@@ -1,6 +1,6 @@
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3/d3", "../common/D3Widget", "../common/Palette", "./IPie", "../common/Text", "../common/FAChar"], factory);
+        define(["d3/d3", "../common/D3Widget", "../common/Palette", "./IPie", "../common/Text", "../common/FAChar", "css!./Pie"], factory);
     } else {
         root.Pie = factory(root.d3, root.D3Widget, root.Palette, root.IPie, root.Text, root.FAChar);
     }
@@ -113,6 +113,9 @@
                 context.labelWidgets[d.data.label]
                     .pos(pos)
                     .render()
+                    .element()
+                        .classed("innerLabel", !context._outerText)
+                        .classed("outerLabel", context._outerText)
                 ;
             })
         ;
@@ -141,7 +144,6 @@
               });
             lines.exit().remove();
         }
-
     };
 
     return Pie;

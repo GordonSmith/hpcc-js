@@ -1,6 +1,6 @@
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3/d3", "../common/D3Widget", "./IGraph", "./Vertex", "./GraphData", "./GraphLayouts"], factory);
+        define(["d3/d3", "../common/D3Widget", "./IGraph", "./Vertex", "./GraphData", "./GraphLayouts", "css!./Graph"], factory);
     } else {
         root.Graph = factory(root.d3, root.D3Widget, root.IGraph, root.Vertex, root.GraphData, root.GraphLayouts);
     }
@@ -127,7 +127,7 @@
             ;
             //  SVG  ---
             this._svgZoom = element.append("rect")
-                .attr("class", "zoomLayer")
+                .attr("class", "zoom")
                 .attr("width", this._size.width)
                 .attr("height", this._size.height)
                 .call(this.zoom)
