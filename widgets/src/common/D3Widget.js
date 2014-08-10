@@ -37,6 +37,17 @@
         //  Target is a DOM Node ID ---
         if (typeof (this._target) === 'string' || this._target instanceof String) {
             this._target = document.getElementById(this._target);
+        } else if (this._target instanceof D3Widget) {
+            //  Share target with other D3Widget  ---
+            this._id = _._id;
+            this._parentElement = _._parentElement;
+            this._parentWidget = _._parentWidget;
+            this._target = _._target;
+            this._element = _._element;
+            this.pos(_._pos);
+            this.size(_._size);
+            //this.data(_._data);
+            return this;
         }
 
         if (this._target instanceof SVGElement) {
@@ -105,6 +116,7 @@
         elements.enter().append("g")
             .classed(this._class, true)
             .attr("id", this._id)
+            //.attr("opacity", 0.50)
             .each(function (context) {
                 context._element = d3.select(this);
                 if (context._pos.x || context._pos.y) {

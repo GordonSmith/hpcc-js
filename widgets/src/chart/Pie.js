@@ -30,14 +30,14 @@
     Pie.prototype.d3Color = Palette.ordinal("category20");
 
     Pie.prototype.radius = function (_) {
-        if (!arguments.length) return this.d3Arc.outerRadius();
+        if (!arguments.length) return this._radius;
         this.d3Arc.outerRadius(_);
         this._radius = _;
         return this;
     };
 
     Pie.prototype.innerRadius = function (_) {
-        if (!arguments.length) return this.d3Arc.innerRadius();
+        if (!arguments.length) return this._innerRadius;
         this.d3Arc.innerRadius(_);
         this._innerRadius = _;
         return this;
