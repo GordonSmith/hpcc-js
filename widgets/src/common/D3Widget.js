@@ -46,7 +46,7 @@
             this._element = _._element;
             this.pos(_._pos);
             this.size(_._size);
-            //this.data(_._data);
+            this.data(_._data);
             return this;
         }
 
@@ -60,10 +60,16 @@
             //  Target is a DOM Node, so create a SVG Element  ---
             var style = window.getComputedStyle(this._target, null);
             if (!this._size.width && !this._size.height) {
+                //  TODO - What happens if size is "AUTO"?
+                var width = parseInt(style.getPropertyValue("width"));
+                var height = parseInt(style.getPropertyValue("height"));
+                this.pos({
+                    x: width / 2,
+                    y: height / 2
+                });
                 this.size({
-                    //  TODO - What happens if size is "AUTO"?
-                    width: parseInt(style.getPropertyValue("width")),
-                    height: parseInt(style.getPropertyValue("height"))
+                    width: width,
+                    height: height
                 });
             }
             this._parentElement = d3.select(this._target).append("svg")
