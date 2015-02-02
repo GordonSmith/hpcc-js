@@ -39,7 +39,9 @@
 
                     setTimeout(function () { displayComposition(); }, timeoutStep * timeoutIdx++);
                     setTimeout(function () { displayCharts(); }, timeoutStep * timeoutIdx++);
+                    setTimeout(function () { displayGCharts(); }, timeoutStep * timeoutIdx++);
                     setTimeout(function () { displayMaps(); }, timeoutStep * timeoutIdx++);
+                    setTimeout(function () { displayGMaps(); }, timeoutStep * timeoutIdx++);
                     setTimeout(function () { displayGraphHierarchies(); }, timeoutStep * timeoutIdx++);
                     setTimeout(function () { displaySurfaces(); }, timeoutStep * timeoutIdx++);
                     setTimeout(function () { displayOther(); }, timeoutStep * timeoutIdx++);
@@ -133,10 +135,8 @@
 
                     function displayCharts() {
                         require(["src/chart/Pie", "src/chart/Bubble", "src/chart/Column", "src/chart/Line",
-                            "src/google/Pie", "src/google/Bar", "src/google/Column", "src/google/Line",
                             "src/c3/Pie", "src/c3/Donut", "src/c3/Line", "src/c3/Column", "src/c3/Bar", "src/c3/Step", "src/c3/Area", "src/c3/Scatter"
                         ], function (Pie, Bubble, Column, Line,
-                            GPie, GBar, GColumn, GLine,
                             C3Pie, C3Donut, C3Line, C3Column, C3Bar, C3Step, C3Area, C3Scatter) {
                             //  C3 Charts ---
                             new C3Pie()
@@ -202,7 +202,12 @@
                                 .testData()
                                 .render()
                             ;
+                        });
+                    }
 
+                    function displayGCharts() {
+                        require(["src/google/Pie", "src/google/Bar", "src/google/Column", "src/google/Line"
+                        ], function (GPie, GBar, GColumn, GLine) {
                             //  Google Charts ---
                             new GPie()
                                 .target("gpie")
@@ -242,6 +247,9 @@
                                 .render()
                             ;
                         });
+                    }
+
+                    function displayGMaps() {
                         require(["src/map/GMap"], function (GMap) {
                             var gmap = new GMap()
                                 .target("gmap")
@@ -306,7 +314,7 @@
                             new MultiChartSurface()
                                 .target("multiSurface")
                                 .testData()
-                                .chartType("GOOGLE_COLUMN")
+                                .chartType("C3_COLUMN")
                                 .title("Multi Charts")
                                 .faChar("\uf080")
                                 .mode("multi")

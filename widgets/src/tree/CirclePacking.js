@@ -1,10 +1,10 @@
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3/d3", "../common/SVGWidget", "../common/Palette", "./ITree", "../common/Text", "../common/FAChar", "css!./CirclePacking"], factory);
+        define(["d3/d3", "../common/SVGWidget", "./ITree", "../common/Text", "../common/FAChar", "css!./CirclePacking"], factory);
     } else {
-        root.CirclePacking = factory(root.d3, root.SVGWidget, root.Palette, root.ITree, root.Text, root.FAChar);
+        root.CirclePacking = factory(root.d3, root.SVGWidget, root.ITree, root.Text, root.FAChar);
     }
-}(this, function (d3, SVGWidget, Palette, ITree, Text, FAChar) {
+}(this, function (d3, SVGWidget, ITree, Text, FAChar) {
     function CirclePacking(target) {
         SVGWidget.call(this);
         ITree.call(this);
@@ -34,7 +34,7 @@
         var context = this;
 
         this.svg.selectAll("circle").remove();
-        this.svg.selectAll("text").remove();
+        this.svg.selectAll("text").remove();    
 
         var root = this._data;
         var focus = root;
@@ -44,6 +44,7 @@
             .data(nodes)
           .enter().append("circle")
             .attr("class", function (d) { return d.parent ? d.children ? "node" : "node leaf" : "node root"; })
+            .style("fill", function (d) { return context.palette(d.label); })
             .on("click", function (d) { if (focus !== d) context.zoom(d), d3.event.stopPropagation(); })
         ;
 

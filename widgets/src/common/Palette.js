@@ -9,21 +9,90 @@
         "category10", "category20", "category20b", "category20c",
         "Accent", "Dark2", "Paired", "Pastel1", "Pastel2", "Set1", "Set2", "Set3"
     ];
-    
-    ordinal = function (palette) {
-        if (!arguments.length) return sets;
-        if (d3.scale[palette]) {
-            return d3.scale[palette]();
-        } else if (colorbrewer[palette]) {
-            var largestPalette = 12;
-            while (largestPalette > 0) {
-                if (colorbrewer[palette][largestPalette]) {
-                    return d3.scale.ordinal().range(colorbrewer[palette][largestPalette]);
-                }
-                --largestPalette;
-            }
+    var d3Ordinal = [
+        "category10", "category20", "category20b", "category20c"
+    ];
+    var brewerOrdinal = [
+        "Accent", "Dark2", "Paired", "Pastel1", "Pastel2", "Set1", "Set2", "Set3"
+    ];
+    var hpccOrdinal = [
+        "hpcc10", "hpcc20"
+    ];
+
+    var ordinalCache = {};
+    var rainbowCache = {};
+
+    function fetchOrdinalItem(id, colors) {
+        if (!id) return palette_ordinal();
+        var retVal = ordinalCache[id];
+        if (!retVal) {
+            retVal = palette_ordinal(id, colors);
+            ordinalCache[id] = retVal;
         }
-        throw "Invalid color palette:  " + palette;
+        return retVal;
+    };
+
+    function palette_ordinal(id, colors) {
+        if (!id) return d3Ordinal.concat(brewerOrdinal).concat(hpccOrdinal);
+        var id = id;
+        var scale = null;
+        var colors = colors;
+
+        if (colors) {
+            scale = d3.scale.ordinal().range(colors);
+        } else {
+            if (d3Ordinal.indexOf(id) >= 0) {
+                scale = new d3.scale[id]();
+            } else if (hpccOrdinal.indexOf(id) >= 0) {
+                var newColors = []
+                switch (id) {
+                    case "hpcc10":
+                        var colors = palette_ordinal("default").colors();
+                        newColors = colors.filter(function (item, idx) {
+                            if (idx % 2) {
+                                return true;
+                            }
+                            return false;
+                        });
+                        break;
+                    case "hpcc20":
+                        newColors = palette_ordinal("category10").colors().concat(palette_ordinal("hpcc10").colors());
+                        break;
+                }
+                scale = d3.scale.ordinal().range(newColors);
+            } else if (brewerOrdinal.indexOf(id) > 0) {
+                var largestPalette = 12;
+                while (largestPalette > 0) {
+                    if (colorbrewer[id][largestPalette]) {
+                        scale = d3.scale.ordinal().range(colorbrewer[id][largestPalette]);
+                        break;
+                    }
+                    --largestPalette;
+                }
+            }
+            if (!scale) {
+                //  Default to Category20  ---
+                scale = d3.scale.category20();
+            }
+            colors = scale.range();
+        }
+        function ordinal(x) {
+            return scale(x);
+        }
+        ordinal.id = function (_) {
+            if (!arguments.length) return id;
+            id = _;
+            return ordinal;
+        }
+        ordinal.colors = function (_) {
+            if (!arguments.length) return colors;
+            colors = _;
+            return ordinal;
+        }
+        ordinal.clone = function (newID) {
+            ordinalCache[newID] = palette_ordinal(newID, this.color());
+        }
+        return ordinal;
     };
 
     brewer = function (palette, from, to) {
@@ -73,14 +142,14 @@
     test = function(ordinalDivID, brewerDivID, customDivID, customArr, steps) {
         d3.select(ordinalDivID)
           .selectAll(".palette")
-            .data(ordinal(), function(d){ return d; })
+            .data(palette_ordinal(), function (d) { return d; })
           .enter().append("span")
             .attr("class", "palette")
             .attr("title", function(d) { return d; })
             .on("click", function(d) { 
                 console.log(d3.values(d.value).map(JSON.stringify).join("\n")); 
             })
-          .selectAll(".swatch").data(function(d) { return ordinal(d).range(); })
+          .selectAll(".swatch").data(function (d) { return palette_ordinal(d).colors(); })
           .enter().append("span")
             .attr("class", "swatch")
             .style("background-color", function(d) { return d; });
@@ -123,9 +192,9 @@
     };    
 
     return {
-        ordinal: ordinal,
+        ordinal: fetchOrdinalItem,
         brewer: brewer,
         custom: custom,
-        test: test        
+        test: test
     };
 }));
