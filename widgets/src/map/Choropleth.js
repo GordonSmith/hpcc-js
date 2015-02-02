@@ -134,7 +134,7 @@
     Choropleth.prototype.update = function (domNode, element) {
         var context = this;
 
-        this.d3Color = Palette.brewer(this._palette, this._dataMinWeight, this._dataMaxWeight);
+        this.palette = Palette.brewer(this._palette, this._dataMinWeight, this._dataMaxWeight);
     };
 
     // A modified d3.geo.albersUsa to include Puerto Rico.

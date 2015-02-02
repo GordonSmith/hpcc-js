@@ -1,6 +1,6 @@
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["./Common", "../chart/I2DChart"], factory);
+    define(["./Common", "../chart/I2DChart"], factory);
     } else {
         root.Common2D = factory(root.Common, root.I2DChart);
     }
@@ -11,8 +11,15 @@
         this._class = "c3_Common2D";
 
         var context = this;
+        this._config.color = {
+            pattern: this.palette.colors()
+        };
+
         this._config.data.onclick = function (d, element) {
             context.click(context.rowToObj(context._data[d.index]), d.x ? d.id : context._columns[1]);
+        };
+        this._config.data.color = function (color, d) {
+            return context.palette(d.id ? d.id : d);
         };
     };
     Common2D.prototype = Object.create(Common.prototype);

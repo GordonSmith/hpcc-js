@@ -36,7 +36,7 @@
         return null;
     })();
     Widget.prototype.isIE = Widget.prototype.ieVersion !== null;
-    Widget.prototype.svgMarkerGlitch = Widget.prototype.isIE && Widget.prototype.ieVersion <= 11;
+    Widget.prototype.svgMarkerGlitch = Widget.prototype.isIE && Widget.prototype.ieVersion <= 12;
     Widget.prototype.MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver || function (callback) {
         //  Just enough for HTMLOverlay and C3  ---
         this.callback = callback;

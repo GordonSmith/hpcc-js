@@ -45,7 +45,7 @@
                 var code = usStates.stateNames[d.id].code;
                 var weight = context._dataMap[code] ? context._dataMap[code][1] : undefined;
                 d3.select(this)
-                    .style("fill", weight === undefined ? "url(#hash)" : context.d3Color(weight))
+                    .style("fill", weight === undefined ? "url(#hash)" : context.palette(weight))
                     .select("title")
                     .text(usStates.stateNames[d.id].name + (weight === undefined ? "" : " (" + weight + ")"))
                 ;

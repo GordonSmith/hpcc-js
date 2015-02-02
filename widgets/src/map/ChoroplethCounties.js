@@ -43,7 +43,7 @@
             .each(function (d) {
                 var weight = context._dataMap[d.id] ? context._dataMap[d.id][1] : undefined;
                 d3.select(this)
-                    .style("fill", weight === undefined ? "url(#hash)" : context.d3Color(weight))
+                    .style("fill", weight === undefined ? "url(#hash)" : context.palette(weight))
                     .select("title")
                     .text(usCounties.countyNames[d.id] + (weight === undefined ? "" : " (" + weight + ")"))
                 ;

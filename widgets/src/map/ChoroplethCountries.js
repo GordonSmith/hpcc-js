@@ -93,7 +93,7 @@
                 if (weight === undefined) {
                     return "url(#hash)";
                 }
-                return context.d3Color(context._dataMap[code]);
+                return context.palette(context._dataMap[code]);
             })
         ;
 
