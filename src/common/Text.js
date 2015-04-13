@@ -63,7 +63,7 @@
                 break;
         };
         var yOffset = -(bbox.y + bbox.height / 2);
-        
+
         this._textElement
             .style("text-anchor", this._anchor)
             .attr("transform", function (d) { return "translate(" + xOffset + "," + yOffset + ")"; })
