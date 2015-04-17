@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["./SVGWidget", "./Text", "css!lib/Font-Awesome/css/font-awesome", "css!./FAChar"], factory);
     } else {
-        root.Entity = factory(root.SVGWidget, root.Text);
+        root.FAChar = factory(root.SVGWidget, root.Text);
     }
 }(this, function (SVGWidget, Text) {
     function FAChar() {

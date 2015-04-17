@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["../common/HTMLWidget", "css!./Table"], factory);
     } else {
-        root.Entity = factory(root.HTMLWidget);
+        root.Table = factory(root.HTMLWidget);
     }
 }(this, function (HTMLWidget) {
     function Table() {

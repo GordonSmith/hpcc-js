@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["d3/d3", "../common/SVGWidget", "./ITree", "css!./Dendrogram"], factory);
     } else {
-        root.Dendrogram = factory(root.d3, root.SVGWidget, root.ITree);
+        root.Tree_Dendrogram = factory(root.d3, root.SVGWidget, root.Tree_ITree);
     }
 }(this, function (d3, SVGWidget, ITree) {
     function Dendrogram(target) {

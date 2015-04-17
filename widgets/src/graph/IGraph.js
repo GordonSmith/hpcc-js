@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define([], factory);
     } else {
-        root.IGraph = factory();
+        root.Graph_IGraph = factory();
     }
 }(this, function () {
     function IGraph() {

@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["d3/d3", "./Choropleth", "topojson/topojson", "./us-states"], factory);
     } else {
-        root.ChoroplethStates = factory(root.d3, root.Choropleth, root.topojson, root.usStates);
+        root.Map_ChoroplethStates = factory(root.d3, root.Map_Choropleth, root.topojson, root.usStates);
     }
 }(this, function (d3, Choropleth, topojson, usStates) {
     function ChoroplethStates() {

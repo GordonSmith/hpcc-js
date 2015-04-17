@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["../common/HTMLWidget", "../chart/MultiChart", "../c3/Column", "../c3/Line", "css!./Surface"], factory);
     } else {
-        root.Graph = factory(root.HTMLWidget, root.MultiChart, root.Column, root.Line);
+        root.Layout_Surface = factory(root.HTMLWidget, root.Chart_MultiChart, root.C3_Column, root.C3_Line);
     }
 }(this, function (HTMLWidget, MultiChart, Column, Line) {
     function Surface() {

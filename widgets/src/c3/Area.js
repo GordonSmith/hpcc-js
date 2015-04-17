@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["./CommonND"], factory);
     } else {
-        root.Area = factory(root.CommonND);
+        root.C3_Area = factory(root.C3_CommonND);
     }
 }(this, function (CommonND) {
     function Area(target) {

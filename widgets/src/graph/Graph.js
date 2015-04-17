@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["d3/d3", "../common/SVGWidget", "./IGraph", "./Vertex", "./GraphData", "./GraphLayouts", "../other/Bag", "css!./Graph"], factory);
     } else {
-        root.Graph = factory(root.d3, root.SVGWidget, root.IGraph, root.Vertex, root.GraphData, root.GraphLayouts, root.Bag);
+        root.Graph_Graph = factory(root.d3, root.SVGWidget, root.Graph_IGraph, root.Graph_Vertex, root.Graph_GraphData, root.Graph_GraphLayouts, root.Bag);
     }
 }(this, function (d3, SVGWidget, IGraph, Vertex, GraphData, GraphLayouts, Bag) {
     function Graph() {
@@ -32,7 +32,7 @@
     };
     Graph.prototype = Object.create(SVGWidget.prototype);
     Graph.prototype.implements(IGraph.prototype);
-    
+
     //  Properties  ---
     Graph.prototype.getOffsetPos = function () {
         return { x: 0, y: 0 };
@@ -171,7 +171,7 @@
                 if (d3.event.sourceEvent && d3.event.sourceEvent.shiftKey && d3.event.sourceEvent.ctrlKey) {
                     context._zoomMode = "selection";
                 } else if (d3.event.sourceEvent && d3.event.sourceEvent.shiftKey) {
-                    context._zoomMode = "selection"; 
+                    context._zoomMode = "selection";
                     context._selection.clear();
                 } else {
                     context._zoomMode = "zoom";
@@ -365,7 +365,7 @@
     Graph.prototype.getVertexBounds = function (layoutEngine) {
         return this.getBounds(this.graphData.nodeValues(), layoutEngine);
     };
-        
+
     Graph.prototype.getSelectionBounds = function (layoutEngine) {
         return this.getBounds(this._selection.get(), layoutEngine);
     };

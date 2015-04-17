@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["../common/HTMLWidget"], factory);
     } else {
-        root.Entity = factory(root.HTMLWidget);
+        root.Audio = factory(root.HTMLWidget);
     }
 }(this, function (HTMLWidget) {
     function Audio() {

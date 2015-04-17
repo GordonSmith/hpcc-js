@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["../common/HTMLWidget", "./Cell", "../common/Text", "../chart/Pie", "../chart/MultiChart", "../c3/Column", "../c3/Line", "css!./Grid"], factory);
     } else {
-        root.Graph = factory(root.HTMLWidget, root.Cell, root.Text, root.Pie, root.MultiChart, root.Column, root.Line);
+        root.Layout_Grid = factory(root.HTMLWidget, root.Layout_Cell, root.Text, root.Chart_Pie, root.Chart_MultiChart, root.C3_Column, root.C3_Line);
     }
 }(this, function (HTMLWidget, Cell, Text, Pie, MultiChart, Column, Line) {
 	function Grid() {
