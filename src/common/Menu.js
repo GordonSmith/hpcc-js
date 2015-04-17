@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["./SVGWidget", "./IMenu", "./Icon", "./List", "css!./Menu"], factory);
     } else {
-        root.Entity = factory(root.SVGWidget, root.IMenu, root.Icon, root.List);
+        root.Menu = factory(root.SVGWidget, root.IMenu, root.Icon, root.List);
     }
 }(this, function (SVGWidget, IMenu, Icon, List) {
     function Menu() {

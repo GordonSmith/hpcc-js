@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["../common/Palette"], factory);
     } else {
-        root.IChoropleth = factory(root.Palette, root.usStates,root.usCounties);
+        root.Map_IChoropleth = factory(root.Palette, root.usStates,root.usCounties);
     }
 }(this, function (Palette, usStates, usCounties) {
     function IChoropleth() {

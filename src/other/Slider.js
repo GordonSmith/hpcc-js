@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["../common/SVGWidget", "./ISlider", "css!./Slider"], factory);
     } else {
-        root.Entity = factory(root.SVGWidget, root.ISlider);
+        root.Slider = factory(root.SVGWidget, root.ISlider);
     }
 }(this, function (SVGWidget, ISlider) {
     function Slider() {

@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["d3/d3", "../common/SVGWidget", "./ITree", "css!./Dendrogram"], factory);
     } else {
-        root.Dendrogram = factory(root.d3, root.SVGWidget, root.ITree);
+        root.Tree_Dendrogram = factory(root.d3, root.SVGWidget, root.Tree_ITree);
     }
 }(this, function (d3, SVGWidget, ITree) {
     function Dendrogram(target) {
@@ -13,9 +13,9 @@
     };
     Dendrogram.prototype = Object.create(SVGWidget.prototype);
     Dendrogram.prototype.implements(ITree.prototype);
-	
+
     Dendrogram.prototype.publish("paletteID", "default", "set", "Palette ID", Dendrogram.prototype._palette.switch());
-	
+
     Dendrogram.prototype.enter = function (domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
 
@@ -31,7 +31,7 @@
     Dendrogram.prototype.update = function (domNode, element) {
         var context = this;
         SVGWidget.prototype.update.apply(this, arguments);
-		
+
         this._palette = this._palette.switch(this._paletteID);
         var width = this.width() - 60;  //  Pad to allow text to display
         this.layout
@@ -63,7 +63,7 @@
         node_enter.on("click", function (d) { context.click(d); });
         node_enter.append("circle");
         node_enter.append("text");
-        
+
         nodes.select("circle")
             .attr("r", 4.5)
             .style("fill", function (d) { return context._palette(d.label); })

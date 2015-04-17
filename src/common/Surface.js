@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["./SVGWidget", "./Icon", "./Shape", "./Text", "./FAChar", "./Menu", "css!./Surface"], factory);
     } else {
-        root.Graph = factory(root.SVGWidget, root.Icon, root.Shape, root.Text, root.FAChar, root.Menu);
+        root.Surface = factory(root.SVGWidget, root.Icon, root.Shape, root.Text, root.FAChar, root.Menu);
     }
 }(this, function (SVGWidget, Icon, Shape, Text, FAChar, Menu) {
     function Surface() {

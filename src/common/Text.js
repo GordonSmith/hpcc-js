@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["./SVGWidget", "css!./Text"], factory);
     } else {
-        root.Entity = factory(root.SVGWidget);
+        root.Text = factory(root.SVGWidget);
     }
 }(this, function (SVGWidget) {
     function Text() {

@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["./Surface", "../chart/Pie", "../c3/Column", "../c3/Line", "css!./Cell"], factory);
     } else {
-        root.Graph = factory(root.Surface, root.Pie, root.Column, root.Line);
+        root.Layout_Cell = factory(root.Layout_Surface, root.Chart_Pie, root.C3_Column, root.C3_Line);
     }
 }(this, function (Surface, Pie, Column, Line) {
     function Cell() {

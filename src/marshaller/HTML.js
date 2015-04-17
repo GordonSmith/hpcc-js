@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["d3/d3", "../layout/Grid", "./HipieDDL", "../layout/Surface", "../layout/Cell"], factory);
     } else {
-        root.HTML = factory(root.d3, root.Grid, root.HipieDDL, root.Surface, root.Cell);
+        root.HTML = factory(root.d3, root.Layout_Grid, root.HipieDDL, root.Layout_Surface, root.Layout_Cell);
     }
 }(this, function (d3, Grid, HipieDDL, Surface, Cell) {
     function HTML() {
