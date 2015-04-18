@@ -366,6 +366,17 @@
                         var wordCloud = new WordCloud()
                             .target("wordCloud")
                             .testData()
+
+                        new Table()
+                            .target("table")
+                            .testData()
+                            .render()
+                        ;
+                        var alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+                        var morphText = new MorphText()
+                            .target("morphText")
+                            .text(alphabet.join(""))
+
                             .render()
                         ;
                     });
