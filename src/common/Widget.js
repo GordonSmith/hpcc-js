@@ -3,7 +3,21 @@
     if (typeof define === "function" && define.amd) {
         define(["d3/d3", "require"], factory);
     } else {
-        root.common_Widget = factory(root.d3);
+        root.require = root.require || function (paths, cb) {
+            if (typeof paths === 'function') {
+                cb = paths;
+                paths = [];
+            }
+
+            var objs = paths.map(function (path) {
+                var prop = path.substring("../".length).split("/").join("_");
+                return root[prop];
+            })
+            
+            cb.apply(null, objs);
+        };
+        
+        root.common_Widget = factory(root.d3, root.require);
     }
 }(this, function (d3, require) {
     var root = this;
@@ -122,20 +136,6 @@
     };
 
     // Serialization  ---
-    Widget.prototype.require = require || function (paths, cb) {
-        if (typeof paths === 'function') {
-            cb = paths
-            paths = []
-        }
-
-        var objs = paths.map(function (path) {
-            var prop = path.substring("../".length).split("/").join("_")
-            return root[prop]
-        })
-        
-        cb.apply(null, objs)
-    }
-
     Widget.prototype.publish = function (id, defaultValue, type, description, set, ext) {
         if (this["__meta_" + id] !== undefined) {
             throw id + " is already published."
