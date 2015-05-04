@@ -139,9 +139,9 @@
             var css = selector+'{'+property+':'+value+';'+'}';
             var sheet = document.styleSheets[index];
             if (sheet.insertRule) {
-                sheet.insertRule (css, 0);
+                sheet.insertRule (css, 0); // exp with -1 and other stuff
             } else if (sheet.addRule) {
-                sheet.addRule(selector, property+':'+value, 0);
+                sheet.addRule(selector, property+':'+value, 0); // exp with -1 and other stuff
             }
         }
     }
