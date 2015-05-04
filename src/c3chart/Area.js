@@ -1,7 +1,7 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["./CommonND", "css!./hpcc-c3"], factory);
+        define(["./CommonND"], factory);
     } else {
         root.c3chart_Area = factory(root.c3chart_CommonND);
     }
