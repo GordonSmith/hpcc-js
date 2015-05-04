@@ -13,6 +13,22 @@
         this._type = "area";
     };
     Area.prototype = Object.create(CommonND.prototype);
+    
+    Area.prototype.publish("isStacked", false, "boolean", "Show SubChart");
 
+    Area.prototype.enter = function (domNode, element) {
+        CommonND.prototype.enter.apply(this,arguments);
+    }
+    
+    Area.prototype.update = function (domNode, element) {
+
+        if (this.isStacked()) {
+            this.c3Chart.groups([this._columns.slice(1,this._columns.length)]);
+        } else {
+            this.c3Chart.groups([]);
+        }
+
+        CommonND.prototype.update.apply(this, arguments);
+    }
     return Area;
 }));
