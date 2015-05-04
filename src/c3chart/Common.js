@@ -1,7 +1,7 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "c3", "../common/HTMLWidget", "css!c3"], factory);
+        define(["d3", "c3", "../common/HTMLWidget", "css!./hpcc-c3"], factory);
     } else {
         root.c3chart_Common = factory(root.d3, root.c3, root.common_HTMLWidget);
     }
@@ -29,6 +29,9 @@
     Common.prototype = Object.create(HTMLWidget.prototype);
 
     Common.prototype.publish("legendPosition", "right", "set", "Legend Position", ["bottom", "right"]);
+    Common.prototype.publish("fontSize", 10, "number", "Font Size");
+    Common.prototype.publish("fontName", null, "string", "Font Name");
+    Common.prototype.publish("fontColor", null, "html-color", "Font Color");
 
     Common.prototype.type = function (_) {
         if (!arguments.length) return this._type;
@@ -110,7 +113,7 @@
     }
     
     var updateStyles = function() {
-        // TODO
+        this.updateStyle('#'+this.id()+'.'+this._class+' .c3 svg','font-size',this.fontSize()+'px');
     }
     
     Common.prototype.updateStyle = function(selector,property,value) {
@@ -124,7 +127,6 @@
         }
 
         var theRules = document.styleSheets[index].cssRules;
-        console.log(document.styleSheets[index]);
         var found = 0;
         for (var n in theRules) {
             if (theRules[n].selectorText === selector)   {
@@ -134,9 +136,13 @@
         }
 
         if (!found) {
-            var style = document.getElementById("c3-stylesheet");
             var css = selector+'{'+property+':'+value+';'+'}';
-            style.appendChild(document.createTextNode(css));
+            var sheet = document.styleSheets[index];
+            if (sheet.insertRule) {
+                sheet.insertRule (css, 0);
+            } else if (sheet.addRule) {
+                sheet.addRule(selector, property+':'+value, 0);
+            }
         }
     }
 

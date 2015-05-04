@@ -29,8 +29,8 @@
     }
     
     var updateStyles = function() {
-        this.updateStyle('#'+this.id()+'.c3chart_Line .c3-line','stroke-width',this.lineWidth()+'px');
-        this.updateStyle('#'+this.id()+'.c3chart_Line .c3-line','stroke-dasharray',this.dashedLine().toString());
+        this.updateStyle('#'+this.id()+'.'+this._class+' .c3-line','stroke-width',this.lineWidth()+'px');
+        this.updateStyle('#'+this.id()+'.'+this._class+' .c3-line','stroke-dasharray',this.dashedLine().toString());
     }
 
     return Line;
