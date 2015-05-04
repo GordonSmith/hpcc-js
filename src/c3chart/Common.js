@@ -1,7 +1,7 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "c3", "../common/HTMLWidget", "css!c3"], factory);
+        define(["d3", "c3", "../common/HTMLWidget", "css!./hpcc-c3"], factory);
     } else {
         root.c3chart_Common = factory(root.d3, root.c3, root.common_HTMLWidget);
     }
@@ -29,6 +29,10 @@
     Common.prototype = Object.create(HTMLWidget.prototype);
 
     Common.prototype.publish("legendPosition", "right", "set", "Legend Position", ["bottom", "right"]);
+    Common.prototype.publish("fontSize", 10, "number", "Font Size");
+    Common.prototype.publish("fontName", "sans-serif", "string", "Font Name");
+    Common.prototype.publish("fontColor", "#fff", "html-color", "Font Color");
+    Common.prototype.publish("showLegend", true, "boolean", "LineWidth");
 
     Common.prototype.type = function (_) {
         if (!arguments.length) return this._type;
@@ -74,6 +78,7 @@
     Common.prototype.enter = function (domNode, element) {
         HTMLWidget.prototype.enter.apply(this, arguments);
         element.style("overflow", "hidden");
+        initStyle.call(this);
         this._config.size = {
             width: this.width(),
             height: this.height()
@@ -88,12 +93,68 @@
 
     Common.prototype.update = function (domNode, element) {
         HTMLWidget.prototype.update.apply(this, arguments);
+        
+        updateStyles.call(this);
+
+        if (this.showLegend()) {
+            this.c3Chart.legend.show();
+        } else {
+            this.c3Chart.legend.hide();
+        }
 
         this.c3Chart.resize({
             width: this.width(),
             height: this.height()
         });
     };
+
+
+    var initStyle = function() {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var style = document.createElement('style');
+
+        style.type = 'text/css';
+        style.setAttribute("id","c3-stylesheet");
+        style.appendChild(document.createTextNode("")); // webkit hack
+
+        head.appendChild(style);
+    }
+    
+    var updateStyles = function() {
+        this.updateStyle('#'+this.id()+'.'+this._class+' .c3 svg','font-size',this.fontSize()+'px');
+        //this.updateStyle('#'+this.id()+'.'+this._class+' .c3 svg','font-family',this.fontName()+'px');
+        this.updateStyle('#'+this.id()+'.'+this._class+' .c3 svg','color',this.fontColor());
+    }
+    
+    Common.prototype.updateStyle = function(selector,property,value) {
+        var index = 0;
+        for (var i = 0; i < document.styleSheets.length; i++) {
+            var styleSheet = document.styleSheets[i];
+            if (styleSheet.ownerNode.id === "c3-stylesheet") {
+                index = i;
+                break;
+            }
+        }
+
+        var theRules = document.styleSheets[index].cssRules;
+        var found = 0;
+        for (var n in theRules) {
+            if (theRules[n].selectorText === selector)   {
+                theRules[n].style[property] = value;
+                found = 1;
+            }
+        }
+
+        if (!found) {
+            var css = selector+'{'+property+':'+value+';'+'}';
+            var sheet = document.styleSheets[index];
+            if (sheet.insertRule) {
+                sheet.insertRule (css, 0); // exp with -1 and other stuff
+            } else if (sheet.addRule) {
+                sheet.addRule(selector, property+':'+value, 0); // exp with -1 and other stuff
+            }
+        }
+    }
 
     return Common;
 }));

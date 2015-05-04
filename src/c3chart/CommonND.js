@@ -74,7 +74,6 @@
 
     CommonND.prototype.update = function (domNode, element) {
         Common.prototype.update.apply(this, arguments);
-
         this._palette = this._palette.switch(this.paletteID());
 
         switch (this.xaxis_type()) {
@@ -89,7 +88,7 @@
             case "timeseries":
                 this.c3Chart.load({
                     columns: this.getC3Columns(),
-                    unload: this.getDiffC3Columns()
+                    unload: this.getDiffC3Columns(),
                 });
                 break;
         }
