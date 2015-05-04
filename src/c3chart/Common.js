@@ -88,12 +88,52 @@
 
     Common.prototype.update = function (domNode, element) {
         HTMLWidget.prototype.update.apply(this, arguments);
+        
+        updateStyle.call(this);
 
         this.c3Chart.resize({
             width: this.width(),
             height: this.height()
         });
     };
+
+    function updateStyle() {
+
+        //http://stackoverflow.com/questions/20189148/regex-used-in-javascript-array-indexof
+        //http://stackoverflow.com/questions/730048/how-to-change-remove-css-classes-definitions-at-runtime
+        //http://davidwalsh.name/add-rules-stylesheets
+        //http://www.hunlock.com/blogs/Totally_Pwn_CSS_with_Javascript
+        var index = 0;
+        for (var i = 0; i < document.styleSheets.length; i++) {
+            var styleSheet = document.styleSheets[i];
+            console.log(styleSheet);
+            
+            if (styleSheet.href) {
+                if (styleSheet.href.match(/hpcc-c3/)) {
+                    console.log(styleSheet);
+                    this.styleSheet = styleSheet; // do this on .enter that way we dont need to loop through each time
+                    console.log("<ss>");
+                    console.log(styleSheet);
+                    console.log("</ss>");
+                    index = i;
+                }
+            }
+            
+        }
+        console.log(index);
+        
+        var theRules = document.styleSheets[index].cssRules;
+        console.log(document.styleSheets[index]);
+           for (var n in theRules) {
+            console.log(theRules[n].selectorText);
+                if (theRules[n].selectorText === ".c3chart_Area .c3-line")   {
+                    console.log('bbbbbbbbbbbbbbbbbbbbbbbbbb');
+                    console.log(theRules[n].style);
+                    theRules[n].style['stroke-width'] = '5px';
+                }
+            }
+        //document.styleSheets[20].addRule(".c3-line", "stroke-width: 5px");
+    }
 
     return Common;
 }));
