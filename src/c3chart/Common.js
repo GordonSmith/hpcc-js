@@ -29,8 +29,6 @@
     Common.prototype = Object.create(HTMLWidget.prototype);
 
     Common.prototype.publish("legendPosition", "right", "set", "Legend Position", ["bottom", "right"]);
-    Common.prototype.publish("lineWidth", 1.0, "number", "LineWidth");
-    Common.prototype.publish("dashLine", [5,5], "array", "Dashed Lines");
 
     Common.prototype.type = function (_) {
         if (!arguments.length) return this._type;
@@ -110,12 +108,11 @@
 
         head.appendChild(style);
     }
-
+    
     var updateStyles = function() {
-        this.updateStyle('.c3chart_Area .c3-line','stroke-width',this.lineWidth()+'px');
-        this.updateStyle('.c3chart_Area .c3-line','stroke-dasharray',this.dashLine().toString());
+        // TODO
     }
-
+    
     Common.prototype.updateStyle = function(selector,property,value) {
         var index = 0;
         for (var i = 0; i < document.styleSheets.length; i++) {
