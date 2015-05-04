@@ -88,7 +88,7 @@
             case "timeseries":
                 this.c3Chart.load({
                     columns: this.getC3Columns(),
-                    unload: this.getDiffC3Columns()
+                    unload: this.getDiffC3Columns(),
                 });
                 break;
         }

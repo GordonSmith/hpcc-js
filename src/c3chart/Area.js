@@ -37,8 +37,8 @@
     }
     
     var updateStyles = function() {
-        this.updateStyle('.c3chart_Area .c3-line','stroke-width',this.lineWidth()+'px');
-        this.updateStyle('.c3chart_Area .c3-line','stroke-dasharray',this.dashedLine().toString());
+        this.updateStyle('#'+this.id()+'.c3chart_Area .c3-line','stroke-width',this.lineWidth()+'px');
+        this.updateStyle('#'+this.id()+'.c3chart_Area .c3-line','stroke-dasharray',this.dashedLine().toString());
     }
 
     return Area;
