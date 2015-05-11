@@ -27,14 +27,14 @@
     Vertex.prototype.publishProxy("textbox_shape_color_fill", "_textBox", "shape_color_fill");
     Vertex.prototype.publishProxy("textbox_text_color_fill", "_textBox", "text_color_fill");
 
-    Vertex.prototype.publish("annotation_diameter", 14, "number", "Annotation Diameter");
-    Vertex.prototype.publish("annotation_spacing", 3, "number", "Annotation Spacing");
-    Vertex.prototype.publish("annotation_icons", [], "array", "Annotations");
+    Vertex.prototype.publish("annotationDiameter", 14, "number", "Annotation Diameter",null,{tags:['Private','TODO2']});
+    Vertex.prototype.publish("annotationSpacing", 3, "number", "Annotation Spacing",null,{tags:['Private','TODO2']});
+    Vertex.prototype.publish("annotationIcons", [], "array", "Annotations",null,{tags:['Private','TODO2']});
 
     Vertex.prototype.testData = function (_) {
         this._icon.testData();
         this._textBox.testData();
-        this.annotation_icons([{ faChar: "\uf188", tooltip: "Test A", shape_color_fill: "white", image_color_fill: "Red" }, { faChar: "\uf0ad", tooltip: "Test B", shape_color_fill: "green", shape_color_stroke: "green", image_color_fill: "white" }, { faChar: "\uf193", tooltip: "Test C", shape_color_fill: "navy", shape_color_stroke: "navy", image_color_fill: "white" }])
+        this.annotationIcons([{ faChar: "\uf188", tooltip: "Test A", shape_color_fill: "white", image_color_fill: "Red" }, { faChar: "\uf0ad", tooltip: "Test B", shape_color_fill: "green", shape_color_stroke: "green", image_color_fill: "white" }, { faChar: "\uf193", tooltip: "Test C", shape_color_fill: "navy", shape_color_stroke: "navy", image_color_fill: "white" }])
         return this;
     };
 
@@ -62,7 +62,7 @@
         ;
 
         var context = this;
-        var annotations = element.selectAll(".annotation").data(this.annotation_icons());
+        var annotations = element.selectAll(".annotation").data(this.annotationIcons());
         annotations.enter().append("g")
             .attr("class", "annotation")
             .each(function (d, idx) {
@@ -79,7 +79,7 @@
                 var annotationWidget = context._annotationWidgets[idx];
                 var ddd = context.textbox_shape_color_stroke();
                 annotationWidget
-                    .diameter(context.annotation_diameter())
+                    .diameter(context.annotationDiameter())
                     .shape_color_fill(context.textbox_shape_color_fill())
                     .shape_color_stroke(context.textbox_shape_color_stroke())
                 ;
@@ -97,7 +97,7 @@
                         y: yOffset + aBBox.height / 4
                     })
                 ;
-                xOffset -= aBBox.width + context.annotation_spacing();
+                xOffset -= aBBox.width + context.annotationSpacing();
             })
         ;
         annotations.exit()

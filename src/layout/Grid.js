@@ -16,10 +16,10 @@
     Grid.prototype = Object.create(HTMLWidget.prototype);
     Grid.prototype._class += " layout_Grid";
 
-    Grid.prototype.publish("designMode", false, "boolean", "Design Mode");
-    Grid.prototype.publish("gutter", 4, "number", "Gap Between Widgets");
-    Grid.prototype.publish("fitTo", "all", "set", "Sizing Strategy", ["all", "width"]);
-    Grid.prototype.publish("content", [], "widgetArray", "widgets");
+    Grid.prototype.publish("designMode", false, "boolean", "Design Mode",null,{tags:['Private','TODO2']});
+    Grid.prototype.publish("gutter", 4, "number", "Gap Between Widgets",null,{tags:['Private','TODO2']});
+    Grid.prototype.publish("fitTo", "all", "set", "Sizing Strategy", ["all", "width"],{tags:['Private','TODO2']});
+    Grid.prototype.publish("content", [], "widgetArray", "widgets",null,{tags:['Private','TODO2']});
 
     Grid.prototype.testData = function () {
         this

@@ -194,10 +194,10 @@
     Graph.prototype = Object.create(GraphWidget.prototype);
     Graph.prototype._class += " marshaller_Graph";
 
-    Graph.prototype.publish("ddlUrl", "", "string", "DDL URL");
-    Graph.prototype.publish("databomb", "", "string", "Data Bomb");
-    Graph.prototype.publish("visualizeRoxie", false, "boolean", "Show Roxie Data Sources");
-    Graph.prototype.publish("proxyMappings", [], "array", "Proxy Mappings");
+    Graph.prototype.publish("ddlUrl", "", "string", "DDL URL",null,{tags:['Private','TODO2']});
+    Graph.prototype.publish("databomb", "", "string", "Data Bomb",null,{tags:['Private','TODO2']});
+    Graph.prototype.publish("visualizeRoxie", false, "boolean", "Show Roxie Data Sources",null,{tags:['Private','TODO2']});
+    Graph.prototype.publish("proxyMappings", [], "array", "Proxy Mappings",null,{tags:['Private','TODO2']});
 
     Graph.prototype.publish()
     

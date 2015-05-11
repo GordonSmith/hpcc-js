@@ -17,7 +17,15 @@
     Scatter.prototype = Object.create(CommonXY.prototype);
     Scatter.prototype.implements(INDChart.prototype);
 
+    /**
+     * Publish Params Common To Other Libraries
+     */
     Scatter.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Scatter.prototype._palette.switch());
+
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    Scatter.prototype.publish("tooltipText","x:[[x]] y:[[y]]", "string", "Tooltip Text");
     
     Scatter.prototype.enter = function(domNode, element) {
         CommonXY.prototype.enter.apply(this, arguments);

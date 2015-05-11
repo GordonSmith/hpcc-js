@@ -26,8 +26,15 @@
     Common2D.prototype._class += " c3chart_Common2D";
     Common2D.prototype.implements(I2DChart.prototype);
 
+    /**
+     * Publish Params Common To Other Libraries
+     */
     Common2D.prototype.publish("paletteID", "default", "set", "Palette ID", Common2D.prototype._palette.switch());
 
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    
     Common2D.prototype.update = function (domNode, element) {
         Common.prototype.update.apply(this, arguments);
         this._palette = this._palette.switch(this.paletteID());
