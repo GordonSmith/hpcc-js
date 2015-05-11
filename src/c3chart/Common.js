@@ -122,9 +122,9 @@
         element.selectAll(".c3 .c3-legend-item text").style({ 
             "fill": this.legendFontColor(), 
             "font-size": this.legendFontSize()+"px", 
-            "font-family": this.legendFontFamily,
-            "font-weight": this.legendFontBold ? "bold" : "normal",
-            "font-style": this.legendFontItalic ? "italic" : "normal"
+            "font-family": this.legendFontFamily(),
+            "font-weight": this.legendFontBold() ? "bold" : "normal",
+            "font-style": this.legendFontItalic() ? "italic" : "normal"
         });
     };
     
