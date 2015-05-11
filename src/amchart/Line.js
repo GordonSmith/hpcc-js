@@ -11,18 +11,22 @@
         this._class = "amchart_Line";
         this._tag = "div";
         
-        this._gType = "smoothedLine";
+        this._gType = "line";
     };
     
     Line.prototype = Object.create(CommonSerial.prototype);
     Line.prototype.implements(INDChart.prototype);
-    
+
+    /**
+     * Publish Params Common To Other Libraries
+     */
     Line.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Line.prototype._palette.switch());
     
-    Line.prototype.publish("gType", "smoothedLine", "set", "Bullet Type", ["line", "column", "step", "smoothedLine"]);
-
-    Line.prototype.publish("globalTooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text");
-    Line.prototype.publish("graphTooltipText",["[[category]]([[title]]): [[value]]"], "array", "Tooltip Text");
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    //Line.prototype.publish("gType", "smoothedLine", "set", "Bullet Type", ["line", "column", "step", "smoothedLine"],{tags:['Basic','TODO2']}); should we expose and is it shared? right now its private and we need to call it via gType() if we do use it
+    Line.prototype.publish("tooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Basic','TODO2']});
 
     Line.prototype.enter = function(domNode, element) {
         var initObj = {

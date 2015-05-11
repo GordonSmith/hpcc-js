@@ -142,6 +142,7 @@
     // Serialization  ---
     Widget.prototype.publish = function (id, defaultValue, type, description, set, ext) {
         if (this["__meta_" + id] !== undefined) {
+            console.log(this._class);
             throw id + " is already published."
         }
         this["__meta_" + id] = {

@@ -15,12 +15,16 @@
     
     Polar.prototype = Object.create(CommonRadar.prototype);
     Polar.prototype.implements(INDChart.prototype);
-    
+    /**
+     * Publish Params Common To Other Libraries
+     */
     Polar.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Polar.prototype._palette.switch());
 
-    Polar.prototype.publish("globalTooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text");
-    Polar.prototype.publish("graphTooltipText",["[[category]]([[title]]): [[value]]"], "array", "Tooltip Text");
-    
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    Polar.prototype.publish("tooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Intermediate','TODO2']});
+
     Polar.prototype.testData = function() {
         this.columns(["Subject", "Year 1", "Year 2", "Year 3", "Year 4"]);
         this.data([
@@ -37,10 +41,11 @@
             ["Math II", 76, 30, 34, 6],
             ["Math III", 80, 30, 27, 8],
         ]);
-        this.valueAxesAxisTitleOffset([20])
-        this.valueAxesMinimum([0]);
-        this.valueAxesAxisAlpha([0.15]);
-        this.valueAxesDashLength([3]);
+        // FIX these 
+        this.yAxisTitleOffset([20])
+        this.yAxisMinimum([0]);
+        this.yAxisAlpha([0.15]);
+        this.yAxisDashLength([3]);
         
         return this;
     };

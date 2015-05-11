@@ -17,9 +17,9 @@
     Paginator.prototype = Object.create(HTMLWidget.prototype);
     Paginator.prototype._class += " other_Paginator";
 
-    Paginator.prototype.publish("itemsPerPage", 2, "number", "Pagination items per page");
-    Paginator.prototype.publish("numItems", 10, "number", "Pagination total number of items");
-    Paginator.prototype.publish("pageNumber", 1, "number", "Pagination set or get the page number");
+    Paginator.prototype.publish("itemsPerPage", 2, "number", "Pagination items per page",null,{tags:['Private','TODO2']});
+    Paginator.prototype.publish("numItems", 10, "number", "Pagination total number of items",null,{tags:['Private','TODO2']});
+    Paginator.prototype.publish("pageNumber", 1, "number", "Pagination set or get the page number",null,{tags:['Private','TODO2']});
 
     Paginator.prototype.enter = function (domNode, element) {
         HTMLWidget.prototype.enter.apply(this, arguments);

@@ -13,14 +13,21 @@
     
     Funnel.prototype = Object.create(CommonFunnel.prototype);
     Funnel.prototype.implements(I2DChart.prototype);
-    
+
+    /**
+     * Publish Params Common To Other Libraries
+     */
     Funnel.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Funnel.prototype._palette.switch());
 
-    Funnel.prototype.publish("neckHeightPercent", 30, "number", "Neck Height %");
-    Funnel.prototype.publish("neckWidthPercent", 40, "number", "Neck Width %");
+    /**
+     * Publish Params Unique To This Widget
+     */  
+    Funnel.prototype.publish("neckHeightPercent", 30, "number", "Neck Height %",null,{tags:['Basic','TODO2']});
+    Funnel.prototype.publish("neckWidthPercent", 40, "number", "Neck Width %",null,{tags:['Basic','TODO2']});
     
-    Funnel.prototype.publish("globalTooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text");
-        
+    //TODO
+    //Funnel.prototype.publish("tooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Basic','TODO2']});
+
     Funnel.prototype.enter = function(domNode, element) {
         CommonFunnel.prototype.enter.apply(this, arguments);
     };
