@@ -15,7 +15,7 @@
         this._data;
         this._columns;
         this._valueField;
-        this._categoryField;
+        this._categoryField = [];
         this._colors = [];
     };
     
@@ -116,7 +116,7 @@
         this._chart.valueAxes[0].fontSize = this.axisFontSize();
         this._chart.valueAxes[0].color = this.yAxisFontColor();
  
-         this._chart.valueAxes[0].autoGridCount = this.yAxisAutoGridCount();
+        this._chart.valueAxes[0].autoGridCount = this.yAxisAutoGridCount();
         this._chart.valueAxes[0].gridPosition = this.yAxisGridPosition();
         
         // Color Palette

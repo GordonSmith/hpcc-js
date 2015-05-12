@@ -14,8 +14,8 @@
         this._chart = {};
         this._data;
         this._columns;
-        this._valueField;
-        this._categoryField;
+        this._valueField = [];
+        this._categoryField = [];
         this._colors = [];
         
         this._numValueAxis = 1;
