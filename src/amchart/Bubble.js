@@ -16,8 +16,16 @@
     };
     Bubble.prototype = Object.create(CommonXY.prototype);
     Bubble.prototype.implements(INDChart.prototype);
-
+    
+    /**
+     * Publish Params Common To Other Libraries
+     */
     Bubble.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Bubble.prototype._palette.switch());
+
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    Bubble.prototype.publish("tooltipText","[[category]]: [[value]]", "string", "Tooltip Text",null,{tags:['Intermediate','TODO2']});
 
     Bubble.prototype.enter = function(domNode, element) {
         CommonXY.prototype.enter.apply(this, arguments);

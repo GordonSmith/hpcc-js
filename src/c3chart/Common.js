@@ -29,11 +29,20 @@
     Common.prototype = Object.create(HTMLWidget.prototype);
     Common.prototype._class += " c3chart_Common";
 
-    Common.prototype.publish("legendPosition", "right", "set", "Legend Position", ["bottom", "right"]);
-
-    Common.prototype.publish("legendFontColor", "#000", "html-color", "Font Color");
-    Common.prototype.publish("legendFontSize", 11, "number", "Font Size");
-    Common.prototype.publish("showLegend", true, "boolean", "Show/Hide Legend");
+    /**
+     * Publish Params Common To Other Libraries
+     */
+    Common.prototype.publish("showLegend", true, "boolean", "Show/Hide Legend",null,{tags:['Basic','TODO2']});
+    Common.prototype.publish("legendFontColor", "#000", "html-color", "Font Color",null,{tags:['Intermediate','TODO2']});
+    Common.prototype.publish("legendFontSize", 11, "number", "Font Size",null,{tags:['Intermediate','TODO2']});
+    Common.prototype.publish("legendFontFamily", null, "string", "Legend Font Name",null,{tags:['Private']});
+    Common.prototype.publish("legendFontBold", false, "boolean", "Legend Font Bold",null,{tags:['Private']});
+    Common.prototype.publish("legendFontItalic", false, "boolean", "Legend Font Italic",null,{tags:['Private']});
+    
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    Common.prototype.publish("legendPosition", "right", "set", "Legend Position", ["bottom", "right"],{tags:['Intermediate','TODO2']});
 
     Common.prototype.type = function (_) {
         if (!arguments.length) return this._type;
@@ -112,7 +121,10 @@
 
         element.selectAll(".c3 .c3-legend-item text").style({ 
             "fill": this.legendFontColor(), 
-            "font-size": this.legendFontSize()+"px" 
+            "font-size": this.legendFontSize()+"px", 
+            "font-family": this.legendFontFamily(),
+            "font-weight": this.legendFontBold() ? "bold" : "normal",
+            "font-style": this.legendFontItalic() ? "italic" : "normal"
         });
     };
     

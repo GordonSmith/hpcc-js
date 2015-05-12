@@ -15,7 +15,14 @@
     CommonND.prototype._class += " google_CommonND";
     CommonND.prototype.implements(INDChart.prototype);
 
-    CommonND.prototype.publish("paletteID", "default", "set", "Palette ID", CommonND.prototype._palette.switch());
+    /**
+     * Publish Params Common To Other Libraries
+     */
+    CommonND.prototype.publish("paletteID", "default", "set", "Palette ID", CommonND.prototype._palette.switch(),{tags:['Basic']});
+    
+    /**
+     * Publish Params Unique To This Widget
+     */   
     
     CommonND.prototype.getChartOptions = function () {
         var chartOptions = Common.prototype.getChartOptions.call(this);
@@ -28,7 +35,6 @@
     CommonND.prototype.update = function(domNode, element) {
     	this._palette = this._palette.switch(this.paletteID()); 
         Common.prototype.update.apply(this, arguments);
-        this._chart.draw(this._data_google, this.getChartOptions());
     }
 
     function initSeries(num) {
