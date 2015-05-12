@@ -15,24 +15,31 @@
     Pie.prototype = Object.create(Common2D.prototype);
     Pie.prototype._class += " google_Pie";
 
-    Pie.prototype.publish("is3D", true, "boolean", "Enable 3D");
-    Pie.prototype.publish("pieHole", 0, "number", "Pie Hole Size",null,{min:0,max:0.9,step:0.1});
-    Pie.prototype.publish("pieStartAngle", 0, "number", "Pie Start Angle");
-    
-    Pie.prototype.publish("pieSliceText", "percentage", "set", "The content of the text displayed on the slice" ,["none","label","value","percentage"]);
-    Pie.prototype.publish("pieSliceTextStyleColor", "#FFFFFF", "hmtl-color", "Specifies the slice text style.");
-    Pie.prototype.publish("pieSliceTextStyleFontName", null, "string", "Specifies the slice text style.");
-    Pie.prototype.publish("pieSliceTextStyleFontSize", null, "number", "Specifies the slice text style.");
+    /**
+     * Publish Params Common To Other Libraries
+     */
+    Pie.prototype.publish("is3D", false, "boolean", "Enable 3D",null,{tags:['Basic']});
 
-    Pie.prototype.publish("pieSliceBorderColor", "#FFFFFF", "html-color", "The color of the slice borders");
-    Pie.prototype.publish("pieResidueSliceColor", "#ccc", "html-color", "Color for the combination slice that holds all slices below sliceVisibilityThreshold");
-    Pie.prototype.publish("pieResidueSliceLabel", "Other", "string", "A label for the combination slice that holds all slices below sliceVisibilityThreshold");
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    Pie.prototype.publish("pieHole", 0, "number", "Pie Hole Size",null,{min:0,max:0.9,step:0.1,tags:['Intermediate']});
+    Pie.prototype.publish("pieStartAngle", 0, "number", "Pie Start Angle",null,{tags:['Advanced']});
     
-    Pie.prototype.publish("sliceVisibilityThreshold", 1/720, "number", "The slice relative part, below which a slice will not show individually."); // 1/720
+    Pie.prototype.publish("pieSliceText", "percentage", "set", "The content of the text displayed on the slice" ,["none","label","value","percentage"],{tags:['Basic']});
+    Pie.prototype.publish("pieSliceFontColor", "#FFFFFF", "hmtl-color", "Specifies the slice text style.",null,{tags:['Basic']});
+    Pie.prototype.publish("pieSliceFontFamily", null, "string", "Specifies the slice text style.",null,{tags:['Basic']});
+    Pie.prototype.publish("pieSliceFontSize", null, "number", "Specifies the slice text style.",null,{tags:['Basic']});
+
+    Pie.prototype.publish("pieSliceBorderColor", "#FFFFFF", "html-color", "The color of the slice borders",null,{tags:['Intermediate']});
+    Pie.prototype.publish("pieResidueSliceColor", "#ccc", "html-color", "Color for the combination slice that holds all slices below sliceVisibilityThreshold",null,{tags:['Advanced']});
+    Pie.prototype.publish("pieResidueSliceLabel", "Other", "string", "A label for the combination slice that holds all slices below sliceVisibilityThreshold",null,{tags:['Advanced']});
     
-    Pie.prototype.publish("slicesColor", [], "array", "Per slice");
-    Pie.prototype.publish("slicesOffset", [], "array", "Per slice");
-    Pie.prototype.publish("slicesTextStyle", [], "array", "Per slice"); // overrides pieSliceTextStyle
+    Pie.prototype.publish("sliceVisibilityThreshold", 1/720, "number", "The slice relative part, below which a slice will not show individually.",null,{tags:['Advanced']}); // 1/720
+    
+    Pie.prototype.publish("slicesColor", [], "array", "Per slice",null,{tags:['Private']});
+    Pie.prototype.publish("slicesOffset", [], "array", "Per slice",null,{tags:['Advanced']});
+    Pie.prototype.publish("slicesTextStyle", [], "array", "Per slice",null,{tags:['Private']}); // overrides pieSliceTextStyle
     
     Pie.prototype.getChartOptions = function () {
         var retVal = Common2D.prototype.getChartOptions.apply(this, arguments);
@@ -46,9 +53,9 @@
         retVal.pieStartAngle = this.pieStartAngle();
         retVal.pieSliceText = this.pieSliceText();
         retVal.pieSliceTextStyle = {
-            color: this.pieSliceTextStyleColor(),
-            fontName: this.pieSliceTextStyleFontName(),
-            fontSize: this.pieSliceTextStyleFontSize()
+            color: this.pieSliceFontColor(),
+            fontName: this.pieSliceFontFamily(),
+            fontSize: this.pieSliceFontSize()
         }
         retVal.pieSliceBorderColor = this.pieSliceBorderColor();
         retVal.pieResidueSliceColor = this.pieResidueSliceColor();

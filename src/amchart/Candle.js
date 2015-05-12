@@ -22,23 +22,27 @@
     
     Candle.prototype = Object.create(CommonSerial.prototype);
     Candle.prototype.implements(INDChart.prototype);
-
+    
+    /**
+     * Publish Params Common To Other Libraries
+     */
     Candle.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Candle.prototype._palette.switch());
-    
-    Candle.prototype.publish("paletteGrouping", "Columns", "set", "Palette Grouping",["Main","Columns"]);
+    Candle.prototype.publish("isStacked", true, "boolean", "Stacked",null,{tags:['Basic','TODO2']});
 
-    Candle.prototype.publish("globalTooltipText",'<div style="text-align:left;"><b>[[category]]</b><br/> Open:<b>[[open]]</b> Close:<b>[[close]]</b><br/>Low:<b>[[low]]</b> High:<b>[[high]]</b></div>', "string", "Tooltip Text", null, {inputType:'textarea'});
-    Candle.prototype.publish("graphTooltipText",[], "array", "Tooltip Text Array");
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    Candle.prototype.publish("paletteGrouping", "By Column", "set", "Palette Grouping",["By Category","By Column"],{tags:['Basic','TODO2']});
 
-    Candle.prototype.publish("cylinderBars", false, "boolean", "Cylinder Bars");
-    Candle.prototype.publish("circleRadius", 1, "number", "Circle Radius");
+    Candle.prototype.publish("tooltipText",'<div style="text-align:left;"><b>[[category]]</b><br/> Open:<b>[[open]]</b> Close:<b>[[close]]</b><br/>Low:<b>[[low]]</b> High:<b>[[high]]</b></div>', "string", "Tooltip Text",null,{tags:['Intermediate','TODO2']});
     
-    Candle.prototype.publish("columnWidth", 0.62, "number", "Bar Width");
-
-    Candle.prototype.publish("isStacked", true, "boolean", "Stacked");
-    Candle.prototype.publish("stackType", "regular", "set", "Stack Type",["none","regular","100%"]);
+    Candle.prototype.publish("cylinderBars", false, "boolean", "Cylinder Bars",null,{tags:['Basic','TODO2']});
+    Candle.prototype.publish("circleRadius", 1, "number", "Circle Radius",null,{tags:['Basic','TODO2']});
     
-    Candle.prototype.publish("useOhlcLines", false, "boolean", "Use OHLC lines rather than candlestick blocks");
+    Candle.prototype.publish("columnWidth", 0.62, "number", "Bar Width",null,{tags:['Basic','TODO2']});
+    
+    Candle.prototype.publish("stackType", "regular", "set", "Stack Type",["none","regular","100%"],{tags:['Basic','TODO2']});
+    Candle.prototype.publish("useOhlcLines", false, "boolean", "Use OHLC lines rather than candlestick blocks",null,{tags:['Intermediate','TODO2']});
 
     Candle.prototype.testData = function() {
         this.columns(["Subject", "low", "open", "close", "high"]);
@@ -88,13 +92,13 @@
         this._chart.categoryAxis.startOnAxis = false; //override due to render issue
 
         // Color Palette
-        if(this.paletteGrouping() === "Main"){
+        if(this.paletteGrouping() === "By Category"){
             this._chart.dataProvider.forEach(function(dataPoint,i){
                 context._chart.dataProvider[i].color = context._palette(i);
                 context._chart.dataProvider[i].linecolor = context.lineColor() !== null ? context.lineColor() : context._palette(i);
             });
             this._chart.colors = [];
-        } else if (this.paletteGrouping() === "Columns") {
+        } else if (this.paletteGrouping() === "By Column") {
             this._colors = [];
             this._columns.slice(1,this._columns.length).forEach(function(dataPoint,i){
                 context._colors.push(context._palette(i));

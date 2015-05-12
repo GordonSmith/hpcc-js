@@ -15,10 +15,15 @@
     Pyramid.prototype = Object.create(CommonFunnel.prototype);
     Pyramid.prototype.implements(I2DChart.prototype);
 
+    /**
+     * Publish Params Common To Other Libraries
+     */
     Pyramid.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Pyramid.prototype._palette.switch());
-    
-    Pyramid.prototype.publish("globalTooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text");
-    Pyramid.prototype.publish("graphTooltipText",["[[category]]([[title]]): [[value]]"], "array", "Tooltip Text");
+
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    Pyramid.prototype.publish("tooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Intermediate','TODO2']});
     
     Pyramid.prototype.testData = function() {
         this.columns(["Subject", "Year 1"]);

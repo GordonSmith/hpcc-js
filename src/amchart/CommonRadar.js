@@ -20,62 +20,80 @@
     };
     
     CommonRadar.prototype = Object.create(HTMLWidget.prototype);
+    
+    // NO X-Axis  !!!
+    
+    /**
+     * Publish Params Common To Other Libraries
+     */
+    CommonRadar.prototype.publish("fontSize", null, "number", "Font Size",null,{tags:['Basic','TODO2']});
+    CommonRadar.prototype.publish("fontFamily", null, "string", "Font Name",null,{tags:['Basic','TODO2']});
+    CommonRadar.prototype.publish("fontColor", null, "html-color", "Font Color",null,{tags:['Basic','TODO2']});
+    
+    CommonRadar.prototype.publish("lineWidth", 2, "number", "Line Thickness", null, {min:0,max:10,step:1,inputType:'range',tags:['Basic','TODO2']});
+    CommonRadar.prototype.publish("lineOpacity", 1, "number", "Line Opacity", null, {min:0,max:1,step:0.001,inputType:'range',tags:['Basic','TODO2']}); 
+    CommonRadar.prototype.publish("dashedLineStyle", 0, "number", "",null,{tags:['Advanced','TODO2']}); // TODO
+    
+    CommonRadar.prototype.publish("yAxisBaselineColor", "#000000", "html-color", "Axis color",null,{tags:['Intermediate','TODO2']}); // -> BaseLineCOlor  (axisAxis needs be baseline?)
+    
+    CommonRadar.prototype.publish("axisFontSize", null, "number", "Size of value labels text. Will use chart's fontSize if not set.",null,{tags:['Basic','TODO2']});
+    CommonRadar.prototype.publish("yAxisFontColor", null, "string", "Font Name",null,{tags:['Basic','TODO2']});
+    
+    CommonRadar.prototype.publish("yAxisTitle", "Axis title", "string", "Y-Axis Title",null,{tags:['Basic','TODO2']});
+    CommonRadar.prototype.publish("yAxisTitleFontColor", null, "html-color", "Color of axis value labels. Will use chart's color if not set.",null,{tags:['Basic','TODO2']});
+    CommonRadar.prototype.publish("yAxisTitleFontSize", null, "html-color", "Font Size of axis value labels. Will use chart's color if not set.",null,{tags:['Basic','TODO2']});
+        
+    CommonRadar.prototype.publish("axisLineWidth", 1, "number", "Thickness of axis",null,{tags:['Basic','TODO2']});    
 
-    CommonRadar.prototype.publish("marginLeft", null, "number", "Margin (Left)");
-    CommonRadar.prototype.publish("marginRight", null, "number", "Margin (Right)");
-    CommonRadar.prototype.publish("marginTop", null, "number", "Margin (Top)");
-    CommonRadar.prototype.publish("marginBottom", null, "number", "Margin (Bottom)");
+    /**
+     * Publish Params Unique To This Widget
+     */
+    CommonRadar.prototype.publish("marginLeft", null, "number", "Margin (Left)",null,{tags:['Intermediate','TODO2']});
+    CommonRadar.prototype.publish("marginRight", null, "number", "Margin (Right)",null,{tags:['Intermediate','TODO2']});
+    CommonRadar.prototype.publish("marginTop", null, "number", "Margin (Top)",null,{tags:['Intermediate','TODO2']});
+    CommonRadar.prototype.publish("marginBottom", null, "number", "Margin (Bottom)",null,{tags:['Intermediate','TODO2']});
     
-    CommonRadar.prototype.publish("chartScrollbar", false, "boolean", "Chart Scrollbar");
+    CommonRadar.prototype.publish("showScrollbar", false, "boolean", "Chart Scrollbar",null,{tags:['Intermediate','TODO2']});
     
-    CommonRadar.prototype.publish("globalFillAlpha", .3, "number", "Shape Opacity", null, {min:0,max:1,step:0.001,inputType:'range'});
-    CommonRadar.prototype.publish("globalLineAlpha", 1, "number", "Line Opacity", null, {min:0,max:1,step:0.001,inputType:'range'}); 
-    CommonRadar.prototype.publish("globalLineThickness", 2, "number", "Line Thickness", null, {min:0,max:10,step:0.1,inputType:'range'}); 
-    CommonRadar.prototype.publish("globalBulletSize", 9, "number", "Bullet Size");
-    CommonRadar.prototype.publish("globalBulletType", "round", "set", "Bullet Type", ["none", "round", "square", "triangleUp", "triangleDown", "triangleLeft", "triangleRight", "bubble", "diamond"]);
+    CommonRadar.prototype.publish("startDuration", 0.3, "number", "Start Duration (sec)",null,{tags:['Private','TODO2']});
     
-    CommonRadar.prototype.publish("graphFillAlpha", [], "array", "Area Opacity", null, {min:0, max:1,step:0.001,inputType:'range'}); 
-    CommonRadar.prototype.publish("graphLineAlpha", [], "array", "Area Border Opacity", null, {min:0,max:1,step:0.001,inputType:'range'}); 
-    CommonRadar.prototype.publish("graphLineThickness", [], "array", "Line Thickness", null, {min:0,max:1,step:0.001,inputType:'range'});
-    CommonRadar.prototype.publish("graphBulletSize", [], "number", "Bullet Size");
-    CommonRadar.prototype.publish("graphBulletType", [], "array", "Bullet Type");
+    CommonRadar.prototype.publish("dataDateFormat", null, "string", "",null,{tags:['Private','TODO2']});
     
-    CommonRadar.prototype.publish("startDuration", 0.3, "number", "Start Duration (sec)");
+    // BUNCH OF PARAMS not being used
     
-    CommonRadar.prototype.publish("dataDateFormat", null, "string", "");
+    CommonRadar.prototype.publish("yAxisAutoGridCount", true, "boolean", "Specifies whether number of gridCount is specified automatically, acoarding to the axis size",null,{tags:['Advanced','TODO2']});
+    CommonRadar.prototype.publish("yAxisGridPosition", "start", "set", "Specifies if a grid line is placed on the center of a cell or on the beginning of a cell", ["start","middle"],{tags:['Advanced','TODO2']});
     
-    CommonRadar.prototype.publish("categoryAxisAutoGridCount", true, "boolean", "Specifies whether number of gridCount is specified automatically, acoarding to the axis size");
-    CommonRadar.prototype.publish("categoryAxisGridPosition", "start", "set", "Specifies if a grid line is placed on the center of a cell or on the beginning of a cell", ["start","middle"]);
-    CommonRadar.prototype.publish("categoryAxisAlpha", 1, "number", "Axis opacity");
-    CommonRadar.prototype.publish("categoryAxisAxisColor", "#000000", "html-color", "Axis color");
-    CommonRadar.prototype.publish("categoryAxisAxisThickness", 1, "number", "Thickness of axis");
-    CommonRadar.prototype.publish("categoryAxisBoldPeriodBeginning", true, "boolean", "When parse dates is on for the category axis, the chart will try to highlight the beginning of the periods, like month, in bold.");
-    CommonRadar.prototype.publish("categoryAxisColor", null, "html-color", "Color of axis value labels. Will use chart's color if not set.");
-    CommonRadar.prototype.publish("categoryAxisDashLength", 0, "number", "Length of a dash. 0 means line is not dashed.");
-    CommonRadar.prototype.publish("categoryAxisFillAlpha", 0, "number", "Fill opacity. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.");
-    CommonRadar.prototype.publish("categoryAxisFillColor", "#FFFFFF", "html-color", "Fill color. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.");
-    CommonRadar.prototype.publish("categoryAxisFontSize", null, "number", "Size of value labels text. Will use chart's fontSize if not set.");
-    CommonRadar.prototype.publish("categoryAxisGridAlpha", 0.2, "number", "Grid alpha.");
+    //CommonRadar.prototype.publish("yAxisBoldPeriodBeginning", true, "boolean", "When parse dates is on for the category axis, the chart will try to highlight the beginning of the periods, like month, in bold.",null,{tags:['Advanced','TODO2']});
+    //CommonRadar.prototype.publish("yAxisFillAlpha", 0, "number", "Fill opacity. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.",null,{tags:['Intermediate','TODO2']});
+    //CommonRadar.prototype.publish("yAxisFillColor", "#FFFFFF", "html-color", "Fill color. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.",null,{tags:['Intermediate','TODO2']});
+    //CommonRadar.prototype.publish("yAxisGridAlpha", 0.2, "number", "Grid alpha.",null,{tags:['Intermediate','TODO2']});
     
-    CommonRadar.prototype.publish("numValueAxis", 1, "number", "");
-    CommonRadar.prototype.publish("valueAxesId", [], "array", "");
-    CommonRadar.prototype.publish("valueAxesTitle", [], "array", "");
-    CommonRadar.prototype.publish("valueAxesMinimum", [], "array", "");
-    CommonRadar.prototype.publish("valueAxesAxisTitleOffset", [], "array", "");
-    CommonRadar.prototype.publish("valueAxesAxisAlpha", [], "array", "");
-    CommonRadar.prototype.publish("valueAxesDashLength", [], "array", "Length of a dash. 0 means line is not dashed.");
+    CommonRadar.prototype.publish("yAxisMinimum", [], "array", "",null,{tags:['Advanced','TODO2']});
+    CommonRadar.prototype.publish("yAxisTitleOffset", [], "array", "",null,{tags:['Advanced','TODO2']});
+    CommonRadar.prototype.publish("yAxisDashLength", [], "array", "Length of a dash. 0 means line is not dashed.",null,{tags:['Advanced','TODO2']});
+    CommonRadar.prototype.publish("axisAlpha", 1, "number", "Axis opacity",null,{tags:['Intermediate','TODO2']});
     
-    CommonRadar.prototype.publish("circularGrid", false, "boolean", "Circular Grid"); // not dynamic
+    CommonRadar.prototype.publish("circularGrid", false, "boolean", "Circular Grid",null,{tags:['Intermediate','TODO2']}); // not dynamic
+    
+    CommonRadar.prototype.publish("bulletSize", 9, "number", "Bullet Size",null,{tags:['Intermediate','TODO2']});
+    CommonRadar.prototype.publish("bulletType", "round", "set", "Bullet Type", ["none", "round", "square", "triangleUp", "triangleDown", "triangleLeft", "triangleRight", "bubble", "diamond"],{tags:['Intermediate','TODO2']});
+    
+    CommonRadar.prototype.publish("fillOpacity", .3, "number", "Shape Opacity", null, {min:0,max:1,step:0.001,inputType:'range',tags:['Intermediate','TODO2']}); 
     
     CommonRadar.prototype.updateChartOptions = function() {
         var context = this;
 
         this._chart.pathToImages = "//cdn.rawgit.com/cdnjs/cdnjs/master/ajax/libs/amcharts/3.13.0/images/";
-        this._chart.dataDateFormat = this._dataDateFormat;
+        if (this.dataDateFormat()) { this._chart.dataDateFormat = this.dataDateFormat(); }
         this._chart.theme = "none";
         this._chart.type = "radar";
         this._chart.startDuration = this.startDuration();
         this._chart.categoryField = this._categoryField;
+        
+        this._chart.color = this.fontColor();
+        this._chart.fontSize = this.fontSize();
+        this._chart.fontFamily = this.fontFamily();
        
         if (this.marginLeft()) { this._chart.marginLeft = this.marginLeft(); }
         if (this.marginRight()) { this._chart.marginRight = this.marginRight(); }
@@ -87,19 +105,22 @@
         // DataProvider
         this._chart.dataProvider = this.formatData(this._data); 
             
-        // ValueAxis
-        for (var i = 1, j = this.numValueAxis(); i < j; i++) {
-            this._chart.valueAxes[i].id = this.valueAxesId()[i],
-            this._chart.valueAxes[i].title = this.valueAxesTitle()[i];
-        }
+        // ValueAxis        
+        this._chart.valueAxes[0].title = this.yAxisTitle();
+        this._chart.valueAxes[0].axisTitleOffset = this.yAxisTitleOffset();
+        this._chart.valueAxes[0].minimum = this.yAxisMinimum();
+        this._chart.valueAxes[0].axisAlpha = this.axisAlpha();
+        this._chart.valueAxes[0].dashLength = this.yAxisDashLength() || this.dashedLineStyle();
+        this._chart.valueAxes[0].axisColor = this.yAxisBaselineColor()
+        this._chart.valueAxes[0].axisThickness = this.axisLineWidth();
+        this._chart.valueAxes[0].titleColor = this.yAxisTitleFontColor(); 
+        this._chart.valueAxes[0].titleFontSize = this.yAxisTitleFontSize();          
+        this._chart.valueAxes[0].fontSize = this.axisFontSize();
+        this._chart.valueAxes[0].color = this.yAxisFontColor();
+ 
+         this._chart.valueAxes[0].autoGridCount = this.yAxisAutoGridCount();
+        this._chart.valueAxes[0].gridPosition = this.yAxisGridPosition();
         
-        //this._chart.valueAxes[i].id = this._valueAxesId[i] // causes issue
-        this._chart.valueAxes[0].title = this.valueAxesTitle()[0];
-        this._chart.valueAxes[0].axisTitleOffset = this.valueAxesAxisTitleOffset()[0];
-        this._chart.valueAxes[0].minimum = this.valueAxesMinimum()[0];
-        this._chart.valueAxes[0].axisAlpha = this.valueAxesAxisAlpha()[0];
-        this._chart.valueAxes[0].dashLength = this.valueAxesDashLength()[0];
-    
         // Color Palette
         this._colors = [];
         this._columns.slice(1,this._columns.length).forEach(function(dataPoint,i){
@@ -112,7 +133,7 @@
             })
         }
         
-        if (this.chartScrollbar()) {
+        if (this.showScrollbar()) {
             this._chart.chartScrollbar.enabled = true;
         } else {
             this._chart.chartScrollbar.enabled = false;
@@ -124,13 +145,15 @@
     CommonRadar.prototype.buildGraphObj = function(gType,i) {
         var context = this;
         var gObj = {}; 
-
-        gObj.balloonText = context.graphTooltipText()[i] || context.globalTooltipText();
-        gObj.fillAlphas = context.graphFillAlpha()[i] || context.globalFillAlpha();
-        gObj.lineAlpha = context.graphLineAlpha()[i] || context.globalLineAlpha();
-        gObj.lineThickness = context.graphLineThickness()[i] || context.globalLineThickness();
-        gObj.bullet = context.graphBulletType()[i] || context.globalBulletType();
-        gObj.bulletSize = context.graphBulletSize()[i] || context.globalBulletSize();
+        
+        gObj.balloonText = context.tooltipText();
+        gObj.fillAlphas = context.fillOpacity();
+        gObj.lineAlpha = context.lineOpacity();
+        gObj.lineThickness = context.lineWidth();
+        gObj.bullet = context.bulletType();
+        gObj.bulletSize = context.bulletSize();
+        gObj.dashLength = context.dashedLineStyle(); // TODO: convert to css Array Prop
+        
         
         gObj.type = gType;
 
