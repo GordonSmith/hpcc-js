@@ -14,69 +14,96 @@
         this._chart = {};
         this._data;
         this._columns;
-        this._valueField;
-        this._categoryField;
+        this._valueField = [];
+        this._categoryField = [];
         this._colors = [];
+        
+        this._numValueAxis = 1;
     };
     
     CommonSerial.prototype = Object.create(HTMLWidget.prototype);
     
-    CommonSerial.prototype.publish("yAxisTitle", "Axis title", "string", "Y-Axis Title");
-    CommonSerial.prototype.publish("xAxisTitle", "Axis title", "string", "X-Axis Title");
+    /**
+     * Publish Params Common To Other Libraries
+     */
+    CommonSerial.prototype.publish("fontSize", null, "number", "Font Size",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("fontFamily", null, "string", "Font Name",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("fontColor", null, "html-color", "Font Color",null,{tags:['Basic','TODO2']});
     
-    CommonSerial.prototype.publish("marginLeft", null, "number", "Margin (Left)");
-    CommonSerial.prototype.publish("marginRight", null, "number", "Margin (Right)");
-    CommonSerial.prototype.publish("marginTop", null, "number", "Margin (Top)");
-    CommonSerial.prototype.publish("marginBottom", null, "number", "Margin (Bottom)");
+    CommonSerial.prototype.publish("lineWidth", 1, "number", "Line Thickness", null, {min:0,max:10,step:1,inputType:'range',tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("lineColor", null, "html-color", "Color of the data/content lines",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("lineOpacity", 1, "number", "Line Opacity", null, {min:0,max:1,step:0.001,inputType:'range',tags:['Basic','TODO2']}); 
+    
+    CommonSerial.prototype.publish("dashedLineStyle", 0, "number", "Length of Dashed Line. 0 = none",null,{tags:['Advanced','TODO2']});
+    
+    CommonSerial.prototype.publish("axisFontSize", null, "number", "X/Y Axis Text Font Size",null,{tags:['Basic','TODO2']});
 
-    CommonSerial.prototype.publish("chartScrollbar", false, "boolean", "Chart Scrollbar");
+    CommonSerial.prototype.publish("xAxisBaselineColor", "#000000", "html-color", "X Axis Baseline Color",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("yAxisBaselineColor", "#000000", "html-color", "Y Axis baseline Color",null,{tags:['Basic','TODO2']});
     
-    CommonSerial.prototype.publish("orientation", "horizontal", "set", "Orientation",["horizontal","vertical"]);
+    CommonSerial.prototype.publish("xAxisFontColor", null, "html-color", "Horizontal Axis Text Style (Color)",null,{tags:['Basic']});
+    CommonSerial.prototype.publish("yAxisFontColor", null, "html-color", "Vertical Axis Text Style (Color)",null,{tags:['Basic']});
     
-    CommonSerial.prototype.publish("globalFillAlpha", .7, "number", "Shape Opacity", null, {min:0,max:1,step:0.001,inputType:'range'}); 
-    CommonSerial.prototype.publish("globalLineAlpha", 1, "number", "Line Opacity", null, {min:0,max:1,step:0.001,inputType:'range'}); 
-    CommonSerial.prototype.publish("globalLineThickness", 2, "number", "Line Thickness", null, {min:0,max:10,step:0.1,inputType:'range'}); 
-    CommonSerial.prototype.publish("globalBulletSize", 0, "number", "Bullet Size");
-    CommonSerial.prototype.publish("globalBulletType", "none", "set", "Bullet Type", ["none", "round", "square", "triangleUp", "triangleDown", "triangleLeft", "triangleRight", "bubble", "diamond"]);
+    CommonSerial.prototype.publish("xAxisTitle", "Axis title", "string", "X-Axis Title",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("yAxisTitle", "Axis title", "string", "Y-Axis Title",null,{tags:['Basic','TODO2']});
     
-    CommonSerial.prototype.publish("graphFillAlpha", [], "array", "Area Opacity", null, {min:0, max:1,step:0.001,inputType:'range'}); 
-    CommonSerial.prototype.publish("graphLineAlpha", [], "array", "Area Border Opacity", null, {min:0,max:1,step:0.001,inputType:'range'});
-    CommonSerial.prototype.publish("graphLineThickness", [], "array", "Line Thickness", null, {min:0,max:1,step:0.001,inputType:'range'});
-    CommonSerial.prototype.publish("graphBulletSize", [], "number", "Bullet Size");
-    CommonSerial.prototype.publish("graphBulletType", [], "array", "Bullet Type");
+    CommonSerial.prototype.publish("xAxisTitleFontSize", null, "number", "Vertical Axis Title Text Style (Font Size)",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("yAxisTitleFontSize", null, "number", "Vertical Axis Title Text Style (Font Size)",null,{tags:['Intermediate']});
     
-    CommonSerial.prototype.publish("startDuration", 0.3, "number", "Start Duration (sec)");
+    CommonSerial.prototype.publish("xAxisTitleFontColor", null, "html-color", "Horizontal Axis Title Text Style (Color)",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("yAxisTitleFontColor", null, "html-color", "Vertical Axis Title Text Style (Color)",null,{tags:['Basic','TODO2']});
 
-    CommonSerial.prototype.publish("dataDateFormat", null, "string", "");
+    CommonSerial.prototype.publish("xAxisLabelRotation", 30, "number", "X-Axis Label Rotation", null, {min:0,max:90,step:0.1,inputType:'range',tags:['Intermediate','TODO2']});
+
+    CommonSerial.prototype.publish("axisLineWidth", 1, "number", "Axis Line Width",null,{tags:['Intermediate','TODO2']});
+
+    CommonSerial.prototype.publish("fillOpacity", .7, "number", "Opacity of The Fill Color", null, {min:0,max:1,step:0.001,inputType:'range',tags:['Intermediate','TODO2']}); 
+
+    /**
+     * Publish Params Unique To This Widget
+     */
+    CommonSerial.prototype.publish("axisAlpha", 1, "number", "Axis Alpha",null,{tags:['Intermediate','TODO2']}); // share?
     
-    CommonSerial.prototype.publish("categoryAxisAutoGridCount", true, "boolean", "Specifies whether number of gridCount is specified automatically, acoarding to the axis size");
-    CommonSerial.prototype.publish("categoryAxisGridPosition", "start", "set", "Specifies if a grid line is placed on the center of a cell or on the beginning of a cell", ["start","middle"]);
-    CommonSerial.prototype.publish("categoryAxisAxisAlpha", 1, "number", "Axis opacity");
-    CommonSerial.prototype.publish("categoryAxisAxisColor", "#000000", "html-color", "Axis color");
-    CommonSerial.prototype.publish("categoryAxisAxisThickness", 1, "number", "Thickness of axis");
-    CommonSerial.prototype.publish("categoryAxisBoldPeriodBeginning", true, "boolean", "When parse dates is on for the category axis, the chart will try to highlight the beginning of the periods, like month, in bold.");
-    CommonSerial.prototype.publish("categoryAxisColor", null, "html-color", "Color of axis value labels. Will use chart's color if not set.");
-    CommonSerial.prototype.publish("categoryAxisDashLength", 0, "number", "Length of a dash. 0 means line is not dashed.");
-    CommonSerial.prototype.publish("categoryAxisFillAlpha", 0, "number", "Fill opacity. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.");
-    CommonSerial.prototype.publish("categoryAxisFillColor", "#FFFFFF", "html-color", "Fill color. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.");
-    CommonSerial.prototype.publish("categoryAxisFontSize", null, "number", "Size of value labels text. Will use chart's fontSize if not set.");
-    CommonSerial.prototype.publish("categoryAxisGridAlpha", 0.2, "number", "Grid alpha.");
-    //CommonSerial.prototype.publish("categoryAxisTitle", 'X-Axis', "string", ""); -----> xAxisTitle
+    CommonSerial.prototype.publish("marginLeft", null, "number", "Margin (Left)",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("marginRight", null, "number", "Margin (Right)",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("marginTop", null, "number", "Margin (Top)",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("marginBottom", null, "number", "Margin (Bottom)",null,{tags:['Intermediate','TODO2']});
+
+    CommonSerial.prototype.publish("showScrollbar", false, "boolean", "Show Chart Scrollbar",null,{tags:['Intermediate','TODO2']}); // needs to be shared
     
-    CommonSerial.prototype.publish("numValueAxis", 1, "number", "Grid alpha.");
-    CommonSerial.prototype.publish("valueAxesId", [], "array", "");
-    CommonSerial.prototype.publish("valueAxesTitle", [], "array", "");
-    CommonSerial.prototype.publish("valueAxesMinimum", [], "array", "");
-    CommonSerial.prototype.publish("valueAxesAxisTitleOffset", [], "array", "");
-    CommonSerial.prototype.publish("valueAxesAxisAxisAlpha", [], "array", "");
+    CommonSerial.prototype.publish("orientation", "horizontal", "set", "Orientation",["horizontal","vertical"],{tags:['Intermediate','TODO2']});
+
+    CommonSerial.prototype.publish("bulletSize", 0, "number", "Bullet Size",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("bulletType", "none", "set", "Bullet Type", ["none", "round", "square", "triangleUp", "triangleDown", "triangleLeft", "triangleRight", "bubble", "diamond"],{tags:['Basic','TODO2']});
     
-    CommonSerial.prototype.publish("xAxisLabelRotation", 30, "number", "X-Axis Label Rotation", null, {min:0,max:90,step:0.1,inputType:'range'});
-    CommonSerial.prototype.publish("startOnAxis", true, "boolean", "Draw chart starting on axis.");
+    CommonSerial.prototype.publish("dataDateFormat", null, "string", "",null,{tags:['Private','TODO2']});
     
-    CommonSerial.prototype.publish("useImgPatterns", false, "boolean", "Enable Image Pattern backgrounds");
-    CommonSerial.prototype.publish("imgPatternArr", '["../ampatterns/black/pattern2.png"]', "string", "Background Pattern Images (Not used if '[]')",null,{inputType:'textarea'});
+    CommonSerial.prototype.publish("xAxisAutoGridCount", true, "boolean", "Specifies Whether Number of GridCount Is Specified Automatically, According To The Axis Size",null,{tags:['Advanced','TODO2']});
+    CommonSerial.prototype.publish("xAxisGridPosition", "middle", "set", "Specifies If A Grid Line Is Placed On The Center of A Cell or On The Beginning of A Cell", ["start","middle"],{tags:['Advanced','TODO2']});
+        
+    CommonSerial.prototype.publish("xAxisBoldPeriodBeginning", true, "boolean", "When parse dates is on for the category axis, the chart will try to highlight the beginning of the periods, like month, in bold.",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("yAxisBoldPeriodBeginning", true, "boolean", "When parse dates is on for the category axis, the chart will try to highlight the beginning of the periods, like month, in bold.",null,{tags:['Intermediate','TODO2']});
     
-    CommonSerial.prototype.publish("lineColor", null, "html-color", "Color of the data/content lines");
+    CommonSerial.prototype.publish("xAxisDashLength", 0, "number", "Length of a dash. 0 means line is not dashed.",null,{tags:['Advanced','TODO2']});
+    CommonSerial.prototype.publish("yAxisDashLength", 0, "number", "Length of a dash. 0 means line is not dashed.",null,{tags:['Advanced','TODO2']});
+    
+    CommonSerial.prototype.publish("xAxisFillAlpha", 0, "number", "Fill opacity. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("yAxisFillAlpha", 0, "number", "Fill opacity. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.",null,{tags:['Intermediate','TODO2']});
+    
+    CommonSerial.prototype.publish("xAxisFillColor", "#FFFFFF", "html-color", "Fill color. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("yAxisFillColor", "#FFFFFF", "html-color", "Fill color. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.",null,{tags:['Intermediate','TODO2']});
+    
+    CommonSerial.prototype.publish("xAxisGridAlpha", 0.2, "number", "Grid alpha.",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("yAxisGridAlpha", 0.2, "number", "Grid alpha.",null,{tags:['Intermediate','TODO2']});
+
+    //CommonSerial.prototype.publish("yAxisMinimum", null, "number", "",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("yAxisTitleOffset", null, "number", "",null,{tags:['Intermediate','TODO2']});
+    
+    CommonSerial.prototype.publish("startOnAxis", true, "boolean", "Draw Chart Starting On Axis.",null,{tags:['Intermediate','TODO2']});
+    
+    CommonSerial.prototype.publish("startDuration", 0.3, "number", "Start Duration (sec)",null,{tags:['Private','TODO2']});
+    CommonSerial.prototype.publish("useImgPatterns", false, "boolean", "Enable Image Pattern backgrounds",null,{tags:['Private','TODO2']});
+    CommonSerial.prototype.publish("imgPatternArr", '["../ampatterns/black/pattern2.png"]', "string", "Background Pattern Images (Not used if '[]')",null,{inputType:'textarea',tags:['Private','TODO2']});
     
     CommonSerial.prototype.updateChartOptions = function() {
         var context = this;
@@ -88,14 +115,29 @@
         this._chart.rotate = this.orientation() === "vertical"; // this messes up the hover over things
         this._chart.categoryField = this._categoryField;
         
+        this._chart.color = this.fontColor();
+        this._chart.fontSize = this.fontSize();
+        this._chart.fontFamily = this.fontFamily();
+        
         this._chart.categoryAxis = {};
-        this._chart.categoryAxis.autoGridCount = this.categoryAxisAutoGridCount();
-        this._chart.categoryAxis.gridPosition = "start";
-        this._chart.categoryAxis.axisAlpha = this.categoryAxisAxisAlpha();
-        this._chart.categoryAxis.gridAlpha = this.categoryAxisGridAlpha();
+        this._chart.categoryAxis.autoGridCount = this.xAxisAutoGridCount();
+        this._chart.categoryAxis.gridPosition = this.xAxisGridPosition();
+        this._chart.categoryAxis.axisAlpha = this.axisAlpha();
+        this._chart.categoryAxis.gridAlpha = this.xAxisGridAlpha();
         this._chart.categoryAxis.startOnAxis = this.startOnAxis();
         this._chart.categoryAxis.labelRotation = this.xAxisLabelRotation();
         this._chart.categoryAxis.title = this.xAxisTitle();
+        
+        this._chart.categoryAxis.axisColor = this.xAxisBaselineColor();
+        this._chart.categoryAxis.axisThickness = this.axisLineWidth();
+        this._chart.categoryAxis.boldPeriodBeginning = this.xAxisBoldPeriodBeginning();
+        this._chart.categoryAxis.dashLength = this.xAxisDashLength();
+        this._chart.categoryAxis.fillAlpha = this.xAxisFillAlpha();
+        this._chart.categoryAxis.fillColor = this.xAxisFillColor();
+        this._chart.categoryAxis.fontSize = this.axisFontSize();
+        this._chart.categoryAxis.color = this.xAxisFontColor();  
+        this._chart.categoryAxis.titleColor = this.xAxisTitleFontColor();  
+        this._chart.categoryAxis.titleFontSize = this.xAxisTitleFontSize();  
         
         this._chart.titles = [];
         
@@ -105,16 +147,24 @@
         if (this.marginBottom()) { this._chart.marginBottom = this.marginBottom(); }
 
         this._chart.dataProvider = this.formatData(this._data); 
-            
-        // ValueAxis
 
-        for (var i = 1, j = this.numValueAxis(); i < j; i++) {
-            this._chart.valueAxes[i].id = this.valueAxesId()[i],
-            this._chart.valueAxes[i].title = this.valueAxesTitle()[i];
-        }
-        this._chart.valueAxes[0].title = this.valueAxesTitle()[0] || this.yAxisTitle();
+        this._chart.valueAxes[0].title = this.yAxisTitle();   
+        this._chart.valueAxes[0].titleColor = this.yAxisTitleFontColor();  
+        this._chart.valueAxes[0].titleFontSize = this.yAxisTitleFontSize();  
+        this._chart.valueAxes[0].axisThickness = this.axisLineWidth();
+        this._chart.valueAxes[0].color = this.yAxisFontColor();
+        this._chart.valueAxes[0].fontSize = this.axisFontSize();
+        this._chart.valueAxes[0].axisColor = this.yAxisBaselineColor();
+        this._chart.valueAxes[0].axisAlpha = this.axisAlpha();
+        this._chart.valueAxes[0].fillColor = this.yAxisFillColor();
+        this._chart.valueAxes[0].fillAlpha = this.yAxisFillAlpha();
         
-        if (this.chartScrollbar()) {
+        this._chart.valueAxes[0].gridAlpha = this.yAxisGridAlpha();
+        this._chart.valueAxes[0].dashLength = this.yAxisDashLength();
+        this._chart.valueAxes[0].boldPeriodBeginning = this.yAxisBoldPeriodBeginning();
+        this._chart.valueAxes[0].axisTitleOffset = this.yAxisTitleOffset();
+        
+        if (this.showScrollbar()) {
             this._chart.chartScrollbar.enabled = true;
         } else {
             this._chart.chartScrollbar.enabled = false;
@@ -123,18 +173,19 @@
         return this._chart;
     };
     
-       
     CommonSerial.prototype.buildGraphObj = function(gType,i) {
         var context = this;
         var gObj = {}; 
 
-        gObj.balloonText = context.graphTooltipText()[i] || context.globalTooltipText();
-        gObj.fillAlphas = context.graphFillAlpha()[i] || context.globalFillAlpha();
-        gObj.lineAlpha = context.graphLineAlpha()[i] || context.globalLineAlpha();
-        gObj.lineThickness = context.graphLineThickness()[i] || context.globalLineThickness();
-        gObj.bullet = context.graphBulletType()[i] || context.globalBulletType();
-        gObj.bulletSize = context.graphBulletSize()[i] || context.globalBulletSize();
-        
+        gObj.balloonText = context.tooltipText();
+        gObj.fillAlphas = context.fillOpacity();
+        gObj.lineAlpha = context.lineOpacity();
+        gObj.lineColor = context.lineColor();
+        gObj.lineThickness = context.lineWidth();
+        gObj.bullet = context.bulletType();
+        gObj.bulletSize = context.bulletSize();
+        gObj.dashLength = context.dashedLineStyle(); // TODO: convert to css Array Prop
+                    
         gObj.type = gType;
 
         gObj.title = 'temp title';
@@ -146,7 +197,7 @@
         });
         
         if (typeof(context.paletteGrouping) === 'function') {
-            if(context.paletteGrouping() === "Main"){
+            if(context.paletteGrouping() === "By Category"){
                 gObj.colorField = "color";
                 gObj.lineColorField = "linecolor";
             }

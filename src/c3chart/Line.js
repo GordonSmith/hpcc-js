@@ -14,9 +14,16 @@
     Line.prototype = Object.create(CommonND.prototype);
     Line.prototype._class += " c3chart_Line";
 
-    Line.prototype.publish("lineWidth", 1.0, "number", "LineWidth");
-    Line.prototype.publish("dashedLine", [], "array", "Dashed Lines");
-    Line.prototype.publish("lineOpacity", 1.0, "number", "LineWidth");
+    /**
+     * Publish Params Common To Other Libraries
+     */
+    Line.prototype.publish("lineWidth", 1.0, "number", "Line Width",null,{tags:['Basic','TODO2']});
+    Line.prototype.publish("lineDashStyle", [], "array", "Dashed Lines",null,{tags:['Basic','TODO2']});
+    Line.prototype.publish("lineOpacity", 1.0, "number", "Line Alpha",null,{tags:['Basic','TODO2']});
+
+    /**
+     * Publish Params Unique To This Widget
+     */   
 
     Line.prototype.enter = function (domNode, element) {
         CommonND.prototype.enter.apply(this,arguments);
@@ -28,7 +35,7 @@
         element.selectAll(".c3-line").style({ 
             "stroke-width": this.lineWidth()+"px", 
             "stroke-opacity": this.lineOpacity(), 
-            "stroke-dasharray": this.dashedLine().toString(), 
+            "stroke-dasharray": this.lineDashStyle().toString(), 
         });
     }
 

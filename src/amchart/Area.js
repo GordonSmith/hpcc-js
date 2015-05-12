@@ -16,14 +16,18 @@
     
     Area.prototype = Object.create(CommonSerial.prototype);
     Area.prototype.implements(INDChart.prototype);
-    
-    Area.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Area.prototype._palette.switch());
 
-    Area.prototype.publish("globalTooltipText","[[category]]: [[value]]", "string", "Tooltip Text");
-    Area.prototype.publish("graphTooltipText",["[[category]]: [[value]]"], "array", "Tooltip Text Array");
+    /**
+     * Publish Params Common To Other Libraries
+     */
+    Area.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Area.prototype._palette.switch());
+    Area.prototype.publish("isStacked", false, "boolean", "Stack Chart",null,{tags:['Basic','TODO2']});
     
-    Area.prototype.publish("isStacked", false, "boolean", "Stacked");
-    Area.prototype.publish("stackType", "regular", "set", "Stack Type",["none","regular","100%"]);
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    Area.prototype.publish("tooltipText","[[category]]: [[value]]", "string", "Tooltip Text",null,{tags:['Intermediate','TODO2']});
+    Area.prototype.publish("stackType", "regular", "set", "Stack Type",["none","regular","100%"],{tags:['Basic','TODO2']});
     
     Area.prototype.enter = function(domNode, element) {
         CommonSerial.prototype.enter.apply(this, arguments);
@@ -73,7 +77,7 @@
         }
 
         function buildGraphObj(gObj) {
-            // TODO: Line Specific Options
+            // Area Specific Options
             return gObj;
         }
     }

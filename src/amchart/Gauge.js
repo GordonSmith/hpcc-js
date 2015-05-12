@@ -19,33 +19,40 @@
     Gauge.prototype = Object.create(HTMLWidget.prototype);
     Gauge.prototype.implements(I1DChart.prototype);
 
+    /**
+     * Publish Params Common To Other Libraries
+     */
     Gauge.prototype.publish("paletteID", "default", "set", "Palette ID", Gauge.prototype._palette.switch());
-    Gauge.prototype.publish("colorType", "a", "set", "", ["a","b","c"]);
+    Gauge.prototype.publish("low", 0, "number", "Gauge lower bound",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("high", 100, "number", "Gauge higher bound",null,{tags:['Intermediate','TODO2']});
     
-    Gauge.prototype.publish("marginLeft", null, "number", "Margin (Left)");
-    Gauge.prototype.publish("marginRight", null, "number", "Margin (Right)");
-    Gauge.prototype.publish("marginTop", null, "number", "Margin (Top)");
-    Gauge.prototype.publish("marginBottom", null, "number", "Margin (Bottom)");
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    Gauge.prototype.publish("axisLineWidth", 1, "number", "Thickness of axis",null,{tags:['Intermediate','TODO2']});
 
-    Gauge.prototype.publish("low", 0, "number", "Gauge lower bound");
-    Gauge.prototype.publish("high", 100, "number", "Gauge higher bound");
-
-    Gauge.prototype.publish("numBands", null, "number", "");
-    Gauge.prototype.publish("bandsColor", [], "array", "");
-    Gauge.prototype.publish("bandsStartValue", [], "array", "");
-    Gauge.prototype.publish("bandsEndValue", [], "array", "");
-    Gauge.prototype.publish("bandsInnerRadius", [], "array", "");
+    Gauge.prototype.publish("colorType", "a", "set", "", ["a","b","c"],{tags:['Basic','TODO2']});
     
-    Gauge.prototype.publish("axisThickness", 1, "number", "");
-    Gauge.prototype.publish("axisAlpha", 0.2, "number", "");
-    Gauge.prototype.publish("tickAlpha", 0.2, "number", "");
-    Gauge.prototype.publish("valueInterval", 20, "number", "");
-    Gauge.prototype.publish("bottomText", "", "string", "");
-    Gauge.prototype.publish("bottomTextYOffset", -20, "number", "");
-    
-    Gauge.prototype.publish("animateDuration", 2, "number", "");
+    Gauge.prototype.publish("marginLeft", null, "number", "Margin (Left)",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("marginRight", null, "number", "Margin (Right)",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("marginTop", null, "number", "Margin (Top)",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("marginBottom", null, "number", "Margin (Bottom)",null,{tags:['Intermediate','TODO2']});
 
-    Gauge.prototype.publish("globalTooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text");
+    Gauge.prototype.publish("numBands", null, "number", "",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("bandsColor", [], "array", "Bands Color",null,{tags:['Basic','TODO2']});
+    Gauge.prototype.publish("bandsStartValue", [], "array", "Bands Start Value",null,{tags:['Advanced','TODO2']});
+    Gauge.prototype.publish("bandsEndValue", [], "array", "Bands End Value",null,{tags:['Advanced','TODO2']});
+    Gauge.prototype.publish("bandsInnerRadius", [], "array", "Bands Inner Radius",null,{tags:['Advanced','TODO2']});
+    
+    Gauge.prototype.publish("axisAlpha", 0.2, "number", "Axis Alpha",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("tickAlpha", 0.2, "number", "Tick Alpha",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("valueInterval", 20, "number", "Value Interval",null,{tags:['Advanced','TODO2']});
+    Gauge.prototype.publish("bottomText", "", "string", "Text Along Bottom",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("bottomTextYOffset", -20, "number", "Bottom Text Vertical Offset",null,{tags:['Intermediate','TODO2']});
+    
+    Gauge.prototype.publish("animatationDuration", 2, "number", "Animation Duration (sec)",null,{tags:['Intermediate','TODO2']});
+
+    //Gauge.prototype.publish("tooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Intermediate','TODO2']});
     
     Gauge.prototype.updateChartOptions = function() {
 
@@ -54,7 +61,7 @@
         this._chart.theme = "none";
         this._chart.pathToImages = "//cdn.rawgit.com/cdnjs/cdnjs/master/ajax/libs/amcharts/3.13.0/images/";
 
-        this._chart.startDuration = this.animateDuration();
+        this._chart.startDuration = this.animatationDuration();
                         
         this._chart.titles = [];
         this._chart.allLabels = [];
@@ -64,13 +71,12 @@
         if (this.marginTop()) { this._chart.marginTop = this.marginTop(); }
         if (this.marginBottom()) { this._chart.marginBottom = this.marginBottom(); }
         
-        this._chart.axes[0].axisThickness = this.axisThickness();
+        this._chart.axes[0].axisThickness = this.axisLineWidth();
         this._chart.axes[0].axisAlpha = this.axisAlpha();
         this._chart.axes[0].tickAlpha = this.tickAlpha();
         this._chart.axes[0].valueInterval = this.valueInterval();
         this._chart.axes[0].bands = [];
         this._chart.axes[0].bottomText = this.bottomText();
-        this._chart.axes[0].axisThickness = this.axisThickness();
         this._chart.axes[0].bottomTextYOffset = this.bottomTextYOffset();
         this._chart.axes[0].endValue = this.high();
         this._chart.axes[0].startValue = this.low();
@@ -151,7 +157,7 @@
         this.high(220);
         this.low(0);
         this.data(100);
-        this.axisThickness(1);
+        this.axisLineWidth(1);
         this.axisAlpha(0.2);
         this.tickAlpha(0.2);
         this.valueInterval(20); 

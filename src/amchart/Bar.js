@@ -16,22 +16,28 @@
     Bar.prototype = Object.create(CommonSerial.prototype);
     Bar.prototype.implements(INDChart.prototype);
     
+    /**
+     * Publish Params Common To Other Libraries
+     */   
     Bar.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Bar.prototype._palette.switch());
-    Bar.prototype.publish("paletteGrouping", "Columns", "set", "Palette Grouping",["Main","Columns"]);
-
-    Bar.prototype.publish("cylinderBars", false, "boolean", "Cylinder Bars");
-    Bar.prototype.publish("circleRadius", 1, "number", "Circle Radius");
+    Bar.prototype.publish("isStacked", false, "boolean", "Stack Chart",null,{tags:['Basic','TODO2']});
     
-    Bar.prototype.publish("columnWidth", 0.62, "number", "Bar Width");
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    Bar.prototype.publish("paletteGrouping", "By Column", "set", "Palette Grouping",["By Category","By Column"],{tags:['Basic','TODO2']});
+
+    Bar.prototype.publish("cylinderBars", false, "boolean", "Cylinder Bars",null,{tags:['Basic','TODO2']});
+    Bar.prototype.publish("circleRadius", 1, "number", "Circle Radius of Cylinder Bars",null,{tags:['Basic','TODO2']});
     
-    Bar.prototype.publish("Depth3D", 20, "number", "3D Depth (px)");
-    Bar.prototype.publish("Angle3D", 45, "number", "3D Angle (Deg)");
+    Bar.prototype.publish("columnWidth", 0.62, "number", "Bar Width",null,{tags:['Basic','TODO2']});
+    
+    Bar.prototype.publish("Depth3D", 20, "number", "3D Depth (px)",null,{tags:['Basic','TODO2']});
+    Bar.prototype.publish("Angle3D", 45, "number", "3D Angle (Deg)",null,{tags:['Basic','TODO2']});
 
-    Bar.prototype.publish("isStacked", false, "boolean", "Stacked");
-    Bar.prototype.publish("stackType", "regular", "set", "Stack Type",["none","regular","100%"]);
+    Bar.prototype.publish("stackType", "regular", "set", "Stack Type",["none","regular","100%"],{tags:['Basic','TODO2']});
 
-    Bar.prototype.publish("globalTooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text");
-    Bar.prototype.publish("graphTooltipText",["[[category]]([[title]]): [[value]]"], "array", "Tooltip Text");
+    Bar.prototype.publish("tooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Intermediate','TODO2']});
     
     Bar.prototype.enter = function(domNode, element) {
         CommonSerial.prototype.enter.apply(this, arguments);
@@ -41,14 +47,21 @@
         CommonSerial.prototype.updateChartOptions.apply(this, arguments);
         var context = this;
         
+        // Stacked
+        if(this.isStacked()){
+            this._chart.valueAxes[0].stackType = this.stackType();
+        } else {
+            this._chart.valueAxes[0].stackType = "none";
+        }
+        
         // Color Palette
-        if(this.paletteGrouping() === "Main"){
+        if(this.paletteGrouping() === "By Category"){
             this._chart.dataProvider.forEach(function(dataPoint,i){
                 context._chart.dataProvider[i].color = context._palette(i);
                 context._chart.dataProvider[i].linecolor = context.lineColor() !== null ? context.lineColor() : context._palette(i);
             });
             this._chart.colors = [];
-        } else if (this.paletteGrouping() === "Columns") {
+        } else if (this.paletteGrouping() === "By Column") {
             this._colors = [];
             this._columns.slice(1,this._columns.length).forEach(function(dataPoint,i){
                 context._colors.push(context._palette(i));
@@ -62,17 +75,10 @@
             this._chart.colors = this._colors;
         }
         
-        // Stacked
-        if(this.isStacked()){
-            this._chart.valueAxes[0].stackType = this.stackType();
-        } else {
-            this._chart.valueAxes[0].stackType = "none";
-        }
-
         this._chart.depth3D = this.Depth3D();
         this._chart.angle = this.Angle3D();
         this._chart.categoryAxis.startOnAxis = false; //override due to render issue
-        
+          
         this.buildGraphs(this._gType);
         
         return this._chart;

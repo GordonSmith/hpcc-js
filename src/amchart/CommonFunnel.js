@@ -19,23 +19,33 @@
     };
     
     CommonFunnel.prototype = Object.create(HTMLWidget.prototype);
+
+    /**
+     * Publish Params Common To Other Libraries
+     */
+    CommonFunnel.prototype.publish("fontSize", null, "number", "Font Size",null,{tags:['Basic','TODO2']});
+    CommonFunnel.prototype.publish("fontFamily", null, "string", "Font Name",null,{tags:['Basic','TODO2']});
+    CommonFunnel.prototype.publish("fontColor", null, "html-color", "Font Color",null,{tags:['Basic','TODO2']});
+
+    /**
+     * Publish Params Unique To This Widget
+     */   
+    CommonFunnel.prototype.publish("flip", true, "boolean", "Flip Chart",null,{tags:['Intermediate','TODO2']});
+    CommonFunnel.prototype.publish("reverseDataSorting", false, "boolean", "Reverse Data Sorting",null,{tags:['Intermediate','TODO2']});
     
-    CommonFunnel.prototype.publish("flip", true, "boolean", "Flip Chart");
-    CommonFunnel.prototype.publish("reverseDataSorting", false, "boolean", "Reverse Data Sorting");
+    CommonFunnel.prototype.publish("marginLeft", null, "number", "Margin (Left)",null,{tags:['Intermediate','TODO2']});
+    CommonFunnel.prototype.publish("marginRight", 150, "number", "Margin (Right)",null,{tags:['Intermediate','TODO2']});
+    CommonFunnel.prototype.publish("marginTop", null, "number", "Margin (Top)",null,{tags:['Intermediate','TODO2']});
+    CommonFunnel.prototype.publish("marginBottom", null, "number", "Margin (Bottom)",null,{tags:['Intermediate','TODO2']});
     
-    CommonFunnel.prototype.publish("marginLeft", null, "number", "Margin (Left)");
-    CommonFunnel.prototype.publish("marginRight", 150, "number", "Margin (Right)");
-    CommonFunnel.prototype.publish("marginTop", null, "number", "Margin (Top)");
-    CommonFunnel.prototype.publish("marginBottom", null, "number", "Margin (Bottom)");
+    CommonFunnel.prototype.publish("labelPosition", "right", "set", "Label Position", ["left","right"],{tags:['Intermediate','TODO2']});
     
-    CommonFunnel.prototype.publish("labelPosition", "right", "set", "Label Position", ["left","right"]);
+    CommonFunnel.prototype.publish("showScrollbar", false, "boolean", "Show Chart Scrollbar",null,{tags:['Intermediate','TODO2']});
     
-    CommonFunnel.prototype.publish("chartScrollbar", false, "boolean", "Chart Scrollbar");
+    CommonFunnel.prototype.publish("startDuration", 0.3, "number", "Start Duration (sec)",null,{tags:['Private','TODO2']});
     
-    CommonFunnel.prototype.publish("startDuration", 0.3, "number", "Start Duration (sec)");
-    
-    CommonFunnel.prototype.publish("Depth3D", 0, "number", "3D Depth (px)");
-    CommonFunnel.prototype.publish("Angle3D", 0, "number", "3D Angle (Deg)");
+    CommonFunnel.prototype.publish("Depth3D", 0, "number", "3D Depth (px)",null,{tags:['Basic','TODO2']});
+    CommonFunnel.prototype.publish("Angle3D", 0, "number", "3D Angle (Deg)",null,{tags:['Basic','TODO2']});
     
     CommonFunnel.prototype.updateChartOptions = function() {
         var context = this;
@@ -45,6 +55,11 @@
         this._chart.type = "funnel";
         this._chart.startDuration = this.startDuration();
         this._chart.rotate = this.flip();
+        
+        
+        this._chart.color = this.fontColor();
+        this._chart.fontSize = this.fontSize();
+        this._chart.fontFamily = this.fontFamily();
         
         if (this.marginLeft()) { this._chart.marginLeft = this.marginLeft(); }
         if (this.marginRight()) { this._chart.marginRight = this.marginRight(); }
@@ -79,7 +94,7 @@
         this._chart.colors = this._colors;
         
         // Scroll Bar
-        if (this.chartScrollbar()) {
+        if (this.showScrollbar()) {
             this._chart.chartScrollbar.enabled = true;
         } else {
             this._chart.chartScrollbar.enabled = false;
