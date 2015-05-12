@@ -39,10 +39,10 @@
     Gauge.prototype.publish("marginBottom", null, "number", "Margin (Bottom)",null,{tags:['Intermediate','TODO2']});
 
     Gauge.prototype.publish("numBands", null, "number", "",null,{tags:['Intermediate','TODO2']});
-    Gauge.prototype.publish("bandsColor", [], "array", "",null,{tags:['Basic','TODO2']});
-    Gauge.prototype.publish("bandsStartValue", [], "array", "",null,{tags:['Advanced','TODO2']});
-    Gauge.prototype.publish("bandsEndValue", [], "array", "",null,{tags:['Advanced','TODO2']});
-    Gauge.prototype.publish("bandsInnerRadius", [], "array", "",null,{tags:['Advanced','TODO2']});
+    Gauge.prototype.publish("bandsColor", [], "array", "Bands Color",null,{tags:['Basic','TODO2']});
+    Gauge.prototype.publish("bandsStartValue", [], "array", "Bands Start Value",null,{tags:['Advanced','TODO2']});
+    Gauge.prototype.publish("bandsEndValue", [], "array", "Bands End Value",null,{tags:['Advanced','TODO2']});
+    Gauge.prototype.publish("bandsInnerRadius", [], "array", "Bands Inner Radius",null,{tags:['Advanced','TODO2']});
     
     Gauge.prototype.publish("axisAlpha", 0.2, "number", "Axis Alpha",null,{tags:['Intermediate','TODO2']});
     Gauge.prototype.publish("tickAlpha", 0.2, "number", "Tick Alpha",null,{tags:['Intermediate','TODO2']});
