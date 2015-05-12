@@ -21,7 +21,7 @@
     Area.prototype.publish("lineWidth", 1.0, "number", "LineWidth",null,{tags:['Basic','TODO2']});
     Area.prototype.publish("lineDashStyle", [], "array", "Dashed Lines",null,{tags:['Basic','TODO2']});
     Area.prototype.publish("lineOpacity", 1.0, "number", "LineWidth",null,{tags:['Basic','TODO2']});
-    //Area.prototype.publish("fillOpacity", 0.2, "number", "Opacity of the shape fill color",null,{tags:['Basic','TODO2']}); // NOT WORKING
+    Area.prototype.publish("fillOpacity", 0.2, "number", "Opacity of the shape fill color",null,{tags:['Basic','TODO2']}); // NOT WORKING
     
     /**
      * Publish Params Unique To This Library
@@ -47,7 +47,7 @@
         });
 
         element.selectAll(".c3-area").style({ // NOT WORKING (css gets overwritten?)
-            //"opacity": 1.0, 
+            "opacity": this.fillOpacity()
         });
     }
     
