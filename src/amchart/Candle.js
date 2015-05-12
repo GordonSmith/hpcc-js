@@ -27,7 +27,7 @@
      * Publish Params Common To Other Libraries
      */
     Candle.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Candle.prototype._palette.switch());
-    Candle.prototype.publish("isStacked", true, "boolean", "Stacked",null,{tags:['Basic','TODO2']});
+    Candle.prototype.publish("isStacked", true, "boolean", "Stack CHart",null,{tags:['Basic','TODO2']});
 
     /**
      * Publish Params Unique To This Widget
@@ -37,12 +37,12 @@
     Candle.prototype.publish("tooltipText",'<div style="text-align:left;"><b>[[category]]</b><br/> Open:<b>[[open]]</b> Close:<b>[[close]]</b><br/>Low:<b>[[low]]</b> High:<b>[[high]]</b></div>', "string", "Tooltip Text",null,{tags:['Intermediate','TODO2']});
     
     Candle.prototype.publish("cylinderBars", false, "boolean", "Cylinder Bars",null,{tags:['Basic','TODO2']});
-    Candle.prototype.publish("circleRadius", 1, "number", "Circle Radius",null,{tags:['Basic','TODO2']});
+    Candle.prototype.publish("circleRadius", 1, "number", "Circle Radius of Cylinder Bars",null,{tags:['Basic','TODO2']});
     
     Candle.prototype.publish("columnWidth", 0.62, "number", "Bar Width",null,{tags:['Basic','TODO2']});
     
     Candle.prototype.publish("stackType", "regular", "set", "Stack Type",["none","regular","100%"],{tags:['Basic','TODO2']});
-    Candle.prototype.publish("useOhlcLines", false, "boolean", "Use OHLC lines rather than candlestick blocks",null,{tags:['Intermediate','TODO2']});
+    Candle.prototype.publish("useOhlcLines", false, "boolean", "Use OHLC Lines",null,{tags:['Intermediate','TODO2']});
 
     Candle.prototype.testData = function() {
         this.columns(["Subject", "low", "open", "close", "high"]);

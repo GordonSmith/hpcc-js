@@ -28,7 +28,7 @@
     Pie.prototype.publish("paletteID", "default", "set", "Palette ID", Pie.prototype._palette.switch());
     Pie.prototype.publish("fontFamily", "Verdana", "string", "Label Font Family",null,{tags:['Basic','TODO2']});
     Pie.prototype.publish("fontSize", 11, "number", "Label Font Size",null,{tags:['Basic','TODO2']});
-    Pie.prototype.publish("fontColor", null, "html-color", "Font Color",null,{tags:['Basic','TODO2']});
+    Pie.prototype.publish("fontColor", null, "html-color", "Label Font Color",null,{tags:['Basic','TODO2']});
     
     /**
      * Publish Params Unique To This Widget
@@ -45,7 +45,7 @@
    
     Pie.prototype.publish("reverseDataSorting", false, "boolean", "Reverse Data Sorting",null,{tags:['Intermediate','TODO2']});
     
-    Pie.prototype.publish("holePercent", 0, "number", "holePercent",null,{tags:['Basic','TODO2']});
+    Pie.prototype.publish("holePercent", 0, "number", "Hole Size (Percent)",null,{tags:['Basic','TODO2']});
     
     Pie.prototype.publish("radius", null, "number", "Radius",null,{tags:['Basic','TODO2']});
     Pie.prototype.publish("pieAlpha", [], "array", "Individual Alpha per Slice",null,{tags:['Basic','TODO2']});

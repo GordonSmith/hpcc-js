@@ -33,8 +33,8 @@
      * Publish Params Common To Other Libraries
      */
     Common.prototype.publish("showLegend", true, "boolean", "Show/Hide Legend",null,{tags:['Basic','TODO2']});
-    Common.prototype.publish("legendFontColor", "#000", "html-color", "Font Color",null,{tags:['Intermediate','TODO2']});
-    Common.prototype.publish("legendFontSize", 11, "number", "Font Size",null,{tags:['Intermediate','TODO2']});
+    Common.prototype.publish("legendFontColor", "#000", "html-color", "Legend Font Color",null,{tags:['Intermediate','TODO2']});
+    Common.prototype.publish("legendFontSize", 11, "number", "Legend Font Size",null,{tags:['Intermediate','TODO2']});
     Common.prototype.publish("legendFontFamily", null, "string", "Legend Font Name",null,{tags:['Private']});
     Common.prototype.publish("legendFontBold", false, "boolean", "Legend Font Bold",null,{tags:['Private']});
     Common.prototype.publish("legendFontItalic", false, "boolean", "Legend Font Italic",null,{tags:['Private']});
@@ -43,6 +43,7 @@
      * Publish Params Unique To This Widget
      */   
     Common.prototype.publish("legendPosition", "right", "set", "Legend Position", ["bottom", "right"],{tags:['Intermediate','TODO2']});
+    Common.prototype.publish("animationDuration", 0, "number", "Animation Duration",null,{tags:['Advanced']});
 
     Common.prototype.type = function (_) {
         if (!arguments.length) return this._type;
@@ -93,6 +94,9 @@
             width: this.width(),
             height: this.height()
         };
+        this._config.transition = {
+            duration: this.animationDuration()
+        }
         this._config.data.type = this._type;
         if (this._type !== "gauge") {
             this._config.legend = {
@@ -131,6 +135,6 @@
     Common.prototype.getChartOptions = function() {
         return {};
     }
-
+    
     return Common;
 }));

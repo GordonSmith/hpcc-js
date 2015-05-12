@@ -44,13 +44,13 @@
     Gauge.prototype.publish("bandsEndValue", [], "array", "",null,{tags:['Advanced','TODO2']});
     Gauge.prototype.publish("bandsInnerRadius", [], "array", "",null,{tags:['Advanced','TODO2']});
     
-    Gauge.prototype.publish("axisAlpha", 0.2, "number", "",null,{tags:['Intermediate','TODO2']});
-    Gauge.prototype.publish("tickAlpha", 0.2, "number", "",null,{tags:['Intermediate','TODO2']});
-    Gauge.prototype.publish("valueInterval", 20, "number", "",null,{tags:['Advanced','TODO2']});
-    Gauge.prototype.publish("bottomText", "", "string", "",null,{tags:['Intermediate','TODO2']});
-    Gauge.prototype.publish("bottomTextYOffset", -20, "number", "",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("axisAlpha", 0.2, "number", "Axis Alpha",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("tickAlpha", 0.2, "number", "Tick Alpha",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("valueInterval", 20, "number", "Value Interval",null,{tags:['Advanced','TODO2']});
+    Gauge.prototype.publish("bottomText", "", "string", "Text Along Bottom",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("bottomTextYOffset", -20, "number", "Bottom Text Vertical Offset",null,{tags:['Intermediate','TODO2']});
     
-    Gauge.prototype.publish("animatationDuration", 2, "number", "",null,{tags:['Intermediate','TODO2']});
+    Gauge.prototype.publish("animatationDuration", 2, "number", "Animation Duration (sec)",null,{tags:['Intermediate','TODO2']});
 
     //Gauge.prototype.publish("tooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Intermediate','TODO2']});
     

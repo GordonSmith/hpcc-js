@@ -17,9 +17,9 @@
     /**
      * Publish Params Common To Other Libraries
      */
-    Line.prototype.publish("lineWidth", 1.0, "number", "LineWidth",null,{tags:['Basic','TODO2']});
+    Line.prototype.publish("lineWidth", 1.0, "number", "Line Width",null,{tags:['Basic','TODO2']});
     Line.prototype.publish("lineDashStyle", [], "array", "Dashed Lines",null,{tags:['Basic','TODO2']});
-    Line.prototype.publish("lineOpacity", 1.0, "number", "LineWidth",null,{tags:['Basic','TODO2']});
+    Line.prototype.publish("lineOpacity", 1.0, "number", "Line Alpha",null,{tags:['Basic','TODO2']});
 
     /**
      * Publish Params Unique To This Widget

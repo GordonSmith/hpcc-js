@@ -54,8 +54,8 @@
     Common.prototype.publish("animationOnStartup", true, "boolean", "Animate On Startup",null,{tags:['Advanced']});
     Common.prototype.publish("animationEasing", "linear", "set", "Animation Easing", ["linear", "in", "out", "inAndOut"],{tags:['Advanced']});
     
-    Common.prototype.publish("title", "", "string", "Text to display above the chart",null,{tags:['Private']}); // does not support alignment (TODO make our own title functons)
-    Common.prototype.publish("titlePosition", "out", "set", "Position of title",["in","out","none"],{tags:['Private']});
+    Common.prototype.publish("title", "", "string", "Text To Display Above The Chart",null,{tags:['Private']}); // does not support alignment (TODO make our own title functons)
+    Common.prototype.publish("titlePosition", "out", "set", "Position of Title",["in","out","none"],{tags:['Private']});
 
     // need to see if this is going to be shared these 3 below
     Common.prototype.publish("backgroundColorStroke", "#666", "html-color", "Background Border Color",null,{tags:['Advanced']});

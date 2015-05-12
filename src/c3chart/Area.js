@@ -17,21 +17,21 @@
     /**
      * Publish Params Common To Other Libraries
      */
-    Area.prototype.publish("isStacked", false, "boolean", "Show SubChart",null,{tags:['Basic','TODO2']});
-    Area.prototype.publish("lineWidth", 1.0, "number", "LineWidth",null,{tags:['Basic','TODO2']});
+    Area.prototype.publish("isStacked", false, "boolean", "Stack Chart",null,{tags:['Basic','TODO2']});
+    Area.prototype.publish("lineWidth", 1.0, "number", "Line Width",null,{tags:['Basic','TODO2']});
     Area.prototype.publish("lineDashStyle", [], "array", "Dashed Lines",null,{tags:['Basic','TODO2']});
-    Area.prototype.publish("lineOpacity", 1.0, "number", "LineWidth",null,{tags:['Basic','TODO2']});
-    Area.prototype.publish("fillOpacity", 0.2, "number", "Opacity of the shape fill color",null,{tags:['Basic','TODO2']}); // NOT WORKING
+    Area.prototype.publish("lineOpacity", 1.0, "number", "Line Alpha",null,{tags:['Basic','TODO2']});
+    Area.prototype.publish("fillOpacity", 0.2, "number", "Opacity of The Fill Color",null,{tags:['Basic','Exp']});
     
     /**
      * Publish Params Unique To This Library
      */
     
-    Area.prototype.enter = function (domNode, element) {
+    Area.prototype.enter = function (domNode, element) {       
         CommonND.prototype.enter.apply(this,arguments);
     }
     
-    Area.prototype.update = function (domNode, element) {
+    Area.prototype.update = function (domNode, element) {       
         CommonND.prototype.update.apply(this, arguments);
 
         if (this.isStacked()) {
@@ -46,8 +46,8 @@
             "stroke-dasharray": this.lineDashStyle().toString(), 
         });
 
-        element.selectAll(".c3-area").style({ // NOT WORKING (css gets overwritten?)
-            "opacity": this.fillOpacity()
+        element.selectAll(".c3-area").style({
+            "opacity": this.fillOpacity() 
         });
     }
     

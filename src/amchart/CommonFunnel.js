@@ -40,7 +40,7 @@
     
     CommonFunnel.prototype.publish("labelPosition", "right", "set", "Label Position", ["left","right"],{tags:['Intermediate','TODO2']});
     
-    CommonFunnel.prototype.publish("showScrollbar", false, "boolean", "Chart Scrollbar",null,{tags:['Intermediate','TODO2']});
+    CommonFunnel.prototype.publish("showScrollbar", false, "boolean", "Show Chart Scrollbar",null,{tags:['Intermediate','TODO2']});
     
     CommonFunnel.prototype.publish("startDuration", 0.3, "number", "Start Duration (sec)",null,{tags:['Private','TODO2']});
     
@@ -55,6 +55,7 @@
         this._chart.type = "funnel";
         this._chart.startDuration = this.startDuration();
         this._chart.rotate = this.flip();
+        
         
         this._chart.color = this.fontColor();
         this._chart.fontSize = this.fontSize();

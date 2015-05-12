@@ -20,26 +20,28 @@
      */
     Bar.prototype.publish("isStacked", false, "boolean", "Stacks the elements in a series",null,{tags:['Basic']});
     //opacity?
-    Bar.prototype.publish("axisFontSize", null, "number", "Horizontal axis text style (Font Size)",null,{tags:['Basic']});
-    Bar.prototype.publish("axisFontFamily", null, "string", "Horizontal axis text style (Font Name)",null,{tags:['Basic']});
+    Bar.prototype.publish("axisFontSize", null, "number", "X/Y Axis Label Font Size",null,{tags:['Basic']});
+    Bar.prototype.publish("axisFontFamily", null, "string", "X/Y Axis Label Font Name",null,{tags:['Basic']});
     
-    Bar.prototype.publish("xAxisFontColor", null, "html-color", "Horizontal axis text style (Color)",null,{tags:['Basic']});
-    Bar.prototype.publish("yAxisFontColor", null, "html-color", "Vertical axis text style (Color)",null,{tags:['Basic']});
-
-    Bar.prototype.publish("xAxisBaselineColor", "#000000", "html-color", "Specifies the color of the baseline for the horizontal axis",null,{tags:['Intermediate']});
-    Bar.prototype.publish("yAxisBaselineColor", "#000000", "html-color", "Specifies the color of the baseline for the vertical axis",null,{tags:['Intermediate']});
+    Bar.prototype.publish("xAxisFontColor", null, "html-color", "X Axis Text Font Color",null,{tags:['Basic']});
+    Bar.prototype.publish("yAxisFontColor", null, "html-color", "X Axis Text Font Color",null,{tags:['Basic']});
     
-    Bar.prototype.publish("xAxisTitle", "", "string", "Specifies a title for the horizontal axis",null,{tags:['Basic']});
-    Bar.prototype.publish("yAxisTitle", "", "string", "Specifies a title for the vertical axis",null,{tags:['Basic']});
+    Bar.prototype.publish("xAxisBaselineColor", "#000000", "html-color", "Specifies The Color of The Baseline For The Horizontal Axis",null,{tags:['Intermediate']});
+    Bar.prototype.publish("yAxisBaselineColor", "#000000", "html-color", "Specifies The Color of The Baseline For The Vertical Axis",null,{tags:['Intermediate']});
     
-    Bar.prototype.publish("xAxisTitleFontColor", null, "html-color", "Horizontal axis title text style (Color)",null,{tags:['Intermediate']});
-    Bar.prototype.publish("yAxisTitleFontColor", null, "html-color", "Vertical axis title text style (Color)",null,{tags:['Intermediate']});
-
-    Bar.prototype.publish("xAxisTitleFontSize", null, "number", "Horizontal axis titletext style (Font Size)",null,{tags:['Intermediate']});
-    Bar.prototype.publish("yAxisTitleFontSize", null, "number", "Vertical axis titletext style (Font Size)",null,{tags:['Intermediate']});
-
-    Bar.prototype.publish("xAxisTitleFontFamily", null, "string", "Horizontal axis title text style (Font Name)",null,{tags:['Intermediate']});
-    Bar.prototype.publish("yAxisTitleFontFamily", null, "string", "Vertical axis title text style (Font Name)",null,{tags:['Intermediate']});
+    Bar.prototype.publish("xAxisTitle", "", "string", "X Axis Title",null,{tags:['Basic']});
+    Bar.prototype.publish("yAxisTitle", "", "string", "Y Axis Title",null,{tags:['Basic']});
+    
+    Bar.prototype.publish("xAxisTitleFontColor", null, "html-color", "Horizontal Axis Title Text Style (Color)",null,{tags:['Intermediate']});
+    Bar.prototype.publish("yAxisTitleFontColor", null, "html-color", "Vertical Axis Title Text Style (Color)",null,{tags:['Intermediate']});
+    
+    Bar.prototype.publish("xAxisTitleFontSize", null, "number", "Horizontal Axis Titletext Style (Font Size)",null,{tags:['Intermediate']});
+    Bar.prototype.publish("yAxisTitleFontSize", null, "number", "Vertical Axis Titletext Style (Font Size)",null,{tags:['Intermediate']});
+    
+    Bar.prototype.publish("xAxisTitleFontFamily", null, "string", "Horizontal Axis Title Text Style (Font Name)",null,{tags:['Intermediate']});
+    Bar.prototype.publish("yAxisTitleFontFamily", null, "string", "Vertical Axis Title Text Style (Font Name)",null,{tags:['Intermediate']});
+    
+    Bar.prototype.publish("xAxisLabelRotation", 0, "number", "X Axis Label Angle",null,{tags:['Intermediate']});
     
     /**
      * Publish Params Unique To This Widget
@@ -47,50 +49,50 @@
     Bar.prototype.publish("groupWidth", "", "string", "The width of a group of bars, Percent or Pixels",null,{tags:['Advanced']});
     Bar.prototype.publish("dataOpacity", 1.0, "number", "Transparency of Data Points",null,{tags:['Intermediate']});
     
-    Bar.prototype.publish("xAxisBaseline", null, "number", "The baseline for the horizontal axis",null,{tags:['Intermediate']});
-    Bar.prototype.publish("yAxisBaseline", null, "number", "The baseline for the horizontal axis",null,{tags:['Intermediate']});
+    Bar.prototype.publish("xAxisBaseline", null, "number", "Specifies the color of the baseline for the horizontal axis",null,{tags:['Intermediate']});
+    Bar.prototype.publish("yAxisBaseline", null, "number", "Specifies the color of the baseline for the vertical axis",null,{tags:['Intermediate']});
 
-    Bar.prototype.publish("xAxisInversed", false, "boolean", "The direction in which the values along the horizontal axis grow.",null,{tags:['Advanced']});
-    Bar.prototype.publish("yAxisInversed", false, "boolean", "The direction in which the values along the vertical axis grow.",null,{tags:['Advanced']});
+    Bar.prototype.publish("xAxisInversed", false, "boolean", "The Direction In Which The Values Along The Horizontal Axis Grow.",null,{tags:['Advanced']});
+    Bar.prototype.publish("yAxisInversed", false, "boolean", "The Direction In Which The Values Along The Vertical Axis Grow.",null,{tags:['Advanced']});
     
-    Bar.prototype.publish("xAxisFormat", "", "string", "A format string for numeric axis labels", ["","decimal","scientific","currency","percent","short","long"],{tags:['Intermediate']});
-    Bar.prototype.publish("yAxisFormat", "", "string", "A format string for numeric axis labels", ["","decimal","scientific","currency","percent","short","long"],{tags:['Intermediate']});
+    Bar.prototype.publish("xAxisFormat", "", "string", "Format String For Numeric Axis Labels", ["","decimal","scientific","currency","percent","short","long"],{tags:['Intermediate']});
+    Bar.prototype.publish("yAxisFormat", "", "string", "Format String For Numeric Axis Labels", ["","decimal","scientific","currency","percent","short","long"],{tags:['Intermediate']});
     
-    Bar.prototype.publish("xAxisGridlinesCount", 5, "number", "The number of horizontal gridlines between two regular gridlines",null,{tags:['Intermediate']});
-    Bar.prototype.publish("yAxisGridlinesCount", 5, "number", "The number of vertical gridlines between two regular gridlines",null,{tags:['Intermediate']});
+    Bar.prototype.publish("xAxisGridlinesCount", 5, "number", "The Number of Horizontal Gridlines Between Two Regular Gridlines",null,{tags:['Intermediate']});
+    Bar.prototype.publish("yAxisGridlinesCount", 5, "number", "The Number of Vertical Gridlines Between Two Regular Gridline",null,{tags:['Intermediate']});
     
-    Bar.prototype.publish("xAxisGridlinesColor", "#CCC", "html-color", "The color of the horizontal gridlines inside the chart area",null,{tags:['Basic']});
-    Bar.prototype.publish("yAxisGridlinesColor", "#CCC", "html-color", "The color of the vertical gridlines inside the chart area",null,{tags:['Basic']});
+    Bar.prototype.publish("xAxisGridlinesColor", "#CCC", "html-color", "The Color of The Horizontal Gridlines Inside The Chart Area",null,{tags:['Basic']});
+    Bar.prototype.publish("yAxisGridlinesColor", "#CCC", "html-color", "The Color of The Vertical Gridlines Inside The Chart Area",null,{tags:['Basic']});
     
-    Bar.prototype.publish("xAxisMinorGridlinesCount", 0, "number", "The number of horizontal minor gridlines between two regular gridlines",null,{tags:['Intermediate']});
-    Bar.prototype.publish("yAxisMinorGridlinesCount", 0, "number", "The number of vertical minor gridlines between two regular gridlines",null,{tags:['Intermediate']});
+    Bar.prototype.publish("xAxisMinorGridlinesCount", 0, "number", "The Number of Horizontal Minor Gridlines Between Two Regular Gridlines",null,{tags:['Intermediate']});
+    Bar.prototype.publish("yAxisMinorGridlinesCount", 0, "number", "The Number of Vertical Minor Gridlines Between Two Regular Gridlines",null,{tags:['Intermediate']});
 
-    Bar.prototype.publish("xAxisMinorGridlinesColor", "#FFFFFF", "html-color", "The color of the horizontal minor gridlines inside the chart area",null,{tags:['Intermediate']});
-    Bar.prototype.publish("yAxisMinorGridlinesColor", "#FFFFFF", "html-color", "The color of the vertical minor gridlines inside the chart area",null,{tags:['Intermediate']});
+    Bar.prototype.publish("xAxisMinorGridlinesColor", "#FFFFFF", "html-color", "The Color of The Horizontal Minor Gridlines Inside The Chart Area",null,{tags:['Intermediate']});
+    Bar.prototype.publish("yAxisMinorGridlinesColor", "#FFFFFF", "html-color", "The Color of The Vertical Minor Gridlines Inside The Chart Area",null,{tags:['Intermediate']});
     
-    Bar.prototype.publish("xAxisLogScale", false, "boolean", "Makes horizontal axis a log scale",null,{tags:['Advanced']});
-    Bar.prototype.publish("yAxisLogScale", false, "boolean", "Makes vertical axis a log scale",null,{tags:['Advanced']});
+    Bar.prototype.publish("xAxisLogScale", false, "boolean", "Makes Horizontal Axis A log Scale",null,{tags:['Advanced']});
+    Bar.prototype.publish("yAxisLogScale", false, "boolean", "Makes Vertical Axis A Log Scale",null,{tags:['Advanced']});
     
-    Bar.prototype.publish("xAxisTextPosition", "out", "set", "Position of the horizontal axis text, relative to the chart area", ["out","in","none"],{tags:['Advanced']});
-    Bar.prototype.publish("yAxisTextPosition", "out", "set", "Position of the vertical axis text, relative to the chart area", ["out","in","none"],{tags:['Advanced']});
+    Bar.prototype.publish("xAxisTextPosition", "out", "set", "Position of The Horizontal Axis Text, Relative To The Chart Area", ["out","in","none"],{tags:['Advanced']});
+    Bar.prototype.publish("yAxisTextPosition", "out", "set", "Position of The Vertical Axis Text, Relative To The Chart Area", ["out","in","none"],{tags:['Advanced']});
     
-    Bar.prototype.publish("xAxisTicks", [], "array", "Replaces the automatically generated X-axis ticks with the specified array",null,{tags:['Private']});
-    Bar.prototype.publish("yAxisTicks", [], "array", "Replaces the automatically generated Y-axis ticks with the specified array",null,{tags:['Private']});
+    Bar.prototype.publish("xAxisTicks", [], "array", "Replaces The Automatically Generated X-Axis Ticks With The Specified Array",null,{tags:['Private']});
+    Bar.prototype.publish("yAxisTicks", [], "array", "Replaces The Automatically Generated Y-Axis Ticks With The Specified Array",null,{tags:['Private']});
     
-    Bar.prototype.publish("xAxisMaxValue", null, "number", "Moves the max value of the horizontal axis to the specified value",null,{tags:['Advanced']});
-    Bar.prototype.publish("yAxisMaxValue", null, "number", "Moves the max value of the vertical axis to the specified value",null,{tags:['Advanced']});
+    Bar.prototype.publish("xAxisMaxValue", null, "number", "Moves The Max Value of The Horizontal Axis To The Specified Value",null,{tags:['Advanced']});
+    Bar.prototype.publish("yAxisMaxValue", null, "number", "Moves The Max Value of The Vertical Axis To The Specified Value",null,{tags:['Advanced']});
     
-    Bar.prototype.publish("xAxisMinValue", null, "number", "Moves the min value of the horizontal axis to the specified value",null,{tags:['Advanced']});
-    Bar.prototype.publish("yAxisMinValue", null, "number", "Moves the min value of the vertical axis to the specified value",null,{tags:['Advanced']});
+    Bar.prototype.publish("xAxisMinValue", null, "number", "Moves The Min Value of The Horizontal Axis To The Specified Value",null,{tags:['Advanced']});
+    Bar.prototype.publish("yAxisMinValue", null, "number", "Moves The Min Value of The Vertical Axis To The Specified Value",null,{tags:['Advanced']});
     
-    Bar.prototype.publish("xAxisViewWindowMode", "pretty", "set", "Specifies how to scale the horizontal axis to render the values within the chart area", ["pretty","maximized","explicit"],{tags:['Advanced']});
-    Bar.prototype.publish("yAxisViewWindowMode", "pretty", "set", "Specifies how to scale the vertical axis to render the values within the chart area", ["pretty","maximized","explicit"],{tags:['Advanced']});
+    Bar.prototype.publish("xAxisViewWindowMode", "pretty", "set", "Specifies How To Scale The Horizontal Axis To Render The values Within The Chart Area", ["pretty","maximized","explicit"],{tags:['Advanced']});
+    Bar.prototype.publish("yAxisViewWindowMode", "pretty", "set", "Specifies How To Scale The Vertical Axis To Render The Values Within The Chart Area", ["pretty","maximized","explicit"],{tags:['Advanced']});
     
-    Bar.prototype.publish("xAxisViewWindowMax", null, "number", "The maximum horizontal data value to render",null,{tags:['Advanced']});
-    Bar.prototype.publish("yAxisViewWindowMax", null, "number", "The maximum vertical data value to render",null,{tags:['Advanced']});
+    Bar.prototype.publish("xAxisViewWindowMax", null, "number", "The Maximum Horizontal Data Value To Render",null,{tags:['Advanced']});
+    Bar.prototype.publish("yAxisViewWindowMax", null, "number", "The Maximum Vertical Data Value To Render",null,{tags:['Advanced']});
     
-    Bar.prototype.publish("xAxisViewWindowMin", null, "number", "The minimum horizontal data value to render",null,{tags:['Advanced']});
-    Bar.prototype.publish("yAxisViewWindowMin", null, "number", "The minimum vertical data value to render",null,{tags:['Advanced']});
+    Bar.prototype.publish("xAxisViewWindowMin", null, "number", "The Minimum Horizontal Data Value To Render",null,{tags:['Advanced']});
+    Bar.prototype.publish("yAxisViewWindowMin", null, "number", "The Minimum Vertical Data Value To Render",null,{tags:['Advanced']});
     
     Bar.prototype.getChartOptions = function () {
         var retVal = CommonND.prototype.getChartOptions.apply(this, arguments);
@@ -121,6 +123,8 @@
         retVal.hAxis.title = this.xAxisTitle();
         retVal.hAxis.minValue = this.xAxisMinValue();
         retVal.hAxis.maxValue = this.xAxisMaxValue();
+        retVal.hAxis.slantedText = this.xAxisLabelRotation() !== 0;
+        retVal.hAxis.slantedTextAngle = this.xAxisLabelRotation();
         
         retVal.hAxis.format = this.xAxisFormat();
         retVal.hAxis.textStyle = {

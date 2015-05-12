@@ -21,7 +21,7 @@
      * Publish Params Common To Other Libraries
      */
     Area.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Area.prototype._palette.switch());
-    Area.prototype.publish("isStacked", false, "boolean", "Stacked",null,{tags:['Basic','TODO2']});
+    Area.prototype.publish("isStacked", false, "boolean", "Stack Chart",null,{tags:['Basic','TODO2']});
     
     /**
      * Publish Params Unique To This Widget

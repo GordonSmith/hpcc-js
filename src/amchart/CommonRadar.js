@@ -57,10 +57,8 @@
     
     CommonRadar.prototype.publish("startDuration", 0.3, "number", "Start Duration (sec)",null,{tags:['Private','TODO2']});
     
-    CommonRadar.prototype.publish("dataDateFormat", null, "string", "",null,{tags:['Private','TODO2']});
-    
-    // BUNCH OF PARAMS not being used
-    
+    CommonRadar.prototype.publish("dataDateFormat", null, "string", "Date Format String",null,{tags:['Private','TODO2']});
+        
     CommonRadar.prototype.publish("yAxisAutoGridCount", true, "boolean", "Specifies whether number of gridCount is specified automatically, acoarding to the axis size",null,{tags:['Advanced','TODO2']});
     CommonRadar.prototype.publish("yAxisGridPosition", "start", "set", "Specifies if a grid line is placed on the center of a cell or on the beginning of a cell", ["start","middle"],{tags:['Advanced','TODO2']});
     

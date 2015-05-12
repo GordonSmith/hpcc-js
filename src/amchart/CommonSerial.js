@@ -34,42 +34,42 @@
     CommonSerial.prototype.publish("lineColor", null, "html-color", "Color of the data/content lines",null,{tags:['Basic','TODO2']});
     CommonSerial.prototype.publish("lineOpacity", 1, "number", "Line Opacity", null, {min:0,max:1,step:0.001,inputType:'range',tags:['Basic','TODO2']}); 
     
-    CommonSerial.prototype.publish("dashedLineStyle", 0, "number", "",null,{tags:['Advanced','TODO2']});
+    CommonSerial.prototype.publish("dashedLineStyle", 0, "number", "Length of Dashed Line. 0 = none",null,{tags:['Advanced','TODO2']});
     
-    CommonSerial.prototype.publish("axisFontSize", null, "number", "Size of value labels text. Will use chart's fontSize if not set.",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("axisFontSize", null, "number", "X/Y Axis Text Font Size",null,{tags:['Basic','TODO2']});
 
-    CommonSerial.prototype.publish("xAxisBaselineColor", "#000000", "html-color", "Axis color",null,{tags:['Basic','TODO2']});
-    CommonSerial.prototype.publish("yAxisBaselineColor", "#000000", "html-color", "Axis color",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("xAxisBaselineColor", "#000000", "html-color", "X Axis Baseline Color",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("yAxisBaselineColor", "#000000", "html-color", "Y Axis baseline Color",null,{tags:['Basic','TODO2']});
     
-    CommonSerial.prototype.publish("xAxisFontColor", null, "html-color", "Horizontal axis text style (Color)",null,{tags:['Basic']});
-    CommonSerial.prototype.publish("yAxisFontColor", null, "html-color", "Vertical axis text style (Color)",null,{tags:['Basic']});
+    CommonSerial.prototype.publish("xAxisFontColor", null, "html-color", "Horizontal Axis Text Style (Color)",null,{tags:['Basic']});
+    CommonSerial.prototype.publish("yAxisFontColor", null, "html-color", "Vertical Axis Text Style (Color)",null,{tags:['Basic']});
     
     CommonSerial.prototype.publish("xAxisTitle", "Axis title", "string", "X-Axis Title",null,{tags:['Basic','TODO2']});
     CommonSerial.prototype.publish("yAxisTitle", "Axis title", "string", "Y-Axis Title",null,{tags:['Basic','TODO2']});
     
-    CommonSerial.prototype.publish("xAxisTitleFontSize", null, "number", "Vertical axis titletext style (Font Size)",null,{tags:['Basic','TODO2']});
-    CommonSerial.prototype.publish("yAxisTitleFontSize", null, "number", "Vertical axis titletext style (Font Size)",null,{tags:['Intermediate']});
+    CommonSerial.prototype.publish("xAxisTitleFontSize", null, "number", "Vertical Axis Title Text Style (Font Size)",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("yAxisTitleFontSize", null, "number", "Vertical Axis Title Text Style (Font Size)",null,{tags:['Intermediate']});
     
-    CommonSerial.prototype.publish("xAxisTitleFontColor", null, "html-color", "Color of axis value labels. Will use chart's color if not set.",null,{tags:['Basic','TODO2']});
-    CommonSerial.prototype.publish("yAxisTitleFontColor", null, "html-color", "Color of axis value labels. Will use chart's color if not set.",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("xAxisTitleFontColor", null, "html-color", "Horizontal Axis Title Text Style (Color)",null,{tags:['Basic','TODO2']});
+    CommonSerial.prototype.publish("yAxisTitleFontColor", null, "html-color", "Vertical Axis Title Text Style (Color)",null,{tags:['Basic','TODO2']});
 
     CommonSerial.prototype.publish("xAxisLabelRotation", 30, "number", "X-Axis Label Rotation", null, {min:0,max:90,step:0.1,inputType:'range',tags:['Intermediate','TODO2']});
 
-    CommonSerial.prototype.publish("axisLineWidth", 1, "number", "Thickness of axis",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("axisLineWidth", 1, "number", "Axis Line Width",null,{tags:['Intermediate','TODO2']});
 
-    CommonSerial.prototype.publish("fillOpacity", .7, "number", "Shape Opacity", null, {min:0,max:1,step:0.001,inputType:'range',tags:['Intermediate','TODO2']}); 
+    CommonSerial.prototype.publish("fillOpacity", .7, "number", "Opacity of The Fill Color", null, {min:0,max:1,step:0.001,inputType:'range',tags:['Intermediate','TODO2']}); 
 
     /**
      * Publish Params Unique To This Widget
      */
-    CommonSerial.prototype.publish("axisAlpha", 1, "number", "Axis opacity",null,{tags:['Intermediate','TODO2']}); // share?
+    CommonSerial.prototype.publish("axisAlpha", 1, "number", "Axis Alpha",null,{tags:['Intermediate','TODO2']}); // share?
     
     CommonSerial.prototype.publish("marginLeft", null, "number", "Margin (Left)",null,{tags:['Intermediate','TODO2']});
     CommonSerial.prototype.publish("marginRight", null, "number", "Margin (Right)",null,{tags:['Intermediate','TODO2']});
     CommonSerial.prototype.publish("marginTop", null, "number", "Margin (Top)",null,{tags:['Intermediate','TODO2']});
     CommonSerial.prototype.publish("marginBottom", null, "number", "Margin (Bottom)",null,{tags:['Intermediate','TODO2']});
 
-    CommonSerial.prototype.publish("showScrollbar", false, "boolean", "Chart Scrollbar",null,{tags:['Intermediate','TODO2']}); // needs to be shared
+    CommonSerial.prototype.publish("showScrollbar", false, "boolean", "Show Chart Scrollbar",null,{tags:['Intermediate','TODO2']}); // needs to be shared
     
     CommonSerial.prototype.publish("orientation", "horizontal", "set", "Orientation",["horizontal","vertical"],{tags:['Intermediate','TODO2']});
 
@@ -78,8 +78,8 @@
     
     CommonSerial.prototype.publish("dataDateFormat", null, "string", "",null,{tags:['Private','TODO2']});
     
-    CommonSerial.prototype.publish("xAxisAutoGridCount", true, "boolean", "Specifies whether number of gridCount is specified automatically, acoarding to the axis size",null,{tags:['Advanced','TODO2']});
-    CommonSerial.prototype.publish("xAxisGridPosition", "middle", "set", "Specifies if a grid line is placed on the center of a cell or on the beginning of a cell", ["start","middle"],{tags:['Advanced','TODO2']});
+    CommonSerial.prototype.publish("xAxisAutoGridCount", true, "boolean", "Specifies Whether Number of GridCount Is Specified Automatically, According To The Axis Size",null,{tags:['Advanced','TODO2']});
+    CommonSerial.prototype.publish("xAxisGridPosition", "middle", "set", "Specifies If A Grid Line Is Placed On The Center of A Cell or On The Beginning of A Cell", ["start","middle"],{tags:['Advanced','TODO2']});
         
     CommonSerial.prototype.publish("xAxisBoldPeriodBeginning", true, "boolean", "When parse dates is on for the category axis, the chart will try to highlight the beginning of the periods, like month, in bold.",null,{tags:['Intermediate','TODO2']});
     CommonSerial.prototype.publish("yAxisBoldPeriodBeginning", true, "boolean", "When parse dates is on for the category axis, the chart will try to highlight the beginning of the periods, like month, in bold.",null,{tags:['Intermediate','TODO2']});
@@ -99,7 +99,7 @@
     //CommonSerial.prototype.publish("yAxisMinimum", null, "number", "",null,{tags:['Intermediate','TODO2']});
     CommonSerial.prototype.publish("yAxisTitleOffset", null, "number", "",null,{tags:['Intermediate','TODO2']});
     
-    CommonSerial.prototype.publish("startOnAxis", true, "boolean", "Draw chart starting on axis.",null,{tags:['Intermediate','TODO2']});
+    CommonSerial.prototype.publish("startOnAxis", true, "boolean", "Draw Chart Starting On Axis.",null,{tags:['Intermediate','TODO2']});
     
     CommonSerial.prototype.publish("startDuration", 0.3, "number", "Start Duration (sec)",null,{tags:['Private','TODO2']});
     CommonSerial.prototype.publish("useImgPatterns", false, "boolean", "Enable Image Pattern backgrounds",null,{tags:['Private','TODO2']});

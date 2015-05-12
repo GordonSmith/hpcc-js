@@ -23,7 +23,7 @@
     /**
      * Publish Params Common To Other Libraries
      */
-    //TODO: need to add this globally to all widgets as well
+    
     CommonXY.prototype.publish("fontSize", null, "number", "Font Size",null,{tags:['Basic','TODO2']});
     CommonXY.prototype.publish("fontFamily", null, "string", "Font Name",null,{tags:['Basic','TODO2']});
     CommonXY.prototype.publish("fontColor", null, "html-color", "Font Color",null,{tags:['Basic','TODO2']});
@@ -90,12 +90,7 @@
     
     //CommonXY.prototype.publish("yAxisMinimum", null, "number", "",null,{tags:['Intermediate','TODO2']});
     CommonXY.prototype.publish("yAxisTitleOffset", null, "number", "",null,{tags:['Intermediate','TODO2']});
-    
-    //CommonXY.prototype.publish("startOnAxis", true, "boolean", "Draw chart starting on axis.",null,{tags:['Intermediate','TODO2']}); // DO WE NEED THIS except for override 
-    //CommonXY.prototype.publish("startDuration", 0.3, "number", "Start Duration (sec)",null,{tags:['Advanced','TODO2']}); // not coded
-    //CommonXY.prototype.publish("useImgPatterns", false, "boolean", "Enable Image Pattern backgrounds",null,{tags:['Private','TODO2']});
-    //CommonXY.prototype.publish("imgPatternArr", '["../ampatterns/black/pattern2.png"]', "string", "Background Pattern Images (Not used if '[]')",null,{inputType:'textarea',tags:['Private','TODO2']});
-    
+
     CommonXY.prototype.updateChartOptions = function() {
         var context = this;
 

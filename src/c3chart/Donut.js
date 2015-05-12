@@ -26,7 +26,7 @@
     //Donut.prototype.publish("labelThreshold", 0.05, "number", "???",null,{tags:['Intermediate','TODO2']});
     Donut.prototype.publish("arcWidth", 45, "number", "Arc Width",null,{tags:['Basic','TODO2']});
     Donut.prototype.publish("expand", true, "boolean", "Arc Explode",null,{tags:['Intermediate','TODO2']});
-    Donut.prototype.publish("title", "xxx", "string", "Label",null,{tags:['Intermediate','TODO2']});
+    Donut.prototype.publish("title", "xxx", "string", "Center Label",null,{tags:['Intermediate','TODO2']});
 
     Donut.prototype.enter = function (domNode, element) {
         this._config.donut = {

@@ -26,7 +26,7 @@
     Funnel.prototype.publish("neckWidthPercent", 40, "number", "Neck Width %",null,{tags:['Basic','TODO2']});
     
     //TODO
-    //Funnel.prototype.publish("tooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Basic','TODO2']});
+    Funnel.prototype.publish("tooltipText","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Basic','TODO2']});
 
     Funnel.prototype.enter = function(domNode, element) {
         CommonFunnel.prototype.enter.apply(this, arguments);
@@ -36,6 +36,7 @@
         CommonFunnel.prototype.updateChartOptions.apply(this, arguments);
         var context = this;
         
+        this._chart.balloonText = this.tooltipText();
         this._chart.neckHeight = this.neckHeightPercent()+"%";
         this._chart.neckWidth = this.neckWidthPercent()+"%";
     }

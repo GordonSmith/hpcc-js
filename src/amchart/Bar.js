@@ -20,7 +20,7 @@
      * Publish Params Common To Other Libraries
      */   
     Bar.prototype.publish("paletteID", "Dark2", "set", "Palette ID", Bar.prototype._palette.switch());
-    Bar.prototype.publish("isStacked", false, "boolean", "Stacked",null,{tags:['Basic','TODO2']});
+    Bar.prototype.publish("isStacked", false, "boolean", "Stack Chart",null,{tags:['Basic','TODO2']});
     
     /**
      * Publish Params Unique To This Widget
@@ -28,7 +28,7 @@
     Bar.prototype.publish("paletteGrouping", "By Column", "set", "Palette Grouping",["By Category","By Column"],{tags:['Basic','TODO2']});
 
     Bar.prototype.publish("cylinderBars", false, "boolean", "Cylinder Bars",null,{tags:['Basic','TODO2']});
-    Bar.prototype.publish("circleRadius", 1, "number", "Circle Radius",null,{tags:['Basic','TODO2']});
+    Bar.prototype.publish("circleRadius", 1, "number", "Circle Radius of Cylinder Bars",null,{tags:['Basic','TODO2']});
     
     Bar.prototype.publish("columnWidth", 0.62, "number", "Bar Width",null,{tags:['Basic','TODO2']});
     
