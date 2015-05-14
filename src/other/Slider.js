@@ -1,14 +1,19 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["../common/SVGWidget", "./ISlider", "css!./Slider"], factory);
+        define(["../common/SVGWidget", "./ISlider", "../common/Icon", "css!./Slider"], factory);
     } else {
-        root.other_Slider = factory(root.common_SVGWidget, root.other_ISlider);
+        root.other_Slider = factory(root.common_SVGWidget, root.other_ISlider, root.common_Icon);
     }
-}(this, function (SVGWidget, ISlider) {
+}(this, function (SVGWidget, ISlider, Icon) {
     function Slider() {
         SVGWidget.call(this);
         ISlider.call(this);
+
+        this._icon = new Icon()
+            .faChar("\uf07b")
+            .padding_percent(50)
+        ;
 
         this.selectionLabel("");
 
@@ -16,6 +21,12 @@
             .clamp(true)
         ;
         var context = this;
+        
+        this._icon = new Icon()
+            .faChar("\uf04b")
+            .padding_percent(50)
+        ;
+
         this.brush = d3.svg.brush()
             .x(this.xScale)
             .extent([0, 0])
@@ -39,6 +50,7 @@
     Slider.prototype._class += " other_Slider";
     Slider.prototype.implements(ISlider.prototype);
 
+    Slider.prototype.publish("showPlay", false, "boolean", "Show Play Button");
     Slider.prototype.publish("allowRange", false, "boolean", "Allow Range Selection");
     Slider.prototype.publish("low", 0, "number", "Low");
     Slider.prototype.publish("high", 100, "number", "High");
@@ -57,6 +69,7 @@
         this.data([44, 66]);
         return this;
     };
+
 
     Slider.prototype.data = function (_) {
         var retVal = SVGWidget.prototype.data.apply(this, arguments);
@@ -110,6 +123,26 @@
     Slider.prototype.update = function (domNode, element) {
         var context = this;
         var width = this.width() - 50;  //TODO - 50 should be "padding"
+        var height = this.height() - 20;  //TODO - 20 should be "padding"
+       
+        if (this.showPlay()) {
+            this._icon
+                .target(domNode)
+                .pos({x: width/2 - 20, y: -height/2 + 20})
+                .render()
+            ; 
+        } else {
+            this._icon
+                .target(domNode)
+                .move({ x: 500, y: 200})
+                .render()
+            ;
+        }
+
+        this._icon.element() 
+        .on("click", function (d) { 
+            d3.event.stopPropagation(); 
+        }) 
 
         this.xScale
             .domain([this.allowRange(), this.high()])
@@ -190,7 +223,7 @@
 
     Slider.prototype.nearestStep = function (value) {
         return this.allowRange() + Math.round((value - this.allowRange()) / this.step()) * this.step();
-    }
+    };
 
     Slider.prototype.handlePath = function (d, i) {
         var e = +(d === "e");
