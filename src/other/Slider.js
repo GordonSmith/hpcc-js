@@ -163,18 +163,27 @@
         var context = this;
         var width = this.width() - 100;  //TODO - 50 should be "padding"
         var height = this.height() - 20;  //TODO - 20 should be "padding"
+
+        this.xScale
+            .domain([this.allowRange(), this.high()])
+            .range([-width/2, width/2])
+        ;
+         this.data(this._data);
        
         if (this.showPlay()) {
             this._icon
                 .display(true)
                 .render()
             ;
-
+            this.xScale
+                .domain([this.allowRange(), this.high()])
+                .range([-width/2, width/2 - this._icon.diameter() - 50])
+            ;
+            this.data(this._data);
 
         } else {
             this._icon
                 .display(false)
-                // .move({ x: 500, y: 200})
                 .render()
             ;
         }
@@ -200,12 +209,6 @@
                 ;
             }
         }); 
-
-        this.xScale
-            .domain([this.allowRange(), this.high()])
-            // .range([-width/2, (width/2 - 100*this._icon.width())])
-            .range([-width/2 - this._icon.diameter() - 20, width/2 - this._icon.diameter() - 20])
-        ;
 
         this.axisElement
             .call(this.axis)
