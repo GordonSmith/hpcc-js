@@ -71,19 +71,14 @@
         var context = this;
         var tick = this.low(); 
 
-        var intervalHandler = setInterval(function () { 
+        this.intervalHandler = setInterval(function () { 
             context 
                 .data(tick) 
                 .render() 
             ;
             tick += context.step();
             if (tick > context.high()) {
-                clearInterval(intervalHandler);
-            }
-
-            if (context._playing === false) {
-                clearInterval(intervalHandler);
-                context.data(context.low());
+                clearInterval(context.intervalHandler);
             }
         }, context.playInterval());
         // }, 1000);
@@ -99,6 +94,9 @@
             .faChar("\uf04b")
             .render()
         ;
+ 
+        clearInterval(this.intervalHandler);
+        this.data(this.low());
     };
 
     Slider.prototype.data = function (_) {
