@@ -21,6 +21,7 @@
         this._icon = new Icon()
             .faChar("\uf04b")
             .padding_percent(50)
+            .scale(1.5)
         ;
 
         this.brush = d3.svg.brush()
@@ -152,7 +153,7 @@
 
         this._icon
             .target(domNode)
-            .pos({x: this.width()/2 - 75, y: -this.height()/2 + 30})
+            .pos({x: this.width()/2 - 50, y: 0})
             .display(false)
             .render()
         ;
@@ -160,14 +161,16 @@
 
     Slider.prototype.update = function (domNode, element) {
         var context = this;
-        var width = this.width() - 50;  //TODO - 50 should be "padding"
+        var width = this.width() - 100;  //TODO - 50 should be "padding"
         var height = this.height() - 20;  //TODO - 20 should be "padding"
        
         if (this.showPlay()) {
             this._icon
                 .display(true)
                 .render()
-            ; 
+            ;
+
+
         } else {
             this._icon
                 .display(false)
@@ -200,7 +203,8 @@
 
         this.xScale
             .domain([this.allowRange(), this.high()])
-            .range([-width/2, width/2])
+            // .range([-width/2, (width/2 - 100*this._icon.width())])
+            .range([-width/2 - this._icon.diameter() - 20, width/2 - this._icon.diameter() - 20])
         ;
 
         this.axisElement
