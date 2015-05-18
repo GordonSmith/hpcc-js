@@ -54,6 +54,8 @@
     Slider.prototype.publish("step", 10, "number", "Step");
     Slider.prototype.publish("playInterval", 1000, "number", "Play Interval");
     Slider.prototype.publish("selectionLabel", "", "string", "Selection Label");
+    Slider.prototype.publishProxy("diameter", "_icon", "diameter");
+    Slider.prototype.publish("gap", 50, "number", "gap");
 
     Slider.prototype.testData = function (_) {
         this.columns("Percent");
@@ -177,7 +179,7 @@
             ;
             this.xScale
                 .domain([this.allowRange(), this.high()])
-                .range([-width/2, width/2 - this._icon.diameter() - 50])
+                .range([-width/2, width/2 - this._icon.diameter() - this.gap()])
             ;
             this.data(this._data);
 
