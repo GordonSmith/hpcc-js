@@ -1,21 +1,29 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/SVGWidget", "./ISlider", "css!./Slider"], factory);
+        define(["d3", "../common/SVGWidget", "./ISlider", "../common/Icon", "css!./Slider"], factory);
     } else {
-        root.other_Slider = factory(root.d3, root.common_SVGWidget, root.other_ISlider);
+        root.other_Slider = factory(root.d3, root.common_SVGWidget, root.other_ISlider, root.common_Icon);
     }
-}(this, function (d3, SVGWidget, ISlider) {
+}(this, function (d3, SVGWidget, ISlider, Icon) {
     function Slider() {
         SVGWidget.call(this);
         ISlider.call(this);
 
         this.selectionLabel("");
 
+
         this.xScale = d3.scale.linear()
             .clamp(true)
         ;
         var context = this;
+        
+        this._icon = new Icon()
+            .faChar("\uf04b")
+            // .padding_percent(50)
+            .scale(1.5)
+        ;
+
         this.brush = d3.svg.brush()
             .x(this.xScale)
             .extent([0, 0])
@@ -43,11 +51,15 @@
     Slider.prototype.publish("fontFamily", null, "string", "Font Name",null,{tags:['Basic']});
     Slider.prototype.publish("fontColor", null, "html-color", "Font Color",null,{tags:['Basic']});
 
+    Slider.prototype.publish("showPlay", false, "boolean", "Show Play Button");
     Slider.prototype.publish("allowRange", false, "boolean", "Allow Range Selection",null,{tags:['Intermediate']});
     Slider.prototype.publish("low", 0, "number", "Low",null,{tags:['Intermediate']});
     Slider.prototype.publish("high", 100, "number", "High",null,{tags:['Intermediate']});
     Slider.prototype.publish("step", 10, "number", "Step",null,{tags:['Intermediate']});
+    Slider.prototype.publish("playInterval", 1000, "number", "Play Interval");
     Slider.prototype.publish("selectionLabel", "", "string", "Selection Label",null,{tags:['Intermediate']});
+    Slider.prototype.publishProxy("diameter", "_icon", "diameter");
+    Slider.prototype.publish("gap", 50, "number", "gap");
 
     Slider.prototype.testData = function (_) {
         this.columns("Percent");
@@ -60,6 +72,38 @@
         this.columns("Percent");
         this.data([44, 66]);
         return this;
+    };
+
+    Slider.prototype.play = function () {
+        var context = this;
+        var tick = this.low(); 
+
+        this.intervalHandler = setInterval(function () { 
+            context 
+                .data(tick) 
+                .render() 
+            ;
+            tick += context.step();
+            if (tick > context.high()) {
+                clearInterval(context.intervalHandler);
+            }
+        }, context.playInterval());
+        // }, 1000);
+    };
+
+    Slider.prototype.pause = function () {
+        // Will be added later
+    };
+
+    Slider.prototype.stop = function () {
+        console.log("stopped");
+        this._icon
+            .faChar("\uf04b")
+            .render()
+        ;
+ 
+        clearInterval(this.intervalHandler);
+        this.data(this.low());
     };
 
     Slider.prototype.data = function (_) {
@@ -78,6 +122,8 @@
         if ((this.high() - this.low()) / this.step() <= 10) {
             this.axis.tickValues(d3.merge([d3.range(this.low(), this.high(), this.step()), [this.high()]]));
         }
+
+        this._playing = false;
 
         this.axisElement = element.append("g")
             .attr("class", "x axis")
@@ -109,16 +155,62 @@
             .attr("class", "handle")
             .attr("transform", "translate(0,-27)")
         ;
+
+        this._icon
+            .target(domNode)
+            .pos({x: this.width()/2 - 50, y: 0})
+            .display(false)
+            .render()
+        ;
     };
 
     Slider.prototype.update = function (domNode, element) {
         var context = this;
-        var width = this.width() - 50;  //TODO - 50 should be "padding"
+        var width = this.width() - 100;  //TODO - 50 should be "padding"
+        var height = this.height() - 20;  //TODO - 20 should be "padding"
 
         this.xScale
             .domain([this.low(), this.high()])
             .range([-width/2, width/2])
         ;
+         this.data(this._data);
+       
+        if (this.showPlay()) {
+            this._icon
+                .display(true)
+                .render()
+            ;
+            this.xScale
+                .domain([this.low(), this.high()])
+                .range([-width/2, width/2 - this._icon.diameter() - this.gap()])
+            ;
+            this.data(this._data);
+
+        } else {
+            this._icon
+                .display(false)
+                .render()
+            ;
+        }
+
+        this._icon.click = function(d) {
+            d3.event.stopPropagation();
+            if (context._playing) {
+                context._playing = false;
+                context.stop();
+                d
+                    .faChar("\uf04b")
+                    .render()
+                ;
+            } else {
+                context._playing = true;
+                context.play();
+                d
+                    .faChar("\uf04c")
+                    .render()
+                ;
+            }
+        };
 
         this.axisElement
             .call(this.axis)
