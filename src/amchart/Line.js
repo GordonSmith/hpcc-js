@@ -1,3 +1,8 @@
+/**
+ * @file AmChart Line
+ * @author HPCC Systems
+ */
+
 "use strict";
 (function(root, factory) {
     if (typeof define === "function" && define.amd) {
@@ -6,33 +11,72 @@
         root.amchart_Line = factory(root.d3, root.amchart_CommonSerial, root.api_INDChart);
     }
 }(this, function(d3, CommonSerial, INDChart) {
+    /**
+     * @class amchart_Line
+     * @extends amchart_CommonSerial
+     * @extends api_INDChart
+     * @implements api_INDChart
+     */
     function Line() {
         CommonSerial.call(this);
+        /**
+         * Specifies the HTML tag type of the container.
+         * @member {string} _tag
+         * @memberof amchart_Gauge
+         * @private
+         */
         this._class = "amchart_Line";
+        /**
+         * Specifies the HTML tag type of the container.
+         * @member {string} _tag
+         * @memberof amchart_Gauge
+         * @private
+         */
         this._tag = "div";
-
+        /**
+         * Specifies the graph type of the AmChart Widget.
+         * @member {string} _gType
+         * @memberof amchart_Area
+         * @private
+         */
         this._gType = "line";
     }
 
     Line.prototype = Object.create(CommonSerial.prototype);
     Line.prototype.implements(INDChart.prototype);
 
-    /**
-     * Publish Params Common To Other Libraries
-     */
+    // Publish Params Common To Other Libraries
+
     Line.prototype.publish("paletteID", "default", "set", "Palette ID", Line.prototype._palette.switch(), {tags:['Basic','Shared']});
     Line.prototype.publish("smoothLines", false, "boolean", "Causes chart data lines to draw smoothly",null,{tags:['Basic','Shared']});
 
-    /**
-     * Publish Params Unique To This Widget
-     */
+    // Publish Params Unique To This Widget
+
     Line.prototype.publish("stepLines", false, "boolean", "Causes chart data lines to draw smoothly",null,{tags:['Basic']});
     Line.prototype.publish("tooltipTemplate","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Basic']});
 
+    /**
+     * The function that is executed on first render.
+     * @method enter
+     * @private
+     * @instance
+     * @memberof amchart_Line
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     Line.prototype.enter = function(domNode, element) {
         CommonSerial.prototype.enter.apply(this, arguments);
     };
 
+    /**
+     * Updates underlying AmChart widget object, with options from publish parameters.
+     * @method updateChartOptions
+     * @memberof amchart_Line
+     * @instance
+     * @private
+     * @returns {Object}
+     */
     Line.prototype.updateChartOptions = function() {
         CommonSerial.prototype.updateChartOptions.apply(this, arguments);
 
@@ -46,6 +90,15 @@
         return this._chart;
     };
 
+    /**
+     * Builds AmChart graph object that becomes a property of the AmChart widget object.
+     * @method buildGraphs
+     * @memberof amchart_Line
+     * @instance
+     * @private
+     * @param {string} gType Value from this._gType.
+     * @returns {Widget}
+     */
     Line.prototype.buildGraphs = function(gType) {
         if (typeof(this._chart.graphs) === 'undefined') { this._chart.graphs = []; }
         var currentGraphCount = this._chart.graphs.length;
@@ -79,6 +132,15 @@
         }
     };
 
+    /**
+     * The function that is executed on first render, after enter() and everytime the widget is updated with subsequent render calls.
+     * @method update
+     * @memberof amchart_Line
+     * @instance
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     Line.prototype.update = function(domNode, element) {
         CommonSerial.prototype.update.apply(this, arguments);
 

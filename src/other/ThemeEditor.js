@@ -6,6 +6,10 @@
         root.other_PropertyEditor = factory(root.common_Widget, root.common_HTMLWidget, root.other_Persist, root.other_PropertyEditor);
     }
 }(this, function (Widget, HTMLWidget, Persist, PropertyEditor) {
+    /**
+     * @class other_ThemeEditor
+     * @extends common_HTMLWidget
+     */
     function ThemeEditor() {
         HTMLWidget.call(this);
 

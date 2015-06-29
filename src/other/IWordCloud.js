@@ -6,6 +6,9 @@
         root.other_IWordCloud = factory();
     }
 }(this, function () {
+    /**
+     * @interface other_IWordCloud
+     */
     function IWordCloud() {
     }
 

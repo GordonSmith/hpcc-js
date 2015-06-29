@@ -6,6 +6,10 @@
         root.common_Icon = factory(root.common_SVGWidget, root.common_Shape, root.common_FAChar);
     }
 }(this, function (SVGWidget, Shape, FAChar) {
+    /**
+     * @class common_Icon
+     * @extends common_SVGWidget
+     */
     function Icon() {
         SVGWidget.call(this);
 

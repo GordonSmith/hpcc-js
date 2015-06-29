@@ -6,6 +6,14 @@
         root.c3chart_Common2D = factory(root.c3chart_Common, root.api_I2DChart);
     }
 }(this, function (Common, I2DChart) {
+    /**
+     * @class c3chart_Common2D
+     * @abstract
+     * @extends c3chart_Common
+     * @extends api_I2DChart
+     * @implements api_I2DChart
+     * @noinit
+     */
     function Common2D(target) {
         Common.call(this);
         I2DChart.call(this);
@@ -23,18 +31,31 @@
         };
     }
     Common2D.prototype = Object.create(Common.prototype);
-    Common2D.prototype._class += " c3chart_Common2D";
     Common2D.prototype.implements(I2DChart.prototype);
-
     /**
-     * Publish Params Common To Other Libraries
+     * Specifies the class name of the container.
+     * @member {string} _class
+     * @memberof c3chart_Common2D
+     * @private
      */
+    Common2D.prototype._class += " c3chart_Common2D";
+
+    // Publish Params Common To Other Libraries
+
     Common2D.prototype.publish("paletteID", "default", "set", "Palette ID", Common2D.prototype._palette.switch(), {tags:['Basic','Shared']});
 
-    /**
-     * Publish Params Unique To This Widget
-     */
+    // Publish Params Unique To This Widget
 
+    /**
+     * The function that is executed on first render, after enter() and everytime the widget is updated with subsequent render calls.
+     * @method update
+     * @memberof c3chart_Common2D
+     * @instance
+     * @private
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     Common2D.prototype.update = function (domNode, element) {
         this._palette = this._palette.switch(this.paletteID());
         Common.prototype.update.apply(this, arguments);

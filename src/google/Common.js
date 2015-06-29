@@ -6,7 +6,11 @@
         root.google_Common = factory(root.d3, root.common_HTMLWidget);
     }
 }(this, function (d3, HTMLWidget) {
-
+    /**
+     * @class google_Common
+     * @extends common_HTMLWidget
+     * @noinit
+     */
     function Common(tget) {
         HTMLWidget.call(this);
 
@@ -21,9 +25,8 @@
     Common.prototype = Object.create(HTMLWidget.prototype);
     Common.prototype._class += " google_Common";
 
-    /**
-     * Publish Params Common To Other Libraries
-     */
+    // Publish Params Common To Other Libraries
+
     Common.prototype.publish("fontSize", null, "number", "Font Size",null,{tags:['Basic','Shared']});
     Common.prototype.publish("fontFamily", null, "string", "Font Name",null,{tags:['Basic','Shared']});
     Common.prototype.publish("fontColor", null, "html-color", "Font Color",null,{tags:['Basic','Shared']});
@@ -37,9 +40,8 @@
     Common.prototype.publish("legendFontBold", false, "boolean", "Legend Font Bold",null,{tags:['Private']});
     Common.prototype.publish("legendFontItalic", false, "boolean", "Legend Font Italic",null,{tags:['Private']});
 
-    /**
-     * Publish Params Unique To This Widget
-     */
+    // Publish Params Unique To This Widget
+
     Common.prototype.publish("chartAreaWidth", null, "string", "Chart Area Width",null,{tags:['Advanced']}); // num or string
     Common.prototype.publish("chartAreaHeight", null, "string", "Chart Area Height",null,{tags:['Advanced']});
     Common.prototype.publish("chartAreaTop", null, "string", "Chart Area Distance From Top",null,{tags:['Advanced']}); // num or string (google default auto)
@@ -135,7 +137,7 @@
         };
         return chartOptions;
     };
-    
+
     Common.prototype.getNumSeries = function () {
         return this._columns.slice(1).length;
     };

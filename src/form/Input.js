@@ -6,6 +6,12 @@
         root.form_Form = factory(root.d3, root.common_HTMLWidget, root.api_IInput);
     }
 }(this, function (d3, HTMLWidget, IInput) {
+    /**
+     * @class form_Input
+     * @extends common_HTMLWidget
+     * @extends api_IInput
+     * @implements api_IInput
+     */
     function Input() {
         HTMLWidget.call(this);
         IInput.call(this);

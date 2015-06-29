@@ -6,9 +6,18 @@
         root.c3chart_Gauge = factory(root.c3chart_Common1D);
     }
 }(this, function (Common1D) {
+    /**
+     * @class c3chart_Gauge
+     * @extends c3chart_Common1D
+     */
     function Gauge(target) {
         Common1D.call(this);
-
+        /**
+         * Specifies the widget type of the c3 Widget/HPCC Widget.
+         * @member {string} _type
+         * @memberof c3chart_Gauge
+         * @private
+         */
         this._type = "gauge";
 
         var context = this;
@@ -22,22 +31,36 @@
         };
     }
     Gauge.prototype = Object.create(Common1D.prototype);
+    /**
+     * Specifies the class name of the container.
+     * @member {string} _class
+     * @memberof c3chart_Gauge
+     * @private
+     */
     Gauge.prototype._class += " c3chart_Gauge";
 
-    /**
-     * Publish Params Common To Other Libraries
-     */
+    // Publish Params Common To Other Libraries
+
     Gauge.prototype.publish("low", 0, "number", "Gauge Lower Bound",null,{tags:['Intermediate','Shared']});
     Gauge.prototype.publish("high", 100, "number", "Gauge Higher Bound",null,{tags:['Intermediate','Shared']});
 
-    /**
-     * Publish Params Unique To This Widget
-     */
+    // Publish Params Unique To This Widget
+
     Gauge.prototype.publish("valueFormat", "Percent", "set", "Value Display Format", ["Percent", "Value"],{tags:['Basic']});
     Gauge.prototype.publish("arcWidth", 10, "number", "Gauge Width of Arc",null,{tags:['Basic']});
     Gauge.prototype.publish("showLabels", true, "boolean", "Show Labels",null,{tags:['Basic']});
     Gauge.prototype.publish("showValueLabel", true, "boolean", "Show Value Label",null,{tags:['Basic']});
 
+    /**
+     * The function that is executed on first render, after enter() and everytime the widget is updated with subsequent render calls.
+     * @method update
+     * @memberof c3chart_Gauge
+     * @instance
+     * @private
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     Gauge.prototype.update = function (domNode, element) {
         this.c3Chart.internal.config.gauge_min = this.low();
         this.c3Chart.internal.config.gauge_max = this.high();
@@ -48,6 +71,14 @@
         Common1D.prototype.update.apply(this, arguments);
     };
 
+    /**
+     * Builds and returns an c3chart configuration Object based on publish param values.
+     * @method getChartOptions
+     * @memberof c3chart_Gauge
+     * @instance
+     * @private
+     * @returns {Object}
+     */
     Gauge.prototype.getChartOptions = function () {
         var chartOptions = Common1D.prototype.getChartOptions.apply(this, arguments);
 

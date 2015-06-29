@@ -6,6 +6,10 @@
         root.common_FAChar = factory(root.common_SVGWidget, root.common_Text);
     }
 }(this, function (SVGWidget, Text) {
+    /**
+     * @class common_FAChar
+     * @extends common_SVGWidget
+     */
     function FAChar() {
         SVGWidget.call(this);
 

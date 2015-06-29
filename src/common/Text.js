@@ -6,6 +6,10 @@
         root.common_Text = factory(root.common_SVGWidget);
     }
 }(this, function (SVGWidget) {
+    /**
+     * @class common_Text
+     * @extends common_SVGWidget
+     */
     function Text() {
         SVGWidget.call(this);
     }

@@ -6,6 +6,10 @@
         root.form_Form = factory(root.d3, root.common_HTMLWidget, root.form_Input, root.form_Slider);
     }
 }(this, function (d3,HTMLWidget,Input,Slider) {
+    /**
+     * @class form_Form
+     * @extends common_HTMLWidget
+     */
     function Form() {
         HTMLWidget.call(this);
 

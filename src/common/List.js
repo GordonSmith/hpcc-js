@@ -6,6 +6,10 @@
         root.common_List = factory(root.d3, root.common_SVGWidget, root.common_IList, root.common_TextBox);
     }
 }(this, function (d3, SVGWidget, IList, TextBox) {
+    /**
+     * @class common_List
+     * @extends common_SVGWidget
+     */
     function List(target) {
         SVGWidget.call(this);
         IList.call(this);

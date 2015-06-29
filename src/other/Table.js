@@ -6,6 +6,10 @@
         root.other_Table = factory(root.d3, root.common_HTMLWidget, root.other_Paginator, root.other_Bag);
     }
 }(this, function (d3, HTMLWidget, Paginator, Bag) {
+    /**
+     * @class other_Table
+     * @extends common_HTMLWidget
+     */
     function Table() {
         HTMLWidget.call(this);
         this._tag = "div";

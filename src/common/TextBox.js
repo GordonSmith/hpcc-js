@@ -6,6 +6,10 @@
         root.common_TextBox = factory(root.common_SVGWidget, root.common_Shape, root.common_Text);
     }
 }(this, function (SVGWidget, Shape, Text) {
+    /**
+     * @class common_TextBox
+     * @extends common_SVGWidget
+     */
     function TextBox() {
         SVGWidget.call(this);
 

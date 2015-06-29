@@ -6,6 +6,11 @@
         root.other_WordCloud = factory(root.d3, root.common_SVGWidget, root.other_IWordCloud, root.require);
     }
 }(this, function (d3, SVGWidget, IWordCloud, require) {
+    /**
+     * @class other_WordCloud
+     * @extends common_SVGWidget
+     * @implements other_IWordCloud
+     */
     function WordCloud() {
         SVGWidget.call(this);
         IWordCloud.call(this);

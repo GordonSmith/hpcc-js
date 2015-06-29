@@ -39,6 +39,12 @@
     ];
     var _allChartTypes = _2dChartTypes.concat(_multiChartTypes.concat(_anyChartTypes));
 
+    /**
+     * @class chart_MultiChart
+     * @extends common_SVGWidget
+     * @extends api_INDChart
+     * @implements api_INDChart
+     */
     function MultiChart() {
         SVGWidget.call(this);
         INDChart.call(this);

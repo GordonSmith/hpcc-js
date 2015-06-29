@@ -6,6 +6,12 @@
         root.other_Slider = factory(root.d3, root.common_SVGWidget, root.api_IInput, root.common_Icon);
     }
 }(this, function (d3, SVGWidget, IInput, Icon) {
+    /**
+     * @class form_Slider
+     * @extends common_SVGWidget
+     * @extends api_IInput
+     * @implements api_IInput
+     */
     function Slider() {
         SVGWidget.call(this);
         IInput.call(this);

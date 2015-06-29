@@ -6,6 +6,12 @@
         root.chart_Bubble = factory(root.d3, root.common_SVGWidget, root.api_I2DChart, root.common_Text, root.common_FAChar);
     }
 }(this, function (d3, SVGWidget, I2DChart, Text, FAChar) {
+    /**
+     * @class chart_Bubble
+     * @extends common_SVGWidget
+     * @extends api_I2DChart
+     * @implements api_I2DChart
+     */
     function Bubble(target) {
         SVGWidget.call(this);
         I2DChart.call(this);

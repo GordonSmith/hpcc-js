@@ -6,6 +6,12 @@
         root.chart_MultiChartSurface = factory(root.d3, root.common_ResizeSurface, root.chart_MultiChart, root.api_INDChart);
     }
 }(this, function (d3, ResizeSurface, MultiChart, INDChart) {
+    /**
+     * @class chart_MultiChartSurface
+     * @extends common_ResizeSurface
+     * @extends api_INDChart
+     * @implements api_INDChart
+     */
     function MultiChartSurface() {
         ResizeSurface.call(this);
         INDChart.call(this);

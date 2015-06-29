@@ -6,7 +6,10 @@
         root.Scatter = factory(root.d3, root.google_CommonND, root.common_HTMLWidget);
     }
 }(this, function (d3, CommonND, HTMLWidget) {
-
+    /**
+     * @class google_Scatter
+     * @extends google_CommonND
+     */
     function Scatter() {
         CommonND.call(this);
         this._chartType = "ScatterChart";
@@ -14,26 +17,26 @@
     Scatter.prototype = Object.create(CommonND.prototype);
     Scatter.prototype._class += " google_Scatter";
 
-    /**
-     * Publish Params Unique To This Widget
-     */
+
+    // Publish Params Unique To This Widget
+
     Scatter.prototype.publish("aggregationTarget", "auto", "string", "How multiple data selections are rolled up into tooltips: 'category'- Group selected data by x-value; 'series'- Group selected data by series; 'auto'- Group selected data by x-value if all selections have the same x-value, and by series otherwise; 'none'- Show only one tooltip per selection.  aggregationTarget will often be used in tandem with selectionMode and tooltip.trigger",null,{tags:['Basic']});
-    
+
     Scatter.prototype.publish("curveType", "none", "set", "Controls the curve of the lines when the line width is not zero. Can be one of the following: 'none' - Straight lines without curve; 'function' - The angles of the line will be smoothed..",['none', 'function'],{tags:['Basic']});
-    
+
     Scatter.prototype.publish("pointShape", "circle", "set", "The shape of individual data elements: 'circle', 'triangle', 'square', 'diamond', 'star', or 'polygon'.",['circle', 'triangle', 'square', 'diamond', 'star', 'polygon'],{tags:['Basic']});
     Scatter.prototype.publish("pointSize", 7, "number", "Diameter of data points, in pixels. Use zero to hide all points.",null,{tags:['Basic']});
     Scatter.prototype.publish("pointsVisible", true, "boolean", "Determines whether points will be displayed. Set to false to hide all points.",null,{tags:['Basic']});
-    
+
     Scatter.prototype.publish("selectionMode", 'single', "set", "When selectionMode is 'multiple', users may select multiple data points.",['single','multiple'],{tags:['Basic']});
 
-     /**
-     * Publish Params Common To Other Libraries
-     */
+
+    // Publish Params Common To Other Libraries
+
     Scatter.prototype.publish("backgroundColor", null, "html-color", "The background color for the main area of the chart. Can be either a simple HTML color string, for example: 'red' or '#00cc00', or an object with the following properties.",null,{tags:['Basic']});
-    
+
     Scatter.prototype.publish("dataOpacity", 1.0, "number", "The transparency of data points, with 1.0 being completely opaque and 0.0 fully transparent. This refers to the visible data (i.e. dots).",null,{tags:['Basic']});
-    
+
     Scatter.prototype.publish("tooltipIsHtml", true, "boolean", "Set to false to use SVG-rendered (rather than HTML-rendered) tooltips.",null,{tags:['Advanced']});
     Scatter.prototype.publish("tooltipTrigger", "focus", "set", "The user interaction that causes the tooltip to be displayed: 'focus' - The tooltip will be displayed when the user hovers over the element; 'none' - The tooltip will not be displayed.",['none', 'focus', 'selection'],{tags:['Basic']});
 
@@ -117,7 +120,7 @@
         retVal.dataOpacity = this.dataOpacity();
         retVal.tooltipIsHtml = this.tooltipIsHtml();
         retVal.tooltipTrigger = this.tooltipTrigger();
-        
+
         retVal.crosshair = {
             color: this.crosshairColor(),
             orientation: this.crosshairOrientation(),

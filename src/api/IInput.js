@@ -1,3 +1,8 @@
+/**
+ * @file Form Input Interface
+ * @author HPCC Systems
+ */
+
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
@@ -6,6 +11,10 @@
         root.api_IInput = factory(root.common_Widget);
     }
 }(this, function (Widget) {
+    /**
+     * @interface api_IInput
+     * @class api_IInput
+     */
     function IInput() {
         Widget.call(this);
     }
@@ -17,6 +26,13 @@
     IInput.prototype.publish("validate", null, "string", "Input Validation");
 
     //  Implementation  ---
+    /**
+     * Tests if an input is valid via regex
+     * @method isValid
+     * @memberof api_IInput
+     * @instance
+     * @returns {Widget}
+     */
     IInput.prototype.isValid = function () {
         if (this.validate()) {
             var re = new RegExp(this.validate());

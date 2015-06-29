@@ -6,7 +6,10 @@
         root.TreeMap = factory(root.d3, root.common_HTMLWidget);
     }
 }(this, function (d3, HTMLWidget) {
-
+    /**
+     * @class google_TreeMap
+     * @extends common_HTMLWidget
+     */
     function TreeMap() {
         HTMLWidget.call(this);
 

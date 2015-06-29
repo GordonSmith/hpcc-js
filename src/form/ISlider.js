@@ -6,6 +6,9 @@
         root.other_ISlider = factory();
     }
 }(this, function () {
+    /**
+     * @interface form_ISlider
+     */
     function ISlider() {
     }
 

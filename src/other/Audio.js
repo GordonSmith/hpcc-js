@@ -6,6 +6,10 @@
         root.other_Audio = factory(root.d3, root.common_HTMLWidget);
     }
 }(this, function (d3, HTMLWidget) {
+    /**
+     * @class other_Audio
+     * @extends common_HTMLWidget
+     */
     function Audio() {
         HTMLWidget.call(this);
 

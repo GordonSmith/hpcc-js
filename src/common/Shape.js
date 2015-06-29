@@ -6,6 +6,10 @@
         root.common_Shape = factory(root.d3, root.common_SVGWidget);
     }
 }(this, function (d3, SVGWidget) {
+    /**
+     * @class common_Shape
+     * @extends common_SVGWidget
+     */
     function Shape() {
         SVGWidget.call(this);
     }

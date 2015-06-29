@@ -6,6 +6,10 @@
         root.other_MorphText = factory(root.common_SVGWidget);
     }
 }(this, function (SVGWidget) {
+    /**
+     * @class other_MorphText
+     * @extends common_SVGWidget
+     */
     function MorphText() {
         SVGWidget.call(this);
 

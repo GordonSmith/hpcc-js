@@ -6,6 +6,10 @@
         root.other_Paginator = factory(root.d3, root.common_HTMLWidget);
     }
 }(this, function (d3, HTMLWidget) {
+    /**
+     * @class other_Paginator
+     * @extends common_HTMLWidget
+     */
     function Paginator() {
         HTMLWidget.call(this);
 

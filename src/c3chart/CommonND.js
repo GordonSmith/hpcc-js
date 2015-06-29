@@ -6,6 +6,14 @@
         root.c3chart_CommonND = factory(root.c3chart_Common, root.api_INDChart);
     }
 }(this, function (Common, INDChart) {
+    /**
+     * @class c3chart_CommonND
+     * @abstract
+     * @extends c3chart_Common
+     * @extends api_INDChart
+     * @implements api_INDChart
+     * @noinit
+     */
     function CommonND(target) {
         Common.call(this);
         INDChart.call(this);
@@ -23,12 +31,17 @@
         };
     }
     CommonND.prototype = Object.create(Common.prototype);
-    CommonND.prototype._class += " c3chart_CommonND";
     CommonND.prototype.implements(INDChart.prototype);
-
     /**
-     * Publish Params Common To Other Libraries
+     * Specifies the class name of the container.
+     * @member {string} _class
+     * @memberof c3chart_CommonND
+     * @private
      */
+    CommonND.prototype._class += " c3chart_CommonND";
+
+    // Publish Params Common To Other Libraries
+
     CommonND.prototype.publish("paletteID", "default", "set", "Palette ID", CommonND.prototype._palette.switch(), {tags:['Basic','Shared']});
 
     CommonND.prototype.publish("axisLineWidth", 1, "number", "Axis Line Width",null,{tags:['Intermediate','Shared']});
@@ -55,15 +68,25 @@
     CommonND.prototype.publish("yAxisTitleFontFamily", null, "string", "Vertical Axis Title Text Style (Font Name)",null,{tags:['Advanced','Shared']});
     CommonND.prototype.publish("yAxisTitleFontSize", null, "number", "Vertical Axis Title Text Style (Font Size)",null,{tags:['Advanced','Shared']});
 
-    /**
-     * Publish Params Unique To This Library
-     */
+    // Publish Params Unique To This Library
+
     CommonND.prototype.publish("xAxisType", "category", "set", "X-Axis Type", ["category", "timeseries", "indexed"],{tags:['Intermediate']});
     CommonND.prototype.publish("subchart", false, "boolean", "Show SubChart",null,{tags:['Private']});
 
     CommonND.prototype.publish("showXGrid", false, "boolean", "Show X Grid",null,{tags:['Intermediate']});
     CommonND.prototype.publish("showYGrid", false, "boolean", "Show Y Grid",null,{tags:['Intermediate']});
 
+    /**
+     * The function that is executed on first render.
+     * @method enter
+     * @private
+     * @memberof c3chart_Common
+     * @instance
+     * @private
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {Widget}
+     */
     CommonND.prototype.enter = function (domNode, element) {
         if (this.subchart()) {
             this._config.subchart = {
@@ -117,6 +140,16 @@
         Common.prototype.enter.apply(this, arguments);
     };
 
+    /**
+     * The function that is executed on first render, after enter() and everytime the widget is updated with subsequent render calls.
+     * @method update
+     * @memberof c3chart_CommonND
+     * @instance
+     * @private
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     CommonND.prototype.update = function (domNode, element) {
         Common.prototype.update.apply(this, arguments);
 
@@ -145,6 +178,14 @@
         });
     };
 
+    /**
+     * Builds and returns an c3chart configuration Object based on publish param values.
+     * @method getChartOptions
+     * @memberof c3chart_CommonND
+     * @instance
+     * @private
+     * @returns {Object}
+     */
     CommonND.prototype.getChartOptions = function () {
         var chartOptions = Common.prototype.getChartOptions.apply(this, arguments);
 

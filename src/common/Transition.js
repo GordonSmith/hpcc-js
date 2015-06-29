@@ -6,6 +6,10 @@
         root.common_Transition = factory();
     }
 }(this, function () {
+    /**
+     * @class common_Transition
+     *
+     */
     function Transition(widget) {
         this._widget = widget;
         this._duration = 250;

@@ -6,6 +6,10 @@
         root.other_PropertyEditor = factory(root.d3, root.common_Widget, root.common_HTMLWidget, root.other_Persist);
     }
 }(this, function (d3, Widget, HTMLWidget, Persist) {
+    /**
+     * @class other_PropertyEditor
+     * @extends common_HTMLWidget
+     */
     function PropertyEditor() {
         HTMLWidget.call(this);
 
@@ -132,7 +136,7 @@
         HTMLWidget.prototype.enter.apply(this, arguments);
         this._parentElement.style("overflow", "auto");
     };
-    
+
     PropertyEditor.prototype.findSharedProperties = function (data, themeMode) {
         var propsByID = {};
 

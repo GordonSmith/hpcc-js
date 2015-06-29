@@ -6,6 +6,10 @@
         root.common_ResizeSurface = factory(root.d3, root.common_Surface);
     }
 }(this, function (d3, Surface) {
+    /**
+     * @class common_ResizeSurface
+     * @extends common_Surface
+     */
     function ResizeSurface() {
         Surface.call(this);
 

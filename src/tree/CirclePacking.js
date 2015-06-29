@@ -6,6 +6,12 @@
         root.tree_CirclePacking = factory(root.d3, root.common_SVGWidget, root.api_ITree, root.common_Text, root.common_FAChar);
     }
 }(this, function (d3, SVGWidget, ITree, Text, FAChar) {
+    /**
+     * @class tree_CirclePacking
+     * @extends common_SVGWidget
+     * @extends api_ITree
+     * @implements api_ITree
+     */
     function CirclePacking(target) {
         SVGWidget.call(this);
         ITree.call(this);

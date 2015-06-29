@@ -1,3 +1,8 @@
+/**
+ * @file ND Chart Interface
+ * @author HPCC Systems
+ */
+
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
@@ -6,11 +11,27 @@
         root.api_INDChart = factory(root.common_Palette);
     }
 }(this, function (Palette) {
+    /**
+     * @interface api_INDChart
+     * @class api_INDChart
+     */
     function INDChart() {
     }
+    /**
+     * Instance of a HPCC VIZ Palette object.
+     * @member {Object} _palette
+     * @memberof api_INDChart
+     * @private
+     */
     INDChart.prototype._palette = Palette.ordinal("default");
 
-    //  Data ---
+    /**
+     * Populates Data and Columns with test data.
+     * @method testData
+     * @memberof api_INDChart
+     * @instance
+     * @returns {Widget}
+     */
     INDChart.prototype.testData = function () {
         switch (this._chartType) {
             case 'ScatterChart':
@@ -38,6 +59,13 @@
     };
 
     //  Events  ---
+    /**
+     * @method Overridable click callback function.
+     * @memberof api_INDChart
+     * @param {type} row
+     * @param {type} column
+     * @returns {undefined}
+     */
     INDChart.prototype.click = function (row, column) {
         console.log("Click:  " + JSON.stringify(row) + ", " + column);
     };

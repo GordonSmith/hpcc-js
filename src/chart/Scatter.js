@@ -6,6 +6,12 @@
         root.chart_Column = factory(root.d3, root.common_SVGWidget, root.chart_XYAxis, root.api_INDChart);
     }
 }(this, function (d3, SVGWidget, XYAxis, INDChart) {
+    /**
+     * @class chart_Scatter
+     * @extends chart_XYAxis
+     * @extends api_INDChart
+     * @implements api_INDChart
+     */
     function Scatter(target) {
         XYAxis.call(this);
         INDChart.call(this);

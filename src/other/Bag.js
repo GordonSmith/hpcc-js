@@ -6,6 +6,9 @@
         root.other_Bag = factory();
     }
 }(this, function () {
+    /**
+     * @class other_SelectionBag
+     */
     function SelectionBag() {
         this.items = {};
     }

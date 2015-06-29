@@ -6,6 +6,12 @@
         root.common_HTMLWidget = factory(root.d3, root.common_Widget, root.common_Transition);
     }
 }(this, function (d3, Widget, Transition) {
+    /**
+     * @class common_HTMLWidget
+     * @abstract
+     * @noinit
+     * @extends common_Widget
+     */
     function HTMLWidget() {
         Widget.call(this);
     }
@@ -49,6 +55,20 @@
         return this._size.height - this.calcFrameHeight(this._element);
     };
 
+    /**
+     * Resizes widget. If no argument is passed, it will resize to the maximum container width and height.
+     * @method resize
+     * @memberof common_HTMLWidget
+     * @instance
+     * @param {Object} [size] An object with the properties "width" and "height".
+     * @param {Mixed} [size.width] Width in pixels.
+     * @param {Mixed} [size.height] Height in pixels.
+     * @returns {Widget}
+     * @example <caption>Example with specific height and width in pixels.</caption>
+     * widget.resize({width:"100",height:"100"}).render();
+     * @example <caption>Example resize to maximum container dimensions</caption>
+     * widget.resize().render();
+     */
     HTMLWidget.prototype.resize = function (size) {
         var retVal = Widget.prototype.resize.apply(this, arguments);
         this._parentElement

@@ -6,6 +6,12 @@
         root.chart_Column = factory(root.d3, root.chart_XYAxis, root.api_I2DChart);
     }
 }(this, function (d3, XYAxis, I2DChart) {
+    /**
+     * @class chart_Column
+     * @extends chart_XYAxis
+     * @extends api_I2DChart
+     * @implements api_I2DChart
+     */
     function Column(target) {
         XYAxis.call(this);
         I2DChart.call(this);

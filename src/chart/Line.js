@@ -6,6 +6,12 @@
         root.chart_Line = factory(root.d3, root.chart_XYAxis, root.api_INDChart);
     }
 }(this, function (d3, XYAxis, INDChart) {
+    /**
+     * @class chart_Line
+     * @extends chart_XYAxis
+     * @extends api_INDChart
+     * @implements api_INDChart
+     */
     function Line(target) {
         XYAxis.call(this);
         INDChart.call(this);

@@ -1,3 +1,8 @@
+/**
+ * @file c3 Chart Column
+ * @author HPCC Systems
+ */
+
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
@@ -6,27 +11,57 @@
         root.c3chart_Column = factory(root.c3chart_CommonND);
     }
 }(this, function (CommonND) {
+    /**
+     * @class c3chart_Column
+     * @extends c3chart_CommonND
+     */
     function Column(target) {
         CommonND.call(this);
-
+        /**
+         * Specifies the widget type of the c3 Widget/HPCC Widget.
+         * @member {string} _type
+         * @memberof c3chart_Column
+         * @private
+         */
         this._type = "bar";
     }
     Column.prototype = Object.create(CommonND.prototype);
+    /**
+     * Specifies the class name of the container.
+     * @member {string} _class
+     * @memberof c3chart_Column
+     * @private
+     */
     Column.prototype._class += " c3chart_Column";
 
-    /**
-     * Publish Params Common To Other Libraries
-     */
+    // Publish Params Common To Other Libraries
+
     Column.prototype.publish("isStacked", false, "boolean", "Stack Chart",null,{tags:['Basic','Shared']});
 
+    // Publish Params Unique To This Widget
     /**
-     * Publish Params Unique To This Widget
-     */   
-
+     * The function that is executed on first render.
+     * @method enter
+     * @private
+     * @memberof c3chart_Column
+     * @instance
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     Column.prototype.enter = function (domNode, element) {
         CommonND.prototype.enter.apply(this, arguments);
     };
 
+    /**
+     * The function that is executed on first render, after enter() and everytime the widget is updated with subsequent render calls.
+     * @method update
+     * @memberof c3chart_Column
+     * @instance
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     Column.prototype.update = function (domNode, element) {
         CommonND.prototype.update.apply(this, arguments);
 

@@ -6,6 +6,10 @@
         root.common_Menu = factory(root.d3, root.common_SVGWidget, root.common_IMenu, root.common_Icon, root.common_List);
     }
 }(this, function (d3, SVGWidget, IMenu, Icon, List) {
+    /**
+     * @class common_Menu
+     * @extends common_SVGWidget
+     */
     function Menu() {
         SVGWidget.call(this);
         IMenu.call(this);

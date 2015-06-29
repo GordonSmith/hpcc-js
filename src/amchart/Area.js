@@ -1,3 +1,8 @@
+/**
+ * @file AmChart Area
+ * @author HPCC Systems
+ */
+
 "use strict";
 (function(root, factory) {
     if (typeof define === "function" && define.amd) {
@@ -6,35 +11,73 @@
         root.amchart_Area = factory(root.d3, root.amchart_CommonSerial, root.amcharts, root.api_INDChart);
     }
 }(this, function(d3, CommonSerial, AmCharts, INDChart) {
+    /**
+     * @class amchart_Area
+     * @extends amchart_CommonSerial
+     * @extends api_INDChart
+     * @implements api_INDChart
+     */
     function Area() {
         CommonSerial.call(this);
+        /**
+         * Specifies the class name of the container.
+         * @member {string} _class
+         * @memberof amchart_Area
+         * @private
+         */
         this._class = "amchart_Area";
+        /**
+         * Specifies the HTML tag type of the container.
+         * @member {string} _tag
+         * @memberof amchart_Area
+         * @private
+         */
         this._tag = "div";
-
+        /**
+         * Specifies the graph type of the AmChart Widget.
+         * @member {string} _gType
+         * @memberof amchart_Area
+         * @private
+         */
         this._gType = "line";
     }
 
     Area.prototype = Object.create(CommonSerial.prototype);
     Area.prototype.implements(INDChart.prototype);
 
-    /**
-     * Publish Params Common To Other Libraries
-     */
+    // Publish Params Common To Other Libraries
+
     Area.prototype.publish("paletteID", "default", "set", "Palette ID", Area.prototype._palette.switch(),{tags:['Basic','Shared']});
     Area.prototype.publish("isStacked", false, "boolean", "Stack Chart",null,{tags:['Basic','Shared']});
     Area.prototype.publish("fillOpacity", 0.7, "number", "Opacity of The Fill Color", null, {min:0,max:1,step:0.001,inputType:'range',tags:['Intermediate','Shared']});
 
+    // Publish Params Unique To This Widget
 
-    /**
-     * Publish Params Unique To This Widget
-     */
     Area.prototype.publish("tooltipTemplate","[[category]]: [[value]]", "string", "Tooltip Text",null,{tags:['Intermediate']});
     Area.prototype.publish("stackType", "regular", "set", "Stack Type",["none","regular","100%"],{tags:['Basic']});
 
+    /**
+     * The function that is executed on first render.
+     * @method enter
+     * @memberof amchart_Area
+     * @instance
+     * @private
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     Area.prototype.enter = function(domNode, element) {
         CommonSerial.prototype.enter.apply(this, arguments);
     };
 
+    /**
+     * Updates underlying AmChart widget object, with options from publish parameters.
+     * @method updateChartOptions
+     * @memberof amchart_Area
+     * @instance
+     * @private
+     * @returns {Object}
+     */
     Area.prototype.updateChartOptions = function() {
         CommonSerial.prototype.updateChartOptions.apply(this, arguments);
 
@@ -54,6 +97,15 @@
         return this._chart;
     };
 
+    /**
+     * Builds AmChart graph object that becomes a property of the AmChart widget object.
+     * @method buildGraphs
+     * @memberof amchart_Area
+     * @instance
+     * @private
+     * @param {string} gType Value from this._gType.
+     * @returns {Widget}
+     */
     Area.prototype.buildGraphs = function(gType) {
         if (typeof(this._chart.graphs) === 'undefined') { this._chart.graphs = []; }
         var currentGraphCount = this._chart.graphs.length;
@@ -81,6 +133,16 @@
         }
     };
 
+    /**
+     * The function that is executed on first render, after enter() and everytime the widget is updated with subsequent render calls.
+     * @method update
+     * @memberof amchart_Area
+     * @instance
+     * @private
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     Area.prototype.update = function(domNode, element) {
         CommonSerial.prototype.update.apply(this, arguments);
 

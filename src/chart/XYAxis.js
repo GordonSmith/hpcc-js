@@ -6,6 +6,12 @@
         root.chart_XYAxis = factory(root.d3, root.common_SVGWidget);
     }
 }(this, function (d3, SVGWidget) {
+    /**
+     * @class chart_Line
+     * @abstract
+     * @noinit
+     * @extends common_SVGWidget
+     */
     function XYAxis(target) {
         SVGWidget.call(this);
         this._drawStartPos = "origin";

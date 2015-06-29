@@ -6,6 +6,10 @@
         root.common_Surface = factory(root.d3, root.common_SVGWidget, root.common_Icon, root.common_Shape, root.common_Text, root.common_FAChar, root.common_Menu);
     }
 }(this, function (d3, SVGWidget, Icon, Shape, Text, FAChar, Menu) {
+    /**
+     * @class common_Surface
+     * @extends common_SVGWidget
+     */
     function Surface() {
         SVGWidget.call(this);
 

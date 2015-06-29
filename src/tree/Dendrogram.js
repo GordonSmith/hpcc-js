@@ -6,6 +6,12 @@
         root.tree_Dendrogram = factory(root.d3, root.common_SVGWidget, root.api_ITree);
     }
 }(this, function (d3, SVGWidget, ITree) {
+    /**
+     * @class tree_Dendrogram
+     * @extends common_SVGWidget
+     * @extends api_ITree
+     * @implements api_ITree
+     */
     function Dendrogram(target) {
         SVGWidget.call(this);
         ITree.call(this);
@@ -16,11 +22,11 @@
     Dendrogram.prototype = Object.create(SVGWidget.prototype);
     Dendrogram.prototype._class += " tree_Dendrogram";
     Dendrogram.prototype.implements(ITree.prototype);
-    
+
     Dendrogram.prototype.publish("paletteID", "default", "set", "Palette ID", Dendrogram.prototype._palette.switch(),{tags:['Basic','Shared']});
     Dendrogram.prototype.publish("textOffset", 8, "number", "Text offset from circle",null,{tags:['Private']});
-    Dendrogram.prototype.publish("orientation", "horizontal", "set", "Orientation", ["horizontal","vertical"],{tags:['Private']}); 
-     
+    Dendrogram.prototype.publish("orientation", "horizontal", "set", "Orientation", ["horizontal","vertical"],{tags:['Private']});
+
     Dendrogram.prototype.enter = function (domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
         var context = this;
@@ -34,7 +40,7 @@
     Dendrogram.prototype.update = function (domNode, element, secondPass) {
         var context = this;
         SVGWidget.prototype.update.apply(this, arguments);
-        
+
         this._palette = this._palette.switch(this.paletteID());
 
         //  Pad to allow text to display  ---
@@ -47,7 +53,7 @@
         } else {
             this.layout
                 .size([width, this.height()])
-            ;            
+            ;
         }
 
         var dataNodes = this.layout.nodes(this.data());

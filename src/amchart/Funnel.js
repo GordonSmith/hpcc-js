@@ -1,3 +1,8 @@
+/**
+ * @file AmChart Funnel
+ * @author HPCC Systems
+ */
+
 "use strict";
 (function(root, factory) {
     if (typeof define === "function" && define.amd) {
@@ -6,32 +11,60 @@
         root.amchart_Funnel = factory(root.d3, root.amchart_CommonFunnel, root.api_I2DChart);
     }
 }(this, function(d3, CommonFunnel, I2DChart) {
+    /**
+     * @class amchart_Funnel
+     * @extends amchart_CommonFunnel
+     * @extends api_I2DChart
+     * @implements api_I2DChart
+     */
     function Funnel() {
         CommonFunnel.call(this);
+        /**
+         * Specifies the HTML tag type of the container.
+         * @member {string} _tag
+         * @memberof amchart_Funnel
+         * @private
+         */
         this._class = "amchart_Funnel";
     }
 
     Funnel.prototype = Object.create(CommonFunnel.prototype);
     Funnel.prototype.implements(I2DChart.prototype);
 
-    /**
-     * Publish Params Common To Other Libraries
-     */
+    // Publish Params Common To Other Libraries
+
     Funnel.prototype.publish("paletteID", "default", "set", "Palette ID", Funnel.prototype._palette.switch(), {tags:['Basic','Shared']});
 
-    /**
-     * Publish Params Unique To This Widget
-     */
+    // Publish Params Unique To This Widget
+
     Funnel.prototype.publish("neckHeightPercent", 30, "number", "Neck Height %",null,{tags:['Basic']});
     Funnel.prototype.publish("neckWidthPercent", 40, "number", "Neck Width %",null,{tags:['Basic']});
 
     //TODO
     Funnel.prototype.publish("tooltipTemplate","[[category]]([[title]]): [[value]]", "string", "Tooltip Text",null,{tags:['Basic']});
 
+    /**
+     * The function that is executed on first render.
+     * @method enter
+     * @private
+     * @instance
+     * @memberof amchart_Funnel
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     Funnel.prototype.enter = function(domNode, element) {
         CommonFunnel.prototype.enter.apply(this, arguments);
     };
 
+    /**
+     * Updates underlying AmChart widget object, with options from publish parameters.
+     * @method updateChartOptions
+     * @memberof amchart_Funnel
+     * @instance
+     * @private
+     * @returns {Object}
+     */
     Funnel.prototype.updateChartOptions = function() {
         CommonFunnel.prototype.updateChartOptions.apply(this, arguments);
 
@@ -40,6 +73,15 @@
         this._chart.neckWidth = this.neckWidthPercent()+"%";
     };
 
+    /**
+     * The function that is executed on first render, after enter() and everytime the widget is updated with subsequent render calls.
+     * @method update
+     * @memberof amchart_Funnel
+     * @instance
+     * @param {HTMLElement} domeNode HTML DOMNode of widget container.
+     * @param {D3Selection} element d3 selection object of widget.
+     * @returns {undefined}
+     */
     Funnel.prototype.update = function(domNode, element) {
         CommonFunnel.prototype.update.apply(this, arguments);
 
