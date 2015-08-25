@@ -23,21 +23,21 @@
     Border.prototype.constructor = Border;
     Border.prototype._class += " layout_Border";
 
-    Border.prototype.publish("gutter", 4, "number", "Gap Between Widgets",null,{tags:["Private"]});
+    Border.prototype.publish("gutter", 2, "number", "Gap Between Widgets",null,{tags:["Private"]});
 
     Border.prototype.publish("designMode", false, "boolean", "Design Mode",null,{tags:["Private"]});
 
     Border.prototype.publish("layoutType", "Default", "set", "This determines the placement/size of the Cells relative to the Border._target element", ["Default"], { tags: ["Private"] });
 
-    Border.prototype.publish("topCellSize", 100, "number", "Height of the 'Top' Cell (px)",null,{tags:["Private"]});
-    Border.prototype.publish("leftCellSize", 150, "number", "Width of the 'Left' Cell (px)",null,{tags:["Private"]});
-    Border.prototype.publish("rightCellSize", 250, "number", "Width of the 'Right' Cell (px)",null,{tags:["Private"]});
-    Border.prototype.publish("bottomCellSize", 80, "number", "Height of the 'Bottom' Cell (px)",null,{tags:["Private"]});
+    Border.prototype.publish("topCellSize", 0, "number", "Height of the 'Top' Cell (px)",null,{tags:["Private"]});
+    Border.prototype.publish("leftCellSize", 0, "number", "Width of the 'Left' Cell (px)",null,{tags:["Private"]});
+    Border.prototype.publish("rightCellSize", 0, "number", "Width of the 'Right' Cell (px)",null,{tags:["Private"]});
+    Border.prototype.publish("bottomCellSize", 0, "number", "Height of the 'Bottom' Cell (px)",null,{tags:["Private"]});
 
-    Border.prototype.publish("topCellPercentage", 0, "number", "Percentage (of parent) Height of the 'Top' Cell",null,{tags:["Private"]});
-    Border.prototype.publish("leftCellPercentage", 0, "number", "Percentage (of parent) Width of the 'Left' Cell",null,{tags:["Private"]});
-    Border.prototype.publish("rightCellPercentage", 0, "number", "Percentage (of parent) Width of the 'Right' Cell",null,{tags:["Private"]});
-    Border.prototype.publish("bottomCellPercentage", 0, "number", "Percentage (of parent) Height of the 'Bottom' Cell",null,{tags:["Private"]});
+    Border.prototype.publish("topCellPercentage", 20, "number", "Percentage (of parent) Height of the 'Top' Cell",null,{tags:["Private"]});
+    Border.prototype.publish("leftCellPercentage", 20, "number", "Percentage (of parent) Width of the 'Left' Cell",null,{tags:["Private"]});
+    Border.prototype.publish("rightCellPercentage", 20, "number", "Percentage (of parent) Width of the 'Right' Cell",null,{tags:["Private"]});
+    Border.prototype.publish("bottomCellPercentage", 20, "number", "Percentage (of parent) Height of the 'Bottom' Cell",null,{tags:["Private"]});
 
     Border.prototype.publish("cellPadding", 0, "number", "Cell Padding (px)", null, { tags: ["Intermediate"] });
 
@@ -83,7 +83,19 @@
         var t,b,r,l,c,retObj = {},context=this;
         var topSize,topPerc,bottomSize,bottomPerc,leftSize,leftPerc,rightSize,rightPerc;
 
-        var gridRect = this.target().getBoundingClientRect();
+        var bcRect = this.target().getBoundingClientRect();
+        var gridRect = {};
+        gridRect.top = bcRect.top;
+        gridRect.left = bcRect.left;
+        gridRect.bottom = bcRect.bottom;
+        gridRect.right = bcRect.right;
+        if(this.target() instanceof SVGElement){
+            gridRect.width = parseFloat(this.target().getAttribute('width'));
+            gridRect.height = parseFloat(this.target().getAttribute('height'));
+        } else {
+            gridRect.width = bcRect.width;
+            gridRect.height = bcRect.height;
+        }
         switch(layoutType){
             default:
                 if(this.sectionTypes().indexOf("topSection") !== -1){
@@ -194,7 +206,6 @@
     };
 
     Border.prototype.getContent = function (id) {
-        var retVal = null;
         var sectionTypes = this.sectionTypes();
         var content = this.content();
         var idx = this.sectionTypes().indexOf(id);
@@ -316,17 +327,11 @@
 
     Border.prototype.size = function (_) {
         var retVal = HTMLWidget.prototype.size.apply(this, arguments);
-        if (arguments.length) {
-            if (this.dropDiv) {
-                this.dropDiv
-                    //.style("width", this._size.width + "px")
-                    //.style("height", this._size.height + "px")
-                ;
-                this.contentDiv
-                    .style("width", this._size.width + "px")
-                    .style("height", this._size.height + "px")
-                ;
-            }
+        if (arguments.length && this.contentDiv) {
+            this.contentDiv
+                .style("width", this._size.width + "px")
+                .style("height", this._size.height + "px")
+            ;
         }
         return retVal;
     };
@@ -334,7 +339,6 @@
     Border.prototype.enter = function (domNode, element) {
         HTMLWidget.prototype.enter.apply(this, arguments);
         element.style("position", "relative");
-        this.dropDiv = element.append("div");
         this.contentDiv = element.append("div");
         this._scrollBarWidth = this.getScrollbarWidth();
     };
