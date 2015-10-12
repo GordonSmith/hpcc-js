@@ -42,7 +42,21 @@
             .font(this.fontFamily())
             .padding(this.padding())
         ;
-        this.svg = element.append("g");
+        var context = this;
+        this.zoomListener = d3.behavior.zoom()
+            //.translate([0, 0])
+            //.scale(1)
+            .scaleExtent([1, 10])
+            .on("zoom", function () {
+                console.log(d3.event.translate)
+                context.svg.attr("transform", "translate(" + d3.event.translate + ")" + "scale(" + d3.event.scale + ")")
+
+            })
+        ;
+        this.svg = element
+            .append("g")
+            .call(this.zoomListener)
+        ;
     };
 
     WordCloud.prototype.update = function (domNode, element) {
@@ -110,8 +124,11 @@
                     dy = bounds[1].y - bounds[0].y,
                     borderScale = 0.9 / Math.max(dx / w, dy / h);
                 context.svg.transition().delay(1000).duration(750)
-                    .attr("transform", "scale(" + borderScale + ")")
-                ;
+                    //.attr("transform", "scale(" + borderScale + ")")
+                    .each(function(){
+    this.__chart__={x:0,y:0,k:0}; //or you can pick those values using attr
+ })
+                .call(context.zoomListener.translate([0,0]).scale(borderScale).event)                
             }
         }
     };
