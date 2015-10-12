@@ -9,6 +9,8 @@
     function WordCloud() {
         SVGWidget.call(this);
         IWordCloud.call(this);
+
+        this.translate = null;
     }
     WordCloud.prototype = Object.create(SVGWidget.prototype);
     WordCloud.prototype.constructor = WordCloud;
@@ -44,10 +46,13 @@
         ;
         var context = this;
         this.zoomListener = d3.behavior.zoom()
-            //.translate([0, 0])
-            //.scale(1)
+            .translate([0, 0])
+            .scale(1)
             .scaleExtent([1, 10])
             .on("zoom", function () {
+                if (context.translate) {
+                    d3.event.translate = context.translation;   
+                }
                 console.log(d3.event.translate)
                 context.svg.attr("transform", "translate(" + d3.event.translate + ")" + "scale(" + d3.event.scale + ")")
 
@@ -123,12 +128,11 @@
                 var dx = bounds[1].x - bounds[0].x,
                     dy = bounds[1].y - bounds[0].y,
                     borderScale = 0.9 / Math.max(dx / w, dy / h);
+
+                context.translation = [0,0];
+                
                 context.svg.transition().delay(1000).duration(750)
-                    //.attr("transform", "scale(" + borderScale + ")")
-                    .each(function(){
-    this.__chart__={x:0,y:0,k:0}; //or you can pick those values using attr
- })
-                .call(context.zoomListener.translate([0,0]).scale(borderScale).event)                
+                    .call(context.zoomListener.translate([0,0]).scale(borderScale).event)                
             }
         }
     };
