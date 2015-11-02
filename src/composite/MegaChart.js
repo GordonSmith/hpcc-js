@@ -85,13 +85,17 @@
             this._layout.clearContent("right");
         }
         if(this.valueAxisTitle() !== ""){
-            this._layout.setContent("left", this._valueTitle);
+            if(this._layout.getContent("left") === null || this._layout.getContent("left").id() !== this._valueTitle.id()){
+                this._layout.setContent("left", this._valueTitle);
+            }
         } else {
             this._layout.clearContent("left");
         }
         
         if(this.domainAxisTitle() !== ""){
-            this._layout.setContent("bottom", this._domainTitle);
+            if(this._layout.getContent("bottom") === null || this._layout.getContent("bottom").id() !== this._domainTitle.id()){
+                this._layout.setContent("bottom", this._domainTitle);
+            }
         } else {
             this._layout.clearContent("bottom");
         }
