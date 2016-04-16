@@ -1302,6 +1302,28 @@
         console.log("Comms Error:\n" + source + "\n" + error);
     };
 
+    Marshaller.prototype.createDatabomb = function () {
+        var fetchResultID = [];
+        var fetchResultPromises = [];
+        this.dashboardArray.forEach(function (dashboard) {
+            for (var key in dashboard.datasources) {
+                fetchResultID.push(key);
+                fetchResultPromises.push(dashboard.datasources[key].comms.fetchResults().then(function (results) {
+                    return results;
+                }));
+            }
+        });
+        return Promise.all(fetchResultPromises).then(function (fetchResults, idx) {
+            var retVal = {};
+            fetchResults.forEach(function (results, idx) {
+                for (var key in results) {
+                    retVal[fetchResultID[idx]] = results[key];
+                }
+            });
+            return retVal;
+        });
+    };
+
     return {
         exists: exists,
         Marshaller: Marshaller,
