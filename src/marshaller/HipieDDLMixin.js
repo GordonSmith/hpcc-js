@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/Class", "../common/PropertyExt", "./HipieDDL", "../other/Persist", "../layout/Surface", "./FlyoutButton"], factory);
+        define(["d3", "../common/Class", "../common/PropertyExt", "../common/Utility", "./HipieDDL", "../other/Persist", "../layout/Surface", "./FlyoutButton"], factory);
     } else {
-        root.marshaller_HipieDDLMixin = factory(root.d3, root.common_Class, root.common_PropertyExt, root.marshaller_HipieDDL, root.other_Persist, root.layout_Surface, root.marshaller_FlyoutButton);
+        root.marshaller_HipieDDLMixin = factory(root.d3, root.common_Class, root.common_PropertyExt, root.common_PropertyExt, root.common_Utility, root.other_Persist, root.layout_Surface, root.marshaller_FlyoutButton);
     }
-}(this, function (d3, Class, PropertyExt, HipieDDL, Persist, Surface, FlyoutButton) {
+}(this, function (d3, Class, PropertyExt, Utility, HipieDDL, Persist, Surface, FlyoutButton) {
 
     function HipieDDLMixin() {
         Class.call(this);
@@ -183,6 +183,44 @@
             });
         }
     };
+
+    var tpl =
+"<!doctype html><html><head><meta charset='utf-8'>" +
+"<script src='http://viz.hpccsystems.com/v1.14.0-rc4/dist-amd/hpcc-viz.js'></script>" +
+"<script src='http://viz.hpccsystems.com/v1.14.0-rc4/dist-amd/hpcc-viz-common.js'></script>" +
+"</head>" +
+"<body style='padding:0px; margin:0px; overflow:hidden'><div id='placeholder' style='width:100%; height:100vh'></div><script>" + 
+"   require(['src/other/Persist'], function (Persist) {\n" +
+"       Persist.create({STATE}, function(widget) {\n" +
+"           widget\n" +
+"               .target('placeholder')\n" +
+"               .databomb('{DATABOMB}')\n" +
+"               .render()\n" +
+"           ;\n" +
+"       });\n" +
+"   });" +
+"</script></body></html>";
+
+    HipieDDLMixin.prototype.generateTestPage = function () {
+        if (this.marshaller) {
+            var context = this;
+            this.marshaller.createDatabomb().then(function (databomb) {
+                var state = Persist.serialize(context, function (widget, publishItem) {
+                    if (publishItem.id === "databomb") {
+                        return true;
+                    }
+                    return false;
+                });
+                var page = tpl
+                    .replace("{VERSION}", context.version())
+                    .replace("{STATE}", state)
+                    .replace("{DATABOMB}", JSON.stringify(databomb))
+                ;
+                Utility.downloadBlob("html", page, "test");
+            });
+        }
+    };
+
 
     return HipieDDLMixin;
 }));
