@@ -52,7 +52,7 @@
                     }
                 } else if (item instanceof HipieDDL.Output) {
                     if (item.dataSource.databomb) {
-                        item.dataSource.comms.databombOutput(item.from);
+                        item.dataSource.comms.databombOutput(item.from, item.id);
                     }
                 } else if (item instanceof HipieDDL.Visualization) {
                     if (item.widget) {
@@ -111,9 +111,12 @@
             .clearDataOnUpdate(this.clearDataOnUpdate())
             .propogateClear(this.propogateClear())
             .widgetMappings(widgetMap)
-            .on("commsError", function (source, error) {
-                context.commsError(source, error);
+            .on("commsEvent", function (source, error) {
+                context.commsEvent.apply(context, arguments);
             })
+            .on("vizEvent", function () {
+                context.vizEvent.apply(context, arguments);
+            });
         ;
         this.firstRender = true;
 
@@ -125,10 +128,10 @@
         }
 
         function postParse() {
-            context.dashboards = context.gatherDashboards(context.marshaller, context.databomb());
+            context._ddlDashboards = context.gatherDashboards(context.marshaller, context.databomb());
             //  Remove existing widgets not used and prime popups ---
-            for (var key in context.dashboards) {
-                context.dashboards[key].visualizations.forEach(function (viz, idx) {
+            for (var key in context._ddlDashboards) {
+                context._ddlDashboards[key].visualizations.forEach(function (viz, idx) {
                     removedMap.remove(viz.id);
                     if (!context.marshaller.widgetMappings().get(viz.id)) {
                         viz.widgetSurface = null;
@@ -143,7 +146,7 @@
                         viz.widget.size({ width: 0, height: 0 });
                     }
                 });
-                context.dashboards[key].popupVisualizations.forEach(function (viz, idx) {
+                context._ddlDashboards[key].popupVisualizations.forEach(function (viz, idx) {
                     removedMap.remove(viz.id);
                     var targetVizs = viz.events.getUpdatesVisualizations();
                     targetVizs.forEach(function (targetViz) {
@@ -164,9 +167,9 @@
             });
             context.populateContent();
             BaseClass.render.call(context, function (widget) {
-                for (var dashKey in context.dashboards) {
-                    for (var dsKey in context.dashboards[dashKey].dashboard.datasources) {
-                        context.dashboards[dashKey].dashboard.datasources[dsKey].fetchData({}, true);
+                for (var dashKey in context._ddlDashboards) {
+                    for (var dsKey in context._ddlDashboards[dashKey].dashboard.datasources) {
+                        context._ddlDashboards[dashKey].dashboard.datasources[dsKey].fetchData({}, true);
                     }
                 }
 
@@ -184,6 +187,28 @@
         }
     };
 
+    HipieDDLMixin.prototype.dashboards = function () {
+        var retVal = {};
+        for (var key in this._ddlDashboards) {
+            retVal[key] = {};
+            this._ddlDashboards[key].visualizations.forEach(function (ddlViz) {
+                retVal[key][ddlViz.id] = ddlViz.widget;
+            }, this);
+        }
+        return retVal;
+    };
+
+
+    HipieDDLMixin.prototype.visualizations = function () {
+        var retVal = {};
+        for (var key in this._ddlDashboards) {
+            this._ddlDashboards[key].visualizations.forEach(function (ddlViz) {
+                retVal[ddlViz.id] = ddlViz.widget;
+            }, this);
+        }
+        return retVal;
+    };
+
     var tpl =
 "<!doctype html><html><head><meta charset='utf-8'>" +
 "<script src='http://viz.hpccsystems.com/v1.14.0-rc4/dist-amd/hpcc-viz.js'></script>" +
@@ -194,6 +219,7 @@
 "       Persist.create({STATE}, function(widget) {\n" +
 "           widget\n" +
 "               .target('placeholder')\n" +
+"               .ddlUrl('{DDL}')\n" +
 "               .databomb('{DATABOMB}')\n" +
 "               .render()\n" +
 "           ;\n" +
@@ -204,23 +230,28 @@
     HipieDDLMixin.prototype.generateTestPage = function () {
         if (this.marshaller) {
             var context = this;
-            this.marshaller.createDatabomb().then(function (databomb) {
-                var state = Persist.serialize(context, function (widget, publishItem) {
-                    if (publishItem.id === "databomb") {
-                        return true;
-                    }
-                    return false;
-                });
-                var page = tpl
-                    .replace("{VERSION}", context.version())
-                    .replace("{STATE}", state)
-                    .replace("{DATABOMB}", JSON.stringify(databomb))
-                ;
-                Utility.downloadBlob("html", page, "test");
+            var state = Persist.serialize(context, function (widget, publishItem) {
+                if (publishItem.id === "databomb" || publishItem.id === "ddlUrl") {
+                    return true;
+                }
+                return false;
             });
+            var databomb = this.marshaller.createDatabomb();
+            var page = tpl
+                .replace("{VERSION}", context.version())
+                .replace("{STATE}", state)
+                .replace("{DDL}", context.marshaller._json.replace("WUID", "databomb"))
+                .replace("{DATABOMB}", JSON.stringify(databomb))
+            ;
+            Utility.downloadBlob("html", page, "test");
         }
     };
 
+    HipieDDLMixin.prototype.vizEvent = function (sourceWidget, eventID, row, col, selected) {
+    };
+
+    HipieDDLMixin.prototype.commsEvent = function (ddlSource, eventID, request, response) {
+    };
 
     return HipieDDLMixin;
 }));

@@ -29,8 +29,8 @@
     Graph.prototype.populateContent = function () {
         var vertices = [];
         var edges = [];
-        for (var key in this.dashboards) {
-            this.dashboards[key].visualizations.forEach(function (viz) {
+        for (var key in this._ddlDashboards) {
+            this._ddlDashboards[key].visualizations.forEach(function (viz) {
                 if (viz.widget) {
                     var newSurface = null;
                     if (viz.widget instanceof ResizeSurface) {
@@ -55,8 +55,8 @@
                 }, this);
             }, this);
         }
-        for (key in this.dashboards) {
-            this.dashboards[key].visualizations.forEach(function (viz) {
+        for (key in this._ddlDashboards) {
+            this._ddlDashboards[key].visualizations.forEach(function (viz) {
                 viz.getInputVisualizations().forEach(function (inViz) {
                     edges.push(new Edge()
                         .sourceVertex(inViz.widgetSurface)

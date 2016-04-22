@@ -21,9 +21,9 @@
         var cellRow = 0;
         var cellCol = 0;
         var cellDensity = this.cellDensity();
-        for (var key in this.dashboards) {
-            var maxCol = Math.floor(Math.sqrt(this.dashboards[key].visualizations.length));
-            this.dashboards[key].visualizations.forEach(function (viz) {
+        for (var key in this._ddlDashboards) {
+            var maxCol = Math.floor(Math.sqrt(this._ddlDashboards[key].visualizations.length));
+            this._ddlDashboards[key].visualizations.forEach(function (viz) {
                 while (this.getCell(cellRow * cellDensity, cellCol * cellDensity) !== null) {
                     cellCol++;
                     if (cellCol % maxCol === 0) {
@@ -46,8 +46,8 @@
             }
         });
 
-        for (key in this.dashboards) {
-            this.dashboards[key].visualizations.forEach(function (viz, idx) {
+        for (key in this._ddlDashboards) {
+            this._ddlDashboards[key].visualizations.forEach(function (viz, idx) {
                 if (viz.properties.flyout) {
                     return;
                 }

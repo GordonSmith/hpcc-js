@@ -489,8 +489,9 @@
             menu.classed("hide", !menu.classed("hide"));
         }
         function doSave() {
-            if (currWidget && currWidget.generateTestPage()) {
-                currWidget
+            if (currWidget && currWidget.generateTestPage) {
+                var d = currWidget.visualizations();
+                currWidget.generateTestPage();
             }
         }
     </script>
