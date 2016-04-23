@@ -32,6 +32,7 @@
                 "d3-bullet": "../bower_components/d3-plugins/bullet/bullet",
                 "handsontable": "../bower_components/handsontable/dist/handsontable.full",
                 "grid-list": "../bower_components/grid-list/src/gridList",
+                "plotly": "../bower_components/plotly.js/dist/plotly",
 
                 "amcharts": "../bower_components/amcharts3/amcharts/amcharts",
                 "amcharts-funnel": "../bower_components/amcharts3/amcharts/funnel",
@@ -134,6 +135,7 @@
             "d3-bullet": rawgitBaseUrl + "/d3/d3-plugins/master/bullet/bullet",
             "handsontable": rawgitBaseUrl + "/handsontable/handsontable/0.24.3/dist/handsontable.full.min",
             "grid-list": rawgitBaseUrl + "/hootsuite/grid/v0.3.4/src/gridList",
+            "plotly": rawgitBaseUrl + "/plotly/plotly.js/v1.9.0/dist/plotly.min",
 
             "amcharts": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/amcharts",
             "amcharts-funnel": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/funnel",
@@ -330,7 +332,7 @@
                 create: function (state, callback) {
                     if (typeof state === "string") {
                         state = JSON.parse(state);
-                    }
+                }
                     switch (state.__version) {
                         case "1":
                         case "2":
