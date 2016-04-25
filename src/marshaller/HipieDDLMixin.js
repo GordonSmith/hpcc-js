@@ -211,8 +211,8 @@
 
     var tpl =
 "<!doctype html><html><head><meta charset='utf-8'>" +
-"<script src='http://viz.hpccsystems.com/v1.14.0-rc4/dist-amd/hpcc-viz.js'></script>" +
-"<script src='http://viz.hpccsystems.com/v1.14.0-rc4/dist-amd/hpcc-viz-common.js'></script>" +
+"<script src='http://viz.hpccsystems.com/v1.14.0-rc5/dist-amd/hpcc-viz.js'></script>" +
+"<script src='http://viz.hpccsystems.com/v1.14.0-rc5/dist-amd/hpcc-viz-common.js'></script>" +
 "</head>" +
 "<body style='padding:0px; margin:0px; overflow:hidden'><div id='placeholder' style='width:100%; height:100vh'></div><script>" + 
 "   require(['src/other/Persist'], function (Persist) {\n" +
