@@ -26,6 +26,9 @@
         SVGWidget.prototype.enter.apply(this, arguments);
 
         this._container = element.append("g");
+        this._vis = this._container.append("svg:svg");
+        this._visGroup = this._vis.append("svg:g");
+        this._path = this._visGroup.append("svg:path");
     };
 
     CircularDendrogram.prototype.update = function (domNode, element, secondPass) {
@@ -45,17 +48,21 @@
         var diagonal = d3.svg.diagonal.radial()
             .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
 
-        var svg = this._container
+        console.log('width: ' + w);
+        console.log('height: ' + h);
+
+        this._container
             .style("width", w + "px")
             .style("height", w + "px");
 
-        var vis = svg.append("svg:svg")
+        this._vis
             .attr("width", w)
-            .attr("height", w)
-            .append("svg:g")
+            .attr("height", w);
+
+        this._visGroup
             .attr("transform", "translate(" + rx + "," + ry + ")");
 
-        vis.append("svg:path")
+        this._path
             .attr("class", "arc")
             .attr("d", d3.svg.arc().innerRadius(ry - 120).outerRadius(ry).startAngle(0).endAngle(2 * Math.PI))
             .on("mousedown", mousedown);
@@ -64,14 +71,14 @@
 
         var nodes = cluster.nodes(json);
 
-        var link = vis.selectAll("path.link")
+        var link = this._visGroup.selectAll("path.link")
             .data(cluster.links(nodes));
 
             link.enter().append("svg:path")
                 .attr("class", "link")
                 .attr("d", diagonal);
 
-        var node = vis.selectAll("g.node")
+        var node = this._visGroup.selectAll("g.node")
             .data(nodes);
 
             node.enter().append("svg:g")
@@ -94,7 +101,6 @@
 
         link.exit().remove();
         node.exit().remove();
-        nodes.exit().remove();
 
         function mouse(e) {
             return [e.pageX - rx, e.pageY - ry];
