@@ -10,7 +10,7 @@
         SVGWidget.call(this);
         ITree.call(this);
 
-        this._drawStartPos = "origin";
+        this._drawStartPos = "center";
         this._maxTextWidth = 0;
     }
     CircularDendrogram.prototype = Object.create(SVGWidget.prototype);
@@ -24,14 +24,10 @@
 
     CircularDendrogram.prototype.enter = function (domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
-
-        this._container = element.append("g");
-        this._vis = this._container.append("svg:svg");
-        this._visGroup = this._vis.append("svg:g");
-        this._path = this._visGroup.append("svg:path");
+        this._path = element.append("svg:path");
     };
 
-    CircularDendrogram.prototype.update = function (domNode, element, secondPass) {
+    CircularDendrogram.prototype.update = function (domNode, element) {
         SVGWidget.prototype.update.apply(this, arguments);
 
         var w = this.width(),
@@ -51,17 +47,6 @@
         console.log('width: ' + w);
         console.log('height: ' + h);
 
-        this._container
-            .style("width", w + "px")
-            .style("height", w + "px");
-
-        this._vis
-            .attr("width", w)
-            .attr("height", w);
-
-        this._visGroup
-            .attr("transform", "translate(" + rx + "," + ry + ")");
-
         this._path
             .attr("class", "arc")
             .attr("d", d3.svg.arc().innerRadius(ry - 120).outerRadius(ry).startAngle(0).endAngle(2 * Math.PI))
@@ -71,33 +56,45 @@
 
         var nodes = cluster.nodes(json);
 
-        var link = this._visGroup.selectAll("path.link")
+        var link = element.selectAll("path.link")
             .data(cluster.links(nodes));
 
-            link.enter().append("svg:path")
-                .attr("class", "link")
-                .attr("d", diagonal);
+        link.enter().append("svg:path")
+            .attr("class", "link")
+            .attr("d", diagonal);
 
-        var node = this._visGroup.selectAll("g.node")
+        var node = element.selectAll("g.node")
             .data(nodes);
 
-            node.enter().append("svg:g")
-            .attr("class", "node")
-            .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
+        var g = node.enter().append("svg:g");
 
-        node.append("svg:circle")
-            .attr("r", 3);
+        g.each(function () {
+            var ge = d3.select(this);
 
-        node.append("svg:text")
-            .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
-            .attr("dy", ".31em")
-            .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-            .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
-            .text(function(d) { return d.name; });
+            ge.attr("class", "node")
+                .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
+
+            ge.append("svg:circle")
+                .attr("r", 3);
+
+            ge.append("svg:text")
+                .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+                .attr("dy", ".31em")
+                .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+                .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+                .text(function(d) { return d.name; });
+        });
+
+
+
+
 
         d3.select(window)
             .on("mousemove", mousemove)
             .on("mouseup", mouseup);
+
+        element
+            .attr("transform", "translate(" + rx + "," + ry + ")");
 
         link.exit().remove();
         node.exit().remove();
@@ -112,48 +109,48 @@
         }
 
         function mousemove() {
-            if (m0) {
-                var m1 = mouse(d3.event),
-                    dm = Math.atan2(cross(m0, m1), dot(m0, m1)) * 180 / Math.PI,
-                    tx = "translate3d(0," + (ry - rx) + "px,0)rotate3d(0,0,0," + dm + "deg)translate3d(0," + (rx - ry) + "px,0)";
-                svg
-                    .style("-moz-transform", tx)
-                    .style("-ms-transform", tx)
-                    .style("-webkit-transform", tx);
-            }
+            //if (m0) {
+            //    var m1 = mouse(d3.event),
+            //        dm = Math.atan2(cross(m0, m1), dot(m0, m1)) * 180 / Math.PI,
+            //        tx = "translate3d(0," + (ry - rx) + "px,0)rotate3d(0,0,0," + dm + "deg)translate3d(0," + (rx - ry) + "px,0)";
+            //    svg
+            //        .style("-moz-transform", tx)
+            //        .style("-ms-transform", tx)
+            //        .style("-webkit-transform", tx);
+            //}
         }
 
         function mouseup() {
-            if (m0) {
-                var m1 = mouse(d3.event),
-                    dm = Math.atan2(cross(m0, m1), dot(m0, m1)) * 180 / Math.PI,
-                    tx = "rotate3d(0,0,0,0deg)";
-
-                rotate += dm;
-                if (rotate > 360) rotate -= 360;
-                else if (rotate < 0) rotate += 360;
-                m0 = null;
-
-                svg
-                    .style("-moz-transform", tx)
-                    .style("-ms-transform", tx)
-                    .style("-webkit-transform", tx);
-
-                vis
-                    .attr("transform", "translate(" + rx + "," + ry + ")rotate(" + rotate + ")")
-                    .selectAll("g.node text")
-                    .attr("dx", function(d) { return (d.x + rotate) % 360 < 180 ? 8 : -8; })
-                    .attr("text-anchor", function(d) { return (d.x + rotate) % 360 < 180 ? "start" : "end"; })
-                    .attr("transform", function(d) { return (d.x + rotate) % 360 < 180 ? null : "rotate(180)"; });
-            }
+            //if (m0) {
+            //    var m1 = mouse(d3.event),
+            //        dm = Math.atan2(cross(m0, m1), dot(m0, m1)) * 180 / Math.PI,
+            //        tx = "rotate3d(0,0,0,0deg)";
+            //
+            //    rotate += dm;
+            //    if (rotate > 360) rotate -= 360;
+            //    else if (rotate < 0) rotate += 360;
+            //    m0 = null;
+            //
+            //    svg
+            //        .style("-moz-transform", tx)
+            //        .style("-ms-transform", tx)
+            //        .style("-webkit-transform", tx);
+            //
+            //    vis
+            //        .attr("transform", "translate(" + rx + "," + ry + ")rotate(" + rotate + ")")
+            //        .selectAll("g.node text")
+            //        .attr("dx", function(d) { return (d.x + rotate) % 360 < 180 ? 8 : -8; })
+            //        .attr("text-anchor", function(d) { return (d.x + rotate) % 360 < 180 ? "start" : "end"; })
+            //        .attr("transform", function(d) { return (d.x + rotate) % 360 < 180 ? null : "rotate(180)"; });
+            //}
         }
 
         function cross(a, b) {
-            return a[0] * b[1] - a[1] * b[0];
+            //return a[0] * b[1] - a[1] * b[0];
         }
 
         function dot(a, b) {
-            return a[0] * b[0] + a[1] * b[1];
+            //return a[0] * b[0] + a[1] * b[1];
         }
 
     };
