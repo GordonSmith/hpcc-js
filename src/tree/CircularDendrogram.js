@@ -25,20 +25,17 @@
     CircularDendrogram.prototype.enter = function (domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
 
-        this._container = element.append("div");
+        this._container = element.append("g");
     };
 
     CircularDendrogram.prototype.update = function (domNode, element, secondPass) {
-        var context = this;
         SVGWidget.prototype.update.apply(this, arguments);
-
-        debugger;
 
         var w = this.width(),
             h = this.height(),
+            m0,
             rx = w / 2,
             ry = h / 2,
-            m0,
             rotate = 0;
 
         var cluster = d3.layout.cluster()
@@ -48,52 +45,56 @@
         var diagonal = d3.svg.diagonal.radial()
             .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
 
-        var min = (w < h) ? w : h;
-
         var svg = this._container
-            .style("width", min + "px")
-            .style("height", min + "px");
+            .style("width", w + "px")
+            .style("height", w + "px");
 
         var vis = svg.append("svg:svg")
-            .attr("width", min)
-            .attr("height", min)
+            .attr("width", w)
+            .attr("height", w)
             .append("svg:g")
             .attr("transform", "translate(" + rx + "," + ry + ")");
 
         vis.append("svg:path")
             .attr("class", "arc")
-            .attr("d", d3.svg.arc().innerRadius(ry - 120).outerRadius(ry).startAngle(0).endAngle(2 * Math.PI));
-            //.on("mousedown", mousedown);
+            .attr("d", d3.svg.arc().innerRadius(ry - 120).outerRadius(ry).startAngle(0).endAngle(2 * Math.PI))
+            .on("mousedown", mousedown);
 
-        d3.json("../src/tree/flare.json", function(json) {
-            var nodes = cluster.nodes(json);
+        var json = this.data();
 
-            var link = vis.selectAll("path.link")
-                .data(cluster.links(nodes))
-                .enter().append("svg:path")
+        var nodes = cluster.nodes(json);
+
+        var link = vis.selectAll("path.link")
+            .data(cluster.links(nodes));
+
+            link.enter().append("svg:path")
                 .attr("class", "link")
                 .attr("d", diagonal);
 
-            var node = vis.selectAll("g.node")
-                .data(nodes)
-                .enter().append("svg:g")
-                .attr("class", "node")
-                .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
+        var node = vis.selectAll("g.node")
+            .data(nodes);
 
-            node.append("svg:circle")
-                .attr("r", 3);
+            node.enter().append("svg:g")
+            .attr("class", "node")
+            .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
 
-            node.append("svg:text")
-                .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
-                .attr("dy", ".31em")
-                .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-                .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
-                .text(function(d) { return d.name; });
-        });
+        node.append("svg:circle")
+            .attr("r", 3);
 
-        //d3.select(window)
-        //    .on("mousemove", mousemove)
-        //    .on("mouseup", mouseup);
+        node.append("svg:text")
+            .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+            .attr("dy", ".31em")
+            .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+            .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+            .text(function(d) { return d.name; });
+
+        d3.select(window)
+            .on("mousemove", mousemove)
+            .on("mouseup", mouseup);
+
+        link.exit().remove();
+        node.exit().remove();
+        nodes.exit().remove();
 
         function mouse(e) {
             return [e.pageX - rx, e.pageY - ry];
@@ -148,16 +149,6 @@
         function dot(a, b) {
             return a[0] * b[0] + a[1] * b[1];
         }
-
-
-
-
-
-
-
-
-
-
 
     };
 
