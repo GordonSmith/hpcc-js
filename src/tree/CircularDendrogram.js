@@ -24,12 +24,15 @@
 
     CircularDendrogram.prototype.enter = function (domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
+
+        this._container = element.append("div");
     };
 
     CircularDendrogram.prototype.update = function (domNode, element, secondPass) {
         var context = this;
         SVGWidget.prototype.update.apply(this, arguments);
 
+        debugger;
 
         var w = this.width(),
             h = this.height(),
@@ -45,22 +48,24 @@
         var diagonal = d3.svg.diagonal.radial()
             .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
 
-        var svg = d3.select("#body").append("div")
-            .style("width", w + "px")
-            .style("height", w + "px");
+        var min = (w < h) ? w : h;
+
+        var svg = this._container
+            .style("width", min + "px")
+            .style("height", min + "px");
 
         var vis = svg.append("svg:svg")
-            .attr("width", w)
-            .attr("height", w)
+            .attr("width", min)
+            .attr("height", min)
             .append("svg:g")
             .attr("transform", "translate(" + rx + "," + ry + ")");
 
         vis.append("svg:path")
             .attr("class", "arc")
-            .attr("d", d3.svg.arc().innerRadius(ry - 120).outerRadius(ry).startAngle(0).endAngle(2 * Math.PI))
-            .on("mousedown", mousedown);
+            .attr("d", d3.svg.arc().innerRadius(ry - 120).outerRadius(ry).startAngle(0).endAngle(2 * Math.PI));
+            //.on("mousedown", mousedown);
 
-        d3.json("flare.json", function(json) {
+        d3.json("../src/tree/flare.json", function(json) {
             var nodes = cluster.nodes(json);
 
             var link = vis.selectAll("path.link")
@@ -73,7 +78,7 @@
                 .data(nodes)
                 .enter().append("svg:g")
                 .attr("class", "node")
-                .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+                .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
 
             node.append("svg:circle")
                 .attr("r", 3);
@@ -86,9 +91,9 @@
                 .text(function(d) { return d.name; });
         });
 
-        d3.select(window)
-            .on("mousemove", mousemove)
-            .on("mouseup", mouseup);
+        //d3.select(window)
+        //    .on("mousemove", mousemove)
+        //    .on("mouseup", mouseup);
 
         function mouse(e) {
             return [e.pageX - rx, e.pageY - ry];
