@@ -101,7 +101,7 @@
             ge.select("text")
                 .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
                 .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-                .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+                .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; });
         });
 
         d3.select(window)
@@ -158,7 +158,7 @@
                     .selectAll("g.node text")
                     .attr("dx", function(d) { return (d.x + rotate) % 360 < 180 ? 8 : -8; })
                     .attr("text-anchor", function(d) { return (d.x + rotate) % 360 < 180 ? "start" : "end"; })
-                    .attr("transform", function(d) { return (d.x + rotate) % 360 < 180 ? null : "rotate(180)"; })
+                    .attr("transform", function(d) { return (d.x + rotate) % 360 < 180 ? null : "rotate(180)"; });
 
 
             }
