@@ -1,0 +1,120 @@
+.tree_CircularDendrogram .node circle {
+    fill: #dcf1ff;
+    stroke: #1f77b4;
+    stroke-width: 1.0px;
+}
+
+.tree_CircularDendrogram .node {
+}
+
+.tree_CircularDendrogram .link {
+    fill: none;
+    stroke: #656565;
+    stroke-width: 1.0px;
+}
+
+
+
+.tree_CircularDendrogram path.arc {
+    cursor: move;
+    fill: #fff;
+}
+
+.tree_CircularDendrogram .node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+
+.tree_CircularDendrogram .node {
+    font-size: 10px;
+    pointer-events: none;
+}
+
+.tree_CircularDendrogram .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+}
+
+.tree_CircularDendrogram #chart, #header, #footer {
+    position: absolute;
+    top: 0;
+}
+
+.tree_CircularDendrogram #header, #footer {
+    z-index: 1;
+    display: block;
+    font-size: 36px;
+    font-weight: 300;
+    text-shadow: 0 1px 0 #fff;
+}
+
+.tree_CircularDendrogram #header.inverted, #footer.inverted {
+    color: #fff;
+    text-shadow: 0 1px 4px #000;
+}
+
+.tree_CircularDendrogram #header {
+    top: 80px;
+    left: 140px;
+    width: 1000px;
+}
+
+.tree_CircularDendrogram #footer {
+    top: 680px;
+    right: 140px;
+    text-align: right;
+}
+
+.tree_CircularDendrogram rect {
+    fill: none;
+    pointer-events: all;
+}
+
+.tree_CircularDendrogram pre {
+    font-size: 18px;
+}
+
+.tree_CircularDendrogram line {
+    stroke: #000;
+    stroke-width: 1.5px;
+}
+
+.tree_CircularDendrogram .string, .regexp {
+    color: #f39;
+}
+
+.tree_CircularDendrogram .keyword {
+    color: #00c;
+}
+
+.tree_CircularDendrogram .comment {
+    color: #777;
+    font-style: oblique;
+}
+
+.tree_CircularDendrogram .number {
+    color: #369;
+}
+
+.tree_CircularDendrogram .class, .special {
+    color: #1181B8;
+}
+
+.tree_CircularDendrogram a:link, a:visited {
+    color: #000;
+    text-decoration: none;
+}
+
+.tree_CircularDendrogram a:hover {
+    color: #666;
+}
+
+.tree_CircularDendrogram .hint {
+    position: absolute;
+    right: 0;
+    width: 1280px;
+    font-size: 12px;
+    color: #999;
+}
