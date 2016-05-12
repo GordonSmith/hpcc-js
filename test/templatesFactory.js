@@ -5,24 +5,24 @@
     } else {
         root.test_templatesFactory = factory();
     }
-}(this, function (DataFactory, HeatMap, WordCloud, Table) {
+}(this, function () {
     return {
-        HTML: {
+        SVG: {
             simple: function (callback) {
-                require(["test/DataFactory", "templates/HTML"], function (DataFactory, HTML) {
-                    callback(new HeatMap()
-                        .columns(DataFactory.HeatMap.simple.columns)
-                        .data(DataFactory.HeatMap.simple.data)
+                require(["test/DataFactory", "templates/SVGTemplate"], function (DataFactory, SVGTemplate) {
+                    callback(new SVGTemplate()
+                        .columns(DataFactory.ND.subjects.columns)
+                        .data(DataFactory.ND.subjects.data)
                     );
                 });
             }
         },
-        SVG: {
+        HTML: {
             simple: function (callback) {
-                require(["test/DataFactory", "templates/SVG"], function (DataFactory, SVG) {
-                    callback(new HeatMap()
-                        .columns(DataFactory.HeatMap.simple.columns)
-                        .data(DataFactory.HeatMap.simple.data)
+                require(["test/DataFactory", "templates/HTMLTemplate"], function (DataFactory, SVGTemplate) {
+                    callback(new SVGTemplate()
+                        .columns(DataFactory.ND.subjects.columns)
+                        .data(DataFactory.ND.subjects.data)
                     );
                 });
             }
