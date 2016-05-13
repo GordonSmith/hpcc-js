@@ -1,0 +1,10 @@
+.chart_BulletBox  { font: 10px sans-serif; }
+.chart_BulletBox  .marker { stroke: #000; stroke-width: 2px; }
+.chart_BulletBox  .tick line { stroke: #666; stroke-width: .5px; }
+.chart_BulletBox  .range.s0 { fill: #eee; }
+.chart_BulletBox  .range.s1 { fill: #ddd; }
+.chart_BulletBox  .range.s2 { fill: #ccc; }
+.chart_BulletBox  .measure.s0 { fill: lightsteelblue; }
+.chart_BulletBox  .measure.s1 { fill: steelblue; }
+.chart_BulletBox  .title { font-size: 14px; font-weight: bold; color:red }
+.chart_BulletBox  .subtitle { fill: #999; }
