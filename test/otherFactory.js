@@ -244,7 +244,7 @@
         	 simple: function (callback) {
 	        	 require(["src/other/Select"], function (Select) {
 		        	 callback(new Select()
-			        	 .columns(["Col A", "Col C"])
+			        	 .columns(["Col Label", "Col Value"])
 			        	 .data([
 			        	        ["GJS0", 0],
 			        	        ["GJS1", 1],
