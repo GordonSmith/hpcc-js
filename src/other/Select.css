@@ -1,8 +1,8 @@
-.template_HTMLTemplate ul {
+.other_Select select {
     padding-left: 24px;
 }
 
-.template_HTMLTemplate .dataRow {
-    list-style-type: disc;
+.other_Select span {
+    display: inline-block;
+    vertical-align: top;
 }
-
