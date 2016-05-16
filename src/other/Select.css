@@ -1,0 +1,8 @@
+.other_Select select {
+    padding-left: 24px;
+}
+
+.other_Select span {
+    display: inline-block;
+    vertical-align: top;
+}
