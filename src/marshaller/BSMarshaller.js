@@ -21,7 +21,6 @@
     };
 
     BSMarshaller.prototype.populateContent = function () {
-        var d = 0;
     };
 
     BSMarshaller.prototype.enter = function (domNode, element) {
