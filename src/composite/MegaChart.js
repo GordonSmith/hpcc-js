@@ -51,8 +51,16 @@
     MegaChart.prototype.publish("titleFontBold", true, "boolean", "Enable Bold Title Font", null, { tags: ["Advanced"], optional: true });
     MegaChart.prototype.publish("titleBackgroundColor", null, "html-color", "Background Color", null, { tags: ["Intermediate"], optional: true });
 
+    MegaChart.prototype.publish("chartFamily", null, "set", "Chart Family", [null, "1D", "2D", "ND", "hierarchy", "graph"], { optional: true });
+    MegaChart.prototype.publish("chartType2", null, "set", "Chart Type", function () { return this.chartTypes(); });
     MegaChart.prototype.publishProxy("chartType", "_chart", "chartType");
     MegaChart.prototype.publishProxy("chart", "_chart", "chart");
+
+    MegaChart.prototype.chartTypes = function () {
+        switch (this.chartFamily()) {
+        }
+        return ["GJS"];
+    };
 
     MegaChart.prototype.toolbarWidgets = function (_) {
         if (!arguments.length) return this._toolbar.widgets();
