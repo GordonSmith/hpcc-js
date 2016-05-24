@@ -65,7 +65,7 @@
     };
 
     HTML.prototype.render = function (callback) {
-        this.marshallerRender(Grid.prototype, callback);
+        this._marshallerRender(Grid.prototype, callback);
         return this;
     };
 
