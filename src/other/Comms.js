@@ -11,6 +11,9 @@
             return null;
         }
         if (!val.trim) {
+            if (val.Row) {
+                return espRowFix(val.Row);
+            }
             return val;
         }
         var retVal = val.trim();

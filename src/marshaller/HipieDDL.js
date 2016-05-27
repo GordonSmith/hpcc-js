@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/Class", "../common/Database", "../common/Utility", "../other/Comms", "../common/Widget", "require", "es6-promise"], factory);
+        define(["d3", "../common/Class", "../common/Database", "../common/Utility", "../other/Comms", "../common/Widget", "../composite/MegaChart", "../chart/MultiChart", "require", "es6-promise"], factory);
     } else {
-        root.marshaller_HipieDDL = factory(root.d3, root.common_Class, root.common_Database, root.common_Utility, root.other_Comms, root.common_Widget, root.require);
+        root.marshaller_HipieDDL = factory(root.d3, root.common_Class, root.common_Database, root.common_Utility, root.other_Comms, root.common_Widget, root.composite_MegaChart, root.chart_MultiChart, root.require);
     }
-}(this, function (d3, Class, Database, Utility, Comms, Widget, require) {
+}(this, function (d3, Class, Database, Utility, Comms, Widget, MegaChart, MultiChart, require) {
     var LOADING = "...loading...";
     var _CHANGED = "_changed";
 
@@ -78,10 +78,19 @@
                 return "time";
             case "geohash":
                 return "geohash";
+            case "visualization":
+                return "widget";
             default:
-                if (hipieType.indexOf("unsigned") === 0) {
-                    return "number";
+                if (hipieType) {
+                    if (hipieType.indexOf("unsigned") === 0) {
+                        return "number";
+                    } else if (hipieType.indexOf("string") === 0) {
+                        return "string";
+                    }
                 }
+        }
+        if (window.__hpcc_debug) {
+            console.log("unknown hipieType:  " + hipieType);
         }
         return "string";
     }
@@ -226,7 +235,7 @@
     function GraphMappings(visualization, mappings, link) {
         SourceMappings.call(this, visualization, mappings);
         this.icon = visualization.icon || {};
-        this.fields = visualization.fields || {};
+        this.fields = visualization.fields || [];
         this.columns = ["uid", "label", "weight", "flags"];
         this.columnsIdx = { uid: 0, label: 1, weight: 2, flags: 3 };
         this.init();
@@ -317,8 +326,8 @@
         data.forEach(function (item) {
             var mappedItem = context.doMap(item);
             var vertex = getVertex(mappedItem, item);
-            if (item[context.link.childfile] && item[context.link.childfile].Row) {
-                var childItems = item[context.link.childfile].Row;
+            if (item[context.link.childfile] && item[context.link.childfile] instanceof Array) {
+                var childItems = item[context.link.childfile];
                 childItems.forEach(function (childItem, i) {
                     var childMappedItem = context.linkMappings.doMap(childItem);
                     var childVertex = getVertex(childMappedItem);
@@ -406,6 +415,10 @@
 
     Source.prototype.getFields = function () {
         return this.mappings.getFields();
+    };
+
+    Source.prototype.getColumnsRHS = function () {
+        return this.mappings.columnsRHS;
     };
 
     Source.prototype.getColumns = function () {
@@ -559,13 +572,27 @@
         this.icon = visualization.icon || {};
         this.flag = visualization.flag || [];
         this.fields = visualization.fields || {};
+        this.fieldsMap = {};
+        this.fields.forEach(function (d) {
+            this.fieldsMap[d.id] = d;
+        }, this);
+
         this.properties = visualization.properties || (visualization.source ? visualization.source.properties : null) || {};
         this.source = new Source(this, visualization.source);
         this.events = new Events(this, visualization.events);
-        this.layers = (visualization.visualizations || []).map(function (innerViz) {
-            return new Visualization(dashboard, innerViz, this);
-        }, this);
-
+        this.layers = [];
+        this.hasVizDeclarations = false;
+        this.vizDeclarations = {};
+        if (this.type === "CHORO") {
+            this.layers = (visualization.visualizations || []).map(function (innerViz) { 
+                return new Visualization(dashboard, innerViz, this); 
+            }, this);
+        } else {
+            (visualization.visualizations || []).forEach(function (innerViz) {
+                this.vizDeclarations[innerViz.id] = new Visualization(dashboard, innerViz, this);
+                this.hasVizDeclarations = true;
+            }, this);
+        }
         var context = this;
         switch (this.type) {
             case "CHORO":
@@ -617,11 +644,11 @@
             case "BUBBLE":
             case "BAR":
             case "WORD_CLOUD":
-                this.loadWidget("../composite/MegaChart", function (widget) {
-                    widget
+                var widgetType = MultiChart.prototype._allChartTypesMap[context.properties.chartType || context.properties.charttype || context.type];
+                this.loadMegaChartWidget(widgetType.widgetPath, function (megaChart, widget) {
+                    megaChart
                         .id(visualization.id)
                         .legendPosition_default("none")
-                        .chartType_default(context.properties.chartType || context.properties.charttype || context.type)
                     ;
                 });
                 break;
@@ -637,13 +664,15 @@
                 });
                 break;
             case "TABLE":
-                this.loadWidget("../composite/MegaChart", function (widget) {
-                    widget
+                this.loadMegaChartWidget("../other/Table", function (megaChart, table) {
+                    megaChart
                         .id(visualization.id)
                         .legendPosition_default("none")
                         .showChartSelect_default(false)
                         .chartType_default("TABLE")
-                        .chartTypeDefaults({ pagination: true })
+                    ;
+                    table
+                        .pagination_default(true)
                     ;
                 });
                 break;
@@ -789,6 +818,19 @@
         return this.widget instanceof Widget;
     };
 
+    Visualization.prototype.loadMegaChartWidget = function (widgetPath, callback) {
+        this.loadWidgets(["../composite/MegaChart", widgetPath], function (megaChart, widgets) {
+            var chart = new widgets[1]();
+            megaChart
+                .chartType_default(MultiChart.prototype._allChartTypesByClass[chart.classID()].id)
+                .chart(chart)
+            ;
+            if (callback) {
+                callback(megaChart, chart, widgets);
+            }
+        });
+    };
+
     Visualization.prototype.loadWidget = function (widgetPath, callback) {
         this.loadWidgets([widgetPath], callback);
     };
@@ -883,7 +925,47 @@
     Visualization.prototype.notify = function () {
         if (this.source.hasData()) {
             if (this.widget) {
+                var columnsRHS = this.source.getColumnsRHS();
                 var data = this.source.getData();
+                if (data instanceof Array) {
+                    //  TODO:  Move into source.getData  ---
+                    data = data.map(function (row) {
+                        return row.map(function (cell, colIdx) {
+                            var field = this.fieldsMap[columnsRHS[colIdx]];
+                            var fieldType = (!field || !field.properties) ? "unknown" : hipieType2DBType(field.properties.type);
+                            switch (fieldType) {
+                                case "number":
+                                    return Number(cell);
+                                case "string":
+                                    return String(cell).trim();
+                                case "time":
+                                    return cell;
+                                case "widget":
+                                    var viz = this.vizDeclarations[field.properties.localVisualizationID];
+                                    var output = viz.source.getOutput();
+                                    var db = output.db;
+                                    output.setData(cell, {}, []);
+                                    var widget = viz.widget;
+                                    if (widget instanceof MegaChart) {
+                                        widget = widget.chart();
+                                    }
+                                    var newWidget = new widget.constructor();
+                                    widget.copyPropsTo(newWidget);
+                                    newWidget.columns(viz.source.getColumns());
+                                    newWidget.data(viz.source.getData());
+                                    output.db = db;
+                                    return newWidget;
+                            }
+                            if (window.__hpcc_debug) {
+                                console.log("Unknown field type:  " + fieldType);
+                            }
+                            if (cell.trim && cell !== "" && !isNaN(cell)) {
+                                return Number(cell);
+                            }
+                            return cell;
+                        }, this);
+                    }, this);
+                }
                 this.widget.data(data);
 
                 this.update();
