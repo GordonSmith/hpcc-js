@@ -193,29 +193,31 @@
                                 it("Large Data");
                                 break;
                             default:
-                                it("DOM Node:  " + widgetPath + "-" + sample.key, function (done) {
-                                    sample.value.factory(function (testWidget) {
-                                        var element = d3.select("#testWidget");
-                                        var testDiv = element.append("div")
-                                            .attr("class", "widgetTest")
-                                        ;
-                                        var widgetDiv = testDiv.append("div")
-                                            .attr("class", "widget")
-                                        ;
-                                        testDiv.append("center")
-                                            .attr("class", "title")
-                                            .text(widgetPath + "-" + sample.key)
-                                        ;
-                                        testWidget
-                                            .target(widgetDiv.node())
-                                            .render(function (w) {
-                                                noSurfaceHTML = w.element().selectAll("*");
-                                                assert.isAbove(noSurfaceHTML.length, 0);
-                                                done();
-                                            })
-                                        ;
-                                    });
-                                });
+                                if (widgetPath.indexOf("templates") === 0) {
+                                    it("DOM Node:  " + widgetPath + "-" + sample.key, function (done) {
+                                        sample.value.factory(function (testWidget) {
+                                            var element = d3.select("#testWidget");
+                                            var testDiv = element.append("div")
+                                                .attr("class", "widgetTest")
+                                            ;
+                                            var widgetDiv = testDiv.append("div")
+                                                .attr("class", "widget")
+                                            ;
+                                            testDiv.append("center")
+                                                .attr("class", "title")
+                                                .text(widgetPath + "-" + sample.key)
+                                            ;
+                                            testWidget
+                                                .target(widgetDiv.node())
+                                                .render(function (w) {
+                                                    noSurfaceHTML = w.element().selectAll("*");
+                                                    assert.isAbove(noSurfaceHTML.length, 0);
+                                                    done();
+                                                })
+                                            ;
+                                        });
+                                  });
+                                }
                         }
                         var surfaceHTML = null;
                         switch (widgetPath + "-" + sample.key) {
@@ -236,32 +238,34 @@
                                 it("Large Data");
                                 break;
                             default:
-                                it("Surface Node:  " + widgetPath + "-" + sample.key, function (done) {
-                                    require(["src/common/ResizeSurface"], function (ResizeSurface) {
-                                        sample.value.factory(function (testWidget) {
-                                            var element = d3.select("#testWidget");
-                                            var testDiv = element.append("div")
-                                                .attr("class", "widgetTest")
-                                            ;
-                                            var widgetDiv = testDiv.append("div")
-                                                .attr("class", "widget")
-                                            ;
-                                            testDiv.append("center")
-                                                .attr("class", "title")
-                                                .text(widgetPath + "-" + sample.key)
-                                            ;
-                                            var vizWidget = new ResizeSurface()
-                                                .target(widgetDiv.node())
-                                                .content(testWidget)
-                                                .render(function (w) {
-                                                    surfaceHTML = w.element().selectAll("*");
-                                                    assert.equal(noSurfaceHTML.length, surfaceHTML.length);
-                                                    done();
-                                                })
-                                            ;
+                                if (widgetPath.indexOf("templates") === 0) {
+                                    it("Surface Node:  " + widgetPath + "-" + sample.key, function (done) {
+                                        require(["src/common/ResizeSurface"], function (ResizeSurface) {
+                                            sample.value.factory(function (testWidget) {
+                                                var element = d3.select("#testWidget");
+                                                var testDiv = element.append("div")
+                                                    .attr("class", "widgetTest")
+                                                ;
+                                                var widgetDiv = testDiv.append("div")
+                                                    .attr("class", "widget")
+                                                ;
+                                                testDiv.append("center")
+                                                    .attr("class", "title")
+                                                    .text(widgetPath + "-" + sample.key)
+                                                ;
+                                                var vizWidget = new ResizeSurface()
+                                                    .target(widgetDiv.node())
+                                                    .content(testWidget)
+                                                    .render(function (w) {
+                                                        surfaceHTML = w.element().selectAll("*");
+                                                        assert.equal(noSurfaceHTML.length, surfaceHTML.length);
+                                                        done();
+                                                    })
+                                                ;
+                                            });
                                         });
                                     });
-                                });
+                                }
                         }
                     });
                 });
