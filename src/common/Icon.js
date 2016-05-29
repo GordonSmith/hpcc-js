@@ -24,6 +24,7 @@
     Icon.prototype.publish("paddingPercent", 45, "number", "Padding Percent",null,{tags:["Private"]});
     Icon.prototype.publishProxy("shape_colorFill", "_shapeWidget", "colorFill");
     Icon.prototype.publishProxy("shape_colorStroke", "_shapeWidget", "colorStroke");
+    Icon.prototype.publishProxy("shape_opacity", "_shapeWidget", "opacity");
 
     Icon.prototype.intersection = function (pointA, pointB) {
         return this._shapeWidget.intersection(pointA, pointB);

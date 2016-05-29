@@ -1,13 +1,14 @@
 ﻿"use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/SVGWidget", "../common/Icon", "css!./SVGZoomWidget"], factory);
+        define(["d3", "./SVGWidget", "./SVGToolbar", "css!./SVGZoomWidget"], factory);
     } else {
-        root.common_SVGZoomWidget = factory(root.d3, root.common_SVGWidget, root.common_Icon);
+        root.common_SVGZoomWidget = factory(root.d3, root.common_SVGWidget, root.common_SVGToolbar);
     }
-}(this, function (d3, SVGWidget, Icon) {
-    function SVGZoomWidget(target) {
+}(this, function (d3, SVGWidget, SVGToolbar) {
+    function SVGZoomWidget() {
         SVGWidget.call(this);
+        this._drawStartPos = "origin";
     }
     SVGZoomWidget.prototype = Object.create(SVGWidget.prototype);
     SVGZoomWidget.prototype.constructor = SVGZoomWidget;
@@ -60,6 +61,36 @@
             })
         ;
         this._zoomElement.call(this._zoom);
+
+        var context = this;
+        this._toolbar = new SVGToolbar()
+            .target(domNode)
+            .orientation("vertical")
+            .content([
+                new SVGToolbar.prototype.Icon()
+                    .faChar("\uf0b2")
+                    .shape("square")
+                    .tooltip("Zoom to fit")
+                    .on("click", function () {
+                        context.zoomToFit();
+                    }),
+                new SVGToolbar.prototype.Spacer(),
+                new SVGToolbar.prototype.Icon()
+                    .faChar("\uf067")
+                    .shape("square")
+                    .tooltip("Zoom +")
+                    .on("click", function () {
+                        context.zoomTo(null, context._zoom.scale() * 1.20);
+                    }),
+                new SVGToolbar.prototype.Icon()
+                    .faChar("\uf068")
+                    .shape("square")
+                    .tooltip("Zoom -")
+                    .on("click", function () {
+                        context.zoomTo(null, context._zoom.scale() / 1.20);
+                    })
+            ])
+        ;
     };
 
     SVGZoomWidget.prototype.update = function (domNode, element) {
@@ -70,75 +101,19 @@
             .attr("height", this.height())
         ;
 
-        var context = this;
-        var toolbar = element.selectAll(".toolbar").data(this.zoomToolbar() ? ["dummy"] : []);
-        var iconDiameter = 24;
-        var faCharHeight = 14;
-        toolbar.enter().append("g")
-            .attr("class", "toolbar")
-            .each(function (d) {
-                context._buttonToFit = new Icon()
-                    .target(this)
-                    .faChar("\uf0b2")
-                    .shape("square")
-                    .diameter(iconDiameter)
-                    .paddingPercent((1 - faCharHeight / iconDiameter) * 100)
-                    .on("click", function () {
-                        context.zoomToFit();
-                    })
-                ;
-                context._buttonPlus = new Icon()
-                    .target(this)
-                    .faChar("\uf067")
-                    .shape("square")
-                    .diameter(iconDiameter)
-                    .paddingPercent((1 - faCharHeight / iconDiameter) * 100)
-                    .on("click", function () {
-                        context.zoomTo(null, context._zoom.scale() * 1.20);
-                    })
-                ;
-                context._buttonMinus = new Icon()
-                    .target(this)
-                    .faChar("\uf068")
-                    .shape("square")
-                    .diameter(iconDiameter)
-                    .paddingPercent((1 - faCharHeight / iconDiameter) * 100)
-                    .on("click", function () {
-                        context.zoomTo(null, context._zoom.scale() / 1.20);
-                    })
-                ;
-                context._buttonLast = context._buttonMinus;
-            })
+        this._toolbar
+            .display(this.zoomToolbar())
+            .render()
         ;
-        if (this.zoomToolbar()) {
-            this._buttonToFit
-                .x(this.width() - iconDiameter / 2 - 4)
-                .y(iconDiameter / 2 + 4)
-                .render()
-            ;
-            this._buttonPlus
-                .x(this.width() - iconDiameter / 2 - 4)
-                .y(this._buttonToFit.y() + 4 + iconDiameter)
-                .render()
-            ;
-            this._buttonMinus
-                .x(this.width() - iconDiameter / 2 - 4)
-                .y(this._buttonPlus.y() + iconDiameter)
-                .render()
-            ;
-        }
-        toolbar.exit()
-            .each(function () {
-                context._buttonToFit
-                    .target(null)
-                    .render()
-                ;
-                delete context._buttonToFit;
-            })
-            .remove()
+        var toolbarBBox = this._toolbar.getBBox();
+        this._toolbar
+            .move({ x: this.width() - toolbarBBox.width - 4, y: 4 })
         ;
     };
     SVGZoomWidget.prototype.exit = function (domNode, element) {
+        this._toolbar
+            .target(null)
+        ;
         SVGWidget.prototype.exit.apply(this, arguments);
     };
 

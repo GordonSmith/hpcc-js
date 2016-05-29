@@ -17,7 +17,8 @@
     Shape.prototype.publish("width", 24, "number", "Width",null,{tags:["Private"]});
     Shape.prototype.publish("height", 24, "number", "Height",null,{tags:["Private"]});
     Shape.prototype.publish("colorStroke", null, "html-color", "Stroke Color", null, {tags:["Private"]});
-    Shape.prototype.publish("colorFill", null, "html-color", "Fill Color", null, {tags:["Private"]});
+    Shape.prototype.publish("colorFill", null, "html-color", "Fill Color", null, { tags: ["Private"] });
+    Shape.prototype.publish("opacity", null, "Opacity", "Fill Color", null, { tags: ["Private"], optional: true });
     Shape.prototype.publish("radius", null, "number", "Radius", null, { tags: ["Private"] });
     Shape.prototype.publish("tooltip", "", "string", "Tooltip", null, { tags: ["Private"] });
 
@@ -54,6 +55,7 @@
         shape
             .style("fill", this.colorFill())
             .style("stroke", this.colorStroke())
+            .style("opacity", this.opacity())
             .each(function (d) {
                 var element = d3.select(this);
                 context._tooltipElement.text(context.tooltip());

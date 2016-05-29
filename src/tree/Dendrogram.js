@@ -21,8 +21,6 @@
         SVGZoomWidget.call(this);
         ITree.call(this);
 
-        this._drawStartPos = "origin";
-
         var context = this;
 
         this._d3LayoutCluster = d3.layout.cluster();
