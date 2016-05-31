@@ -1,0 +1,16 @@
+{
+  "name": "openDataGovIE",
+  "version": "0.0.0",
+  "description": "Open Data Gov IE",
+  "keywords": [],
+  "main": [],
+  "ignore": [],
+    "dependencies": {
+        "jsonstat": "*"
+    },
+  "license": "Apache-2.0",
+  "authors": [
+    "Gordon Smith",
+    "HPCC Systems"
+  ]
+}
