@@ -103,6 +103,15 @@
         return this;
     };
 
+    Grid.prototype.sortedContent = function () {
+        return this.content().sort(function (l, r) {
+            if (l.gridRow() === r.gridRow()) {
+                return l.gridCol() - r.gridCol();
+            }
+            return l.gridRow() - r.gridRow();
+        });
+    };
+
     Grid.prototype.getCell = function (row, col) {
         var retVal = null;
         this.content().some(function (cell) {
@@ -114,6 +123,13 @@
             return false;
         });
         return retVal;
+    };
+
+    Grid.prototype.removeCell = function (removeCell) {
+        this.content(this.content().filter(function (cell) {
+            return cell !== removeCell;
+        }));
+        return this;
     };
 
     Grid.prototype.getWidgetCell = function (id) {
@@ -160,6 +176,20 @@
     Grid.prototype.childMoved = Grid.prototype.debounce(function (domNode, element) {
         this.render();
     }, 250);
+
+    Grid.prototype.resizeContent = function () {
+        this.content().forEach(function (cell) {
+            cell.resize();
+        })
+        return this;
+    };
+
+    Grid.prototype.renderContent = function () {
+        this.content().forEach(function (cell) {
+            cell.render();
+        })
+        return this;
+    };
 
     Grid.prototype.enter = function (domNode, element) {
         HTMLWidget.prototype.enter.apply(this, arguments);
