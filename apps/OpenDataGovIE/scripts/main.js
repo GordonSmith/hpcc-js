@@ -1,12 +1,9 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["src/other/Table", "src/chart/Column", "json!./CJA07.json"], factory);
+        define(["src/other/Table", "src/chart/Column", "json!../data/CJA07.json"], factory);
     }
 }(this, function (Table, Column, j) {
-    JSONstat("http://www.cso.ie/StatbankServices/StatbankServices.svc/jsonservice/responseinstance/CJA07", function () {
-        var d = 0;
-    });
     var stats = JSONstat(j);
     var len = stats.length;
     for (var i = 0; i < len; ++i) {
@@ -15,20 +12,20 @@
         var dimensions = ids.map(function (id) {
             var retVal = stats.Dataset(i).Dimension(id);
             dimensionMap[retVal.label] = retVal;
-            var test = retVal.Category(0).label;
+            var test = retVal.Category(0);
             return retVal;
         });
     }
 
+    var t2 = stats.Dataset(0).Data(0);
     var data = stats.Dataset(0).toTable();
     var col = new Table()
         .target("col")
         .pagination(true)
-        .columns(ids)
-        //.data(data)
+        .columns(data[0])
+        .data(data.filter(function (row, idx) { return idx > 0; }))
         .render()
-    ;
-
+        ;
     return function () {
         col
             .resize()

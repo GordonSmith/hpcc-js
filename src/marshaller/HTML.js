@@ -24,14 +24,16 @@
         for (var key in this._ddlDashboards) {
             var maxCol = Math.floor(Math.sqrt(this._ddlDashboards[key].visualizations.length));
             this._ddlDashboards[key].visualizations.forEach(function (viz) {
-                while (this.getCell(cellRow * cellDensity, cellCol * cellDensity) !== null) {
-                    cellCol++;
-                    if (cellCol % maxCol === 0) {
-                        cellRow++;
-                        cellCol = 0;
+                if (viz.newWidgetSurface) {
+                    while (this.getCell(cellRow * cellDensity, cellCol * cellDensity) !== null) {
+                        cellCol++;
+                        if (cellCol % maxCol === 0) {
+                            cellRow++;
+                            cellCol = 0;
+                        }
                     }
+                    this.setContent(cellRow, cellCol, viz.newWidgetSurface);
                 }
-                this.setContent(cellRow, cellCol, viz.widgetSurface);
             }, this);
         }
 

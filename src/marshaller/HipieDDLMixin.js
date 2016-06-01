@@ -136,15 +136,16 @@
             context._ddlVisualizations.forEach(function(viz) {
                 removedMap.remove(viz.id);
                 if (!context._marshaller.widgetMappings().get(viz.id)) {
-                    viz.widgetSurface = null;
+                    //  New widget  ---
+                    viz.newWidgetSurface = null;
                     if (viz.widget instanceof Surface || viz.widget.classID() === "composite_MegaChart") {
-                        viz.widgetSurface = viz.widget;
+                        viz.newWidgetSurface = viz.widget;
                     } else {
-                        viz.widgetSurface = new Surface()
+                        viz.newWidgetSurface = new Surface()
                             .widget(viz.widget)
                         ;
                     }
-                    viz.widgetSurface.title(viz.title);
+                    viz.newWidgetSurface.title(viz.title);
                     viz.widget.size({ width: 0, height: 0 });
                 }
             });
@@ -202,7 +203,7 @@
 
     HipieDDLMixin.prototype.visualizations = function () {
         return this._marshaller._visualizationArray.map(function (ddlViz) {
-            return ddlViz.widgetSurface || ddlViz.widget;
+            return ddlViz.newWidgetSurface || ddlViz.widget;
         });
     };
 

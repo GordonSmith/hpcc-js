@@ -47,7 +47,7 @@
                         ;
                     }
                     if (newSurface) {
-                        viz.widgetSurface = newSurface;
+                        viz.newWidgetSurface = newSurface;
                     }
                     vertices.push(newSurface);
                 }
@@ -59,8 +59,8 @@
             this._ddlDashboards[key].visualizations.forEach(function (viz) {
                 viz.getInputVisualizations().forEach(function (inViz) {
                     edges.push(new Edge()
-                        .sourceVertex(inViz.widgetSurface)
-                        .targetVertex(viz.widgetSurface)
+                        .sourceVertex(inViz.newWidgetSurface)
+                        .targetVertex(viz.newWidgetSurface)
                         .targetMarker("arrowHead")
                     );
                 }, this);

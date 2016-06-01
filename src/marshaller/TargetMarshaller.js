@@ -30,13 +30,13 @@
                 var widget_config = _configObject[viz.id];
                 if (widget_config !== undefined) {
                     if (widget_config.target !== undefined) {
-                        viz.widgetSurface.target(widget_config.target);
+                        viz.newWidgetSurface.target(widget_config.target);
                     } else {
                         console.log("Target not specified for the following:");
                         console.log("this._ddlDashboards[" + key + "].visualizations[" + idx + "].id = " + viz.id);
                     }
                     if (typeof widget_config.callback === "function") {
-                        widget_config.callback(viz.widget, viz.widgetSurface);
+                        widget_config.callback(viz.widget, viz.newWidgetSurface);
                     } else {
                         console.warn("Callback not specified for the following:");
                         console.log("this._ddlDashboards[" + key + "].visualizations[" + idx + "].id = " + viz.id);
