@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/HTMLWidget", "./Cell", "../common/TextBox", "../common/Utility", "css!./Grid"], factory);
+        define(["d3", "grid-list", "../common/HTMLWidget", "./Cell", "../common/TextBox", "../common/Utility", "css!./Grid"], factory);
     } else {
-        root.layout_Grid = factory(root.d3, root.common_HTMLWidget, root.layout_Cell, root.common_TextBox, root.common_Utility);
+        root.layout_Grid = factory(root.d3, root.GridList, root.common_HTMLWidget, root.layout_Cell, root.common_TextBox, root.common_Utility);
     }
-}(this, function (d3, HTMLWidget, Cell, TextBox, Utility) {
+}(this, function (d3, GridList, HTMLWidget, Cell, TextBox, Utility) {
     function Grid() {
         HTMLWidget.call(this);
 

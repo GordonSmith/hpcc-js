@@ -1,7 +1,7 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../layout/Grid", "./HipieDDLMixin"], factory);
+        define(["d3", "../layout/Grid2", "./HipieDDLMixin"], factory);
     } else {
         root.marshaller_HTML = factory(root.d3, root.layout_Grid, root.marshaller_HipieDDLMixin);
     }
@@ -20,7 +20,7 @@
     HTML.prototype.populateContent = function () {
         var cellRow = 0;
         var cellCol = 0;
-        var cellDensity = this.cellDensity();
+        var cellDensity = 3;
         this._ddlDashboards.forEach(function (dashboard) {
             var maxCol = Math.floor(Math.sqrt(dashboard.visualizations.length));
             dashboard.visualizations.forEach(function (viz) {
@@ -32,7 +32,7 @@
                             cellCol = 0;
                         }
                     }
-                    this.setContent(cellRow, cellCol, viz.newWidgetSurface);
+                    this.setContent(cellRow * cellDensity, cellCol * cellDensity, viz.newWidgetSurface, "", cellDensity, cellDensity);
                 }
             }, this);
         }, this);

@@ -1,7 +1,7 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/HTMLWidget", "../other/Persist", "../layout/Grid", "../common/Widget", "css!./PropertyEditor"], factory);
+        define(["d3", "../common/HTMLWidget", "../other/Persist", "../layout/Grid2", "../common/Widget", "css!./PropertyEditor"], factory);
     } else {
         root.other_PropertyEditor = factory(root.d3, root.common_HTMLWidget, root.other_Persist, root.layout_Grid, root.common_Widget);
     }
@@ -57,7 +57,7 @@
                 var context = this;
                 _.postSelectionChange = function () {
                     context._selectedItems = _._selectionBag.get().map(function (item) { return item.widget; });
-                    context.render();
+                    context.lazyRender();
                 };
             }
         }

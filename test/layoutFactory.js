@@ -232,6 +232,43 @@
                 });
             }
         },
+        Grid2: {
+            simple: function (callback) {
+                require(["test/DataFactory", "src/layout/Grid2", "src/chart/Pie", "src/chart/MultiChartSurface", "src/chart/Line", "src/chart/Column", "src/chart/Step"], function (DataFactory, Grid, Pie, MultiChartSurface, Line, Column, Step) {
+                    callback(new Grid()
+                        .setContent(0, 0, new Pie()
+                            .columns(DataFactory.TwoD.subjects.columns)
+                            .data(DataFactory.TwoD.subjects.data), "", 2, 2
+                        )
+                        .setContent(0, 2, new Pie()
+                            .columns(DataFactory.TwoD.subjects.columns)
+                            .data(DataFactory.TwoD.subjects.data)
+                            .paletteID("Dark2"), "", 2, 2
+                        )
+                        .setContent(2, 0, new Pie()
+                            .columns(DataFactory.TwoD.subjects.columns)
+                            .data(DataFactory.TwoD.subjects.data)
+                            .paletteID("Paired"), "", 2, 2
+                        )
+                        .setContent(2, 2, new Pie()
+                            .columns(DataFactory.TwoD.subjects.columns)
+                            .data(DataFactory.TwoD.subjects.data)
+                            .paletteID("Pastel2"), "", 2, 2
+                        )
+                        .setContent(0, 4, new Line()
+                            .columns(DataFactory.ND.subjects.columns)
+                            .data(DataFactory.ND.subjects.data)
+                            , "Title AAA", 4, 4
+                        )
+                        .setContent(4, 0, new MultiChartSurface()
+                            .columns(DataFactory.ND.subjects.columns)
+                            .data(DataFactory.ND.subjects.data)
+                            , "Title BBB", 4, 8
+                        )
+                    );
+                });
+            }
+        },
         Layered: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/layout/Layered", "src/layout/AbsoluteSurface", "src/chart/Pie", "src/chart/MultiChartSurface", "src/chart/Line", "src/chart/Column", "src/chart/Step"], function (DataFactory, Layered, AbsoluteSurface, Pie, MultiChartSurface, Line, Column, Step) {

@@ -8,7 +8,7 @@
 }(this, function (d3, Surface) {
     function Cell() {
         Surface.call(this);
-        this._dragHandles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
+        this._dragHandles = [];//["nw", "n", "ne", "e", "se", "s", "sw", "w"];
         this._indicateTheseIds = [];
     }
     Cell.prototype = Object.create(Surface.prototype);
