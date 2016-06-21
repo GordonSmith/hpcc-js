@@ -30,6 +30,7 @@
                 "d3-hexbin": "../bower_components/d3-plugins/hexbin/hexbin",
                 "d3-tip": "../bower_components/d3-tip/index",
                 "d3-bullet": "../bower_components/d3-plugins/bullet/bullet",
+                "grid-list": "../bower_components/grid-list/src/gridList",
 
                 "amcharts": "../bower_components/amcharts3/amcharts/amcharts",
                 "amcharts.funnel": "../bower_components/amcharts3/amcharts/funnel",
@@ -129,6 +130,7 @@
             "d3-hexbin": rawgitBaseUrl + "/d3/d3-plugins/master/hexbin/hexbin",
             "d3-tip": rawgitBaseUrl + "/Caged/d3-tip/v0.6.7/index",
             "d3-bullet": rawgitBaseUrl + "/d3/d3-plugins/master/bullet/bullet",
+            "grid-list": rawgitBaseUrl + "/hootsuite/grid/v0.3.4/src/gridList",
 
             "amcharts": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/amcharts",
             "amcharts.funnel": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/funnel",
