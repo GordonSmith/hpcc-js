@@ -1,0 +1,160 @@
+.layout_Dashboard .cell {
+    border-radius: 5px;
+    border: 1px solid #e5e5e5;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.layout_Dashboard .cell h2 {
+    margin: 0px;
+    padding-top: 4px;
+    -webkit-margin: 0px;
+    text-align: center;
+}
+
+.layout_Dashboard .dropCell {
+    box-sizing:border-box;
+    background-color: lightgrey;
+    border-radius: 5px;
+    border:1px solid #333;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.layout_Dashboard .dropCell.over {
+    border: 2px dashed #000;
+}
+
+.layout_Dashboard .layout_Cell.over {
+    border: 2px dashed #000;
+}
+.layout_Dashboard .dragItem { 
+    z-index: 0;
+}
+
+.layout_Dashboard .notDragItem { 
+    opacity: 1;
+}
+.layout_Dashboard .layout_Surface{
+    height: 100%;
+    width: 100%;
+    box-sizing:border-box;
+}
+.layout_Dashboard div[draggable=true] { 
+    cursor: move;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle {
+    opacity: 1.0;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle_n,
+.layout_Dashboard div[draggable=true] .dragHandle_e,
+.layout_Dashboard div[draggable=true] .dragHandle_s,
+.layout_Dashboard div[draggable=true] .dragHandle_w{
+    background-color:#AAA;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle_nw,
+.layout_Dashboard div[draggable=true] .dragHandle_ne,
+.layout_Dashboard div[draggable=true] .dragHandle_se,
+.layout_Dashboard div[draggable=true] .dragHandle_sw { 
+    background-color:#333;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle_nw { 
+    cursor:nw-resize;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle_n { 
+    cursor:n-resize;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle_ne { 
+    cursor:ne-resize;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle_e { 
+    cursor:e-resize;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle_se { 
+    cursor:se-resize;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle_s { 
+    cursor:s-resize;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle_sw { 
+    cursor:sw-resize;
+}
+
+.layout_Dashboard div[draggable=true] .dragHandle_w { 
+    cursor:w-resize;
+}
+
+.layout_Dashboard div[draggable=false] > div > .dragHandle {
+    display:none;
+}
+
+.layout_Dashboard .selected div.dragHandle{
+     background-color: #F48A00; 
+}
+
+.layout_Dashboard .selected div.dragHandle_nw, 
+.layout_Dashboard .selected div.dragHandle_ne, 
+.layout_Dashboard .selected div.dragHandle_se, 
+.layout_Dashboard .selected div.dragHandle_sw{
+    background-color: #EE1;
+}
+.layout_Dashboard .grid-drop-target{
+    position:fixed;
+    box-sizing:border-box;
+    border:2px dashed #7f8c8d;
+    border-radius:0px;
+    background: repeating-linear-gradient(
+        -45deg,
+        rgba(0, 0, 0, 0),
+        rgba(0, 0, 0, 0) 4px,
+        rgba(100, 100, 100, 0.1) 4px,
+        rgba(100, 100, 100, 0.1) 8px
+    );
+}
+
+.layout_Dashboard .grid-drop-target.drop-target-over{
+    border:2px dashed #179BD7;
+    background: repeating-linear-gradient(
+        -45deg,
+        rgba(0, 0, 0, 0),
+        rgba(0, 0, 0, 0) 6px,
+        rgba(17, 155, 215, 0.1) 6px,
+        rgba(17, 155, 215, 0.1) 12px
+    );
+}
+.layout_Dashboard .grid-drop-target.grid-drag-handle-{
+    cursor:move;
+}
+.layout_Dashboard .grid-drop-target.grid-drag-handle-n,
+.layout_Dashboard .grid-drop-target.grid-drag-handle-s{
+    cursor:ns-resize;
+}
+.layout_Dashboard .grid-drop-target.grid-drag-handle-e,
+.layout_Dashboard .grid-drop-target.grid-drag-handle-w{
+    cursor:ew-resize;
+}
+.layout_Dashboard .grid-drop-target.grid-drag-handle-ne,
+.layout_Dashboard .grid-drop-target.grid-drag-handle-sw{
+    cursor:nesw-resize;
+}
+.layout_Dashboard .grid-drop-target.grid-drag-handle-nw,
+.layout_Dashboard .grid-drop-target.grid-drag-handle-se{
+    cursor:nwse-resize;
+}
+.layout_Dashboard.hideHandles div.dragHandle,
+.layout_Dashboard.hideHandles div.dragHandle_nw, 
+.layout_Dashboard.hideHandles div.dragHandle_ne, 
+.layout_Dashboard.hideHandles div.dragHandle_se, 
+.layout_Dashboard.hideHandles div.dragHandle_sw{
+     background-color: transparent; 
+}

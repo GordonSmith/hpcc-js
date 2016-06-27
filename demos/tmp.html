@@ -3,16 +3,101 @@
 <head>
     <meta charset="utf-8">
     <title>HPCC Systems - Dermatology Test</title>
+
+    <link rel="stylesheet" href="../node_modules/material-design-lite/material.min.css">
+    <script src="../node_modules/material-design-lite/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!--
+    -->
+
     <link href="./tmp.css" rel="stylesheet">
+    <script src="../node_modules/requirejs/require.js"></script>
+    <script src="../src/loader.js"></script>
+    <!--  Uncomment for github
     <script src="https://rawgit.com/jrburke/requirejs/2.2.0/require.js"></script>
     <script src="../src/loader.js"></script>
+    -->
+    <!--  Uncomment to develop
+    <script src="../node_modules/requirejs/require.js"></script>
+    <script src="../src/loader.js"></script>
+    -->
+    <!--  Uncomment to test build
+    <script src="../dist-amd/hpcc-viz.js"></script>
+    -->
+    <script>
+        require.config({
+            paths: {
+                "test": "../test"
+            }
+        });
+    </script>
 </head>
-<body>
-    <div id="surface" style="position:relative;width:1000px;height:1000px;background-color:lightblue">
+<body onresize="doResize()">
+    <!-- Always shows a header, even in smaller screens. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <!-- Title -->
+                <span class="mdl-layout-title">Dermatology</span>
+                <!-- Add spacer, to align navigation to the right -->
+                <div class="mdl-layout-spacer"></div>
+                <!-- Navigation. We hide it in small screens. -->
+                <div id="selectButton" onclick="toggleMenu()">
+                    Select A Widget <i class="fa fa-caret-down"></i>
+                </div>
+                <ul id="widgetSelect" class="hide"></ul>
+                <div class="mdl-layout-spacer"></div>
+                <nav class="mdl-navigation mdl-layout--large-screen-only">
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-button--fab" for="switch-design">
+                        <input type="checkbox" id="switch-design" class="mdl-switch__input">
+                        <span class="mdl-switch__label">Properties</span>
+                    </label>
+                </nav>
+            </div>
+        </header>
+        <div class="mdl-layout__drawer">
+            <span class="mdl-layout-title">File</span>
+            <nav class="mdl-navigation">
+                <a id="fileOpen" class="mdl-navigation__link" href="">Open</a>
+                <a id="fileSave" class="mdl-navigation__link" href="">Save</a>
+                <input type="file" id="fileOpenInput" style="display:none" onchangezzz="loadPersistFiles(this.files)">
+            </nav>
+            <span class="mdl-layout-title">Theme</span>
+            <nav class="mdl-navigation">
+                <a id="themeOpen" class="mdl-navigation__link" href="">Open</a>
+                <a id="themeSave" class="mdl-navigation__link" href="">Save</a>
+                <a id="themeReset" class="mdl-navigation__link" href="">Reset</a>
+            </nav>
+        </div>
+        <main class="mdl-layout__content">
+            <div class="page-content">
+                <div id="surface">
+
+                </div>
+            </div>
+        </main>
     </div>
     <script>
-    require(["./tmp"], function (Main) {
-    });
+        var doResize = function () {
+        };
+        require(["d3", "./tmp"], function (d3, app) {
+            doResize = function () {
+                d3.select("#surface")
+                    .style("width", window.innerWidth - 16 + "px")
+                    .style("height", window.innerHeight - 16 - 64 + "px")
+                ;
+                app._frame
+                    .resize()
+                    .render()
+                ;
+            }
+            doResize();
+        });
+
+        function toggleMenu() {
+            var menu = d3.select("#widgetSelect");
+            menu.classed("hide", !menu.classed("hide"));
+        }
     </script>
 </body>
 </html>

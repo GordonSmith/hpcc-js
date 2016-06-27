@@ -1,9 +1,237 @@
 ﻿"use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "grid-list"], factory);
+        define(["d3", "grid-list", "src/common/Utility", "src/layout/Surface", "src/layout/Grid", "src/other/Persist", "src/other/PropertyEditor", "src/tree/CirclePacking", "test/Factory"], factory);
     }
-}(this, function (d3, GridList) {
+    }(this, function (d3, GridList, Utility, Surface, Grid, Persist, PropertyEditor, Dendrogram, testFactory) {
+    function Main() {
+        this.initWidgetMenu();
+        this.initFileMenu();
+        this.initGrid();
+        this.initToolbar();
+    }
+//    Main.prototype = Object.create();
+    Main.prototype.constructor = Main;
+
+    Main.prototype.initWidgetMenu = function () {
+        var context = this;
+        var categoryOptions = d3.select("#widgetSelect").selectAll("li").data(d3.map(testFactory.categories).entries());
+        categoryOptions.enter().append("li")
+            .attr("value", function (d, idx) { return idx; })
+            .text(function (d) { return d.key; })
+            .append("ul")
+            .attr("class", "widgetMenu")
+            .each(function (d, idx) {
+                var widgetOptions = d3.select(this).selectAll("li").data(d3.map(d.value).entries());
+                widgetOptions.enter().append("li")
+                    .attr("value", function (d, idx) { return idx; })
+                    .text(function (d) { return d.key; })
+                    .each(function (d) {
+                        var element = d3.select(this);
+                        if (d3.keys(d.value).length === 1) {
+                            element
+                                .on("click", function (d) {
+                                    context.loadWidget(d3.map(d.value).values()[0].widgetPath);
+                                    d3.select("#widgetSelect").classed("hide", true);
+                                })
+                            ;
+                        } else {
+                            var sampleOptions = element.append("ul")
+                                .attr("class", "widgetMenu")
+                            ;
+                            var sampleTest = sampleOptions.selectAll("li").data(d3.map(d.value).entries());
+                            sampleTest.enter().append("li")
+                                .text(function (d) { return d.key; })
+                                .on("click", function (d) {
+                                    context.loadWidget(d.value.widgetPath, d.key);
+                                    d3.select("#widgetSelect").classed("hide", true);
+                                })
+                            ;
+                        }
+                    })
+                ;
+            })
+        ;
+    };
+
+    Main.prototype.initFileMenu = function () {
+        var context = this;
+        var fileOpenInput = d3.select("#fileOpenInput")
+            .on("change", function () {
+                for (var i = 0, f; f = this.files[i]; i++) {
+                    var reader = new FileReader();
+                    reader.onload = (function (theFile) {
+                        return function (e) {
+                            console.log('e readAsText = ', e);
+                            console.log('e readAsText target = ', e.target);
+                            try {
+                                var json = JSON.parse(e.target.result);
+                                switch (context._openMode) {
+                                    case "theme":
+                                        Persist.applyTheme(context._currWidget, json, function () {
+                                            context._currWidget.render();
+                                        });
+                                        break;
+                                    default:
+                                        Persist.create(json, function (widget) {
+                                            context.showWidget(widget);
+                                        });
+                                }
+                            } catch (ex) {
+                                alert('ex when trying to parse json = ' + ex);
+                            }
+                        }
+                    })(f);
+                    reader.readAsText(f);
+                }
+            })
+        ;
+        d3.select("#fileOpen")
+            .on("click", function () {
+                d3.event.preventDefault();
+                context._openMode = "persist";
+                fileOpenInput.node().click();
+                context.closeFileMenu();
+            })
+        ;
+        d3.select("#fileSave")
+            .on("click", function () {
+                d3.event.preventDefault();
+                var text = JSON.stringify(Persist.serializeToObject(context._currWidget, null, false), null, "  ");
+                Utility.downloadBlob("JSON", text, "persist");
+                context.closeFileMenu();
+            })
+        ;
+        d3.select("#themeOpen")
+            .on("click", function () {
+                d3.event.preventDefault();
+                context._openMode = "theme";
+                fileOpenInput.node().click();
+                context.closeFileMenu();
+            })
+        ;
+        d3.select("#themeSave")
+            .on("click", function () {
+                d3.event.preventDefault();
+                var text = JSON.stringify(Persist.serializeThemeToObject(context._currWidget), null, "  ");
+                Utility.downloadBlob("JSON", text, "theme");
+                context.closeFileMenu();
+            })
+        ;
+        d3.select("#themeReset")
+            .on("click", function () {
+                d3.event.preventDefault();
+                Persist.removeTheme(context._currWidget, function () {
+                    context._currWidget.render();
+                });
+                context.closeFileMenu();
+            })
+        ;
+    };
+
+    Main.prototype.closeFileMenu = function () {
+        var layout = document.querySelector('.mdl-layout');
+        layout.MaterialLayout.toggleDrawer();
+    };
+
+    Main.prototype.initGrid = function () {
+        this._propEditor = new PropertyEditor()
+            .show_settings(true);
+        ;
+        this._propEditor.onChange = Surface.prototype.debounce(function (widget, propID) {
+            if (propID === "columns") {
+            } else if (propID === "data") {
+            } else {
+                //displaySerialization();
+                //displaySerializationText();
+                //displayThemeText();
+            }
+        }, 500);
+
+        this._main = new Grid()
+            .setContent(0, 2, this._propEditor, "", 2, 1)
+            .surfacePadding(0)
+        ;
+
+        this._frame = new Surface()
+            .widget(this._main)
+            .target("surface")
+            .surfacePadding(0)
+        ;
+    };
+
+    Main.prototype.initToolbar = function () {
+        var context = this;
+        this._toggleDesign = d3.select("#switch-design")
+            .on("click", function () {
+                context.showProperties();
+            })
+        ;
+        this.showProperties();
+    };
+
+    Main.prototype.loadWidget = function (widgetPath, widgetTest, params) {
+        var context = this;
+        var func = widgetTest ? testFactory.widgets[widgetPath][widgetTest].factory : d3.map(testFactory.widgets[widgetPath]).values()[0].factory;
+        func(function (widget) {
+            if (params) {
+                for (var key in params) {
+                    if (widget["__meta_" + key] !== undefined) {
+                        if (widget["__meta_" + key].type === "array") {
+                            widget[key](params[key].split(","));
+                        } else {
+                            widget[key](params[key]);
+                        }
+                    }
+                }
+            }
+            context.showWidget(widget);
+        });
+    };
+
+    Main.prototype.showWidget = function (widget) {
+        this._currWidget = widget;
+        if (this._monitorHandle) {
+            this._monitorHandle.remove();
+        }
+        //updateUrl(widget, widgetPath, widgetTest);
+        this._monitorHandle = widget.monitor(function () {
+            //updateUrl(currWidget, widgetPath, widgetTest);
+        });
+        this._main
+            .setContent(0, 0, widget, "", 2, 2)
+        ;
+        this._propEditor.widget(widget);
+        this._frame
+            //.title(widget.classID())
+            .render(function (mainWidget) {
+                //displayProperties(currWidget);
+                //displayPropertyTree(currWidget);
+                //displaySerialization(currWidget);
+                //displaySerializationText(currWidget);
+                //displayThemeText(currWidget);
+            })
+        ;
+    };
+
+    Main.prototype.showProperties = function () {
+        var show = d3.select("#switch-design").property("checked");
+        this._main
+            .setContent(0, 2, show ? this._propEditor : null, "", 2, 1)
+            .render(function (widget) {
+                if (show) {
+                    //displayProperties();
+                }
+            })
+        ;
+    };
+
+    return new Main();
+
+
+
+
+
     var gridSize = 100;
     var gutter = 2;
     var lanes = 10;
