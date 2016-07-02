@@ -10,20 +10,7 @@
     "Graph"
   ],
   "main": [
-    "dist/hpcc-viz.min.css",
-    "dist/hpcc-viz-common.min.js",
-    "dist/hpcc-viz-api.min.js",
-    "dist/hpcc-viz-layout.min.js",
-    "dist/hpcc-viz-other.min.js",
-    "dist/hpcc-viz-form.min.js",
-    "dist/hpcc-viz-graph.min.js",
-    "dist/hpcc-viz-tree.min.js",
-    "dist/hpcc-viz-chart.min.js",
-    "dist/hpcc-viz-amchart.min.js",
-    "dist/hpcc-viz-c3chart.min.js",
-    "dist/hpcc-viz-google.min.js",
-    "dist/hpcc-viz-map.min.js",
-    "dist/hpcc-viz-marshaller.min.js"
+    "dist-amd/loader.js"
   ],
   "ignore": [
     "apps",

@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["d3", "grid-list", "src/common/Utility", "src/layout/Surface", "src/layout/Grid", "src/other/Persist", "src/other/PropertyEditor", "src/tree/CirclePacking", "test/Factory"], factory);
     }
-    }(this, function (d3, GridList, Utility, Surface, Grid, Persist, PropertyEditor, Dendrogram, testFactory) {
+}(this, function (d3, GridList, Utility, Surface, Grid, Persist, PropertyEditor, Dendrogram, testFactory) {
     function Main() {
         this.initWidgetMenu();
         this.initFileMenu();
