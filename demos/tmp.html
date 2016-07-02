@@ -60,7 +60,7 @@
             <nav class="mdl-navigation">
                 <a id="fileOpen" class="mdl-navigation__link" href="">Open</a>
                 <a id="fileSave" class="mdl-navigation__link" href="">Save</a>
-                <input type="file" id="fileOpenInput" style="display:none" onchangezzz="loadPersistFiles(this.files)">
+                <input type="file" id="fileOpenInput" accept=".persist,.theme,.json" style="display:none">
             </nav>
             <span class="mdl-layout-title">Theme</span>
             <nav class="mdl-navigation">
@@ -70,11 +70,20 @@
             </nav>
         </div>
         <main class="mdl-layout__content">
+            <!-- MDL Progress Bar with Indeterminate Progress -->
             <div class="page-content">
-                <div id="surface">
-
+                <div class="mdl-grid">
+                    <div id="cellSurface" class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+                        <div id="surface">
+                        </div>
+                    </div>
+                    <div id="cellProperties" class="mdl-cell mdl-cell--3-col mdl-shadow--2dp" style="display:none">
+                        <div id="properties">
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div id="spinner" class="mdl-spinner mdl-js-spinner" style="position:absolute;left:50%"></div>
         </main>
     </div>
     <script>
@@ -82,16 +91,28 @@
         };
         require(["d3", "./tmp"], function (d3, app) {
             doResize = function () {
-                d3.select("#surface")
-                    .style("width", window.innerWidth - 16 + "px")
-                    .style("height", window.innerHeight - 16 - 64 + "px")
+                d3.selectAll("#surface")
+                    .style("height", window.innerHeight - 48 - 64 + "px")
                 ;
-                app._frame
-                    .resize()
-                    .render()
+                d3.select("#properties")
+                    .style("height", window.innerHeight - 48 - 64 + "px")
                 ;
+                d3.select("#spinner")
+                    .style("top", (window.innerHeight - 48 - 64) / 2 + "px")
+                ;
+                if (app._main) {
+                    app._main
+                        .resize()
+                        .render()
+                    ;
+                    app._propEditor
+                        .resize()
+                        .render()
+                    ;
+                }
             }
             doResize();
+            app.init();
         });
 
         function toggleMenu() {

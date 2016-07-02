@@ -10,6 +10,17 @@
 .mdl-switch.is-disabled .mdl-switch__thumb {
 }
 
+.mdl-layout-title {
+}
+
+.mdl-layout__content {
+    background-color:ghostwhite;
+}
+
+.mdl-cell {
+    background-color:white;
+}
+
 #surface {
     padding:8px;
 }

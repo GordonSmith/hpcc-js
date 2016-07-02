@@ -5,13 +5,18 @@
     }
 }(this, function (d3, GridList, Utility, Surface, Grid, Persist, PropertyEditor, Dendrogram, testFactory) {
     function Main() {
+    }
+//    Main.prototype = Object.create();
+    Main.prototype.constructor = Main;
+
+    Main.prototype.init = function () {
+        this.showSpinner();
         this.initWidgetMenu();
         this.initFileMenu();
         this.initGrid();
         this.initToolbar();
-    }
-//    Main.prototype = Object.create();
-    Main.prototype.constructor = Main;
+        this.loadWidget("src/chart/Column");
+    };
 
     Main.prototype.initWidgetMenu = function () {
         var context = this;
@@ -58,6 +63,7 @@
         var context = this;
         var fileOpenInput = d3.select("#fileOpenInput")
             .on("change", function () {
+                context.showSpinner();
                 for (var i = 0, f; f = this.files[i]; i++) {
                     var reader = new FileReader();
                     reader.onload = (function (theFile) {
@@ -97,8 +103,8 @@
         d3.select("#fileSave")
             .on("click", function () {
                 d3.event.preventDefault();
-                var text = JSON.stringify(Persist.serializeToObject(context._currWidget, null, false), null, "  ");
-                Utility.downloadBlob("JSON", text, "persist");
+                var text = JSON.stringify(Persist.serializeToObject(context._currWidget, null, true), null, "  ");
+                Utility.downloadBlob("JSON", text, context._currWidget.classID(), "persist");
                 context.closeFileMenu();
             })
         ;
@@ -114,7 +120,7 @@
             .on("click", function () {
                 d3.event.preventDefault();
                 var text = JSON.stringify(Persist.serializeThemeToObject(context._currWidget), null, "  ");
-                Utility.downloadBlob("JSON", text, "theme");
+                Utility.downloadBlob("JSON", text, null, "theme");
                 context.closeFileMenu();
             })
         ;
@@ -136,7 +142,9 @@
 
     Main.prototype.initGrid = function () {
         this._propEditor = new PropertyEditor()
+            .target("properties")
             .show_settings(true);
+            
         ;
         this._propEditor.onChange = Surface.prototype.debounce(function (widget, propID) {
             if (propID === "columns") {
@@ -149,14 +157,9 @@
         }, 500);
 
         this._main = new Grid()
-            .setContent(0, 2, this._propEditor, "", 2, 1)
-            .surfacePadding(0)
-        ;
-
-        this._frame = new Surface()
-            .widget(this._main)
             .target("surface")
             .surfacePadding(0)
+            .surfaceBorderWidth(0)
         ;
     };
 
@@ -170,7 +173,23 @@
         this.showProperties();
     };
 
+    Main.prototype.showSpinner = function (show) {
+        show = arguments.length ? arguments[0] : true;
+        d3.select("#surface")
+            .style("opacity", 0)
+        ;
+        if (!show) {
+            d3.select("#surface").transition().duration(750)
+                .style("opacity", 1)
+            ;
+        }
+        d3.select("#spinner")
+            .classed("is-active", show)
+        ;
+    };
+
     Main.prototype.loadWidget = function (widgetPath, widgetTest, params) {
+        this.showSpinner();
         var context = this;
         var func = widgetTest ? testFactory.widgets[widgetPath][widgetTest].factory : d3.map(testFactory.widgets[widgetPath]).values()[0].factory;
         func(function (widget) {
@@ -190,6 +209,7 @@
     };
 
     Main.prototype.showWidget = function (widget) {
+        this.showSpinner();
         this._currWidget = widget;
         if (this._monitorHandle) {
             this._monitorHandle.remove();
@@ -198,13 +218,12 @@
         this._monitorHandle = widget.monitor(function () {
             //updateUrl(currWidget, widgetPath, widgetTest);
         });
+        var context = this;
         this._main
             .setContent(0, 0, widget, "", 2, 2)
-        ;
-        this._propEditor.widget(widget);
-        this._frame
-            //.title(widget.classID())
             .render(function (mainWidget) {
+                context.showSpinner(false);
+
                 //displayProperties(currWidget);
                 //displayPropertyTree(currWidget);
                 //displaySerialization(currWidget);
@@ -212,12 +231,38 @@
                 //displayThemeText(currWidget);
             })
         ;
+        this._propEditor
+            .widget(widget)
+            .render()
+        ;
     };
 
     Main.prototype.showProperties = function () {
         var show = d3.select("#switch-design").property("checked");
+        if (show) {
+            d3.select("#cellSurface")
+                .classed("mdl-cell--12-col", false)
+                .classed("mdl-cell--9-col", true)
+            ;
+            d3.select("#cellProperties")
+                .style("display", null)
+            ;
+            this._propEditor
+                .resize()
+                .render()
+            ;
+        } else {
+            d3.select("#cellSurface")
+                .classed("mdl-cell--9-col", false)
+                .classed("mdl-cell--12-col", true)
+            ;
+            d3.select("#cellProperties")
+                .style("display", "none")
+            ;
+        }
         this._main
-            .setContent(0, 2, show ? this._propEditor : null, "", 2, 1)
+            //.setContent(0, 2, show ? this._propEditor : null, "", 2, 1)
+            .resize()
             .render(function (widget) {
                 if (show) {
                     //displayProperties();
