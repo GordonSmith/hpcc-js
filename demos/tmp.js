@@ -12,7 +12,6 @@
     Main.prototype.init = function () {
         this.showSpinner();
         this.initWidgetMenu();
-        this.initWidgetMenuOld();
         this.initFileMenu();
         this.initGrid();
         this.initToolbar();
@@ -78,47 +77,6 @@
         ;
         d3.select(d3.select("#widgetDropDown").parentNode)
             .classed("pure-menu-active", true);
-        ;
-    };
-
-    Main.prototype.initWidgetMenuOld = function () {
-        var context = this;
-        var categoryOptions = d3.select("#widgetSelect").selectAll("li").data(d3.map(testFactory.categories).entries());
-        categoryOptions.enter().append("li")
-            .attr("value", function (d, idx) { return idx; })
-            .text(function (d) { return d.key; })
-            .append("ul")
-            .attr("class", "widgetMenu")
-            .each(function (d, idx) {
-                var widgetOptions = d3.select(this).selectAll("li").data(d3.map(d.value).entries());
-                widgetOptions.enter().append("li")
-                    .attr("value", function (d, idx) { return idx; })
-                    .text(function (d) { return d.key; })
-                    .each(function (d) {
-                        var element = d3.select(this);
-                        if (d3.keys(d.value).length === 1) {
-                            element
-                                .on("click", function (d) {
-                                    context.loadWidget(d3.map(d.value).values()[0].widgetPath);
-                                    d3.select("#widgetSelect").classed("hide", true);
-                                })
-                            ;
-                        } else {
-                            var sampleOptions = element.append("ul")
-                                .attr("class", "widgetMenu")
-                            ;
-                            var sampleTest = sampleOptions.selectAll("li").data(d3.map(d.value).entries());
-                            sampleTest.enter().append("li")
-                                .text(function (d) { return d.key; })
-                                .on("click", function (d) {
-                                    context.loadWidget(d.value.widgetPath, d.key);
-                                    d3.select("#widgetSelect").classed("hide", true);
-                                })
-                            ;
-                        }
-                    })
-                ;
-            })
         ;
     };
 
