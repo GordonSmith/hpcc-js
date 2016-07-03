@@ -12,6 +12,7 @@
     Main.prototype.init = function () {
         this.showSpinner();
         this.initWidgetMenu();
+        this.initWidgetMenuOld();
         this.initFileMenu();
         this.initGrid();
         this.initToolbar();
@@ -19,6 +20,68 @@
     };
 
     Main.prototype.initWidgetMenu = function () {
+        var context = this;
+        var categories = d3.select("#widgetDropDownUL").selectAll("li").data(d3.map(testFactory.categories).entries());
+        var catLI = categories.enter().append("li")
+            .attr("class", "pure-menu-item pure-menu-has-children pure-menu-allow-hover")
+        ;
+        catLI.append("a")
+            .attr("href", "#")
+            .attr("class", "pure-menu-link")
+            .text(function (d) { return d.key; })
+        ;
+        var catUL = catLI.append("ul")
+            .attr("class", "pure-menu-children")
+        ;
+        var widgets = catUL.selectAll("li").data(function (d) {
+            var retVal = [];
+            for (var key in d.value) {
+                var value = [];
+                for (var key2 in d.value[key]) {
+                    value.push({
+                        key: key2,
+                        value: d.value[key][key2]
+                    });
+                }
+                retVal.push({
+                    key: key,
+                    value: value
+                });
+            }
+            return retVal;
+        });
+        var widgetsLI = widgets.enter().append("li")
+            .attr("class", "pure-menu-item pure-menu-has-children pure-menu-allow-hover")
+        ;
+        widgetsLI
+            .append("a")
+            .attr("href", "#")
+            .attr("class", "pure-menu-link")
+            .text(function (d) { return d.key; })
+        ;
+        var tests = widgetsLI.append("ul")
+            .attr("class", "pure-menu-children")
+            .selectAll("li").data(function (d) { return d.value; })
+        ;
+        tests.enter().append("li")
+            .attr("class", "pure-menu-item")
+            .append("a")
+            .attr("href", "#")
+            .attr("class", "pure-menu-link")
+            .text(function (d) { return d.key; })
+            .on("click", function (d) {
+                context.loadWidget(d.value.widgetPath, d.key);
+                d3.select(d3.select("#widgetDropDown").parentNode)
+                    .classed("pure-menu-active", false);
+                ;
+            })
+        ;
+        d3.select(d3.select("#widgetDropDown").parentNode)
+            .classed("pure-menu-active", true);
+        ;
+    };
+
+    Main.prototype.initWidgetMenuOld = function () {
         var context = this;
         var categoryOptions = d3.select("#widgetSelect").selectAll("li").data(d3.map(testFactory.categories).entries());
         categoryOptions.enter().append("li")
@@ -95,9 +158,10 @@
         d3.select("#fileOpen")
             .on("click", function () {
                 d3.event.preventDefault();
+                context.closeFileMenu();
+                d3.select("#fileOpenInput").property("accept", ".persist,.json");
                 context._openMode = "persist";
                 fileOpenInput.node().click();
-                context.closeFileMenu();
             })
         ;
         d3.select("#fileSave")
@@ -111,9 +175,10 @@
         d3.select("#themeOpen")
             .on("click", function () {
                 d3.event.preventDefault();
+                context.closeFileMenu();
+                d3.select("#fileOpenInput").property("accept", ".theme,.json");
                 context._openMode = "theme";
                 fileOpenInput.node().click();
-                context.closeFileMenu();
             })
         ;
         d3.select("#themeSave")
@@ -242,7 +307,7 @@
         if (show) {
             d3.select("#cellSurface")
                 .classed("mdl-cell--12-col", false)
-                .classed("mdl-cell--9-col", true)
+                .classed("mdl-cell--8-col", true)
             ;
             d3.select("#cellProperties")
                 .style("display", null)
@@ -253,7 +318,7 @@
             ;
         } else {
             d3.select("#cellSurface")
-                .classed("mdl-cell--9-col", false)
+                .classed("mdl-cell--8-col", false)
                 .classed("mdl-cell--12-col", true)
             ;
             d3.select("#cellProperties")

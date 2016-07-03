@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../node_modules/material-design-lite/material.min.css">
     <script src="../node_modules/material-design-lite/material.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
     <!--
     -->
 
@@ -31,6 +32,7 @@
             }
         });
     </script>
+    <script src="pureMenu.js"></script>
 </head>
 <body onresize="doResize()">
     <!-- Always shows a header, even in smaller screens. -->
@@ -41,12 +43,19 @@
                 <span class="mdl-layout-title">Dermatology</span>
                 <!-- Add spacer, to align navigation to the right -->
                 <div class="mdl-layout-spacer"></div>
-                <!-- Navigation. We hide it in small screens. -->
-                <div id="selectButton" onclick="toggleMenu()">
-                    Select A Widget <i class="fa fa-caret-down"></i>
+                <div style="overflow:visible">
+                    <div class="pure-menu custom-restricted-width">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                                <a href="#" id="widgetDropDown" class="pure-menu-link">Select a Widget</a>
+                                <ul id="widgetDropDownUL" class="pure-menu-children">
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <ul id="widgetSelect" class="hide"></ul>
                 <div class="mdl-layout-spacer"></div>
+                <!-- Navigation. We hide it in small screens. -->
                 <nav class="mdl-navigation mdl-layout--large-screen-only">
                     <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-button--fab" for="switch-design">
                         <input type="checkbox" id="switch-design" class="mdl-switch__input">
@@ -60,7 +69,7 @@
             <nav class="mdl-navigation">
                 <a id="fileOpen" class="mdl-navigation__link" href="">Open</a>
                 <a id="fileSave" class="mdl-navigation__link" href="">Save</a>
-                <input type="file" id="fileOpenInput" accept=".persist,.theme,.json" style="display:none">
+                <input type="file" id="fileOpenInput" accept=".json" style="display:none">
             </nav>
             <span class="mdl-layout-title">Theme</span>
             <nav class="mdl-navigation">
@@ -76,14 +85,14 @@
                     <div id="cellSurface" class="mdl-cell mdl-cell--12-col mdl-shadow--2dp">
                         <div id="surface">
                         </div>
+                        <div id="spinner" class="mdl-spinner mdl-js-spinner"></div>
                     </div>
-                    <div id="cellProperties" class="mdl-cell mdl-cell--3-col mdl-shadow--2dp" style="display:none">
+                    <div id="cellProperties" class="mdl-cell mdl-cell--4-col mdl-shadow--2dp" style="display:none">
                         <div id="properties">
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="spinner" class="mdl-spinner mdl-js-spinner" style="position:absolute;left:50%"></div>
         </main>
     </div>
     <script>
@@ -96,9 +105,6 @@
                 ;
                 d3.select("#properties")
                     .style("height", window.innerHeight - 48 - 64 + "px")
-                ;
-                d3.select("#spinner")
-                    .style("top", (window.innerHeight - 48 - 64) / 2 + "px")
                 ;
                 if (app._main) {
                     app._main

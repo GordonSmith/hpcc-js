@@ -2,7 +2,7 @@
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
         var protocol = window.location.protocol === "https:" ? "https:" : "http:";  //  Could be file:
-        define(["d3", "../common/HTMLWidget", "../layout/AbsoluteSurface", "async!" + protocol + "//maps.google.com/maps/api/js", "css!./GMap"], factory);
+        define(["d3", "../common/HTMLWidget", "../layout/AbsoluteSurface", "async!" + protocol + "//maps.google.com/maps/api/js?key=AIzaSyDwGn2i1i_pMZvnqYJN1BksD_tjYaCOWKg", "css!./GMap"], factory);
     } else {
         root.map_GMap = factory(root.d3, root.common_HTMLWidget, root.layout_AbsoluteSurface);
     }

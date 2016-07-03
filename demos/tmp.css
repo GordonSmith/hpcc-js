@@ -14,15 +14,30 @@
 }
 
 .mdl-layout__content {
-    background-color:ghostwhite;
+    background-color: ghostwhite;
 }
 
 .mdl-cell {
-    background-color:white;
+    background-color: white;
+}
+
+#cellSurface {
+    position: relative;
+}
+
+#spinner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
 }
 
 #surface {
-    padding:8px;
+    padding: 8px;
+}
+
+#widgetDropDown {
+    background-color: snow;
+    color: rgb(119, 119, 119);
 }
 
 #selectButton {
@@ -49,12 +64,15 @@
     box-shadow: 2px 3px 10px 0px rgba(0,0,0,.5);
     margin: 0px;
     padding: 0px;
-    z-index:999;
+    z-index: 999;
+}
+
+.widgetMenu, .sampleMenu {
 }
 
 #widgetSelect {
     top: 48px;
-    margin-left:-100px;
+    margin-left: -100px;
 }
 
 #widgetSelect.hide {
@@ -75,7 +93,7 @@
     text-shadow: none;
     padding: 0 10px;
     line-height: 25px;
-    list-style-type:none;
+    list-style-type: none;
 }
 
 #widgetSelect li:hover {
