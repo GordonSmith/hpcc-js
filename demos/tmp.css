@@ -1,18 +1,10 @@
-﻿.mdl-switch__thumb {
-    //background: rgb(250,250,250);
-}
-
-.mdl-switch.is-checked .mdl-switch__thumb {
+﻿.mdl-switch.is-checked .mdl-switch__thumb {
     background: rgb(255,64,129);
 }
 
-.mdl-switch__thumb fieldset[disabled] .mdl-switch,
-.mdl-switch.is-disabled .mdl-switch__thumb {
+.mdl-switch.is-checked .mdl-switch__track {
+    background: rgba(0,0,0, 0.26);
 }
-
-.mdl-layout-title {
-}
-
 .mdl-layout__content {
     background-color: ghostwhite;
 }
@@ -75,9 +67,9 @@
     margin-left: -100px;
 }
 
-#widgetSelect.hide {
-    display: none;
-}
+    #widgetSelect.hide {
+        display: none;
+    }
 
 .widgetMenu, .sampleMenu {
     left: 100%;
@@ -128,9 +120,9 @@
     position: absolute;
 }
 
-    .resizeHandle:hover {
-        border-color: orange;
-    }
+.resizeHandle:hover {
+    border-color: orange;
+}
 
 .dragging {
     border-style: solid;

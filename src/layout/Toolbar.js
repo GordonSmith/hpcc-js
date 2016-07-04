@@ -50,7 +50,7 @@
             var box = this.getBoundingClientRect();
             var spanBox = span.node().getBoundingClientRect();
             var offset = (box.height/2) - (spanBox.height/2) - (spanBox.top - box.top);
-            span.style("padding", offset+"px");
+            //span.style("padding", offset+"px");
         });
         title.selectAll("div.toolbar-title > span")
             .style("font-size", this.fontSize_exists() ? this.fontSize() + "px" : null)
@@ -89,7 +89,7 @@
                         minX = childBBox.left;
                 })
             ;
-            context.element().select(".toolbar-title span")
+            context.element().select(".toolbar-title")
                 .style("width", (minX - toolbarBBox.left - 4) + "px")
             ;
             if (callback) {

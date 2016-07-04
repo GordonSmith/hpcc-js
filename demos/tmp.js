@@ -5,6 +5,7 @@
     }
 }(this, function (d3, GridList, Utility, Surface, Grid, Persist, PropertyEditor, Dendrogram, testFactory) {
     function Main() {
+        this.urlParts = window.location.search.split("?");
     }
 //    Main.prototype = Object.create();
     Main.prototype.constructor = Main;
@@ -15,7 +16,15 @@
         this.initFileMenu();
         this.initGrid();
         this.initToolbar();
-        this.loadWidget("src/chart/Column");
+        var context = this;
+        testFactory.deserializeFromURL(this.urlParts[1], function (widget, currTest) {
+            if (widget) {
+                context._currTest = currTest;
+                context.showWidget(widget);
+            } else {
+                context.loadWidget("src/chart/Column");
+            }
+        });
     };
 
     Main.prototype.initWidgetMenu = function () {
@@ -96,7 +105,9 @@
                                 switch (context._openMode) {
                                     case "theme":
                                         Persist.applyTheme(context._currWidget, json, function () {
-                                            context._currWidget.render();
+                                            context._currWidget.render(function (w) {
+                                                context.showSpinner(false);
+                                            });
                                         });
                                         break;
                                     default:
@@ -150,8 +161,9 @@
         d3.select("#themeReset")
             .on("click", function () {
                 d3.event.preventDefault();
+                context.showSpinner();
                 Persist.removeTheme(context._currWidget, function () {
-                    context._currWidget.render();
+                    context._currWidget.render(function (w) { context.showSpinner(false); });
                 });
                 context.closeFileMenu();
             })
@@ -213,6 +225,7 @@
 
     Main.prototype.loadWidget = function (widgetPath, widgetTest, params) {
         this.showSpinner();
+        this._currTest = widgetPath + (widgetTest ? "." + widgetTest : "");
         var context = this;
         var func = widgetTest ? testFactory.widgets[widgetPath][widgetTest].factory : d3.map(testFactory.widgets[widgetPath]).values()[0].factory;
         func(function (widget) {
@@ -233,13 +246,18 @@
 
     Main.prototype.showWidget = function (widget) {
         this.showSpinner();
+        this._propEditor
+            .widget(null)
+            .render()
+        ;
         this._currWidget = widget;
         if (this._monitorHandle) {
             this._monitorHandle.remove();
         }
-        //updateUrl(widget, widgetPath, widgetTest);
+        this.updateUrl();
+        var context = this;
         this._monitorHandle = widget.monitor(function () {
-            //updateUrl(currWidget, widgetPath, widgetTest);
+            context.updateUrl();
         });
         var context = this;
         this._main
@@ -292,6 +310,18 @@
                 }
             })
         ;
+    };
+
+    Main.prototype.updateUrl = function () {
+        var params = "";
+        if (this._currWidget) {
+            params = testFactory.serializeToURL(this._currTest, this._currWidget);
+        }
+        try {
+            window.history.pushState("", "", this.urlParts[0] + (params ? "?" + params : ""));
+        } catch (e) {
+            //  Local files do not have history...
+        }
     };
 
     return new Main();
