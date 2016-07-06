@@ -6,7 +6,8 @@
         root.marshaller_HipieDDL = factory(root.d3, root.common_Class, root.common_Database, root.common_Utility, root.other_Comms, root.common_Widget, root.require);
     }
 }(this, function (d3, Class, Database, Utility, Comms, Widget, require) {
-    var loading = "...loading...";
+    var LOADING = "...loading...";
+    var _CHANGED = "_changed";
 
     function exists(prop, scope) {
         var propParts = prop.split(".");
@@ -857,7 +858,7 @@
                 updatedViz.clear();
             });
         }
-        this.update(loading);
+        this.update(LOADING);
     };
 
     Visualization.prototype.on = function (eventID, func) {
@@ -906,7 +907,7 @@
                                     console.log("Duplicate Filter, with mismatched value:  " + key + "=" + inViz._eventValues[key]);
                                 }
                                 datasourceRequests[dataSource.id].request[key] = inViz._eventValues[key];
-                                datasourceRequests[dataSource.id].request[key + "_changed"] = inViz === context;
+                                datasourceRequests[dataSource.id].request[key + _CHANGED] = inViz === context;
                             }
                         }
                     });
@@ -934,6 +935,14 @@
             }
             return false;
         }, this);
+    };
+
+    Visualization.prototype.serialize = function () {
+        return this._eventValues;
+    };
+
+    Visualization.prototype.deserialize = function (state) {
+        this._eventValues = state;
     };
 
     //  Output  ---
@@ -1040,7 +1049,7 @@
         var context = this;
         this.request.refresh = refresh ? true : false;
         this.filter.forEach(function (item) {
-            this.request[item + "_changed"] = request[item + "_changed"] || false;
+            this.request[item + _CHANGED] = request[item + _CHANGED] || false;
             var value = request[item] === undefined ? null : request[item];
             if (this.request[item] !== value) {
                 this.request[item] = value;
@@ -1080,7 +1089,7 @@
                 from = this.outputs[key].id.toLowerCase();
             }
             if (exists(from, response)) {
-                if (!exists(from + "_changed", response) || (exists(from + "_changed", response) && response[from + "_changed"].length && response[from + "_changed"][0][from + "_changed"])) {
+                if (!exists(from + _CHANGED, response) || (exists(from + _CHANGED, response) && response[from + _CHANGED].length && response[from + _CHANGED][0][from + _CHANGED])) {
                     this.outputs[key].setData(response[from], request, updates);
                 } else {
                     //  TODO - I Suspect there is a HIPIE/Roxie issue here (empty request)
@@ -1088,7 +1097,7 @@
                 }
             } else if (exists(from, lowerResponse)) {
                 console.log("DDL 'DataSource.From' case is Incorrect");
-                if (!exists(from + "_changed", lowerResponse) || (exists(from + "_changed", lowerResponse) && response[from + "_changed"].length && lowerResponse[from + "_changed"][0][from + "_changed"])) {
+                if (!exists(from + _CHANGED, lowerResponse) || (exists(from + _CHANGED, lowerResponse) && response[from + _CHANGED].length && lowerResponse[from + _CHANGED][0][from + _CHANGED])) {
                     this.outputs[key].setData(lowerResponse[from], request, updates);
                 } else {
                     //  TODO - I Suspect there is a HIPIE/Roxie issue here (empty request)
@@ -1102,6 +1111,14 @@
                 console.log("Unable to locate '" + from + "' in response {" + responseItems.join(", ") + "}");
             }
         }
+    };
+
+    DataSource.prototype.serialize = function () {
+        return this.request;
+    };
+
+    DataSource.prototype.deserialize = function (state) {
+        this.request = state
     };
 
     //  Dashboard  ---
@@ -1165,6 +1182,35 @@
         return notLoaded.length === 0;
     };
 
+    Dashboard.prototype.serialize = function () {
+        var retVal = {
+            datasources: {},
+            visualizations: {}
+        };
+        for (var key in this.datasources) {
+            retVal.datasources[key] = this.datasources[key].request;
+        }
+        for (var key in this._visualizations) {
+            if (this._visualizations[key]._eventValues) {
+                retVal.visualizations[key] = this._visualizations[key]._eventValues;
+            }
+        }
+        return retVal;
+    };
+
+    Dashboard.prototype.deserialize = function (state) {
+        for (var key in this.datasources) {
+            if (state.datasources[key]) {
+                this.datasources[key].request = state.datasources[key];
+            }
+        }
+        for (var key in this._visualizations) {
+            if (state.visualizations[key]) {
+                this._visualizations[key]._eventValues = state.visualizations[key];
+            }
+        }
+    };
+
     //  Marshaller  ---
     function Marshaller() {
         Class.call(this);
@@ -1193,7 +1239,6 @@
     Marshaller.prototype.getVisualization = function (id) {
         return this._visualizations[id];
     };
-
 
     Marshaller.prototype.accept = function (visitor) {
         visitor.visit(this);
@@ -1371,6 +1416,21 @@
             }
         });
         return retVal;
+    };
+    Marshaller.prototype.serialize = function () {
+        var retVal = {};
+        this.dashboardArray.forEach(function (dashboard, idx) {
+            retVal[dashboard.id] = dashboard.serialize();
+        });
+        return retVal;
+    };
+    Marshaller.prototype.deserialize = function (state) {
+        this.dashboardArray.forEach(function (dashboard, idx) {
+            if (state[dashboard.id]) {
+                dashboard.deserialize(state[dashboard.id]);
+            }
+        });
+        return this;
     };
 
     return {

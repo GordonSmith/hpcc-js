@@ -23,10 +23,15 @@
     HipieDDLMixin.prototype.publish("propogateClear", false, "boolean", "Propogate clear to dependent visualizations", null);
     HipieDDLMixin.prototype.publish("missingDataString", "***MISSING***", "string", "Missing data display string");
 
-    HipieDDLMixin.prototype.selection = function (_) {
-        if (!arguments.length) return this._marshaller ? this._marshaller.request : null;
+    HipieDDLMixin.prototype.serialize = function () {
+        return this._marshaller ? this._marshaller.serialize() : {};
+    };
+
+    HipieDDLMixin.prototype.deserialize = function (state) {
         if (this._marshaller) {
-            this._marshaller.fetchData(_, true);
+            this._marshaller.request(state);
+        } else {
+            this._initialState = state;
         }
         return this;
     };
@@ -124,7 +129,6 @@
                 context.vizEvent.apply(context, arguments);
             })
         ;
-        this.firstRender = true;
 
         //  Parse DDL  ---
         if (this.ddlUrl()[0] === "[" || this.ddlUrl()[0] === "{") {
@@ -134,6 +138,7 @@
         }
 
         function postParse() {
+            var hasData = false;
             context._gatherDashboards(context._marshaller, context.databomb());
             //  Remove existing widgets not used and prime popups ---
             context._ddlVisualizations.forEach(function(viz) {
@@ -150,6 +155,9 @@
                     }
                     viz.newWidgetSurface.title(viz.title);
                     viz.widget.size({ width: 0, height: 0 });
+                }
+                if (!hasData) {
+                    hasData = viz.widget.data().length;
                 }
             });
             context._ddlPopupVisualizations.forEach(function (viz) {
@@ -172,22 +180,32 @@
             });
             context.populateContent();
             BaseClass.render.call(context, function (widget) {
-                for (var dashKey in context._ddlDashboards) {
-                    for (var dsKey in context._ddlDashboards[dashKey].dashboard.datasources) {
-                        context._ddlDashboards[dashKey].dashboard.datasources[dsKey].fetchData({}, true);
-                    }
+                if (context._initialState) {
+                    context._marshaller.deserialize(context._initialState);
+                    delete context._initialState;
                 }
-
-                //  Delay callback until first data has loaded  ---
-                var timeoutCounter = 0;
-                var intervalHandler = setInterval(function () {
-                    if (context._marshaller.commsDataLoaded() || ++timeoutCounter > 120) {
-                        clearInterval(intervalHandler);
-                        if (callback) {
-                            callback(widget);
+                if (!hasData) {
+                    for (var dashKey in context._ddlDashboards) {
+                        for (var dsKey in context._ddlDashboards[dashKey].dashboard.datasources) {
+                            context._ddlDashboards[dashKey].dashboard.datasources[dsKey].fetchData({}, true);
                         }
                     }
-                }, 500);
+
+                    //  Delay callback until first data has loaded  ---
+                    var timeoutCounter = 0;
+                    var intervalHandler = setInterval(function () {
+                        if (context._marshaller.commsDataLoaded() || ++timeoutCounter > 120) {
+                            clearInterval(intervalHandler);
+                            if (callback) {
+                                callback(widget);
+                            }
+                        }
+                    }, 500);
+                } else {
+                    if (callback) {
+                        callback(widget);
+                    }
+                }
             });
         }
     };

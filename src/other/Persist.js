@@ -192,6 +192,10 @@
                     }, this);
                 }
             }
+            if (includeData && widget.serialize) {
+                if (!retVal.__data) retVal.__data = {};
+                retVal.__data.serialization = widget.serialize();
+            }
             if (includeData && widget.data) {
                 if (!retVal.__data) retVal.__data = {};
                 retVal.__data.data = widget.data();
@@ -257,7 +261,20 @@
                     createCount = undefined;
                     if (state.__data) {
                         for (var key in state.__data) {
-                            widget[key](state.__data[key]);
+                            switch (key) {
+                                case "serialization":
+                                    if (widget.deserialize) {
+                                        widget.deserialize(state.__data[key]);
+                                    }
+                                    break;
+                                case "data":
+                                    widget.data(state.__data[key]);
+                                    break;
+                                default:
+                                    console.log("Unexpected __data item:  " + key);
+                                    widget[key](state.__data[key]);
+                                    break;
+                            }
                         }
                     }
                     callback(widget);
