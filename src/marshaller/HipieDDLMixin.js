@@ -185,22 +185,11 @@
                     delete context._initialState;
                 }
                 if (!hasData) {
-                    for (var dashKey in context._ddlDashboards) {
-                        for (var dsKey in context._ddlDashboards[dashKey].dashboard.datasources) {
-                            context._ddlDashboards[dashKey].dashboard.datasources[dsKey].fetchData({}, true);
+                    context._marshaller.fetchData().then(function (response) {
+                        if (callback) {
+                            callback(widget);
                         }
-                    }
-
-                    //  Delay callback until first data has loaded  ---
-                    var timeoutCounter = 0;
-                    var intervalHandler = setInterval(function () {
-                        if (context._marshaller.commsDataLoaded() || ++timeoutCounter > 120) {
-                            clearInterval(intervalHandler);
-                            if (callback) {
-                                callback(widget);
-                            }
-                        }
-                    }, 500);
+                    });
                 } else {
                     if (callback) {
                         callback(widget);

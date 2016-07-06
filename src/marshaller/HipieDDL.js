@@ -1031,6 +1031,9 @@
     };
 
     DataSource.prototype.fetchData = function (request, refresh, updates) {
+        if (request && request.refresh !== undefined) { throw "refresh in this request????"; };
+        request = request || this.request || {};
+        refresh = refresh || false;
         if (!updates) {
             updates = [];
             for (var oKey in this.outputs) {
@@ -1047,7 +1050,7 @@
         }
 
         var context = this;
-        this.request.refresh = refresh ? true : false;
+        this.request.refresh = refresh;
         this.filter.forEach(function (item) {
             this.request[item + _CHANGED] = request[item + _CHANGED] || false;
             var value = request[item] === undefined ? null : request[item];
@@ -1065,15 +1068,19 @@
         }
         var now = Date.now();
         this.dashboard.marshaller.commsEvent(this, "request", this.request);
-        this.comms.call(this.request).then(function (response) {
-            var delay = 500 - (Date.now() - now);  //  500 is to allow for all "clear" transitions to complete...
-            setTimeout(function() {
-                context.processResponse(response, request, updates);
-                context.dashboard.marshaller.commsEvent(context, "response", context.request, response);
-                ++context._loadedCount;
-            }, delay > 0 ? delay : 0);
-        }).catch(function (e) {
-            context.dashboard.marshaller.commsEvent(context, "error", context.request, e);
+        return new Promise(function (resolve, reject) {
+            context.comms.call(context.request).then(function (response) {
+                var delay = 500 - (Date.now() - now);  //  500 is to allow for all "clear" transitions to complete...
+                setTimeout(function () {
+                    context.processResponse(response, request, updates);
+                    context.dashboard.marshaller.commsEvent(context, "response", context.request, response);
+                    ++context._loadedCount;
+                    resolve(response);
+                }, delay > 0 ? delay : 0);
+            }).catch(function (e) {
+                context.dashboard.marshaller.commsEvent(context, "error", context.request, e);
+                reject(e);
+            });
         });
     };
 
@@ -1180,6 +1187,14 @@
     Dashboard.prototype.allVisualizationsLoaded = function () {
         var notLoaded = this._visualizationArray.filter(function (item) { return !item.isLoaded(); });
         return notLoaded.length === 0;
+    };
+
+    Dashboard.prototype.fetchData = function () {
+        var promises = []
+        for (var key in this.datasources) {
+            promises.push(this.datasources[key].fetchData());
+        }
+        return Promise.all(promises);
     };
 
     Dashboard.prototype.serialize = function () {
@@ -1417,6 +1432,14 @@
         });
         return retVal;
     };
+
+    Marshaller.prototype.fetchData = function () {
+        var promises = this.dashboardArray.map(function (dashboard) {
+            return dashboard.fetchData();
+        });
+        return Promise.all(promises);
+    };
+
     Marshaller.prototype.serialize = function () {
         var retVal = {};
         this.dashboardArray.forEach(function (dashboard, idx) {
@@ -1424,6 +1447,7 @@
         });
         return retVal;
     };
+
     Marshaller.prototype.deserialize = function (state) {
         this.dashboardArray.forEach(function (dashboard, idx) {
             if (state[dashboard.id]) {
