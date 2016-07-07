@@ -23,8 +23,8 @@
     HipieDDLMixin.prototype.publish("propogateClear", false, "boolean", "Propogate clear to dependent visualizations", null);
     HipieDDLMixin.prototype.publish("missingDataString", "***MISSING***", "string", "Missing data display string");
 
-    HipieDDLMixin.prototype.serialize = function () {
-        return this._marshaller ? this._marshaller.serialize() : {};
+    HipieDDLMixin.prototype.serializeState = function () {
+        return this._marshaller ? this._marshaller.serializeState() : {};
     };
 
     HipieDDLMixin.prototype.deserialize = function (state) {

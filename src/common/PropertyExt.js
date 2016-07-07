@@ -176,6 +176,14 @@
         return retVal;
     };
 
+    PropertyExt.prototype.propertyWalker = function (filter, visitor) {
+        this.publishedProperties(false, true).forEach(function (publishItem) {
+            if (typeof (filter) !== "function" || !filter(this, publishItem)) {
+                visitor(this, publishItem);
+            }
+        }, this);
+    };
+
     PropertyExt.prototype.publishedProperty = function (id) {
         return this[__meta_ + id];
     };
@@ -408,8 +416,29 @@
         }, this);
     };
 
-    PropertyExt.prototype.serialize = function (retVal) {
-        retVal = retVal || {};
+    PropertyExt.prototype.serializeProperties = function (retVal, filter, includeData, includeState) {
+        var context = this;
+        this.propertyWalker(filter, function (widget, item) {
+            if (widget[item.id + "_modified"]()) {
+                switch (item.type) {
+                    case "widget":
+                        retVal.__properties[item.id] = widget[item.id]().serialize(null, includeData, includeState);
+                        return true;
+                    case "widgetArray":
+                    case "propertyArray":
+                        retVal.__properties[item.id] = [];
+                        var widgetArray = widget[item.id]();
+                        widgetArray.forEach(function (widget, idx) {
+                            retVal.__properties[item.id].push(widget.serialize(null, includeData, includeState));
+                        });
+                        return true;
+                    default:
+                        retVal.__properties[item.id] = widget[item.id]();
+                        break;
+                }
+            }
+        });
+
         return retVal;
     };
 

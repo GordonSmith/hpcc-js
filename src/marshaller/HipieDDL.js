@@ -937,7 +937,7 @@
         }, this);
     };
 
-    Visualization.prototype.serialize = function () {
+    Visualization.prototype.serializeState = function () {
         return this._eventValues;
     };
 
@@ -1120,7 +1120,7 @@
         }
     };
 
-    DataSource.prototype.serialize = function () {
+    DataSource.prototype.serializeState = function () {
         return this.request;
     };
 
@@ -1197,7 +1197,7 @@
         return Promise.all(promises);
     };
 
-    Dashboard.prototype.serialize = function () {
+    Dashboard.prototype.serializeState = function () {
         var retVal = {
             datasources: {},
             visualizations: {}
@@ -1440,10 +1440,10 @@
         return Promise.all(promises);
     };
 
-    Marshaller.prototype.serialize = function () {
+    Marshaller.prototype.serializeState = function () {
         var retVal = {};
         this.dashboardArray.forEach(function (dashboard, idx) {
-            retVal[dashboard.id] = dashboard.serialize();
+            retVal[dashboard.id] = dashboard.serializeState();
         });
         return retVal;
     };

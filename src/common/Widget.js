@@ -493,13 +493,31 @@
     Widget.prototype.postUpdate = function (domNode, element) { };
     Widget.prototype.exit = function (domNode, element) { };
 
-    Widget.prototype.serialize = function () {
+    Widget.prototype.serialize = function (filter, includeData, includeState) {
         var retVal = Class.prototype.serialize.apply(this, arguments);
         if (this._id.indexOf(this._idSeed) !== 0) {
             retVal.__id = this._id;
         }
-        Platform.prototype.serialize.call(this, retVal);
-        PropertyExt.prototype.serialize.call(this, retVal);
+        Platform.prototype.serialize.call(this, retVal, filter, includeData, includeState);
+        if (!retVal.__properties) retVal.__properties = {};
+        PropertyExt.prototype.serializeProperties.call(this, retVal, filter, includeData, includeState);
+
+        if (this.classID() === "marshaller_Graph") {
+            //  TODO never worked  ---
+            var vertices = this.data().vertices;
+            if (vertices) {
+                this.__vertices = vertices.map(function (item) {
+                    return item.serialize(null, includeData);
+                }, this);
+            }
+        }
+        if (includeData) {
+            if (!retVal.__data) retVal.__data = {};
+            retVal.__data.data = this.data();
+        }
+        if (includeState) {
+            if (!retVal.__state) retVal.__state = {};
+        }
         return retVal;
     };
 

@@ -145,6 +145,17 @@
         return retVal;
     };
 
+    Field.prototype.serialize = function (filter, includeData, includeState) {
+        var retVal = Class.prototype.serialize.apply(this, arguments);
+        if (this._id.indexOf(this._idSeed) !== 0) {
+            retVal.__id = this._id;
+        }
+        if (!retVal.__properties) retVal.__properties = {};
+        PropertyExt.prototype.serializeProperties.call(this, retVal, filter, includeData, includeState);
+
+        return retVal;
+    };
+
     //  Grid  ---
     function Grid(dataChecksum) {
         dataChecksum = dataChecksum || false;

@@ -38,26 +38,15 @@
         });
     }
 
-    function propertyWalker(widget, filter, visitor) {
-        var publishedProps = widget.publishedProperties(false, true);
-        for (var i = 0; i < publishedProps.length; ++i) {
-            var publishItem = publishedProps[i];
-            if(typeof (filter) !== "function" || !filter(widget, publishItem)){
-                visitor(widget, publishItem);
-            }
-        }
-    }
-    
     function widgetPropertyWalker(widget, filter, visitor) {
         widgetWalker(widget, function (widget) {
-            propertyWalker(widget, filter, visitor);
+            widget.propertyWalker(filter, visitor);
         });
     }
 
     return {
         widgetWalker: widgetWalker,
         widgetArrayWalker: widgetArrayWalker,
-        propertyWalker: propertyWalker,
         widgetPropertyWalker: widgetPropertyWalker,
         serializeTheme: function(widget,filter){
             return JSON.stringify(this.serializeThemeToObject(widget,filter));
@@ -129,7 +118,8 @@
             }
         },
 
-        serializeToObject: function (widget, filter, includeData) {
+        serializeToObject: function (widget, filter, includeData, includeState) {
+            return widget.serialize(filter, includeData, includeState);
             var retVal = {
                 __class: widget.classID(),
             };
@@ -139,11 +129,10 @@
             if (widget.version) {
                 retVal.__version = widget.version();
             }
-            var retVal2 = widget.serialize();
             retVal.__properties = {};
 
             var context = this;
-            propertyWalker(widget, filter, function (widget, item) {
+            widget.propertyWalker(filter, function (widget, item) {
                 if (widget[item.id + "_modified"]()) {
                     switch (item.type) {
                         case "widget":
@@ -242,16 +231,26 @@
                     if (state.__data) {
                         for (var key in state.__data) {
                             switch (key) {
-                                case "serialization":
-                                    if (widget.deserialize) {
-                                        widget.deserialize(state.__data[key]);
-                                    }
-                                    break;
                                 case "data":
                                     widget.data(state.__data[key]);
                                     break;
                                 default:
                                     console.log("Unexpected __data item:  " + key);
+                                    widget[key](state.__data[key]);
+                                    break;
+                            }
+                        }
+                    }
+                    if (state.__state) {
+                        for (var key in state.__state) {
+                            switch (key) {
+                                case "ddl":
+                                    if (widget.deserialize) {
+                                        widget.deserialize(state.__state[key]);
+                                    }
+                                    break;
+                                default:
+                                    console.log("Unexpected __state item:  " + key);
                                     widget[key](state.__data[key]);
                                     break;
                             }
