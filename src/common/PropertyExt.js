@@ -154,11 +154,23 @@
     };
 
     // Publish Properties  ---
-    PropertyExt.prototype.publishedProperties = function (includePrivate) {
+    PropertyExt.prototype.publishedProperties = function (includePrivate, expandProxies) {
         var retVal = [];
         for (var key in this) {
             if (isMeta(key) && (includePrivate || !isPrivate(this, key))) {
-                retVal.push(this[key]);
+                var meta = this[key];
+                if (expandProxies && meta.type) {
+                    var item = this;
+                    while (meta.type === "proxy") {
+                        item = item[meta.proxy];
+                        meta = item.publishedProperty(meta.method);
+                    }
+                    if (meta.id !== this[key].id) {
+                        meta = JSON.parse(JSON.stringify(meta));  //  Clone meta so we can safely replace the id.
+                        meta.id = this[key].id;
+                    }
+                }
+                retVal.push(meta);
             }
         }
         return retVal;
@@ -394,6 +406,11 @@
                 other[meta.id + "_reset"]();
             }
         }, this);
+    };
+
+    PropertyExt.prototype.serialize = function (retVal) {
+        retVal = retVal || {};
+        return retVal;
     };
 
     return PropertyExt;

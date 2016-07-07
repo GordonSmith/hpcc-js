@@ -151,7 +151,7 @@
                 it("Property Tags", function (done) {
                     require([path, "src/other/Persist"], function (Widget, Persist) {
                         var widget = new Widget();
-                        Persist.discover(widget).forEach(function (prop) {
+                        widget.publishedProperties(false, true).forEach(function (prop) {
                             if (prop.ext && prop.ext.tags) {
                                 prop.ext.tags.forEach(function (tag) {
                                     switch (tag) {

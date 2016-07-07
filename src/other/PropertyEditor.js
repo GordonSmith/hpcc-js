@@ -215,7 +215,7 @@
             label: widget.id() + " (" + widget.classID() + ")",
             children: []
         };
-        var arr = Persist.discover(widget);
+        var arr = widget.publishedProperties(false, true);
         arr.forEach(function (prop) {
             var node = {
                 label: prop.id,
@@ -262,7 +262,7 @@
     };
 
     PropertyEditor.prototype.filterInputs = function(d) {
-        var discArr = Persist.discover(d);
+        var discArr = d.publishedProperties(false, true);
         if ((this.filterTags() || this.excludeTags().length > 0 || this.excludeParams.length > 0) && d instanceof PropertyEditor === false) {
             var context = this;
             return discArr.filter(function(param, idx) {

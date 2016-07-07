@@ -9,7 +9,7 @@
     var widgetID = 0;
     function Widget() {
         Class.call(this);
-        Platform.call(this);
+        Platform.call(this, this);
         PropertyExt.call(this);
         this._class = Object.getPrototypeOf(this)._class;
         this._id = this._idSeed + widgetID++;
@@ -492,6 +492,16 @@
     Widget.prototype.update = function (domNode, element) { };
     Widget.prototype.postUpdate = function (domNode, element) { };
     Widget.prototype.exit = function (domNode, element) { };
+
+    Widget.prototype.serialize = function () {
+        var retVal = Class.prototype.serialize.apply(this, arguments);
+        if (this._id.indexOf(this._idSeed) !== 0) {
+            retVal.__id = this._id;
+        }
+        Platform.prototype.serialize.call(this, retVal);
+        PropertyExt.prototype.serialize.call(this, retVal);
+        return retVal;
+    };
 
     return Widget;
 }));

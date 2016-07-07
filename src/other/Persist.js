@@ -6,31 +6,11 @@
         root.other_Persist = factory(root.common_Utility);
     }
 }(this, function (Utility) {
-    function discover(widget) {
-        var retVal = [];
-        widget.publishedProperties().forEach(function (_meta) {
-            var item = widget;
-            var meta = _meta;
-            if (meta.type) {
-                while (meta.type === "proxy") {
-                    item = item[meta.proxy];
-                    meta = item.publishedProperty(meta.method);
-                }
-                if (meta.id !== widget.publishedProperty(_meta.id).id) {
-                    meta = JSON.parse(JSON.stringify(meta));  //  Clone meta so we can safely replace the id.
-                    meta.id = widget.publishedProperty(_meta.id).id;
-                }
-                retVal.push(meta);
-            }
-        }, this);
-        return retVal;
-    }
-
     function widgetWalker(widget, visitor) {
         if (!widget)
             return;
         visitor(widget);
-        var publishedProps = discover(widget);
+        var publishedProps = widget.publishedProperties(false, true);
         for (var i = 0; i < publishedProps.length; ++i) {
             var publishItem = publishedProps[i];
             switch (publishItem.type) {
@@ -59,7 +39,7 @@
     }
 
     function propertyWalker(widget, filter, visitor) {
-        var publishedProps = discover(widget);
+        var publishedProps = widget.publishedProperties(false, true);
         for (var i = 0; i < publishedProps.length; ++i) {
             var publishItem = publishedProps[i];
             if(typeof (filter) !== "function" || !filter(widget, publishItem)){
@@ -75,7 +55,6 @@
     }
 
     return {
-        discover: discover,
         widgetWalker: widgetWalker,
         widgetArrayWalker: widgetArrayWalker,
         propertyWalker: propertyWalker,
@@ -160,6 +139,7 @@
             if (widget.version) {
                 retVal.__version = widget.version();
             }
+            var retVal2 = widget.serialize();
             retVal.__properties = {};
 
             var context = this;
