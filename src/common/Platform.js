@@ -159,13 +159,5 @@
         };
     };
 
-    Platform.prototype.serialize = function (retVal) {
-        retVal = retVal || {};
-        if (this.version) {
-            retVal.__version = this.version();
-        }
-        return retVal;
-    };
-
     return Platform;
 }));

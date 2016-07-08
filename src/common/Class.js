@@ -52,14 +52,5 @@
         return this;
     };
 
-    Class.prototype.serialize = function () {
-        return {
-            __class: this.classID(),
-        };
-    };
-
-    Class.prototype.deserialize = function (state) {
-    };
-
     return Class;
 }));

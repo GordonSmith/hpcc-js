@@ -75,13 +75,5 @@
         alert("Comms Error:\n" + source + "\n" + error);
     };
 
-    HTML.prototype.serialize = function (filter, includeData, includeState) {
-        var retVal = Grid.prototype.serialize.apply(this, arguments);
-        if (includeState) {
-            retVal.__state.ddl = this.serializeState();
-        }
-        return retVal;
-    };
-
     return HTML;
 }));

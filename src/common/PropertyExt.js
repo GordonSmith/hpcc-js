@@ -416,7 +416,18 @@
         }, this);
     };
 
-    PropertyExt.prototype.serializeProperties = function (retVal, filter, includeData, includeState) {
+    PropertyExt.prototype.serialize = function (filter, includeData, includeState) {
+        var retVal = {
+            __class: this.classID(),
+        };
+        if (this._id.indexOf(this._idSeed) !== 0) {
+            retVal.__id = this._id;
+        }
+        if (this.version) {
+            retVal.__version = this.version();
+        }
+        retVal.__properties = {};
+
         var context = this;
         this.propertyWalker(filter, function (widget, item) {
             if (widget[item.id + "_modified"]()) {
@@ -439,8 +450,16 @@
             }
         });
 
+        if (includeData && this.data) {
+            if (!retVal.__data) retVal.__data = {};
+            retVal.__data.data = this.data();
+        }
+        if (includeState && this.serializeState) {
+            retVal.__state = this.serializeState();
+        }
         return retVal;
     };
+
 
     return PropertyExt;
 }));
