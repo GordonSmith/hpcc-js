@@ -46,8 +46,8 @@
 
         this.insertSelectOptions(this.selectOptions());
         this._inputElement[0]
-            .style("max-width", this.maxWidth_exists() ? this.maxWidth() + "px" : null)
             .property("value", this.value())
+            .style("max-width", this.maxWidth_exists() ? this.maxWidth() + "px" : null)
         ;
     };
 

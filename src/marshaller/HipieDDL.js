@@ -1043,7 +1043,7 @@
                     var inputs = viz.getInputVisualizations();
                     if (!inputs.length) {
                         updates.push(item);
-                        viz.update(loading);
+                        viz.update(LOADING);
                     }
                 }, this);
             }

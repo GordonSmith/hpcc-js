@@ -9,7 +9,7 @@
     var widgetID = 0;
     function Widget() {
         Class.call(this);
-        Platform.call(this, this);
+        Platform.call(this);
         PropertyExt.call(this);
         this._class = Object.getPrototypeOf(this)._class;
         this._id = this._idSeed + widgetID++;

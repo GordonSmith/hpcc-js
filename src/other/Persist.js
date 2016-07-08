@@ -10,24 +10,17 @@
         if (!widget)
             return;
         visitor(widget);
-        var publishedProps = widget.publishedProperties(false, true);
-        for (var i = 0; i < publishedProps.length; ++i) {
-            var publishItem = publishedProps[i];
+        widget.publishedProperties(false, true).forEach(function (publishItem) {
             switch (publishItem.type) {
                 case "widget":
                     widgetWalker(widget[publishItem.id](), visitor);
                     break;
                 case "widgetArray":
                 case "propertyArray":
-                    var widgetArray = widget[publishItem.id]();
-                    if (widgetArray) {
-                        widgetArray.forEach(function (widget) {
-                            widgetWalker(widget, visitor);
-                        });
-                    }
+                    widgetArrayWalker(widget[publishItem.id](), visitor);
                     break;
             }
-        }
+        });
     }
 
     function widgetArrayWalker(widgets, visitor) {

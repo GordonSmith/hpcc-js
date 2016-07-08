@@ -23,19 +23,6 @@
     HipieDDLMixin.prototype.publish("propogateClear", false, "boolean", "Propogate clear to dependent visualizations", null);
     HipieDDLMixin.prototype.publish("missingDataString", "***MISSING***", "string", "Missing data display string");
 
-    HipieDDLMixin.prototype.serializeState = function () {
-        return this._marshaller ? this._marshaller.serializeState() : {};
-    };
-
-    HipieDDLMixin.prototype.deserializeState = function (state) {
-        if (this._marshaller) {
-            this._marshaller.deserializeState(state);
-        } else {
-            this._initialState = state;
-        }
-        return this;
-    };
-
     HipieDDLMixin.prototype._gatherDashboards = function (marshaller, databomb) {
         if (databomb instanceof Object) {
         } else if (databomb) {
@@ -260,6 +247,19 @@
     };
 
     HipieDDLMixin.prototype.commsEvent = function (ddlSource, eventID, request, response) {
+    };
+
+    HipieDDLMixin.prototype.serializeState = function () {
+        return this._marshaller ? this._marshaller.serializeState() : {};
+    };
+
+    HipieDDLMixin.prototype.deserializeState = function (state) {
+        if (this._marshaller) {
+            this._marshaller.deserializeState(state);
+        } else {
+            this._initialState = state;
+        }
+        return this;
     };
 
     return HipieDDLMixin;
