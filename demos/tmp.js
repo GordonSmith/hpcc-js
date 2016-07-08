@@ -12,9 +12,9 @@
 
     Main.prototype.init = function () {
         this.showSpinner();
+        this.initGrid();
         this.initWidgetMenu();
         this.initFileMenu();
-        this.initGrid();
         this.initToolbar();
         var context = this;
         testFactory.deserializeFromURL(this.urlParts[1], function (widget, currTest) {
@@ -168,6 +168,13 @@
                 context.closeFileMenu();
             })
         ;
+        d3.select("#switch-clone")
+            .on("click", function () {
+                context.showClone();
+                context.closeFileMenu();
+            })
+        ;
+        this.showClone();
     };
 
     Main.prototype.closeFileMenu = function () {
@@ -179,7 +186,6 @@
         this._propEditor = new PropertyEditor()
             .target("properties")
             .show_settings(true);
-            
         ;
         this._propEditor.onChange = Surface.prototype.debounce(function (widget, propID) {
             if (propID === "columns") {
@@ -195,6 +201,10 @@
             .target("surface")
             .surfacePadding(0)
             .surfaceBorderWidth(0)
+        ;
+
+        this._cloneSurface = new Surface()
+            .target("clone")
         ;
     };
 
@@ -258,6 +268,7 @@
         var context = this;
         this._monitorHandle = widget.monitor(function () {
             context.updateUrl();
+            context.showClone();
         });
         var context = this;
         this._main
@@ -301,15 +312,39 @@
                 .style("display", "none")
             ;
         }
+        if (this._currWidget && this._currWidget.designMode) {
+            this._currWidget.designMode(show);
+        }
         this._main
-            //.setContent(0, 2, show ? this._propEditor : null, "", 2, 1)
             .resize()
-            .render(function (widget) {
-                if (show) {
-                    //displayProperties();
-                }
-            })
+            .render()
         ;
+    };
+
+    Main.prototype.showClone = function () {
+        var show = d3.select("#switch-clone").property("checked");
+        d3.select("#cellClone")
+            .style("display", show ? null : "none")
+        ;
+        doResize();
+        if (show) {
+            var context = this;
+            Persist.clone(this._currWidget, function (widget) {
+                context._cloneWidget = widget;
+                context._cloneSurface
+                    .surfacePadding(0)
+                    .widget(widget)
+                    .render()
+                ;
+            });
+        } else {
+            this._cloneWidget = null;
+            this._cloneSurface
+                .surfacePadding(0)
+                .widget(null)
+                .render()
+            ;
+        }
     };
 
     Main.prototype.updateUrl = function () {

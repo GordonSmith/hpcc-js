@@ -49,8 +49,7 @@
                         <ul class="pure-menu-list">
                             <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
                                 <a href="#" id="widgetDropDown" class="pure-menu-link">Select a Widget</a>
-                                <ul id="widgetDropDownUL" class="pure-menu-children">
-                                </ul>
+                                <ul id="widgetDropDownUL" class="pure-menu-children"></ul>
                             </li>
                         </ul>
                     </div>
@@ -78,6 +77,13 @@
                 <a id="themeSave" class="mdl-navigation__link" href="">Save</a>
                 <a id="themeReset" class="mdl-navigation__link" href="">Reset</a>
             </nav>
+            <span class="mdl-layout-title">Other</span>
+            <nav class="mdl-navigation" style="margin-left:16px">
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-clone">
+                    <input type="checkbox" id="switch-clone" class="mdl-switch__input">
+                    <span class="mdl-switch__label">Clone</span>
+                </label>
+            </nav>
         </div>
         <main class="mdl-layout__content">
             <!-- MDL Progress Bar with Indeterminate Progress -->
@@ -92,6 +98,10 @@
                         <div id="properties">
                         </div>
                     </div>
+                    <div id="cellClone" class="mdl-cell mdl-cell--12-col mdl-shadow--2dp" style="display:none">
+                        <div id="clone">
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -101,11 +111,17 @@
         };
         require(["d3", "./tmp"], function (d3, app) {
             doResize = function () {
+                var showClone = d3.select("#switch-clone").property("checked");
+                var cloneHeight = showClone ? window.innerHeight / 3 : 0;
+                var cloneMargin = showClone ? 16 : 0;
                 d3.selectAll("#surface")
-                    .style("height", window.innerHeight - 48 - 64 + "px")
+                    .style("height", window.innerHeight - 48 - 64 - cloneHeight - cloneMargin + "px")
                 ;
                 d3.select("#properties")
-                    .style("height", window.innerHeight - 48 - 64 + "px")
+                    .style("height", window.innerHeight - 48 - 64 - cloneHeight + "px")
+                ;
+                d3.select("#clone")
+                    .style("height", cloneHeight + "px")
                 ;
                 if (app._main) {
                     app._main
@@ -113,6 +129,10 @@
                         .render()
                     ;
                     app._propEditor
+                        .resize()
+                        .render()
+                    ;
+                    app._cloneSurface
                         .resize()
                         .render()
                     ;
