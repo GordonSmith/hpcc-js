@@ -138,7 +138,7 @@
 
         var needsPropertiesTableRedraw = this.needsPropTableRedraw();
         if(needsPropertiesTableRedraw && this.showSettings()){
-            var teParams = this.publishedProperties(false, true);
+            var teParams = Persist.discover(this);
             for(var i in teParams){
                 if(teParams[i].ext.tags.indexOf(this.editorComplexity()) !== -1){
                     var teParamVal = this[teParams[i].id]();
@@ -681,7 +681,7 @@
         function _getParams(widgetObj, depth) {
             var retArr = [];
             if(widgetObj !== null){
-                var paramArr = widgetObj.publishedProperties(false, true);
+                var paramArr = Persist.discover(widgetObj);
                 paramArr.forEach(function (param, i1) {
                     if(typeof(param.ext.tags) !== "undefined"){
                         retArr.push({

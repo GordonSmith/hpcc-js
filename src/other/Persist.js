@@ -6,11 +6,15 @@
         root.other_Persist = factory(root.common_Utility);
     }
 }(this, function (Utility) {
+    function discover(widget) {
+        return widget.publishedProperties(false, true);
+    }
+
     function widgetWalker(widget, visitor) {
         if (!widget)
             return;
         visitor(widget);
-        widget.publishedProperties(false, true).forEach(function (publishItem) {
+        discover(widget).forEach(function (publishItem) {
             switch (publishItem.type) {
                 case "widget":
                     widgetWalker(widget[publishItem.id](), visitor);
@@ -31,15 +35,21 @@
         });
     }
 
+    function propertyWalker(widget, filter, visitor) {
+            widget.propertyWalker(filter, visitor);
+    }
+    
     function widgetPropertyWalker(widget, filter, visitor) {
         widgetWalker(widget, function (widget) {
-            widget.propertyWalker(filter, visitor);
+            propertyWalker(widget, filter, visitor);
         });
     }
 
     return {
+        discover: discover,
         widgetWalker: widgetWalker,
         widgetArrayWalker: widgetArrayWalker,
+        propertyWalker: propertyWalker,
         widgetPropertyWalker: widgetPropertyWalker,
         serializeTheme: function(widget,filter){
             return JSON.stringify(this.serializeThemeToObject(widget,filter));
@@ -124,7 +134,7 @@
             retVal.__properties = {};
 
             var context = this;
-            widget.propertyWalker(filter, function (widget, item) {
+            propertyWalker(widget, filter, function (widget, item) {
                 if (widget[item.id + "_modified"]()) {
                     switch (item.type) {
                         case "widget":
