@@ -938,11 +938,14 @@
     };
 
     Visualization.prototype.serializeState = function () {
-        return this._eventValues;
+        return {
+            eventValues: this._eventValues
+        };
     };
 
-    Visualization.prototype.deserialize = function (state) {
-        this._eventValues = state;
+    Visualization.prototype.deserializeState = function (state) {
+        if (!state) return;
+        this._eventValues = state.eventValues;
     };
 
     //  Output  ---
@@ -1121,11 +1124,14 @@
     };
 
     DataSource.prototype.serializeState = function () {
-        return this.request;
+        return {
+            request: this.request
+        };
     };
 
-    DataSource.prototype.deserialize = function (state) {
-        this.request = state
+    DataSource.prototype.deserializeState = function (state) {
+        if (!state) return;
+        this.request = state.request || {};
     };
 
     //  Dashboard  ---
@@ -1203,25 +1209,24 @@
             visualizations: {}
         };
         for (var key in this.datasources) {
-            retVal.datasources[key] = this.datasources[key].request;
+            retVal.datasources[key] = this.datasources[key].serializeState();
         }
         for (var key in this._visualizations) {
-            if (this._visualizations[key]._eventValues) {
-                retVal.visualizations[key] = this._visualizations[key]._eventValues;
-            }
+            retVal.visualizations[key] = this._visualizations[key].serializeState();
         }
         return retVal;
     };
 
-    Dashboard.prototype.deserialize = function (state) {
+    Dashboard.prototype.deserializeState = function (state) {
+        if (!state) return;
         for (var key in this.datasources) {
             if (state.datasources[key]) {
-                this.datasources[key].request = state.datasources[key];
+                this.datasources[key].deserializeState(state.datasources[key]);
             }
         }
         for (var key in this._visualizations) {
             if (state.visualizations[key]) {
-                this._visualizations[key]._eventValues = state.visualizations[key];
+                this._visualizations[key].deserializeState(state.visualizations[key]);
             }
         }
     };
@@ -1448,11 +1453,10 @@
         return retVal;
     };
 
-    Marshaller.prototype.deserialize = function (state) {
+    Marshaller.prototype.deserializeState = function (state) {
+        if (!state) return;
         this.dashboardArray.forEach(function (dashboard, idx) {
-            if (state[dashboard.id]) {
-                dashboard.deserialize(state[dashboard.id]);
-            }
+            dashboard.deserializeState(state[dashboard.id]);
         });
         return this;
     };

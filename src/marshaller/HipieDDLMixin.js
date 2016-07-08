@@ -168,7 +168,7 @@
             context.populateContent();
             BaseClass.render.call(context, function (widget) {
                 if (context._initialState) {
-                    context._marshaller.deserialize(context._initialState);
+                    context._marshaller.deserializeState(context._initialState.marshaller);
                     delete context._initialState;
                 }
                 if (!hasData) {
@@ -250,12 +250,14 @@
     };
 
     HipieDDLMixin.prototype.serializeState = function () {
-        return this._marshaller ? this._marshaller.serializeState() : {};
+        return {
+            marshaller: this._marshaller ? this._marshaller.serializeState() : {}
+        };
     };
 
     HipieDDLMixin.prototype.deserializeState = function (state) {
         if (this._marshaller) {
-            this._marshaller.deserializeState(state);
+            this._marshaller.deserializeState(state.marshaller);
         } else {
             this._initialState = state;
         }

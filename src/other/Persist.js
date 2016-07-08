@@ -138,14 +138,14 @@
                 if (widget[item.id + "_modified"]()) {
                     switch (item.type) {
                         case "widget":
-                            retVal.__properties[item.id] = context.serializeToObject(widget[item.id](), null, includeData);
+                            retVal.__properties[item.id] = context.serializeToObject(widget[item.id](), null, includeData, includeState);
                             return true;
                         case "widgetArray":
                         case "propertyArray":
                             retVal.__properties[item.id] = [];
                             var widgetArray = widget[item.id]();
                             widgetArray.forEach(function (widget, idx) {
-                                retVal.__properties[item.id].push(context.serializeToObject(widget, null, includeData));
+                                retVal.__properties[item.id].push(context.serializeToObject(widget, null, includeData, includeState));
                             });
                             return true;
                         default:
@@ -159,7 +159,7 @@
                 var vertices = widget.data().vertices;
                 if (vertices) {
                     this.__vertices = vertices.map(function (item) {
-                        return this.serializeToObject(item, null, includeData);
+                        return this.serializeToObject(item, null, includeData, includeState);
                     }, this);
                 }
             }
@@ -173,8 +173,8 @@
             return retVal;
         },
 
-        serialize: function (widget, filter, includeData) {
-            return JSON.stringify(this.serializeToObject(widget, filter, includeData));
+        serialize: function (widget, filter, includeData, includeState) {
+            return JSON.stringify(this.serializeToObject(widget, filter, includeData, includeState));
         },
 
         deserializeFromObject: function(widget, state, callback) {
@@ -279,7 +279,7 @@
         },
 
         clone: function (widget, callback) {
-            this.create(this.serializeToObject(widget, [], true), callback);
+            this.create(this.serializeToObject(widget, [], true, true), callback);
         }
     };
 }));

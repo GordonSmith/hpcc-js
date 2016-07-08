@@ -10,6 +10,8 @@
         SVGWidget.call(this);
         I2DChart.call(this);
         ITooltip.call(this);
+        this._selection = new Utility.SimpleSelection();
+
         this._drawStartPos = "origin";
 
         this.labelWidgets = {};
@@ -41,7 +43,7 @@
 
     Bubble.prototype.enter = function (domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
-        this._selection = new Utility.SimpleSelection(element);
+        this._selection.widgetElement(element);
         var context = this;
         this
             .tooltipHTML(function (d) {
@@ -140,5 +142,14 @@
         delete this._selection;
     };
 
+    Bubble.prototype.serializeState = function () {
+        return {
+            selection: this._selection.selection()
+        };
+    };
+
+    Bubble.prototype.deserializeState = function (state) {
+        return this._selection.selection(state.selection);
+    };
     return Bubble;
 }));
