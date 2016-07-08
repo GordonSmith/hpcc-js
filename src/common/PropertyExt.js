@@ -416,50 +416,5 @@
         }, this);
     };
 
-    PropertyExt.prototype.serialize = function (filter, includeData, includeState) {
-        var retVal = {
-            __class: this.classID(),
-        };
-        if (this._id.indexOf(this._idSeed) !== 0) {
-            retVal.__id = this._id;
-        }
-        if (this.version) {
-            retVal.__version = this.version();
-        }
-        retVal.__properties = {};
-
-        var context = this;
-        this.propertyWalker(filter, function (widget, item) {
-            if (widget[item.id + "_modified"]()) {
-                switch (item.type) {
-                    case "widget":
-                        retVal.__properties[item.id] = widget[item.id]().serialize(null, includeData, includeState);
-                        return true;
-                    case "widgetArray":
-                    case "propertyArray":
-                        retVal.__properties[item.id] = [];
-                        var widgetArray = widget[item.id]();
-                        widgetArray.forEach(function (widget, idx) {
-                            retVal.__properties[item.id].push(widget.serialize(null, includeData, includeState));
-                        });
-                        return true;
-                    default:
-                        retVal.__properties[item.id] = widget[item.id]();
-                        break;
-                }
-            }
-        });
-
-        if (includeData && this.data) {
-            if (!retVal.__data) retVal.__data = {};
-            retVal.__data.data = this.data();
-        }
-        if (includeState && this.serializeState) {
-            retVal.__state = this.serializeState();
-        }
-        return retVal;
-    };
-
-
     return PropertyExt;
 }));

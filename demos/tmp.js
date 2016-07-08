@@ -136,7 +136,7 @@
         d3.select("#fileSave")
             .on("click", function () {
                 d3.event.preventDefault();
-                var text = JSON.stringify(Persist.serializeToObject(context._currWidget, null, true), null, "  ");
+                var text = JSON.stringify(Persist.serializeToObject(context._currWidget, null, true, true), null, "  ");
                 Utility.downloadBlob("JSON", text, context._currWidget.classID(), "persist");
                 context.closeFileMenu();
             })

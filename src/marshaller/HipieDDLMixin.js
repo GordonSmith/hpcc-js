@@ -27,9 +27,9 @@
         return this._marshaller ? this._marshaller.serializeState() : {};
     };
 
-    HipieDDLMixin.prototype.deserialize = function (state) {
+    HipieDDLMixin.prototype.deserializeState = function (state) {
         if (this._marshaller) {
-            this._marshaller.request(state);
+            this._marshaller.deserializeState(state);
         } else {
             this._initialState = state;
         }

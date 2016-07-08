@@ -119,7 +119,6 @@
         },
 
         serializeToObject: function (widget, filter, includeData, includeState) {
-            return widget.serialize(filter, includeData, includeState);
             var retVal = {
                 __class: widget.classID(),
             };
@@ -161,13 +160,12 @@
                     }, this);
                 }
             }
-            if (includeData && widget.serialize) {
-                if (!retVal.__data) retVal.__data = {};
-                retVal.__data.serialization = widget.serialize();
-            }
             if (includeData && widget.data) {
                 if (!retVal.__data) retVal.__data = {};
                 retVal.__data.data = widget.data();
+            }
+            if (includeState && widget.serializeState) {
+                retVal.__state = widget.serializeState();
             }
             return retVal;
         },
@@ -241,20 +239,8 @@
                             }
                         }
                     }
-                    if (state.__state) {
-                        for (var key in state.__state) {
-                            switch (key) {
-                                case "ddl":
-                                    if (widget.deserialize) {
-                                        widget.deserialize(state.__state[key]);
-                                    }
-                                    break;
-                                default:
-                                    console.log("Unexpected __state item:  " + key);
-                                    widget[key](state.__data[key]);
-                                    break;
-                            }
-                        }
+                    if (state.__state && widget.deserializeState) {
+                        widget.deserializeState(state.__state);
                     }
                     callback(widget);
                 }

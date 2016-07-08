@@ -27,7 +27,7 @@
                 if (this[prop] === undefined) {
                     this[prop] = source[prop];
                 } else {
-                    console.log("Implements dup func:  " + prop);
+                    console.log("Duplicate member:  " + prop);
                 }
             }
         }
