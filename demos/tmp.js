@@ -5,17 +5,12 @@
     }
 }(this, function (d3, GridList, Utility, Surface, Grid, Persist, PropertyEditor, testFactory) {
     function Main() {
-        this.urlParts = window.location.search.split("?");
-    }
-//    Main.prototype = Object.create();
-    Main.prototype.constructor = Main;
-
-    Main.prototype.init = function () {
         this.showSpinner();
+        this.urlParts = window.location.search.split("?");
+
+        this._testFactory = testFactory;
+
         this.initGrid();
-        this.initWidgetMenu();
-        this.initFileMenu();
-        this.initToolbar();
         var context = this;
         testFactory.deserializeFromURL(this.urlParts[1], function (widget, currTest) {
             if (widget) {
@@ -25,177 +20,14 @@
                 context.loadWidget("src/chart/Column");
             }
         });
-    };
-
-    Main.prototype.initWidgetMenu = function () {
-        var context = this;
-        var categories = d3.select("#widgetDropDownUL").selectAll("li").data(d3.map(testFactory.categories).entries());
-        var catLI = categories.enter().append("li")
-            .attr("class", "pure-menu-item pure-menu-has-children pure-menu-allow-hover")
-        ;
-        catLI.append("a")
-            .attr("href", "#")
-            .attr("class", "pure-menu-link")
-            .text(function (d) { return d.key; })
-        ;
-        var catUL = catLI.append("ul")
-            .attr("class", "pure-menu-children")
-        ;
-        var widgets = catUL.selectAll("li").data(function (d) {
-            var retVal = [];
-            for (var key in d.value) {
-                var value = [];
-                for (var key2 in d.value[key]) {
-                    value.push({
-                        key: key2,
-                        value: d.value[key][key2]
-                    });
-                }
-                retVal.push({
-                    key: key,
-                    value: value
-                });
-            }
-            return retVal;
-        });
-        var widgetsLI = widgets.enter().append("li")
-            .attr("class", "pure-menu-item pure-menu-has-children pure-menu-allow-hover")
-        ;
-        widgetsLI
-            .append("a")
-            .attr("href", "#")
-            .attr("class", "pure-menu-link")
-            .text(function (d) { return d.key; })
-        ;
-        var tests = widgetsLI.append("ul")
-            .attr("class", "pure-menu-children")
-            .selectAll("li").data(function (d) { return d.value; })
-        ;
-        tests.enter().append("li")
-            .attr("class", "pure-menu-item")
-            .append("a")
-            .attr("href", "#")
-            .attr("class", "pure-menu-link")
-            .text(function (d) { return d.key; })
-            .on("click", function (d) {
-                context.loadWidget(d.value.widgetPath, d.key);
-                d3.select(d3.select("#widgetDropDown").parentNode)
-                    .classed("pure-menu-active", false);
-                ;
-            })
-        ;
-        d3.select(d3.select("#widgetDropDown").parentNode)
-            .classed("pure-menu-active", true);
-        ;
-    };
-
-    Main.prototype.initFileMenu = function () {
-        var context = this;
-        var fileOpenInput = d3.select("#fileOpenInput")
-            .on("change", function () {
-                context.showSpinner();
-                for (var i = 0, f; f = this.files[i]; i++) {
-                    var reader = new FileReader();
-                    reader.onload = (function (theFile) {
-                        return function (e) {
-                            console.log('e readAsText = ', e);
-                            console.log('e readAsText target = ', e.target);
-                            try {
-                                var json = JSON.parse(e.target.result);
-                                switch (context._openMode) {
-                                    case "theme":
-                                        Persist.applyTheme(context._currWidget, json, function () {
-                                            context._currWidget.render(function (w) {
-                                                context.showSpinner(false);
-                                            });
-                                        });
-                                        break;
-                                    default:
-                                        Persist.create(json, function (widget) {
-                                            context.showWidget(widget);
-                                        });
-                                }
-                            } catch (ex) {
-                                alert('ex when trying to parse json = ' + ex);
-                            }
-                        }
-                    })(f);
-                    reader.readAsText(f);
-                }
-            })
-        ;
-        d3.select("#fileOpen")
-            .on("click", function () {
-                d3.event.preventDefault();
-                context.closeFileMenu();
-                d3.select("#fileOpenInput").property("accept", ".persist,.json");
-                context._openMode = "persist";
-                fileOpenInput.node().click();
-            })
-        ;
-        d3.select("#fileSave")
-            .on("click", function () {
-                d3.event.preventDefault();
-                var text = JSON.stringify(Persist.serializeToObject(context._currWidget, null, true, true), null, "  ");
-                Utility.downloadBlob("JSON", text, context._currWidget.classID(), "persist");
-                context.closeFileMenu();
-            })
-        ;
-        d3.select("#themeOpen")
-            .on("click", function () {
-                d3.event.preventDefault();
-                context.closeFileMenu();
-                d3.select("#fileOpenInput").property("accept", ".theme,.json");
-                context._openMode = "theme";
-                fileOpenInput.node().click();
-            })
-        ;
-        d3.select("#themeSave")
-            .on("click", function () {
-                d3.event.preventDefault();
-                var text = JSON.stringify(Persist.serializeThemeToObject(context._currWidget), null, "  ");
-                Utility.downloadBlob("JSON", text, null, "theme");
-                context.closeFileMenu();
-            })
-        ;
-        d3.select("#themeReset")
-            .on("click", function () {
-                d3.event.preventDefault();
-                context.showSpinner();
-                Persist.removeTheme(context._currWidget, function () {
-                    context._currWidget.render(function (w) { context.showSpinner(false); });
-                });
-                context.closeFileMenu();
-            })
-        ;
-        d3.select("#switch-clone")
-            .on("click", function () {
-                context.showClone();
-                context.closeFileMenu();
-            })
-        ;
-        this.showClone();
-    };
-
-    Main.prototype.closeFileMenu = function () {
-        var layout = document.querySelector('.mdl-layout');
-        layout.MaterialLayout.toggleDrawer();
-    };
+    }
+    Main.prototype.constructor = Main;
 
     Main.prototype.initGrid = function () {
         this._propEditor = new PropertyEditor()
             .target("properties")
             .show_settings(true);
         ;
-        this._propEditor.onChange = Surface.prototype.debounce(function (widget, propID) {
-            if (propID === "columns") {
-            } else if (propID === "data") {
-            } else {
-                //displaySerialization();
-                //displaySerializationText();
-                //displayThemeText();
-            }
-        }, 500);
 
         this._main = new Grid()
             .target("surface")
@@ -208,9 +40,9 @@
         ;
     };
 
-    Main.prototype.initToolbar = function () {
+    Main.prototype.initPropertiesSwitch = function (id) {
         var context = this;
-        this._toggleDesign = d3.select("#switch-design")
+        this._toggleDesign = d3.select(id)
             .on("click", function () {
                 context.showProperties();
             })
@@ -218,19 +50,9 @@
         this.showProperties();
     };
 
+
+
     Main.prototype.showSpinner = function (show) {
-        show = arguments.length ? arguments[0] : true;
-        d3.select("#surface")
-            .style("opacity", 0)
-        ;
-        if (!show) {
-            d3.select("#surface").transition().duration(750)
-                .style("opacity", 1)
-            ;
-        }
-        d3.select("#spinner")
-            .classed("is-active", show)
-        ;
     };
 
     Main.prototype.loadWidget = function (widgetPath, widgetTest, params) {
@@ -254,6 +76,18 @@
         });
     };
 
+    Main.prototype.openWidget = function (json) {
+        var context = this;
+        Persist.create(json, function (widget) {
+            context.showWidget(widget);
+        });
+    };
+
+    Main.prototype.saveWidget = function () {
+        var text = JSON.stringify(Persist.serializeToObject(this._currWidget, null, true, true), null, "  ");
+        Utility.downloadBlob("JSON", text, this._currWidget.classID(), "persist");
+    };
+
     Main.prototype.showWidget = function (widget) {
         this.showSpinner();
         this._propEditor
@@ -265,12 +99,12 @@
             this._monitorHandle.remove();
         }
         this.updateUrl();
+        this.showClone();
         var context = this;
         this._monitorHandle = widget.monitor(function () {
             context.updateUrl();
             context.showClone();
         });
-        context.showClone();
         var context = this;
         this._main
             .setContent(0, 0, widget, "", 2, 2)
@@ -283,34 +117,24 @@
         }
         this._propEditor
             .widget(widget)
+            .render()
         ;
     };
 
+    Main.prototype.cloneWidget = function (func) {
+        Persist.clone(this._currWidget, func);
+    };
+
     Main.prototype.propertiesVisible = function () {
-        return d3.select("#switch-design").property("checked");
+        return false;
     };
 
     Main.prototype.showProperties = function () {
         var show = this.propertiesVisible();
         if (show) {
-            d3.select("#cellSurface")
-                .classed("mdl-cell--12-col", false)
-                .classed("mdl-cell--8-col", true)
-            ;
-            d3.select("#cellProperties")
-                .style("display", null)
-            ;
             this._propEditor
                 .resize()
                 .render()
-            ;
-        } else {
-            d3.select("#cellSurface")
-                .classed("mdl-cell--8-col", false)
-                .classed("mdl-cell--12-col", true)
-            ;
-            d3.select("#cellProperties")
-                .style("display", "none")
             ;
         }
         if (this._currWidget && this._currWidget.designMode) {
@@ -322,16 +146,16 @@
         ;
     };
 
+    Main.prototype.cloneVisible = function () {
+        return false;
+    };
+
     Main.prototype.showClone = function () {
-        var show = d3.select("#switch-clone").property("checked");
-        d3.select("#cellClone")
-            .style("display", show ? null : "none")
-        ;
+        var show = this.cloneVisible();
         doResize();
         if (show) {
             var context = this;
-            Persist.clone(this._currWidget, function (widget) {
-                context._cloneWidget = widget;
+            this.cloneWidget(function (widget) {
                 context._cloneSurface
                     .surfacePadding(0)
                     .widget(widget)
@@ -339,13 +163,33 @@
                 ;
             });
         } else {
-            this._cloneWidget = null;
             this._cloneSurface
                 .surfacePadding(0)
                 .widget(null)
                 .render()
             ;
         }
+    };
+
+    Main.prototype.openTheme = function (json) {
+        var context = this;
+        Persist.applyTheme(this._currWidget, json, function () {
+            context._currWidget.render(function (w) {
+                context.showSpinner(false);
+            });
+        });
+    };
+
+    Main.prototype.saveTheme = function () {
+        var text = JSON.stringify(Persist.serializeThemeToObject(this._currWidget), null, "  ");
+        Utility.downloadBlob("JSON", text, null, "theme");
+    };
+
+    Main.prototype.resetTheme = function () {
+        var context = this;
+        Persist.removeTheme(this._currWidget, function () {
+            context._currWidget.render(function (w) { context.showSpinner(false); });
+        });
     };
 
     Main.prototype.updateUrl = function () {
@@ -360,7 +204,22 @@
         }
     };
 
-    return new Main();
+    Main.prototype.doResize = function () {
+        this._main
+            .resize()
+            .render()
+        ;
+        this._propEditor
+            .resize()
+            .render()
+        ;
+        this._cloneSurface
+            .resize()
+            .render()
+        ;
+    };
+
+    return Main;
 
 
 

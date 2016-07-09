@@ -342,7 +342,6 @@
     };
 
     PropertyExt.prototype.monitorProperty = function (propID, func) {
-        var context = this;
         var meta = this.publishedProperty(propID);
         switch (meta.type) {
             case "proxy":

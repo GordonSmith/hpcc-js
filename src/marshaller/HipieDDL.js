@@ -1034,7 +1034,7 @@
     };
 
     DataSource.prototype.fetchData = function (request, refresh, updates) {
-        if (request && request.refresh !== undefined) { throw "refresh in this request????"; };
+        if (request && request.refresh !== undefined) { throw "refresh in this request????"; }
         request = request || this.request || {};
         refresh = refresh || false;
         if (!updates) {
@@ -1196,7 +1196,7 @@
     };
 
     Dashboard.prototype.fetchData = function () {
-        var promises = []
+        var promises = [];
         for (var key in this.datasources) {
             promises.push(this.datasources[key].fetchData());
         }
@@ -1211,8 +1211,8 @@
         for (var key in this.datasources) {
             retVal.datasources[key] = this.datasources[key].serializeState();
         }
-        for (var key in this._visualizations) {
-            retVal.visualizations[key] = this._visualizations[key].serializeState();
+        for (var vizKey in this._visualizations) {
+            retVal.visualizations[vizKey] = this._visualizations[vizKey].serializeState();
         }
         return retVal;
     };
@@ -1224,9 +1224,9 @@
                 this.datasources[key].deserializeState(state.datasources[key]);
             }
         }
-        for (var key in this._visualizations) {
-            if (state.visualizations[key]) {
-                this._visualizations[key].deserializeState(state.visualizations[key]);
+        for (var vizKey in this._visualizations) {
+            if (state.visualizations[vizKey]) {
+                this._visualizations[vizKey].deserializeState(state.visualizations[vizKey]);
             }
         }
     };
