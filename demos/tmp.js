@@ -270,27 +270,28 @@
             context.updateUrl();
             context.showClone();
         });
+        context.showClone();
         var context = this;
         this._main
             .setContent(0, 0, widget, "", 2, 2)
             .render(function (mainWidget) {
                 context.showSpinner(false);
-
-                //displayProperties(currWidget);
-                //displayPropertyTree(currWidget);
-                //displaySerialization(currWidget);
-                //displaySerializationText(currWidget);
-                //displayThemeText(currWidget);
             })
         ;
+        if (widget && widget.designMode) {
+            widget.designMode(this.propertiesVisible());
+        }
         this._propEditor
             .widget(widget)
-            .render()
         ;
     };
 
+    Main.prototype.propertiesVisible = function () {
+        return d3.select("#switch-design").property("checked");
+    };
+
     Main.prototype.showProperties = function () {
-        var show = d3.select("#switch-design").property("checked");
+        var show = this.propertiesVisible();
         if (show) {
             d3.select("#cellSurface")
                 .classed("mdl-cell--12-col", false)
