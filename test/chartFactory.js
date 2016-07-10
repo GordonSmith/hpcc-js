@@ -42,7 +42,6 @@
                     callback(new Column()
                         .columns(DataFactory.ordinalRange.default.columns)
                         .data(DataFactory.ordinalRange.default.data)
-                        
                         .yAxisType("linear")
                         .xAxisType("ordinal")
                     );
