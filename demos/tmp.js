@@ -50,8 +50,6 @@
         this.showProperties();
     };
 
-
-
     Main.prototype.showSpinner = function (show) {
     };
 

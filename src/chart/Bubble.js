@@ -10,7 +10,7 @@
         SVGWidget.call(this);
         I2DChart.call(this);
         ITooltip.call(this);
-        this._selection = new Utility.SimpleSelection();
+        Utility.SimpleSelectionMixin.call(this);
 
         this._drawStartPos = "origin";
 
@@ -27,6 +27,7 @@
     Bubble.prototype._class += " chart_Bubble";
     Bubble.prototype.implements(I2DChart.prototype);
     Bubble.prototype.implements(ITooltip.prototype);
+    Bubble.prototype.mixin(Utility.SimpleSelectionMixin);
 
     Bubble.prototype.publish("paletteID", "default", "set", "Palette ID", Bubble.prototype._palette.switch(),{tags:["Basic","Shared"]});
     Bubble.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette",null,{tags:["Intermediate","Shared"]});
@@ -139,17 +140,7 @@
 
     Bubble.prototype.exit = function (domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
-        delete this._selection;
     };
 
-    Bubble.prototype.serializeState = function () {
-        return {
-            selection: this._selection.selection()
-        };
-    };
-
-    Bubble.prototype.deserializeState = function (state) {
-        return this._selection.selection(state.selection);
-    };
     return Bubble;
 }));

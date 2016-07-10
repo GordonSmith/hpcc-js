@@ -188,6 +188,21 @@
         return this;
     };
 
+    function SimpleSelectionMixin(skipBringToTop) {
+        this._selection = new SimpleSelection(null, skipBringToTop);
+    }
+
+    SimpleSelectionMixin.prototype.serializeState = function () {
+        return {
+            selection: this._selection.selection()
+        };
+    };
+
+    SimpleSelectionMixin.prototype.deserializeState = function (state) {
+        return this._selection.selection(state.selection);
+    };
+
+
     var perf = window.performance;
     var now = perf && (perf.now || perf.mozNow || perf.msNow || perf.oNow || perf.webkitNow);
 
@@ -214,6 +229,7 @@
 
         Selection: SelectionBag,
         SimpleSelection: SimpleSelection,
+        SimpleSelectionMixin: SimpleSelectionMixin,
 
         urlParams: function () {
             var def = window.location.search.split("?")[1];
