@@ -192,6 +192,69 @@
             }
            
         },
+        HandsOnTable: {
+            simple: function (callback) {
+                require(["test/DataFactory", "src/handson/Table"], function (DataFactory, Table) {
+                    var table = new Table()
+                        .columns(["Lat","Long","Pin"])
+                        .data([
+                            [37.665074, -122.384375, "green-dot.png"],
+                            [32.69068, -117.17854, "1"],
+                            [39.709455, -104.969859, "2"],
+                            [41.244123, -95.96161, "3"],
+                            [32.68898, -117.19204, "10"],
+                            [45.78649, -108.5266, "11"],
+                            [45.79618, -108.535652, "12"],
+                            [45.77432, -108.49437, "90"],
+                            [45.777062, -108.549835, "red-dot.png"]
+                        ])
+                    ;
+                    callback(table);
+                });
+            },
+            widget: function (callback) {
+                require(["test/DataFactory", "src/handson/Table"], function (DataFactory, Table) {
+                    callback(new Table()
+                        .columns(DataFactory.Table.widget.columns)
+                        .data(DataFactory.Table.widget.data)
+                        //.minWidgetHeight(200)
+                        //.minWidgetWidth(200)
+                    );
+                });
+            },
+            large: function (callback) {
+                require(["test/DataFactory", "src/handson/Table"], function (DataFactory, Table) {
+                    callback(new Table()
+                    .columns(DataFactory.Table.large.columns)
+                    .data(DataFactory.Table.large.data)
+                    //.fixedHeader(true)
+                    );
+                });
+            },
+            totalled: function (callback) {
+                require(["test/DataFactory", "src/handson/Table"], function (DataFactory, Table) {
+                    var table = new Table()
+                        .columns(DataFactory.Table.large.columns)
+                        .data(DataFactory.Table.large.data)
+                        .totalledColumns([1, 2, 5, 6, 7])
+                        .totalledLabel("Total")
+                    ;
+                    callback(table);
+                });
+            },
+            formatted: function (callback) {
+                require(["test/DataFactory", "src/handson/Table"], function (DataFactory, Table) {
+                    var table = new Table()
+                        .columns(DataFactory.Table.formatted.columns)
+                        .data(DataFactory.Table.formatted.data)
+                    ;
+                    table.fields()[0].format(".2f");
+                    table.fields()[2].format(".6r");
+                    table.fields()[4].type("time").mask("%Y-%_m-%_d").format("%d %b '%y");
+                    callback(table);
+                });
+            }
+        },
         Toolbar: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/composite/MegaChart", "src/form/Select"], function (DataFactory, MegaChart, Select) {
