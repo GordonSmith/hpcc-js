@@ -86,6 +86,37 @@
         Utility.downloadBlob("JSON", text, this._currWidget.classID(), "persist");
     };
 
+    Main.prototype.openDDL = function (json) {
+        var context = this;
+        require(["src/marshaller/HTML"], function (HTML) {
+            var widget = new HTML()
+                .ddlUrl(JSON.stringify(json))
+            ;
+            context.showWidget(widget);
+        });
+    };
+
+    Main.prototype.openTheme = function (json) {
+        var context = this;
+        Persist.applyTheme(this._currWidget, json, function () {
+            context._currWidget.render(function (w) {
+                context.showSpinner(false);
+            });
+        });
+    };
+
+    Main.prototype.saveTheme = function () {
+        var text = JSON.stringify(Persist.serializeThemeToObject(this._currWidget), null, "  ");
+        Utility.downloadBlob("JSON", text, null, "theme");
+    };
+
+    Main.prototype.resetTheme = function () {
+        var context = this;
+        Persist.removeTheme(this._currWidget, function () {
+            context._currWidget.render(function (w) { context.showSpinner(false); });
+        });
+    };
+
     Main.prototype.showWidget = function (widget) {
         this.showSpinner();
         this._propEditor
@@ -170,27 +201,6 @@
             }
             this._prevShowClone = show;
         }
-    };
-
-    Main.prototype.openTheme = function (json) {
-        var context = this;
-        Persist.applyTheme(this._currWidget, json, function () {
-            context._currWidget.render(function (w) {
-                context.showSpinner(false);
-            });
-        });
-    };
-
-    Main.prototype.saveTheme = function () {
-        var text = JSON.stringify(Persist.serializeThemeToObject(this._currWidget), null, "  ");
-        Utility.downloadBlob("JSON", text, null, "theme");
-    };
-
-    Main.prototype.resetTheme = function () {
-        var context = this;
-        Persist.removeTheme(this._currWidget, function () {
-            context._currWidget.render(function (w) { context.showSpinner(false); });
-        });
     };
 
     Main.prototype.updateUrl = function () {

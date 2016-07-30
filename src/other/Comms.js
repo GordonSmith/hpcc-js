@@ -258,7 +258,7 @@
     Comms.prototype.ajax = function (method, url, request) {
         return new Promise(function (resolve, reject) {
             var uri = url;
-            if (request) {
+            if (method === "GET" && request) {
                 uri += "?" + serialize(request);
             }
             var xhr = new XMLHttpRequest();
@@ -275,7 +275,12 @@
             };
             xhr.open(method, uri);
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            xhr.send();
+            if (method === "GET") {
+                xhr.send();
+            } else {
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.send(serialize(request));
+            }
         });
     };
 
@@ -473,8 +478,6 @@
         this._sequence = null;
         this._resultName = null;
 
-        this._fetchResultNamesPromise = null;
-        this._fetchResultPromise = {};
         this._resultNameCache = {};
         this._resultNameCacheCount = 0;
     }
@@ -554,47 +557,44 @@
 
     WsWorkunits.prototype._fetchResult = function (target, callback, skipMapping) {
         target = target || {};
-        if (!this._fetchResultPromise[target.resultname]) {
-            target._start = target._start || 0;
-            target._count = target._count || -1;
-            var url = this.getUrl({
-                pathname: "WsWorkunits/WUResult.json"
-            });
-            var request = {
-                Wuid: target.wuid,
-                ResultName: target.resultname,
-                SuppressXmlSchema: true,
-                Start: target._start,
-                Count: target._count
-            };
-            this._resultNameCache[target.resultname] = {};
-            var context = this;
-            this._fetchResultPromise[target.resultname] = this.jsonp(url, request).then(function (response) {
-                // Remove "xxxResponse.Result"
-                for (var key in response) {
-                    if (!response[key].Result) {
-                        throw "No result found.";
-                    }
-                    context._total = response[key].Total;
-                    response = response[key].Result;
-                    for (var responseKey in response) {
-                        response = response[responseKey].Row.map(espRowFix);
-                        break;
-                    }
+        target._start = target._start || 0;
+        target._count = target._count || -1;
+        var url = this.getUrl({
+            pathname: "WsWorkunits/WUResult.json"
+        });
+        var request = {
+            Wuid: target.wuid,
+            ResultName: target.resultname,
+            SuppressXmlSchema: true,
+            Start: target._start,
+            Count: target._count
+        };
+        this._resultNameCache[target.resultname] = {};
+        var context = this;
+        return this.jsonp(url, request).then(function (response) {
+            // Remove "xxxResponse.Result"
+            for (var key in response) {
+                if (!response[key].Result) {
+                    throw "No result found.";
+                }
+                context._total = response[key].Total;
+                response = response[key].Result;
+                for (var responseKey in response) {
+                    response = response[responseKey].Row.map(espRowFix);
                     break;
                 }
-                context._resultNameCache[target.resultname] = response;
-                if (!skipMapping) {
-                    context._mappings.mapResult(context._resultNameCache, target.resultname);
-                }
-                if (callback) {
-                    console.log("Deprecated:  callback, use promise (WsWorkunits.prototype._fetchResult)");
-                    callback(context._resultNameCache[target.resultname]);
-                }
-                return context._resultNameCache[target.resultname];
-            });
-        }
-        return this._fetchResultPromise[target.resultname];
+                break;
+            }
+            context._resultNameCache[target.resultname] = response;
+            if (!skipMapping) {
+                context._mappings.mapResult(context._resultNameCache, target.resultname);
+            }
+            if (callback) {
+                console.log("Deprecated:  callback, use promise (WsWorkunits.prototype._fetchResult)");
+                callback(context._resultNameCache[target.resultname]);
+            }
+            return context._resultNameCache[target.resultname];
+        });
     };
 
     WsWorkunits.prototype.fetchResult = function (target, callback, skipMapping) {
@@ -633,47 +633,63 @@
         });
     };
 
-    WsWorkunits.prototype.fetchResultNames = function (callback) {
-        if (!this._fetchResultNamesPromise) {
-            var url = this.getUrl({
-                pathname: "WsWorkunits/WUInfo.json",
-            });
-            var request = {
-                Wuid: this._wuid,
-                TruncateEclTo64k: true,
-                IncludeExceptions: false,
-                IncludeGraphs: false,
-                IncludeSourceFiles: false,
-                IncludeResults: true,
-                IncludeResultsViewNames: false,
-                IncludeVariables: false,
-                IncludeTimers: false,
-                IncludeResourceURLs: false,
-                IncludeDebugValues: false,
-                IncludeApplicationValues: false,
-                IncludeWorkflows: false,
-                IncludeXmlSchemas: false,
-                SuppressResultSchemas: true
-            };
-
-            this._resultNameCache = {};
-            this._resultNameCacheCount = 0;
-            var context = this;
-            this._fetchResultNamesPromise = this.jsonp(url, request).then(function (response) {
-                if (exists("WUInfoResponse.Workunit.Results.ECLResult", response)) {
-                    response.WUInfoResponse.Workunit.Results.ECLResult.map(function (item) {
-                        context._resultNameCache[item.Name] = [];
-                        ++context._resultNameCacheCount;
-                    });
-                }
-                if (callback) {
-                    console.log("Deprecated:  callback, use promise (WsWorkunits.prototype.fetchResultNames)");
-                    callback(context._resultNameCache);
-                }
-                return context._resultNameCache;
-            });
+    WsWorkunits.prototype.wuInfo = function (options) {
+        var url = this.getUrl({
+            pathname: "WsWorkunits/WUInfo.json",
+        });
+        var request = {
+            Wuid: this._wuid,
+            TruncateEclTo64k: true,
+            IncludeExceptions: false,
+            IncludeGraphs: false,
+            IncludeSourceFiles: false,
+            IncludeResults: false,
+            IncludeResultsViewNames: false,
+            IncludeVariables: false,
+            IncludeTimers: false,
+            IncludeResourceURLs: false,
+            IncludeDebugValues: false,
+            IncludeApplicationValues: false,
+            IncludeWorkflows: false,
+            IncludeXmlSchemas: false,
+            SuppressResultSchemas: true
+        };
+        for (var key in options) {
+            request[key] = options[key];
         }
-        return this._fetchResultNamesPromise;
+        return this.jsonp(url, request);
+    };
+
+    WsWorkunits.prototype.wuUpdate = function (options) {
+        var url = this.getUrl({
+            pathname: "WsWorkunits/WUUpdate.json",
+        });
+        var request = {
+            Wuid: this._wuid
+        };
+        for (var key in options) {
+            request[key] = options[key];
+        }
+        return this.post(url, request);
+    };
+
+    WsWorkunits.prototype.fetchResultNames = function (callback) {
+        var context = this;
+        return this.wuInfo({
+            IncludeResults: true
+        }).then(function (response) {
+            if (exists("WUInfoResponse.Workunit.Results.ECLResult", response)) {
+                response.WUInfoResponse.Workunit.Results.ECLResult.map(function (item) {
+                    context._resultNameCache[item.Name] = [];
+                    ++context._resultNameCacheCount;
+                });
+            }
+            if (callback) {
+                console.log("Deprecated:  callback, use promise (WsWorkunits.prototype.fetchResultNames)");
+                callback(context._resultNameCache);
+            }
+            return context._resultNameCache;
+        });
     };
 
     WsWorkunits.prototype.fetchResults = function (callback, skipMapping) {
@@ -691,6 +707,10 @@
                 return context._resultNameCache;
             });
         });
+    };
+
+    WsWorkunits.prototype.result = function (resultName, skipMapping) {
+        return this.fetchResult({ wuid: this._wuid, resultname: resultName }, null, skipMapping);
     };
 
     WsWorkunits.prototype.postFilter = function (request, response) {
@@ -720,6 +740,32 @@
         }
     };
 
+    WsWorkunits.prototype.appData = function (appID, key, _) {
+        if (arguments.length === 2) {
+            return this.wuInfo({
+                IncludeApplicationValues: true
+            }).then(function (response) {
+                var persistString;
+                if (response.WUInfoResponse && response.WUInfoResponse.Workunit && response.WUInfoResponse.Workunit.ApplicationValues && response.WUInfoResponse.Workunit.ApplicationValues.ApplicationValue) {
+                    response.WUInfoResponse.Workunit.ApplicationValues.ApplicationValue.filter(function (row) {
+                        return row.Application === "HPCC-VizBundle" && row.Name === "persist";
+                    }).forEach(function (row) {
+                        persistString = row.Value;
+                    });
+                }
+                return persistString;
+            });
+        } else if (arguments.length === 3) {
+            return this.wuUpdate({
+                "ApplicationValues.ApplicationValue.0.Application": "HPCC-VizBundle",
+                "ApplicationValues.ApplicationValue.0.Name": "persist",
+                "ApplicationValues.ApplicationValue.0.Value": _,
+                "ApplicationValues.ApplicationValue.itemcount": 1
+            });
+        }
+    };
+
+    //  WsWorkunits_GetStats  ---
     function WsWorkunits_GetStats() {
         Comms.call(this);
 
