@@ -266,6 +266,18 @@
                     callback(widget);
                 });
             }
+        },
+        Cooccurance: {
+            les_miz: function (callback) {
+                require(["test/DataFactory", "src/graph/Cooccurance"], function (DataFactory, Cooccurance) {
+                    var graph = new Cooccurance();
+                    var vertices = [];
+                    var edges = [];
+                    var rawData = DataFactory.Graph.les_miz;
+                    //graph.data({ vertices: vertices, edges: edges });
+                    callback(graph);
+                });
+            }
         }
     };
 }));
