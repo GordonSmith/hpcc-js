@@ -48,7 +48,9 @@
     "simpleheat": "https://raw.githubusercontent.com/mourner/simpleheat/v0.3.0/simpleheat.js",
     "es6-promise": "~3.2.2",
     "javascript-auto-complete": "~1.0.4",
-    "d3-tip": "~0.6.7"
+    "d3-tip": "~0.6.7",
+    "dstore": "SitePen/dstore#v1.1.1",
+    "dgrid": "~1.1.0"
   },
   "resolutions": {
     "d3": "~3.5.17"

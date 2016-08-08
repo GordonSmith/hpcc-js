@@ -77,7 +77,7 @@
         { id: "CHORO_COUNTRIES", display: "Counrty Choropleth", widgetClass: "map_ChoroplethCountries" }
     ].map(function (item) { item.family = "map"; return item; });
     MultiChart.prototype._anyChartTypes = [
-        { id: "TABLE", display: "Table", widgetClass: "other_Table" },
+        { id: "TABLE", display: "Table", widgetClass: "dgrid_Table" },
         { id: "TABLE_NESTED", display: "Nested Table", widgetClass: "other_NestedTable" },
         { id: "TABLE_CALENDAR", display: "Table driven Calendar Heat Map", widgetClass: "other_CalendarHeatMap" },
         { id: "TABLE_BULLET", display: "Table driven bullet chart", widgetClass: "chart_Bullet" },

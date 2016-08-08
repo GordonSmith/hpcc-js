@@ -30,6 +30,9 @@
                 "d3-hexbin": "../bower_components/d3-plugins/hexbin/hexbin",
                 "d3-tip": "../bower_components/d3-tip/index",
                 "d3-bullet": "../bower_components/d3-plugins/bullet/bullet",
+                "dojo": "../bower_components/dojo",
+                "dstore": "../bower_components/dstore",
+                "dgrid": "../bower_components/dgrid",
 
                 "amcharts": "../bower_components/amcharts3/amcharts/amcharts",
                 "amcharts.funnel": "../bower_components/amcharts3/amcharts/funnel",
@@ -45,8 +48,9 @@
                 "simpleheat": "../bower_components/simpleheat/index",
                 "autoComplete": "../bower_components/javascript-auto-complete/auto-complete",
 
-                "src": "../src"
-            },
+                "src": "../src",
+                "dojo/i18n": "../src/dgrid/i18n"
+        },
             shim: {
                 "amcharts.funnel": {
                     deps: ["amcharts"],

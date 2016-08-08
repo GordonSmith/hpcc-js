@@ -158,6 +158,7 @@
             obj.__hpcc_debounce_timeout = setTimeout(delayed, threshold || 100);
         };
     };
+    Platform.prototype.MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
 
     return Platform;
 }));

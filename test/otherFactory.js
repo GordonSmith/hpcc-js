@@ -233,6 +233,28 @@
             }
            
         },
+        DGridTable:{
+            simple: function (callback) {
+                require(["test/DataFactory", "src/dgrid/Table"], function (DataFactory, Table) {
+                    callback(new Table()
+                        .columns(["Subject", "Year 1", { label: "Year2", columns: ["Subject", "Year 1", "Year 2", "Year 3"] }, "Year 3"])
+                        .data([
+                                ["Geography", 75, [["Geography", 75, 68, 65],
+                                                ["English", 45, 55, 52],
+                                                ["Math", 98, 92, 90],
+                                                ["Science", 66, 60, 72]], 65],
+                                ["English", 45, [], 52],
+                                ["Math", 98, [["Geography", 75, 68, 65],
+                                                ["English", 45, 55, 52],
+                                                ["Science", 66, 60, 72]], 90],
+                                ["Science", 66, [["Geography", 75, 68, 65],
+                                                ["Math", 98, 92, 90],
+                                                ["Science", 66, 60, 72]], 72]
+                        ])
+                    );
+                });
+            },
+        },
         Toolbar: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/composite/MegaChart", "src/form/Select"], function (DataFactory, MegaChart, Select) {
