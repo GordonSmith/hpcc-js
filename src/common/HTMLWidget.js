@@ -127,6 +127,9 @@
                     overflow: "hidden"
                 })
             ;
+            this._ariaElement = overlay.append("div")
+                .attr("class", "aria")
+            ;
             this._overlayElement = d3.select(this._target);
 
             var context = this;
@@ -151,6 +154,9 @@
                 });
             }
             this._parentElement = d3.select(this._target).append("div");
+            this._ariaElement = d3.select(this._target).append("div")
+                .attr("class", "aria")
+            ;
         } else {
             this.exit();
         }

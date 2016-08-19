@@ -1,0 +1,41 @@
+.common_ARIATable.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+.common_ARIATable thead {
+    background-color:lightgray;
+}
+
+.common_ARIATable thead {
+    background-color:lightgray;
+}
+
+.common_ARIATable thead > tr > th {
+    padding: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.common_ARIATable tbody > tr {
+    border-width: 0px;
+    border-bottom-width: 1px;
+    border-style:solid;
+    border-color:lightgray;
+
+}
+
+.common_ARIATable tr > td {
+    padding-left: 8px;
+    padding-right: 8px;
+    border-bottom-width: 1px
+}
+
+
+
