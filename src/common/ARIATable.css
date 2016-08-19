@@ -1,0 +1,30 @@
+.common_ARIATable thead {
+    background-color:lightgray;
+}
+
+.common_ARIATable thead {
+    background-color:lightgray;
+}
+
+.common_ARIATable thead > tr > th {
+    padding: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.common_ARIATable tbody > tr {
+    border-width: 0px;
+    border-bottom-width: 1px;
+    border-style:solid;
+    border-color:lightgray;
+
+}
+
+.common_ARIATable tr > td {
+    padding-left: 8px;
+    padding-right: 8px;
+    border-bottom-width: 1px
+}
+
+
+
