@@ -79,6 +79,8 @@
                                     _.edges.forEach(function (edge) {
                                         var origData = edge.data();
                                         edge.text(origData.associationlabel);
+                                        edge.strokeColor(origData.associationlabel === "Out Network" ? "red" : "green");
+                                        edge.strokeDasharray(origData.associationlabel === "Out Network" ? "15 10 5 10" : "5 1");
                                     });
                                 }
                                 return retVal;
