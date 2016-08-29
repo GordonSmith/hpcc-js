@@ -420,6 +420,21 @@
                 }
                 return dest;
             }
+        },
+        exists: function (prop, scope) {
+            if (!prop || !scope) {
+                return false;
+            }
+            var propParts = prop.split(".");
+            var testScope = scope;
+            for (var i = 0; i < propParts.length; ++i) {
+                var item = propParts[i];
+                if (testScope[item] === undefined) {
+                    return false;
+                }
+                testScope = testScope[item];
+            }
+            return true;
         }
     };
 }));
