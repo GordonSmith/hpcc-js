@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["es6-promise"], factory);
+        define(["../common/Utility"], factory);
     } else {
-        root.other_Comms = factory();
+        root.other_Comms = factory(root.common_Utility);
     }
-}(this, function () {
+}(this, function (Utility) {
     var TIMEOUT_DEFAULT = 60;
     function espValFix(val) {
         if (val === undefined || val === null) {
@@ -112,10 +112,10 @@
 
     ESPUrl.prototype.getUrl = function (overrides) {
         overrides = overrides || {};
-        return (overrides.protocol ? overrides.protocol : this._protocol) + "//" +
-                (overrides.hostname ? overrides.hostname : this._hostname) + ":" +
-                (overrides.port ? overrides.port : this._port) + "/" +
-                (overrides.pathname ? overrides.pathname : this._pathname);
+        return (overrides.protocol !== undefined ? overrides.protocol : this._protocol) + "//" +
+                (overrides.hostname !== undefined ? overrides.hostname : this._hostname) + ":" +
+                (overrides.port !== undefined ? overrides.port : this._port) + "/" +
+                (overrides.pathname !== undefined ? overrides.pathname : this._pathname);
     };
 
     function ESPMappings(mappings) {
@@ -130,7 +130,7 @@
     }
 
     ESPMappings.prototype.contains = function (resultName, origField) {
-        return exists(resultName + "." + origField, this._mappings);
+        return Utility.exists(resultName + "." + origField, this._mappings);
     };
 
     ESPMappings.prototype.mapResult = function (response, resultName) {
@@ -172,22 +172,6 @@
         this._timeout = TIMEOUT_DEFAULT;
     }
     Comms.prototype = Object.create(ESPUrl.prototype);
-
-    function exists(prop, scope) {
-        if (!prop || !scope) {
-            return false;
-        }
-        var propParts = prop.split(".");
-        var testScope = scope;
-        for (var i = 0; i < propParts.length; ++i) {
-            var item = propParts[i];
-            if (testScope[item] === undefined) {
-                return false;
-            }
-            testScope = testScope[item];
-        }
-        return true;
-    }
 
     var serialize = function (obj) {
         var str = [];
@@ -626,7 +610,7 @@
         this._resultNameCache = {};
         this._resultNameCacheCount = 0;
         return this.jsonp(url, request).then(function (response) {
-            if (!exists("WUQueryResponse.Workunits.ECLWorkunit", response)) {
+            if (!Utility.exists("WUQueryResponse.Workunits.ECLWorkunit", response)) {
                 throw "No workunit found.";
             }
             response = response.WUQueryResponse.Workunits.ECLWorkunit;
@@ -667,7 +651,7 @@
 
     WsWorkunits.prototype.wuUpdate = function (options) {
         var url = this.getUrl({
-            pathname: "WsWorkunits/WUUpdate.json",
+            pathname: "WsWorkunits/WUUpdate.json"
         });
         var request = {
             Wuid: this._wuid
@@ -676,6 +660,58 @@
             request[key] = options[key];
         }
         return this.post(url, request);
+    };
+
+    WsWorkunits.prototype.wuResult = function (options) {
+        var url = this.getUrl({
+            pathname: "WsWorkunits/WUResult.json",
+        });
+        var request = {
+            Wuid: this._wuid,
+            SuppressXmlSchema: true,
+            Start: 0,
+            Count: -1
+        };
+        for (var key in options) {
+            request[key] = options[key];
+        }
+        var filterIdx = 0;
+        for (var key in filter) {
+            request["FilterBy.NamedValue." + filterIdx + ".Name"] = key;
+            request["FilterBy.NamedValue." + filterIdx + ".Value"] = filter[key];
+            ++filterIdx;
+        }
+        if (filterIdx) {
+            request["FilterBy.NamedValue.itemcount"] = filterIdx;
+        }
+        return this.jsonp(url, request).then(function (response) {
+            var retVal = {
+            };
+            return retVal;
+            // Remove "xxxResponse.Result"
+            for (var key in response) {
+                if (!response[key].Result) {
+                    throw "No result found.";
+                }
+                context._total = response[key].Total;
+                response = response[key].Result;
+                for (var responseKey in response) {
+                    response = response[responseKey].Row.map(espRowFix);
+                    break;
+                }
+                break;
+            }
+            context._resultNameCache[target.resultname] = response;
+            if (!skipMapping) {
+                context._mappings.mapResult(context._resultNameCache, target.resultname);
+            }
+            if (callback) {
+                console.log("Deprecated:  callback, use promise (WsWorkunits.prototype._fetchResult)");
+                callback(context._resultNameCache[target.resultname]);
+            }
+            return context._resultNameCache[target.resultname];
+            return response;
+        });
     };
 
     WsWorkunits.prototype.fetchResultNames = function (callback) {
@@ -687,7 +723,7 @@
             this._fetchResultNamesPromise = this.wuInfo({
                 IncludeResults: true
             }).then(function (response) {
-                if (exists("WUInfoResponse.Workunit.Results.ECLResult", response)) {
+                if (Utility.exists("WUInfoResponse.Workunit.Results.ECLResult", response)) {
                     response.WUInfoResponse.Workunit.Results.ECLResult.map(function (item) {
                         context._resultNameCache[item.Name] = [];
                         ++context._resultNameCacheCount;
@@ -817,7 +853,7 @@
             pathname: "WsWorkunits/WUGetStats.json?WUID=" + this._wuid
         });
         return this.jsonp(url, request).then(function (response) {
-            if (exists("WUGetStatsResponse.Statistics.WUStatisticItem", response)) {
+            if (Utility.exists("WUGetStatsResponse.Statistics.WUStatisticItem", response)) {
                 if (callback) {
                     console.log("Deprecated:  callback, use promise (WsWorkunits_GetStats.prototype.send)");
                     callback(response.WUGetStatsResponse.Statistics.WUStatisticItem);
@@ -830,6 +866,49 @@
                 }
                 return [];
             }
+        });
+    };
+
+    //  HIPIERoxie  ---
+    function WUResult(url, wuid, resultName) {
+        Comms.call(this);
+
+        this._url = url;
+        this._wuid = wuid;
+        this._resultName = resultName;
+        this._schema = null;
+    }
+    WUResult.prototype = Object.create(Comms.prototype);
+
+    WUResult.prototype.query = function (options, filter) {
+        var request = {
+            Wuid: this._wuid,
+            ResultName: this._resultName,
+            SuppressXmlSchema: this._schema !== null,
+            Start: 0,
+            Count: -1
+        };
+        for (var key in options) {
+            request[key] = options[key];
+        }
+        var filterIdx = 0;
+        for (var key in filter) {
+            request["FilterBy.NamedValue." + filterIdx + ".Name"] = key;
+            request["FilterBy.NamedValue." + filterIdx + ".Value"] = filter[key];
+            ++filterIdx;
+        }
+        if (filterIdx) {
+            request["FilterBy.NamedValue.itemcount"] = filterIdx;
+        }
+        var context = this;
+        return this.jsonp(this._url, request).then(function (response) {
+            if (response.WUResultResponse && 
+                response.WUResultResponse.Result && 
+                response.WUResultResponse.Result[context._resultName]) {
+                var result = response.WUResultResponse.Result[context._resultName];
+                return response.WUResultResponse.Result.Row.map(espRowFix);
+            }
+            return [];
         });
     };
 
@@ -1018,6 +1097,7 @@
         ESPUrl: ESPUrl,
         WsECL: WsECL,
         WsWorkunits: WsWorkunits,
+        WUResult: WUResult,
         HIPIERoxie: HIPIERoxie,
         HIPIEWorkunit: HIPIEWorkunit,
         HIPIEDatabomb: HIPIEDatabomb,
