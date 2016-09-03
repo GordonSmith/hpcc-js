@@ -106,14 +106,15 @@
         });
     };
 
-    Workunit.prototype.result = function (name) {
-        if (name.indexOf("http") === 0){
-            return new RoxieQuery(name);
+    Workunit.prototype.result = function (dataSource, resultName) {
+        //dataSource = dataSource || this.getUrl({ pathname: "WsWorkunits/WUInfo?Wuid=" + this._wuid });
+        if (dataSource.indexOf("http") === 0) {
+            return new RoxieQuery(dataSource, resultName);
         }
-        if (name.indexOf("~") === 0 || name.indexOf("::") >= 0) {
-            return new LogicalFile(this.getUrl({ pathname: "WsWorkunits/" }), this._wuid, { LogicalName: name });
+        if (dataSource.indexOf("~") === 0 || dataSource.indexOf("::") >= 0) {
+            return new LogicalFile(this.getUrl({ pathname: "WsWorkunits/" }), this._wuid, { LogicalName: dataSource });
         }
-        return new WUResult(this.getUrl({ pathname: "WsWorkunits/" }), this._wuid, { Name: name });
+        return new WUResult(this.getUrl({ pathname: "WsWorkunits/" }), this._wuid, { Name: resultName });
     };
 
     //  Workunit Result  ---
@@ -216,15 +217,16 @@
     };
 
     //  Logical File  ---
-    function RoxieQuery(baseUrl) {
+    function RoxieQuery(baseUrl, resultName) {
         Comms.Basic.call(this);
         var urlParts = baseUrl.split("/");
-        var name = urlParts.pop();
-        if (name.toLowerCase() === "json") {
-            name = urlParts.pop();
+        var queryName = urlParts.pop();
+        if (queryName.toLowerCase() === "json") {
+            queryName = urlParts.pop();
         }
-        this._name = name;
-        this.url(urlParts.join("/") + "/" + name + "/json");
+        this._queryName = queryName;
+        this._resultName = resultName;
+        this.url(urlParts.join("/") + "/" + queryName + "/json");
     }
     RoxieQuery.prototype = Object.create(Comms.Basic.prototype);
 
@@ -241,12 +243,18 @@
         }
         var context = this;
         return this.jsonp(this.url(), request).then(function (response) {
-            if (response[context._name + "Response"]) {
-                var response = response[context._name + "Response"];
-                for (var key in response) {
-                    if (response[key].Row) {
-                        return nestedRowFix(response[key].Row);
-                        break;
+            if (response[context._queryName + "Response"]) {
+                var response = response[context._queryName + "Response"];
+                if (context._resultName) {
+                    if (response && response[context._resultName] && response[context._resultName].Row) {
+                        return nestedRowFix(response[context._resultName].Row);
+                    }
+                } else {
+                    for (var key in response) {
+                        if (response[key].Row) {
+                            return nestedRowFix(response[key].Row);
+                            break;
+                        }
                     }
                 }
             }
