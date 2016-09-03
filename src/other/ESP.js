@@ -99,19 +99,29 @@
             var retVal = [];
             if (Utility.exists("WUInfoResponse.Workunit.Results.ECLResult", response)) {
                 retVal = response.WUInfoResponse.Workunit.Results.ECLResult.map(function (result) {
-                    return new WUResult(context.url(), context._wuid, result.Name);
+                    return new WUResult(context.getUrl({ pathname: "WsWorkunits/" }), context._wuid, result);
                 });
             }
             return retVal;
         });
     };
 
+    Workunit.prototype.result = function (name) {
+        if (name.indexOf("http") === 0){
+            return new RoxieQuery(name);
+        }
+        if (name.indexOf("~") === 0 || name.indexOf("::") >= 0) {
+            return new LogicalFile(this.getUrl({ pathname: "WsWorkunits/" }), this._wuid, { LogicalName: name });
+        }
+        return new WUResult(this.getUrl({ pathname: "WsWorkunits/" }), this._wuid, { Name: name });
+    };
+
     //  Workunit Result  ---
-    function WUResult(baseUrl, wuid, name) {
+    function WUResult(baseUrl, wuid, espResultInfo) {
         Comms.Basic.call(this);
         this.url(baseUrl + "WUResult.json");
         this._wuid = wuid;
-        this._name = name;
+        this._espResultInfo = espResultInfo;
         this._xmlSchema = null;
     }
     WUResult.prototype = Object.create(Comms.Basic.prototype);
@@ -123,8 +133,8 @@
     };
 
     WUResult.prototype.name = function (_) {
-        if (!arguments.length) return this._name;
-        this._name = _;
+        if (!arguments.length) return this._espResultInfo.Name;
+        this._espResultInfo.Name = _;
         return this;
     };
 
@@ -133,7 +143,7 @@
         filter = filter || {};
         var request = {
             Wuid: this._wuid,
-            ResultName: this._name,
+            ResultName: this._espResultInfo.Name,
             SuppressXmlSchema: this._xmlSchema !== null,
             Start: 0,
             Count: -1
@@ -153,39 +163,135 @@
         var context = this;
         return this.jsonp(this.url(), request).then(function (response) {
             if (response.WUResultResponse &&
-                response.WUResultResponse.Result && 
-                response.WUResultResponse.Result[context._name]) {
+                response.WUResultResponse.Result &&
+                response.WUResultResponse.Result[context._espResultInfo.Name]) {
                 context._xmlSchema = response.WUResultResponse.Result.XmlSchema;
-                return nestedRowFix(response.WUResultResponse.Result[context._name]);
+                return nestedRowFix(response.WUResultResponse.Result[context._espResultInfo.Name]);
             }
             return [];
         });
     };
 
-    WUResult.prototype.flattenResult = function (result) {
-        var retVal = {
-            columns: [],
-            data: []
+    //  Logical File  ---
+    function LogicalFile(baseUrl, wuid, espResultInfo) {
+        Comms.Basic.call(this);
+        this.url(baseUrl + "WUResult.json");
+        this._wuid = wuid;
+        this._espResultInfo = espResultInfo;
+        this._xmlSchema = null;
+    }
+    LogicalFile.prototype = Object.create(Comms.Basic.prototype);
+
+    LogicalFile.prototype.query = function (options, filter) {
+        options = options || {};
+        filter = filter || {};
+        var request = {
+            LogicalName: this._espResultInfo.LogicalName,
+            SuppressXmlSchema: this._xmlSchema !== null,
+            Start: 0,
+            Count: -1
         };
-        if (result && result.length) {
-            var colIdx = {};
-            result.forEach(function (row, rowIdx) {
-                var rowArr = [];
-                for (var key in row) {
-                    if (rowIdx === 0) {
-                        colIdx[key] = retVal.columns.length;
-                        retVal.columns.push(key);
-                    }
-                    rowArr[colIdx[key]] = row[key];
-                }
-                retVal.data.push(rowArr);
-            });
+        for (var key in options) {
+            request[key] = options[key];
         }
-        return retVal;
+        var filterIdx = 0;
+        for (var key in filter) {
+            request["FilterBy.NamedValue." + filterIdx + ".Name"] = key;
+            request["FilterBy.NamedValue." + filterIdx + ".Value"] = filter[key];
+            ++filterIdx;
+        }
+        if (filterIdx) {
+            request["FilterBy.NamedValue.itemcount"] = filterIdx;
+        }
+        var context = this;
+        return this.jsonp(this.url(), request).then(function (response) {
+            if (response.WUResultResponse &&
+                response.WUResultResponse.Result &&
+                response.WUResultResponse.Result.Row) {
+                context._xmlSchema = response.WUResultResponse.Result.XmlSchema;
+                return nestedRowFix(response.WUResultResponse.Result.Row);
+            }
+            return [];
+        });
+    };
+
+    //  Logical File  ---
+    function RoxieQuery(baseUrl) {
+        Comms.Basic.call(this);
+        var urlParts = baseUrl.split("/");
+        var name = urlParts.pop();
+        if (name.toLowerCase() === "json") {
+            name = urlParts.pop();
+        }
+        this._name = name;
+        this.url(urlParts.join("/") + "/" + name + "/json");
+    }
+    RoxieQuery.prototype = Object.create(Comms.Basic.prototype);
+
+    RoxieQuery.prototype.query = function (options, filter) {
+        options = options || {};
+        filter = filter || {};
+        var request = {
+        };
+        for (var key in options) {
+            request[key] = options[key];
+        }
+        for (var key in filter) {
+            request[key] = filter[key];
+        }
+        var context = this;
+        return this.jsonp(this.url(), request).then(function (response) {
+            if (response[context._name + "Response"]) {
+                var response = response[context._name + "Response"];
+                for (var key in response) {
+                    if (response[key].Row) {
+                        return nestedRowFix(response[key].Row);
+                        break;
+                    }
+                }
+            }
+            return [];
+        });
     };
 
     return {
         Workunit: Workunit,
-        WUResult: WUResult
+        WUResult: WUResult,
+        createESPConnection: function (url) {
+            url = url || document.URL;
+            var testURL = new Comms.ESPUrl()
+                .url(url)
+            ;
+            if (testURL.isWsWorkunits()) {
+                var espConnection = Comms.createESPConnection(url);
+                if (espConnection instanceof Comms.WsWorkunits && espConnection.wuid()) {
+                    return new Workunit(espConnection.getUrl({ pathname: "" }), espConnection.wuid())
+                        .url(url)
+                    ;
+                }
+            }
+            return null;
+        },
+        flattenResult: function (result) {
+            var retVal = {
+                columns: [],
+                data: []
+            };
+            if (result && result.length) {
+                var colIdx = {};
+                result.forEach(function (row, rowIdx) {
+                    var rowArr = [];
+                    for (var key in row) {
+                        if (rowIdx === 0) {
+                            colIdx[key] = retVal.columns.length;
+                            retVal.columns.push(key);
+                        }
+                        rowArr[colIdx[key]] = row[key];
+                    }
+                    retVal.data.push(rowArr);
+                });
+            }
+            return retVal;
+        }
     };
 }));
