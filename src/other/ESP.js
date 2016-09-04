@@ -17,6 +17,62 @@
         return row;
     }
 
+    //  WsWorkunits  ---
+    function WsWorkunits(baseUrl) {
+        Comms.Basic.call(this);
+
+        this.url(baseUrl + "WsWorkunits/");
+    }
+    WsWorkunits.prototype = Object.create(Comms.Basic.prototype);
+
+    WsWorkunits.prototype.wuQuery = function (options) {
+        var url = this.getUrl({
+            pathname: "WsWorkunits/WUQuery.json",
+        });
+        var request = {
+            Wuid: "",
+            Type: "",
+            Cluster: "",
+            RoxieCluster: "",
+            Owner: "",
+            State: "",
+            StartDate: "",
+            EndDate: "",
+            ECL: "",
+            Jobname: "",
+            LogicalFile: "",
+            LogicalFileSearchType: "",
+            /*
+            ApplicationValues>
+             ApplicationValue>
+              Application: "",
+              Name: "",
+              Value: "",
+             /ApplicationValue>
+            /ApplicationValues>
+            */
+            After: "",
+            Before: "",
+            Count: "",
+            PageSize: 100,
+            PageStartFrom: 0,
+            PageEndAt: "",
+            LastNDays: "",
+            Sortby: "",
+            Descending: 0,
+            CacheHint: ""
+        };
+        for (var key in options) {
+            request[key] = options[key];
+        }
+        return this.jsonp(url, request).then(function (response) {
+            if (response.WUQueryResponse && response.WUQueryResponse.Workunits) {
+                return response.WUQueryResponse.Workunits.ECLWorkunit;
+            }
+            return [];
+        });
+    };
+
     //  Workunit  ---
     function Workunit(baseUrl, wuid) {
         Comms.Basic.call(this);
@@ -25,6 +81,33 @@
         this._wuid = wuid;
     }
     Workunit.prototype = Object.create(Comms.Basic.prototype);
+
+    Workunit.prototype.wuInfo = function (options) {
+        var url = this.getUrl({
+            pathname: "WsWorkunits/WUInfo.json",
+        });
+        var request = {
+            Wuid: this._wuid,
+            TruncateEclTo64k: true,
+            IncludeExceptions: false,
+            IncludeGraphs: false,
+            IncludeSourceFiles: false,
+            IncludeResults: false,
+            IncludeResultsViewNames: false,
+            IncludeVariables: false,
+            IncludeTimers: false,
+            IncludeResourceURLs: false,
+            IncludeDebugValues: false,
+            IncludeApplicationValues: false,
+            IncludeWorkflows: false,
+            IncludeXmlSchemas: false,
+            SuppressResultSchemas: true
+        };
+        for (var key in options) {
+            request[key] = options[key];
+        }
+        return this.jsonp(url, request);
+    };
 
     Workunit.prototype.wuInfo = function (options) {
         var url = this.getUrl({
@@ -263,6 +346,7 @@
     };
 
     return {
+        WsWorkunits: WsWorkunits,
         Workunit: Workunit,
         WUResult: WUResult,
         createESPConnection: function (url) {
