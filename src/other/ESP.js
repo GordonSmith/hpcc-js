@@ -109,33 +109,6 @@
         return this.jsonp(url, request);
     };
 
-    Workunit.prototype.wuInfo = function (options) {
-        var url = this.getUrl({
-            pathname: "WsWorkunits/WUInfo.json",
-        });
-        var request = {
-            Wuid: this._wuid,
-            TruncateEclTo64k: true,
-            IncludeExceptions: false,
-            IncludeGraphs: false,
-            IncludeSourceFiles: false,
-            IncludeResults: false,
-            IncludeResultsViewNames: false,
-            IncludeVariables: false,
-            IncludeTimers: false,
-            IncludeResourceURLs: false,
-            IncludeDebugValues: false,
-            IncludeApplicationValues: false,
-            IncludeWorkflows: false,
-            IncludeXmlSchemas: false,
-            SuppressResultSchemas: true
-        };
-        for (var key in options) {
-            request[key] = options[key];
-        }
-        return this.jsonp(url, request);
-    };
-
     Workunit.prototype.wuUpdate = function (options) {
         var url = this.getUrl({
             pathname: "WsWorkunits/WUUpdate.json"
