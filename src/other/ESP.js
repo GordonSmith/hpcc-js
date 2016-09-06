@@ -303,15 +303,29 @@
                 var response = response[context._queryName + "Response"];
                 if (context._resultName) {
                     if (response && response[context._resultName] && response[context._resultName].Row) {
-                        return nestedRowFix(response[context._resultName].Row);
+                        return nestedRowFix(postFilter(response[context._resultName].Row));
                     }
                 } else {
                     for (var key in response) {
                         if (response[key].Row) {
-                            return nestedRowFix(response[key].Row);
-                            break;
+                            return nestedRowFix(postFilter(response[key].Row));
                         }
                     }
+                }
+
+                function trimRight(str) {
+                    return str.replace(/ +$/, '')
+                }
+
+                function postFilter(results) {
+                    return results.filter(function (row) {
+                        for (var key in filter) {
+                            if (trimRight(filter[key]) !== trimRight(row[key])) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
                 }
             }
             return [];
