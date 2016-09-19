@@ -314,13 +314,16 @@
                 }
 
                 function trimRight(str) {
-                    return str.replace(/ +$/, '')
+                    if (str && str.replace) {
+                        return str.replace(/ +$/, '')
+                    }
+                    return str;
                 }
 
                 function postFilter(results) {
                     return results.filter(function (row) {
                         for (var key in filter) {
-                            if (trimRight(filter[key]) !== trimRight(row[key])) {
+                            if (row[key] !== undefined && trimRight(filter[key]) !== trimRight(row[key])) {
                                 return false;
                             }
                         }
