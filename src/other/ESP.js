@@ -130,7 +130,7 @@
                 var persistString;
                 if (response.WUInfoResponse && response.WUInfoResponse.Workunit && response.WUInfoResponse.Workunit.ApplicationValues && response.WUInfoResponse.Workunit.ApplicationValues.ApplicationValue) {
                     response.WUInfoResponse.Workunit.ApplicationValues.ApplicationValue.filter(function (row) {
-                        return row.Application === "HPCC-VizBundle" && row.Name === "persist";
+                        return row.Application === appID && row.Name === key;
                     }).forEach(function (row) {
                         persistString = row.Value;
                     });
@@ -139,8 +139,8 @@
             });
         } else if (arguments.length === 3) {
             return this.wuUpdate({
-                "ApplicationValues.ApplicationValue.0.Application": "HPCC-VizBundle",
-                "ApplicationValues.ApplicationValue.0.Name": "persist",
+                "ApplicationValues.ApplicationValue.0.Application": appID,
+                "ApplicationValues.ApplicationValue.0.Name": key,
                 "ApplicationValues.ApplicationValue.0.Value": _,
                 "ApplicationValues.ApplicationValue.itemcount": 1
             });
