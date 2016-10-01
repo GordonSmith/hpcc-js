@@ -304,6 +304,20 @@
         });
     }
 
+    function locateRoxieResponse(response) {
+        // v5 and v6 compatible ---
+        for (var key in response) {
+            if (response[key].Row && response[key].Row instanceof Array) {
+                return response;
+            }
+            var retVal = locateRoxieResponse(response[key]);
+            if (retVal) {
+                return retVal;
+            }
+        }
+        return null;
+    }
+
     RoxieQuery.prototype.query = function (options, filter) {
         options = options || {};
         filter = filter || {};
@@ -317,8 +331,8 @@
         }
         var context = this;
         return this.jsonp(this.url(), request).then(function (response) {
-            if (response[context._queryName + "Response"]) {
-                response = response[context._queryName + "Response"];
+            response = locateRoxieResponse(response);
+            if (response) {
                 if (context._resultName) {
                     if (response && response[context._resultName] && response[context._resultName].Row) {
                         return nestedRowFix(postFilter(response[context._resultName].Row), filter);
