@@ -17,13 +17,37 @@
         return row;
     }
 
+    //  Basic Comms  ---
+    var enableBasicCommsCache = false;
+    var basicCommsCache = {};
+    function BasicComms() {
+        Comms.Basic.call(this);
+    };
+    BasicComms.prototype = Object.create(Comms.Basic.prototype);
+
+    BasicComms.prototype.jsonp = function (url, request) {
+        var requestStr = JSON.stringify(request);
+        if (enableBasicCommsCache && basicCommsCache[url] && basicCommsCache[url][requestStr]) {
+            return Promise.resolve(basicCommsCache[url][requestStr]);
+        }
+        return Comms.Basic.prototype.jsonp.apply(this, arguments).then(function (response) {
+            if (enableBasicCommsCache) {
+                if (!basicCommsCache[url]) {
+                    basicCommsCache[url] = {};
+                }
+                basicCommsCache[url][requestStr] = response;
+            }
+            return response;
+        });
+    }
+
     //  WsWorkunits  ---
     function WsWorkunits(baseUrl) {
-        Comms.Basic.call(this);
+        BasicComms.call(this);
 
         this.url(baseUrl + "WsWorkunits/");
     }
-    WsWorkunits.prototype = Object.create(Comms.Basic.prototype);
+    WsWorkunits.prototype = Object.create(BasicComms.prototype);
 
     WsWorkunits.prototype.wuQuery = function (options) {
         var url = this.getUrl({
@@ -75,12 +99,12 @@
 
     //  Workunit  ---
     function Workunit(baseUrl, wuid) {
-        Comms.Basic.call(this);
+        BasicComms.call(this);
 
         this.url(baseUrl + "WsWorkunits/");
         this._wuid = wuid;
     }
-    Workunit.prototype = Object.create(Comms.Basic.prototype);
+    Workunit.prototype = Object.create(BasicComms.prototype);
 
     Workunit.prototype.wuInfo = function (options) {
         var url = this.getUrl({
@@ -106,7 +130,17 @@
         for (var key in options) {
             request[key] = options[key];
         }
-        return this.jsonp(url, request);
+        return this.jsonp(url, request).then(function (response) {
+            if (enableBasicCommsCache) {
+                var retVal = { WUInfoResponse: { Workunit: {} } };
+                for (var key in options) {
+                    var includeKey = key.substring(7);
+                    retVal.WUInfoResponse.Workunit[includeKey] = response.WUInfoResponse.Workunit[includeKey];
+                }
+                basicCommsCache[url][JSON.stringify(request)] = retVal;
+            }
+            return response;
+        });
     };
 
     Workunit.prototype.wuUpdate = function (options) {
@@ -155,7 +189,7 @@
             var retVal = [];
             if (Utility.exists("WUInfoResponse.Workunit.Results.ECLResult", response)) {
                 retVal = response.WUInfoResponse.Workunit.Results.ECLResult.map(function (result) {
-                    return new WUResult(context.getUrl({ pathname: "WsWorkunits/" }), context._wuid, result);
+                    return new WUResult(context.getUrl({ pathname: "WsWorkunits/" }), context._wuid, result.Name);
                 });
             }
             return retVal;
@@ -163,25 +197,19 @@
     };
 
     Workunit.prototype.result = function (dataSource, resultName) {
-        //  TODO Move this logic out of here  ---
-        if (dataSource.indexOf("http") === 0) {
-            return new RoxieQuery(dataSource, resultName);
-        }
-        if (dataSource.indexOf("~") === 0 || dataSource.indexOf("::") >= 0) {
-            return new LogicalFile(this.getUrl({ pathname: "WsWorkunits/" }), this._wuid, { LogicalName: dataSource });
-        }
-        return new WUResult(this.getUrl({ pathname: "WsWorkunits/" }), this._wuid, { Name: resultName });
+        dataSource = dataSource || this._wuid;
+        return ESP.createESPResult(dataSource, resultName);
     };
 
     //  Workunit Result  ---
-    function WUResult(baseUrl, wuid, espResultInfo) {
-        Comms.Basic.call(this);
+    function WUResult(baseUrl, wuid, name) {
+        BasicComms.call(this);
         this.url(baseUrl + "WUResult.json");
         this._wuid = wuid;
-        this._espResultInfo = espResultInfo;
+        this._name = name;
         this._xmlSchema = null;
     }
-    WUResult.prototype = Object.create(Comms.Basic.prototype);
+    WUResult.prototype = Object.create(BasicComms.prototype);
 
     WUResult.prototype.wuid = function (_) {
         if (!arguments.length) return this._wuid;
@@ -190,8 +218,8 @@
     };
 
     WUResult.prototype.name = function (_) {
-        if (!arguments.length) return this._espResultInfo.Name;
-        this._espResultInfo.Name = _;
+        if (!arguments.length) return this._name;
+        this._name = _;
         return this;
     };
 
@@ -200,8 +228,8 @@
         filter = filter || {};
         var request = {
             Wuid: this._wuid,
-            ResultName: this._espResultInfo.Name,
-            SuppressXmlSchema: this._xmlSchema !== null,
+            ResultName: this._name,
+            SuppressXmlSchema: true,
             Start: 0,
             Count: -1
         };
@@ -221,29 +249,35 @@
         return this.jsonp(this.url(), request).then(function (response) {
             if (response.WUResultResponse &&
                 response.WUResultResponse.Result &&
-                response.WUResultResponse.Result[context._espResultInfo.Name]) {
+                response.WUResultResponse.Result[context._name]) {
+                if (enableBasicCommsCache) {
+                    basicCommsCache[context.url()][JSON.stringify(request)] = {
+                        WUResultResponse: {
+                            Result: response.WUResultResponse.Result
+                        }
+                    };
+                }
                 context._xmlSchema = response.WUResultResponse.Result.XmlSchema;
-                return nestedRowFix(response.WUResultResponse.Result[context._espResultInfo.Name]);
+                return nestedRowFix(response.WUResultResponse.Result[context._name]);
             }
             return [];
         });
     };
 
     //  Logical File  ---
-    function LogicalFile(baseUrl, wuid, espResultInfo) {
-        Comms.Basic.call(this);
+    function LogicalFile(baseUrl, logicalName) {
+        BasicComms.call(this);
         this.url(baseUrl + "WUResult.json");
-        this._wuid = wuid;
-        this._espResultInfo = espResultInfo;
+        this._logicalName = logicalName;
         this._xmlSchema = null;
     }
-    LogicalFile.prototype = Object.create(Comms.Basic.prototype);
+    LogicalFile.prototype = Object.create(BasicComms.prototype);
 
     LogicalFile.prototype.query = function (options, filter) {
         options = options || {};
         filter = filter || {};
         var request = {
-            LogicalName: this._espResultInfo.LogicalName,
+            LogicalName: this._logicalName,
             SuppressXmlSchema: this._xmlSchema !== null,
             Start: 0,
             Count: -1
@@ -274,7 +308,7 @@
 
     //  Roxie Query  ---
     function RoxieQuery(baseUrl, resultName) {
-        Comms.Basic.call(this);
+        BasicComms.call(this);
         var urlParts = baseUrl.split("/");
         var queryName = urlParts.pop();
         if (queryName.toLowerCase() === "json") {
@@ -284,7 +318,7 @@
         this._resultName = resultName;
         this.url(urlParts.join("/") + "/" + queryName + "/json");
     }
-    RoxieQuery.prototype = Object.create(Comms.Basic.prototype);
+    RoxieQuery.prototype = Object.create(BasicComms.prototype);
 
     function trimRight(str) {
         if (str && str.replace) {
@@ -349,11 +383,24 @@
         });
     };
 
-    return {
+    var ESP = {
+        enableCache: function (_) {
+            if (!arguments.length) return enableBasicCommsCache;
+            enableBasicCommsCache = _;
+            if (!_) {
+                basicCommsCache = {};
+            }
+            return this;
+        },
+        cache: function (_) {
+            if (!arguments.length) return basicCommsCache;
+            basicCommsCache = _;
+            return this;
+        },
         WsWorkunits: WsWorkunits,
         Workunit: Workunit,
         WUResult: WUResult,
-        createESPConnection: function (url) {
+        createConnection: function (url) {
             url = url || document.URL;
             var testURL = new Comms.ESPUrl()
                 .url(url)
@@ -365,6 +412,19 @@
                         .url(url)
                     ;
                 }
+            }
+            return null;
+        },
+        createResult: function (_espUrl, dataSource, resultName) {
+            var espUrl = new Comms.ESPUrl()
+                .url(_espUrl)
+            ;
+            if (dataSource.indexOf("http") === 0) {
+                return new RoxieQuery(dataSource, resultName);
+            } else if (dataSource.indexOf("~") === 0 || dataSource.indexOf("::") >= 0) {
+                return new LogicalFile(espUrl.getUrl({ pathname: "WsWorkunits/" }), dataSource);
+            } else if (dataSource) {
+                return new WUResult(espUrl.getUrl({ pathname: "WsWorkunits/" }), dataSource, resultName);
             }
             return null;
         },
@@ -390,4 +450,6 @@
             return retVal;
         }
     };
+
+    return ESP;
 }));
