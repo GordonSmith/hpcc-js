@@ -45,7 +45,7 @@
             roxie: function (callback) {
                 require(["test/DataFactory", "src/marshaller/HTML"], function (DataFactory, HTML) {
                     callback(new HTML()
-                        .ddlUrl_default("http://10.241.100.159:8002/WsEcl/submit/query/roxie/zz_speriasamy_SuspectAddressDemo.Ins011_Service_1/json")
+                        .ddlUrl_default("http://10.241.100.159:8002/WsEcl/submit/query/roxie/periassx_suspectaddressdashboard.Ins121816_Service_20160927_115926/json")
                     );
                 });
             },
