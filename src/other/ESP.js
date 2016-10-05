@@ -277,6 +277,7 @@
         options = options || {};
         filter = filter || {};
         var request = {
+            Cluster:"hthor",  //  TODO:  Should not be needed  ---
             LogicalName: this._logicalName,
             SuppressXmlSchema: this._xmlSchema !== null,
             Start: 0,
