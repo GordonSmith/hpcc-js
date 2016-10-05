@@ -22,7 +22,7 @@
     var basicCommsCache = {};
     function BasicComms() {
         Comms.Basic.call(this);
-    };
+    }
     BasicComms.prototype = Object.create(Comms.Basic.prototype);
 
     BasicComms.prototype.jsonp = function (url, request) {
@@ -39,7 +39,7 @@
             }
             return response;
         });
-    }
+    };
 
     //  WsWorkunits  ---
     function WsWorkunits(baseUrl) {
@@ -198,7 +198,7 @@
 
     Workunit.prototype.result = function (dataSource, resultName) {
         dataSource = dataSource || this._wuid;
-        return ESP.createESPResult(dataSource, resultName);
+        return createResult(dataSource, resultName);
     };
 
     //  Workunit Result  ---
@@ -384,7 +384,21 @@
         });
     };
 
-    var ESP = {
+    function createResult(_espUrl, dataSource, resultName) {
+        var espUrl = new Comms.ESPUrl()
+            .url(_espUrl)
+        ;
+        if (dataSource.indexOf("http") === 0) {
+            return new RoxieQuery(dataSource, resultName);
+        } else if (dataSource.indexOf("~") === 0 || dataSource.indexOf("::") >= 0) {
+            return new LogicalFile(espUrl.getUrl({ pathname: "WsWorkunits/" }), dataSource);
+        } else if (dataSource) {
+            return new WUResult(espUrl.getUrl({ pathname: "WsWorkunits/" }), dataSource, resultName);
+        }
+        return null;
+    }
+
+    return {
         enableCache: function (_) {
             if (!arguments.length) return enableBasicCommsCache;
             enableBasicCommsCache = _;
@@ -416,19 +430,7 @@
             }
             return null;
         },
-        createResult: function (_espUrl, dataSource, resultName) {
-            var espUrl = new Comms.ESPUrl()
-                .url(_espUrl)
-            ;
-            if (dataSource.indexOf("http") === 0) {
-                return new RoxieQuery(dataSource, resultName);
-            } else if (dataSource.indexOf("~") === 0 || dataSource.indexOf("::") >= 0) {
-                return new LogicalFile(espUrl.getUrl({ pathname: "WsWorkunits/" }), dataSource);
-            } else if (dataSource) {
-                return new WUResult(espUrl.getUrl({ pathname: "WsWorkunits/" }), dataSource, resultName);
-            }
-            return null;
-        },
+        createResult: createResult,
         flattenResult: function (result) {
             var retVal = {
                 columns: [],
@@ -451,6 +453,4 @@
             return retVal;
         }
     };
-
-    return ESP;
 }));
