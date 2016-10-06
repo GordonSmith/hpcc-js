@@ -83,17 +83,6 @@
                 });
             }
         },
-        ARIATable: {
-            simple: function (callback) {
-                require(["test/DataFactory", "src/other/ARIATable"], function (DataFactory, ARIATable) {
-                    var table = new ARIATable()
-                        .columns(DataFactory.Table.large.columns)
-                        .data(DataFactory.Table.large.data)
-                    ;
-                    callback(table);
-                });
-            },
-        },
         Table: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/other/Table"], function (DataFactory, Table) {

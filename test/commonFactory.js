@@ -138,6 +138,17 @@
                 });
             }
         },
+        ARIATable: {
+            simple: function (callback) {
+                require(["test/DataFactory", "src/common/ARIATable"], function (DataFactory, ARIATable) {
+                    var table = new ARIATable()
+                        .columns(DataFactory.Table.large.columns)
+                        .data(DataFactory.Table.large.data)
+                    ;
+                    callback(table);
+                });
+            },
+        },
         Composition: {
             simple: function (callback) {
                 require(["test/DataFactory",

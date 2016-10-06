@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "./Class", "./Platform", "./PropertyExt", "./Database"], factory);
+        define(["d3", "./Class", "./Platform", "./PropertyExt", "./Database", "./ARIATable"], factory);
     } else {
-        root.common_Widget = factory(root.d3, root.common_Class, root.common_Platform, root.common_PropertyExt, root.common_Database);
+        root.common_Widget = factory(root.d3, root.common_Class, root.common_Platform, root.common_PropertyExt, root.common_Database, root.common_ARIATable);
     }
-}(this, function (d3, Class, Platform, PropertyExt, Database) {
+}(this, function (d3, Class, Platform, PropertyExt, Database, ARIATable) {
     var widgetID = 0;
     function Widget() {
         Class.call(this);
@@ -329,6 +329,17 @@
         return null;
     };
 
+    Widget.prototype.locateAriaNode = function () {
+        var widget = this.locateParentWidget(this._target);
+        while (widget) {
+            if (widget._ariaElement) {
+                return widget._ariaElement;
+            }
+            widget = this.locateParentWidget(widget._target.parentNode);
+        }
+        return null;
+    };
+
     Widget.prototype.getAbsolutePos = function (domNode, w, h) {
         var root = this.locateSVGNode(domNode);
         if (!root) {
@@ -492,7 +503,11 @@
     Widget.prototype.enter = function (domNode, element) { };
     Widget.prototype.preUpdate = function (domNode, element) { };
     Widget.prototype.update = function (domNode, element) { };
-    Widget.prototype.postUpdate = function (domNode, element) { };
+    Widget.prototype.postUpdate = function (domNode, element) {
+        if (this._ariaElement){
+            ARIATable(this.id(), this._ariaElement, this.columns(), this.data());
+        }
+    };
     Widget.prototype.exit = function (domNode, element) { };
 
     return Widget;

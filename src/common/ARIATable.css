@@ -1,3 +1,9 @@
+.common_ARIATable {
+    width: 1px;
+    height: 1px;
+    visibility: hidden;
+}
+
 .common_ARIATable thead {
     background-color:lightgray;
 }
