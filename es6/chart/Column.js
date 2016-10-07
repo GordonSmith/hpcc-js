@@ -1,10 +1,10 @@
 import * as d3 from "d3"
-import { XYAxis } from "./XYAxis"
+import XYAxis from "./XYAxis"
 import * as INDChart from "../api/INDChart"
 import * as ITooltip from "../api/ITooltip"
 import "css!./Column"
 
-export class Column extends XYAxis {
+export default class Column extends XYAxis {
     constructor() {
         super();
 
@@ -114,19 +114,22 @@ export class Column extends XYAxis {
                         .attr("width", context.yAxisStacked() ? dataLen : columnScale.rangeBand())
                         .attr("y", function (d) { return d.value instanceof Array ? context.valuePos(d.value[1]) : context.valuePos(d.value); })
                         .attr("height", function (d) { return d.value instanceof Array ? context.valuePos(d.value[0]) - context.valuePos(d.value[1]) : height - context.valuePos(d.value); })
-                        .style("fill", function (d) { return context._palette(d.column); });
+                        .style("fill", function (d) { return context._palette(d.column); })
+                    ;
                 } else {
                     columnRect.transition().duration(duration)
                         .attr("y", function (d) { return context.dataPos(dataRow[0]) + (context.yAxisStacked() ? 0 : columnScale(d.column)) + offset; })
                         .attr("height", context.yAxisStacked() ? dataLen : columnScale.rangeBand())
                         .attr("x", function (d) { return d.value instanceof Array ? context.valuePos(d.value[0]) : 0; })
                         .attr("width", function (d) { return d.value instanceof Array ? context.valuePos(d.value[1]) - context.valuePos(d.value[0]) : context.valuePos(d.value); })
-                        .style("fill", function (d) { return context._palette(d.column); });
+                        .style("fill", function (d) { return context._palette(d.column); })
+                    ;
                 }
 
                 columnRect.exit().transition().duration(duration)
-                    .remove();
-            });
+                    .remove()
+                ;
+        });
 
         column.exit().transition().duration(duration)
             .remove();

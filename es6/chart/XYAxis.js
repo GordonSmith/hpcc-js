@@ -1,10 +1,10 @@
 import * as d3 from "d3";
 import * as SVGWidget from "../common/SVGWidget"
-import * as Axis from "./Axis"
+import Axis from "./Axis"
 import * as Utility from "../common/Utility"
 import "css!./XYAxis"
 
-export class XYAxis extends SVGWidget {
+export default class XYAxis extends SVGWidget {
     constructor() {
         super();
         Utility.SimpleSelectionMixin.call(this);

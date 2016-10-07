@@ -1,21 +1,21 @@
-"use strict";
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        define(["d3", "./Scatter", "css!./Line"], factory);
-    } else {
-        root.chart_Line = factory(root.d3, root.chart_Scatter);
-    }
-}(this, function (d3, Scatter) {
-    function Line(target) {
-        Scatter.call(this);
-
-        this
-            .interpolate_default("linear")
-        ;
-    }
-    Line.prototype = Object.create(Scatter.prototype);
-    Line.prototype.constructor = Line;
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+define(["require", "exports", "./Scatter", "css!./Line"], function (require, exports, Scatter_1) {
+    "use strict";
+    var Line = (function (_super) {
+        __extends(Line, _super);
+        function Line() {
+            _super.call(this);
+            this
+                .interpolate_default("linear");
+        }
+        return Line;
+    }(Scatter_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Line;
     Line.prototype._class += " chart_Line";
-
-    return Line;
-}));
+});
+//# sourceMappingURL=Line.js.map

@@ -218,7 +218,7 @@
         if (meta.ext.internal) {
             this[__private_ + id] = true;
         }
-        this[id] = function (_) {
+        this[id + "_call"] = function (_) {
             if (!arguments.length) {
                 if (this[id + "_disabled"]()) return this[id + "_default"]();
                 return this[__prop_ + id] !== undefined ? this[__prop_ + id] : this[id + "_default"]();
@@ -238,6 +238,11 @@
             }
             return this;
         };
+        if (!this[id]) {
+            this[id] = function () {
+                return this[id + "_call"].apply(this, arguments);
+            };
+        }
         this[id + "_disabled"] = function () {
             return ext && ext.disable ? !!ext.disable(this) : false;
         };
@@ -309,7 +314,7 @@
             throw id + " is already published.";
         }
         this[__meta_ + id] = new MetaProxy(id, proxy, method, defaultValue);
-        this[id] = function (_) {
+        this[id + "_call"] = function (_) {
             if (!arguments.length) return defaultValue === undefined || this[id + "_modified"]() ? this[proxy][method]() : defaultValue;
             if (defaultValue !== undefined && _ === defaultValue) {
                 this[proxy][method + "_reset"]();
@@ -318,6 +323,11 @@
             }
             return this;
         };
+        if (!this[id]) {
+            this[id] = function () {
+                return this[id + "_call"].apply(this, arguments);
+            };
+        }
         this[id + "_disabled"] = function () {
             return this[proxy][method + "_disabled"]();
         };

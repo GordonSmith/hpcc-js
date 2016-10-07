@@ -370,6 +370,7 @@
         parseClassID: function (classID, prefix) {
             prefix = prefix || "..";
             var parts = classID.split(".");
+            var path = prefix + "/" + parts[0].split("_").join("/");
             return {
                 path: prefix + "/" + parts[0].split("_").join("/"),
                 memberWidgetID: parts.length > 1 ? parts[1] : null
@@ -380,6 +381,17 @@
             return new Promise(function (resolve, reject) {
                 var parsedClassID = context.parseClassID(classID);
                 require([parsedClassID.path], function (Widget) {
+                    if (Widget.prototype && Widget.prototype.constructor) {
+                    } else if (Widget.default && Widget.default.constructor) {
+                        Widget = Widget.default;
+                    } else {
+                        for (var key in Widget) {
+                            if (Widget[key].prototype.constructor) {
+                                Widget = Widget[key];
+                                break;
+                            }
+                        }
+                    }
                     resolve(parsedClassID.memberWidgetID ? (Widget.prototype ? Widget.prototype[parsedClassID.memberWidgetID] : Widget[parsedClassID.memberWidgetID]) : Widget);
                 });
             });

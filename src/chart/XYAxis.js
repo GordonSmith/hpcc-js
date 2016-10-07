@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/Utility", "css!./XYAxis"], function (require, exports, d3, SVGWidget, Axis, Utility) {
+define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/Utility", "css!./XYAxis"], function (require, exports, d3, SVGWidget, Axis_1, Utility) {
     "use strict";
     var XYAxis = (function (_super) {
         __extends(XYAxis, _super);
@@ -24,13 +24,13 @@ define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/
             }, 250);
             Utility.SimpleSelectionMixin.call(this);
             this._drawStartPos = "origin";
-            this.domainAxis = new Axis()
+            this.domainAxis = new Axis_1.default()
                 .orientation_default("bottom")
                 .type_default("ordinal")
                 .overlapMode_default("stagger")
                 .shrinkToFit_default("high")
                 .extend_default(0);
-            this.valueAxis = new Axis()
+            this.valueAxis = new Axis_1.default()
                 .orientation_default("left")
                 .type_default("linear")
                 .shrinkToFit_default("high");
@@ -400,7 +400,8 @@ define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/
         };
         return XYAxis;
     }(SVGWidget));
-    exports.XYAxis = XYAxis;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = XYAxis;
     XYAxis.prototype._class += " chart_XYAxis";
     XYAxis.prototype.mixin(Utility.SimpleSelectionMixin);
     XYAxis.prototype.publish("orientation", "horizontal", "set", "Selects orientation for the axis", ["horizontal", "vertical"]);

@@ -5,11 +5,8 @@
         "allowJs": true,
         "rootDir": "es6",
         "outDir": "src",
-        "watch": true,
         "sourceMap": true
     },
-    //"rootDirs": [ "./src" ],
-    //"files": ["es6/chart/Bar.js" ],
     "include": ["es6/**/*"],
     "compileOnSave": true,
     "typingOptions": {

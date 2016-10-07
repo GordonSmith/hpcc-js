@@ -1,6 +1,6 @@
-import { Column } from "./Column";
+import Column from "./Column";
 
-export class Bar extends Column {
+export default class Bar extends Column {
     constructor() {
         super();
         this.orientation_default("vertical");
