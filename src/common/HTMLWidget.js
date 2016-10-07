@@ -127,9 +127,7 @@
                     overflow: "hidden"
                 })
             ;
-            this._ariaElement = overlay.append("div")
-                .attr("class", "aria")
-            ;
+            this._ariaElement = overlay.append("div");
             this._overlayElement = d3.select(this._target);
 
             var context = this;
@@ -154,9 +152,7 @@
                 });
             }
             this._parentElement = d3.select(this._target).append("div");
-            this._ariaElement = d3.select(this._target).append("div")
-                .attr("class", "aria")
-            ;
+            this._ariaElement = d3.select(this._target).append("div");
         } else {
             this.exit();
         }
@@ -187,6 +183,9 @@
             this.observer.disconnect();
         }
         this.oldPos = null;
+        if (this._ariaElement) {
+            this._ariaElement.remove();
+        }
         if (this._parentElement) {
             this._parentElement.remove();
         }

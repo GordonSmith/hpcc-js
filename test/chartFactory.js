@@ -10,7 +10,7 @@
         Column: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column()
+                    callback(new Column.Column()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );
@@ -18,7 +18,7 @@
             },
             longLabels: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column()                        
+                    callback(new Column.Column()                        
                         .columns(DataFactory.ND.subjects.columns)
                         .data([
                             ["Geography Geography Geography\nGeography Geography", 75, 68, 65],
@@ -39,7 +39,7 @@
             },
             ordinalRange: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column()
+                    callback(new Column.Column()
                         .columns(DataFactory.ordinalRange.default.columns)
                         .data(DataFactory.ordinalRange.default.data)
                         
@@ -50,7 +50,7 @@
             },
             linear: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column()
+                    callback(new Column.Column()
                         .columns(DataFactory.linear.default.columns)
                         .data(DataFactory.linear.default.data)
                         
@@ -61,7 +61,7 @@
             },
             timeX: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column()
+                    callback(new Column.Column()
                         .columns(DataFactory.timeX.default.columns)
                         .data(DataFactory.timeX.default.data)
                         
@@ -73,7 +73,7 @@
             },
             timeY: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column()
+                    callback(new Column.Column()
                         .columns(DataFactory.timeY.default.columns)
                         .data(DataFactory.timeY.default.data)
                       
@@ -87,7 +87,7 @@
         Bar: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Bar"], function (DataFactory, Bar) {
-                    callback(new Bar()
+                    callback(new Bar.Bar()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );

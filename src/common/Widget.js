@@ -48,6 +48,7 @@
 
     Widget.prototype.publishProxy("fields", "_db", "fields");
     Widget.prototype.publish("classed", {}, "object", "HTML Classes", null, { tags: ["Private"] });
+    Widget.prototype.publish("screenReaderTable", false, "boolean", "Enable screen reader table");
 
     Widget.prototype.export = function (_) {
         switch(_) {
@@ -504,11 +505,22 @@
     Widget.prototype.preUpdate = function (domNode, element) { };
     Widget.prototype.update = function (domNode, element) { };
     Widget.prototype.postUpdate = function (domNode, element) {
-        if (this._ariaElement){
-            ARIATable(this.id(), this._ariaElement, this.columns(), this.data());
+        if (this._ariaElement) {
+            var context = this;
+            setTimeout(function () {
+                if (context.screenReaderTable()) {
+                    ARIATable(context.id(), context._ariaElement, context.columns(), context.data());
+                } else {
+                    ARIATable(context.id(), context._ariaElement);
+                }
+            }, 0);
         }
     };
-    Widget.prototype.exit = function (domNode, element) { };
+    Widget.prototype.exit = function (domNode, element) {
+        if (this._ariaElement) {
+            ARIATable(this.id(), this._ariaElement);
+        }
+    };
 
     return Widget;
 }));

@@ -114,9 +114,7 @@
                     left: 0
                 })
             ;
-            this._ariaElement = this._parentRelativeDiv.append("div")
-                .attr("class", "aria")
-            ;
+            this._ariaElement = this._parentRelativeDiv.append("div");
 
             this.resize(this._size);
         } else {
@@ -144,6 +142,7 @@
 
     SVGWidget.prototype.exit = function (domNode, element) {
         if (this._parentRelativeDiv) {
+            this._ariaElement.remove();
             this._parentOverlay.remove();
             this._parentElement.remove();
             this._parentRelativeDiv.remove();
