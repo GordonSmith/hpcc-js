@@ -1,9 +1,9 @@
 import * as d3 from "d3"
-import * as SVGWidget from "../common/SVGWidget"
+import { SVGWidget } from "../common/SVGWidget"
 import * as Utility from "../common/Utility"
 import "css!./Axis"
 
-export default class Axis extends SVGWidget {
+export class Axis extends SVGWidget {
     constructor() {
         super();
         this._drawStartPos = "origin";

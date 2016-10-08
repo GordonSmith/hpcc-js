@@ -7,7 +7,7 @@ import * as Utility from "../common/Utility"
 import * as ITooltip from "../api/ITooltip"
 import "css!./Bubble"
 
-export default class Bubble extends SVGWidget {
+export class Bubble extends SVGWidget {
     constructor() {
         super();
 

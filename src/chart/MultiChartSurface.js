@@ -11,7 +11,7 @@ define(["require", "exports", "../common/ResizeSurface", "./MultiChart", "../api
             _super.call(this);
             INDChart.call(this);
             this._title = "MultiChartSurface";
-            this._content = new MultiChart_1.default();
+            this._content = new MultiChart_1.MultiChart();
             var context = this;
             this._content.click = function (row, column) {
                 context.click(row, column);
@@ -62,8 +62,7 @@ define(["require", "exports", "../common/ResizeSurface", "./MultiChart", "../api
         };
         return MultiChartSurface;
     }(ResizeSurface));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = MultiChartSurface;
+    exports.MultiChartSurface = MultiChartSurface;
     MultiChartSurface.prototype._class += " chart_MultiChartSurface";
     MultiChartSurface.prototype.implements(INDChart.prototype);
     MultiChartSurface.prototype.publish("mode", "2D", "set", "Chart Type", ["1D", "2D", "ND", "all"]);

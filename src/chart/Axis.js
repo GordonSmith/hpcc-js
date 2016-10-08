@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "../common/SVGWidget", "css!./Axis"], function (require, exports, d3, SVGWidget) {
+define(["require", "exports", "d3", "../common/SVGWidget", "css!./Axis"], function (require, exports, d3, SVGWidget_1) {
     "use strict";
     var Axis = (function (_super) {
         __extends(Axis, _super);
@@ -465,9 +465,8 @@ define(["require", "exports", "d3", "../common/SVGWidget", "css!./Axis"], functi
         };
         ;
         return Axis;
-    }(SVGWidget));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = Axis;
+    }(SVGWidget_1.SVGWidget));
+    exports.Axis = Axis;
     Axis.prototype._class += " chart_Axis";
     Axis.prototype.publish("title", "", "string", "Title");
     Axis.prototype.publish("orientation", "bottom", "set", "Orientation", ["left", "top", "right", "bottom"]);

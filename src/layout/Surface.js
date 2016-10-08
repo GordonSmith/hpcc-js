@@ -6,6 +6,7 @@
         root.layout_Surface = factory(root.d3, root.common_HTMLWidget, root.common_TextBox);
     }
 }(this, function (d3, HTMLWidget, TextBox) {
+    HTMLWidget = HTMLWidget.HTMLWidget;
     function Surface() {
         HTMLWidget.call(this);
 

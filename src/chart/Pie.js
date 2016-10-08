@@ -167,8 +167,7 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
         ;
         return Pie;
     }(SVGWidget));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = Pie;
+    exports.Pie = Pie;
     Pie.prototype._class += " chart_Pie";
     Pie.prototype.implements(I2DChart.prototype);
     Pie.prototype.implements(ITooltip.prototype);

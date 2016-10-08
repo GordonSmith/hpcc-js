@@ -6,6 +6,7 @@
         root.other_PropertyEditor = factory(root.d3, root.common_HTMLWidget, root.other_Persist, root.layout_Grid, root.common_Widget);
     }
 }(this, function (d3, HTMLWidget, Persist, Grid, Widget) {
+    HTMLWidget = HTMLWidget.HTMLWidget;
     function hasProperties(type) {
         switch (type) {
             case "widget":

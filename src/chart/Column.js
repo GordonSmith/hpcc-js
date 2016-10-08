@@ -115,9 +115,8 @@ define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITool
                 .remove();
         };
         return Column;
-    }(XYAxis_1.default));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = Column;
+    }(XYAxis_1.XYAxis));
+    exports.Column = Column;
     Column.prototype._class += " chart_Column";
     Column.prototype.implements(INDChart.prototype);
     Column.prototype.implements(ITooltip.prototype);

@@ -7,7 +7,7 @@ import "css!./Summary"
     var TEXT = "text";
     var HTML = "html";
 
-export default class Summary extends HTMLWidget {
+export class Summary extends HTMLWidget {
     constructor() {
         super();
         this._tag = "div";

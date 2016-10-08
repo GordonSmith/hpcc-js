@@ -164,9 +164,8 @@ define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITool
         };
         ;
         return Scatter;
-    }(XYAxis_1.default));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = Scatter;
+    }(XYAxis_1.XYAxis));
+    exports.Scatter = Scatter;
     Scatter.prototype._class += " chart_Scatter";
     Scatter.prototype.implements(INDChart.prototype);
     Scatter.prototype.implements(ITooltip.prototype);

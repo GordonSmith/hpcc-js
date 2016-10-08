@@ -6,6 +6,7 @@
         root.api_ITooltip = factory(root.d3, root.d3.tip, root.common_Widget);
     }
 }(this, function (d3, d3Tip, Widget, AbsoluteSurface, TextBox) {
+    Widget = Widget.Widget;
     function ITooltip() {
         Widget.call(this);
 

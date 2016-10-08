@@ -1,12 +1,12 @@
 import * as d3 from "d3"
-import * as D3Bullet from "d3-bullet"
+import * as _D3Bullet from "d3-bullet"
 import * as HTMLWidget from "../common/HTMLWidget"
 import * as Utility from "../common/Utility"
 import "css!./Bullet"
 
-D3Bullet = D3Bullet || d3.bullet || window.d3.bullet;
+const D3Bullet = _D3Bullet || d3.bullet || window.d3.bullet;
 
-export default class Bullet extends HTMLWidget {
+export class Bullet extends HTMLWidget {
     constructor() {
         super();
         HTMLWidget.call(this);

@@ -1,51 +1,56 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", "./Database", "./ARIATable"], function (require, exports, d3, Class, Platform, PropertyExt, Database, ARIATable) {
-    "use strict";
+import * as d3 from "d3"
+import * as Class from "./Class"
+import * as Platform from "./Platform"
+import * as PropertyExt from "./PropertyExt"
+import * as Database from "./Database"
+import * as ARIATable from "./ARIATable"
+
     var widgetID = 0;
-    var Widget = (function (_super) {
-        __extends(Widget, _super);
-        function Widget() {
-            _super.call(this);
-            Platform.call(this);
-            PropertyExt.call(this);
-            this._class = Object.getPrototypeOf(this)._class;
-            this._id = this._idSeed + widgetID++;
-            this._db = new Database.Grid();
-            this._pos = { x: 0, y: 0 };
-            this._size = { width: 0, height: 0 };
-            this._scale = 1;
-            this._visible = true;
-            this._target = null;
-            this._parentElement = null;
-            this._parentWidget = null;
-            this._element = d3.select();
-            this._renderCount = 0;
-            if (window.__hpcc_debug) {
-                if (window.g_all === undefined) {
-                    window.g_all = {};
-                }
-                window.g_all[this._id] = this;
+export class Widget extends Class {
+    constructor() {
+        super();
+        Platform.call(this);
+        PropertyExt.call(this);
+        this._class = Object.getPrototypeOf(this)._class;
+        this._id = this._idSeed + widgetID++;
+
+        this._db = new Database.Grid();
+        this._pos = { x: 0, y: 0 };
+        this._size = { width: 0, height: 0 };
+        this._scale = 1;
+        this._visible = true;
+
+        this._target = null;
+        this._parentElement = null;
+        this._parentWidget = null;
+
+        this._element = d3.select();
+
+        this._renderCount = 0;
+
+        if (window.__hpcc_debug) {
+            if (window.g_all === undefined) {
+                window.g_all = {};
             }
-            if (window.__hpcc_theme) {
-                this.applyTheme(window.__hpcc_theme);
-            }
+            window.g_all[this._id] = this;
         }
-        return Widget;
-    }(Class));
-    exports.Widget = Widget;
+        if (window.__hpcc_theme) {
+            this.applyTheme(window.__hpcc_theme);
+        }
+    }
+}
     Widget.prototype.mixin(Platform);
     Widget.prototype.mixin(PropertyExt);
     Widget.prototype._class += " common_Widget";
+
     Widget.prototype._idSeed = "_w";
+
     Widget.prototype.publishProxy("fields", "_db", "fields");
     Widget.prototype.publish("classed", {}, "object", "HTML Classes", null, { tags: ["Private"] });
     Widget.prototype.publish("screenReaderTable", false, "boolean", "Enable screen reader table");
+
     Widget.prototype.export = function (_) {
-        switch (_) {
+        switch(_) {
             case "TSV":
                 return this._db.tsv();
             case "JSON":
@@ -53,6 +58,7 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         }
         return this._db.csv();
     };
+
     Widget.prototype.leakCheck = function (newNode) {
         var context = this;
         var watchArray = [newNode];
@@ -78,6 +84,7 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
             pNode = pNode.parentNode;
         }
     };
+
     //  Events  ---
     Widget.prototype.on = function (eventID, func, stopPropagation) {
         var context = this;
@@ -87,42 +94,45 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
                 if (d3.event) {
                     d3.event.stopPropagation();
                 }
-            }
-            else {
+            } else {
                 retVal = origFunc.apply(context, args);
             }
             return func.apply(context, args) || retVal;
         });
         return this;
     };
+
     //  Implementation  ---
     Widget.prototype.id = function (_) {
-        if (!arguments.length)
-            return this._id;
+        if (!arguments.length) return this._id;
         this._id = _;
         return this;
     };
+
     Widget.prototype.columns = function (_) {
-        if (!arguments.length)
-            return this._db.legacyColumns();
+        if (!arguments.length) return this._db.legacyColumns();
         this._db.legacyColumns(_);
         return this;
     };
+
     Widget.prototype.parsedData = function () {
         return this._db.parsedData();
     };
+
     Widget.prototype.formattedData = function () {
         return this._db.formattedData();
     };
+
     Widget.prototype.data = function (_) {
-        if (!arguments.length)
-            return this._db.legacyData();
+        if (!arguments.length) return this._db.legacyData();
         this._db.legacyData(_);
         return this;
     };
+
     Widget.prototype.cloneData = function () {
         return this.data().map(function (row) { return row.slice(0); });
     };
+
     Widget.prototype.flattenData = function () {
         var retVal = [];
         this.data().forEach(function (row, rowIdx) {
@@ -141,6 +151,7 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         }, this);
         return retVal;
     };
+
     Widget.prototype.rowToObj = function (row) {
         var retVal = {};
         this.fields().forEach(function (field, idx) {
@@ -151,59 +162,61 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         }
         return retVal;
     };
+
     Widget.prototype.pos = function (_) {
-        if (!arguments.length)
-            return this._pos;
+        if (!arguments.length) return this._pos;
         this._pos = _;
         if (this._overlayElement) {
             this._overlayElement
-                .attr("transform", "translate(" + _.x + "," + _.y + ")scale(" + this._scale + ")");
+                .attr("transform", "translate(" + _.x + "," + _.y + ")scale(" + this._scale + ")")
+            ;
         }
         return this;
     };
+
     Widget.prototype.x = function (_) {
-        if (!arguments.length)
-            return this._pos.x;
+        if (!arguments.length) return this._pos.x;
         this.pos({ x: _, y: this._pos.y });
         return this;
     };
+
     Widget.prototype.y = function (_) {
-        if (!arguments.length)
-            return this._pos.y;
+        if (!arguments.length) return this._pos.y;
         this.pos({ x: this._pos.x, y: _ });
         return this;
     };
+
     Widget.prototype.size = function (_) {
-        if (!arguments.length)
-            return this._size;
+        if (!arguments.length) return this._size;
         this._size = _;
         if (this._overlayElement) {
             this._overlayElement
                 .attr("width", _.width)
-                .attr("height", _.height);
+                .attr("height", _.height)
+            ;
         }
         return this;
     };
+
     Widget.prototype.width = function (_) {
-        if (!arguments.length)
-            return this._size.width;
+        if (!arguments.length) return this._size.width;
         this.size({ width: _, height: this._size.height });
         return this;
     };
+
     Widget.prototype.height = function (_) {
-        if (!arguments.length)
-            return this._size.height;
+        if (!arguments.length) return this._size.height;
         this.size({ width: this._size.width, height: _ });
         return this;
     };
+
     Widget.prototype.resize = function (size, delta) {
         delta = delta || { width: 0, height: 0 };
         var width, height;
         if (size && size.width && size.height) {
             width = size.width;
             height = size.height;
-        }
-        else {
+        } else {
             var style = window.getComputedStyle(this._target, null);
             width = parseFloat(style.getPropertyValue("width")) - delta.width;
             height = parseFloat(style.getPropertyValue("height")) - delta.height;
@@ -214,19 +227,20 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         });
         return this;
     };
+
     Widget.prototype.scale = function (_) {
-        if (!arguments.length)
-            return this._scale;
+        if (!arguments.length) return this._scale;
         this._scale = _;
         if (this._overlayElement) {
             this._overlayElement
-                .attr("transform", "translate(" + _.x + "," + _.y + ")scale(" + this._scale + ")");
+                .attr("transform", "translate(" + _.x + "," + _.y + ")scale(" + this._scale + ")")
+            ;
         }
         return this;
     };
+
     Widget.prototype.visible = function (_) {
-        if (!arguments.length)
-            return this._visible;
+        if (!arguments.length) return this._visible;
         this._visible = _;
         if (this._parentElement) {
             this._parentElement.style({
@@ -236,15 +250,16 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         }
         return this;
     };
+
     Widget.prototype.display = function (_) {
-        if (!arguments.length)
-            return this._display;
+        if (!arguments.length) return this._display;
         this._display = _;
         if (this._element) {
             this._element.style("display", this._display ? null : "none");
         }
         return this;
     };
+
     Widget.prototype.calcSnap = function (snapSize) {
         function snap(x, gridSize) {
             function snapDelta(x, gridSize) {
@@ -262,8 +277,9 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         var b = snap(this._pos.y + this._size.height / 2, snapSize);
         var w = r - l;
         var h = b - t;
-        return [{ x: l + w / 2, y: t + h / 2 }, { width: w, height: h }];
+        return [{ x: l + w /2, y: t + h / 2 }, { width: w, height: h }];
     };
+
     //  DOM/SVG Node Helpers  ---
     Widget.prototype.toWidget = function (domNode) {
         if (!domNode) {
@@ -278,19 +294,20 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         }
         return null;
     };
+
     Widget.prototype.locateParentWidget = function (domNode) {
         domNode = domNode || (this._target ? this._target.parentNode : null);
         if (domNode) {
             var widget = this.toWidget(domNode);
             if (widget) {
                 return widget;
-            }
-            else if (domNode.parentNode) {
+            } else if (domNode.parentNode) {
                 return this.locateParentWidget(domNode.parentNode);
             }
         }
         return null;
     };
+
     Widget.prototype.locateSVGNode = function (domNode) {
         if (!domNode) {
             return null;
@@ -300,6 +317,7 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         }
         return this.locateSVGNode(domNode.parentNode);
     };
+
     Widget.prototype.locateOverlayNode = function () {
         var widget = this.locateParentWidget(this._target);
         while (widget) {
@@ -310,6 +328,7 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         }
         return null;
     };
+
     Widget.prototype.locateAriaNode = function () {
         var widget = this.locateParentWidget(this._target);
         while (widget) {
@@ -320,6 +339,7 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         }
         return null;
     };
+
     Widget.prototype.getAbsolutePos = function (domNode, w, h) {
         var root = this.locateSVGNode(domNode);
         if (!root) {
@@ -342,9 +362,11 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         }
         return retVal;
     };
+
     Widget.prototype.hasOverlay = function () {
         return this._overlayElement;
     };
+
     Widget.prototype.syncOverlay = function () {
         if (this._size.width && this._size.height) {
             var newPos = this.getAbsolutePos(this._overlayElement.node(), this._size.width, this._size.height);
@@ -353,28 +375,33 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
                 var yScale = newPos.height / this._size.height;
                 this._parentElement
                     .style({
-                    left: newPos.x - (newPos.width / xScale) / 2 + "px",
-                    top: newPos.y - (newPos.height / yScale) / 2 + "px",
-                    width: newPos.width / xScale + "px",
-                    height: newPos.height / yScale + "px"
-                });
+                        left: newPos.x - (newPos.width / xScale) / 2 + "px",
+                        top: newPos.y - (newPos.height / yScale) / 2 + "px",
+                        width: newPos.width / xScale + "px",
+                        height: newPos.height / yScale + "px"
+                    })
+                ;
                 var transform = "scale(" + xScale + "," + yScale + ")";
                 this._parentElement
                     .style("transform", transform)
                     .style("-moz-transform", transform)
                     .style("-ms-transform", transform)
                     .style("-webkit-transform", transform)
-                    .style("-o-transform", transform);
+                    .style("-o-transform", transform)
+                ;
             }
             this.oldPos = newPos;
         }
     };
+
     Widget.prototype.element = function () {
         return this._element;
     };
+
     Widget.prototype.node = function () {
         return this._element.node();
     };
+
     //  Render  ---
     Widget.prototype.render = function (callback) {
         if (window.__hpcc_debug) {
@@ -384,6 +411,7 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
             }
             this._prevNow = now;
         }
+
         callback = callback || function () { };
         if (!this._parentElement || !this.visible()) {
             callback(this);
@@ -392,32 +420,38 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         if (this._parentElement) {
             if (!this._tag)
                 throw "No DOM tag specified";
+
             var elements = this._parentElement.selectAll("#" + this._id).data([this], function (d) { return d._id; });
             elements.enter().append(this._tag)
                 .classed(this._class, true)
                 .attr("id", this._id)
+                //.attr("opacity", 0.50)  //  Uncomment to debug position offsets  ---
                 .each(function (context) {
-                context._element = d3.select(this);
-                context.enter(this, context._element);
-                if (window.__hpcc_debug) {
-                    context.leakCheck(this);
-                }
-            });
+                    context._element = d3.select(this);
+                    context.enter(this, context._element);
+                    if (window.__hpcc_debug) {
+                        context.leakCheck(this);
+                    }
+                })
+            ;
             elements
                 .classed(this.classed())
                 .each(function (context) {
-                context.preUpdate(this, context._element);
-                context.update(this, context._element);
-                context.postUpdate(this, context._element);
-            });
+                    context.preUpdate(this, context._element);
+                    context.update(this, context._element);
+                    context.postUpdate(this, context._element);
+                })
+            ;
             elements.exit()
                 .each(function (context) {
-                d3.select(this).datum(null);
-                context.exit(this, context._element);
-            })
-                .remove();
+                    d3.select(this).datum(null);
+                    context.exit(this, context._element);
+                })
+                .remove()
+            ;
             this._renderCount++;
         }
+
         //  ASync Render Contained Widgets  ---
         var widgets = [];
         this.publishedProperties(true).forEach(function (meta) {
@@ -435,6 +469,7 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
                 }
             }
         }, this);
+
         var context = this;
         switch (widgets.length) {
             case 0:
@@ -460,9 +495,11 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         }
         return this;
     };
+
     Widget.prototype.lazyRender = Widget.prototype.debounce(function () {
         this.render();
     }, 100);
+
     Widget.prototype.enter = function (domNode, element) { };
     Widget.prototype.preUpdate = function (domNode, element) { };
     Widget.prototype.update = function (domNode, element) { };
@@ -472,8 +509,7 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
             setTimeout(function () {
                 if (context.screenReaderTable()) {
                     ARIATable(context.id(), context._ariaElement, context.columns(), context.data());
-                }
-                else {
+                } else {
                     ARIATable(context.id(), context._ariaElement);
                 }
             }, 0);
@@ -484,5 +520,3 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
             ARIATable(this.id(), this._ariaElement);
         }
     };
-});
-//# sourceMappingURL=Widget.js.map

@@ -145,8 +145,7 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../api/I2DChart", "
         };
         return Summary;
     }(HTMLWidget));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = Summary;
+    exports.Summary = Summary;
     Summary.prototype.implements(I2DChart.prototype);
     Summary.prototype._class += " chart_Summary";
     Summary.prototype.publish("iconColumn", null, "set", "Select display value", function () { return this.columns(); }, { optional: true });

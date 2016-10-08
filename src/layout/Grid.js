@@ -6,7 +6,7 @@
         root.layout_Grid = factory(root.d3, root.GridList, root.common_HTMLWidget, root.layout_Cell, root.common_TextBox, root.common_Utility);
     }
 }(this, function (d3, GridList, HTMLWidget, Cell, TextBox, Utility) {
-
+    HTMLWidget = HTMLWidget.HTMLWidget;
     function Grid() {
         HTMLWidget.call(this);
 

@@ -12,9 +12,8 @@ define(["require", "exports", "./Column"], function (require, exports, Column_1)
             this.orientation_default("vertical");
         }
         return Bar;
-    }(Column_1.default));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = Bar;
+    }(Column_1.Column));
+    exports.Bar = Bar;
     Bar.prototype._class += " chart_Bar";
 });
 //# sourceMappingURL=Bar.js.map

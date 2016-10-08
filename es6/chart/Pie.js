@@ -7,7 +7,7 @@ import * as Utility from "../common/Utility"
 import * as ITooltip from "../api/ITooltip"
 import * as Pie from  "css!./Pie"
 
-export default class Pie extends SVGWidget {
+export class Pie extends SVGWidget {
     constructor() {
         super();
         I2DChart.call(this);

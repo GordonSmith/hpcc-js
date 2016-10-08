@@ -3,9 +3,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "d3-hexbin", "./XYAxis", "../common/Palette", "../api/INDChart", "../api/ITooltip", "css!./HexBin"], function (require, exports, d3, D3HexBin, XYAxis_1, Palette, INDChart, ITooltip) {
+define(["require", "exports", "d3", "./XYAxis", "../common/Palette", "../api/INDChart", "../api/ITooltip", "css!./HexBin"], function (require, exports, d3, XYAxis_1, Palette, INDChart, ITooltip) {
     "use strict";
-    D3HexBin = D3HexBin || d3.hexbin || window.d3.hexbin;
+    var D3HexBin = D3HexBin || d3.hexbin || window.d3.hexbin;
     var HexBin = (function (_super) {
         __extends(HexBin, _super);
         function HexBin() {
@@ -56,9 +56,8 @@ define(["require", "exports", "d3", "d3-hexbin", "./XYAxis", "../common/Palette"
         };
         ;
         return HexBin;
-    }(XYAxis_1.default));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = HexBin;
+    }(XYAxis_1.XYAxis));
+    exports.HexBin = HexBin;
     HexBin.prototype._class += " chart_HexBin";
     HexBin.prototype.implements(INDChart.prototype);
     HexBin.prototype.implements(ITooltip.prototype);

@@ -1,10 +1,10 @@
 import * as d3 from "d3"
-import XYAxis from "./XYAxis"
+import { XYAxis } from "./XYAxis"
 import * as INDChart from "../api/INDChart"
 import * as ITooltip from "../api/ITooltip"
 import "css!./Scatter"
 
-export default class Scatter extends XYAxis {
+export class Scatter extends XYAxis {
     constructor() {
         super();
         INDChart.call(this);

@@ -3,7 +3,7 @@ import * as HTMLWidget from "../common/HTMLWidget"
 import * as Utility from "../common/Utility"
 import * as INDChart from "../api/INDChart"
 
-export default class MultiChart extends HTMLWidget {
+export class MultiChart extends HTMLWidget {
     constructor() {
         super();
         INDChart.call(this);

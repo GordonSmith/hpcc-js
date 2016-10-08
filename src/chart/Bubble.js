@@ -118,8 +118,7 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
         };
         return Bubble;
     }(SVGWidget));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = Bubble;
+    exports.Bubble = Bubble;
     Bubble.prototype._class += " chart_Bubble";
     Bubble.prototype.implements(I2DChart.prototype);
     Bubble.prototype.implements(ITooltip.prototype);

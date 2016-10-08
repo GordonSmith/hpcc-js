@@ -3,9 +3,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "d3-bullet", "../common/HTMLWidget", "../common/Utility", "css!./Bullet"], function (require, exports, d3, D3Bullet, HTMLWidget, Utility) {
+define(["require", "exports", "d3", "d3-bullet", "../common/HTMLWidget", "../common/Utility", "css!./Bullet"], function (require, exports, d3, _D3Bullet, HTMLWidget, Utility) {
     "use strict";
-    D3Bullet = D3Bullet || d3.bullet || window.d3.bullet;
+    var D3Bullet = _D3Bullet || d3.bullet || window.d3.bullet;
     var Bullet = (function (_super) {
         __extends(Bullet, _super);
         function Bullet() {
@@ -108,8 +108,7 @@ define(["require", "exports", "d3", "d3-bullet", "../common/HTMLWidget", "../com
         };
         return Bullet;
     }(HTMLWidget));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = Bullet;
+    exports.Bullet = Bullet;
     Bullet.prototype._class += " chart_Bullet";
     Bullet.prototype.publish("titleColumn", null, "set", "Title Column", function () { return this.columns(); }, { optional: true });
     Bullet.prototype.publish("subtitleColumn", null, "set", "Subtitle Column", function () { return this.columns(); }, { optional: true });

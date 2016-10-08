@@ -216,8 +216,7 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../common/Utility",
         ;
         return MultiChart;
     }(HTMLWidget));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = MultiChart;
+    exports.MultiChart = MultiChart;
     MultiChart.prototype._class += " chart_MultiChart";
     MultiChart.prototype.implements(INDChart.prototype);
     MultiChart.prototype._1DChartTypes = [
