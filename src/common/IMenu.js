@@ -1,16 +1,12 @@
-"use strict";
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        define([], factory);
-    } else {
-        root.common_IMenu = factory();
-    }
-}(this, function () {
-    function IMenu() {
-    }
-
+define(["require", "exports"], function (require, exports) {
+    "use strict";
+    var IMenu = (function () {
+        function IMenu() {
+        }
+        return IMenu;
+    }());
+    exports.IMenu = IMenu;
     //  Properties  ---
-
     //  Events  ---
     IMenu.prototype.click = function (d) {
         console.log("Click:  " + d);
@@ -21,6 +17,5 @@
     IMenu.prototype.postHideMenu = function (d) {
         console.log("postHideMenu");
     };
-
-    return IMenu;
-}));
+});
+//# sourceMappingURL=IMenu.js.map

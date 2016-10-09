@@ -27,7 +27,7 @@
     Main.prototype.initGrid = function () {
         d3.select("#switch-design").property("checked", this.urlParams["designMode"] === "true");
 
-        this._propEditor = new PropertyEditor()
+        this._propEditor = new PropertyEditor.PropertyEditor()
             .target("properties")
             .show_settings(true);
         ;

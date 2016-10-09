@@ -1,24 +1,18 @@
-"use strict";
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        define([], factory);
-    } else {
-        root.common_IList = factory();
-    }
-}(this, function () {
-    function IList() {
-    }
-    
+define(["require", "exports"], function (require, exports) {
+    "use strict";
+    var IList = (function () {
+        function IList() {
+        }
+        return IList;
+    }());
+    exports.IList = IList;
     //  Properties  ---
-
     //  Events  ---
     IList.prototype.click = function (d) {
         console.log("Click:  " + d);
     };
-
     IList.prototype.dblclick = function (d) {
         console.log("Double click:  " + d);
     };
-
-    return IList;
-}));
+});
+//# sourceMappingURL=IList.js.map

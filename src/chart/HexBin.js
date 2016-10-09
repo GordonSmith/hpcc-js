@@ -3,15 +3,15 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "./XYAxis", "../common/Palette", "../api/INDChart", "../api/ITooltip", "css!./HexBin"], function (require, exports, d3, XYAxis_1, Palette, INDChart, ITooltip) {
+define(["require", "exports", "d3", "d3-hexbin", "./XYAxis", "../common/Palette", "../api/INDChart", "../api/ITooltip", "css!./HexBin"], function (require, exports, d3, _D3HexBin, XYAxis_1, Palette, INDChart_1, ITooltip_1) {
     "use strict";
-    var D3HexBin = D3HexBin || d3.hexbin || window.d3.hexbin;
+    var D3HexBin = _D3HexBin || d3.hexbin || window.d3.hexbin;
     var HexBin = (function (_super) {
         __extends(HexBin, _super);
         function HexBin() {
             _super.call(this);
-            INDChart.call(this);
-            ITooltip.call(this);
+            INDChart_1.INDChart.call(this);
+            ITooltip_1.ITooltip.call(this);
             this._hexbin = new D3HexBin();
             this
                 .xAxisGuideLines_default(false)
@@ -59,8 +59,8 @@ define(["require", "exports", "d3", "./XYAxis", "../common/Palette", "../api/IND
     }(XYAxis_1.XYAxis));
     exports.HexBin = HexBin;
     HexBin.prototype._class += " chart_HexBin";
-    HexBin.prototype.implements(INDChart.prototype);
-    HexBin.prototype.implements(ITooltip.prototype);
+    HexBin.prototype.implements(INDChart_1.INDChart.prototype);
+    HexBin.prototype.implements(ITooltip_1.ITooltip.prototype);
     HexBin.prototype._palette = Palette.rainbow("default");
     HexBin.prototype.publish("paletteID", "Blues", "set", "Palette ID", HexBin.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
     HexBin.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });

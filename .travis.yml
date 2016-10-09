@@ -6,3 +6,23 @@ before_script:
   - npm install -g bower
   - npm install -g gulp
   - bower install
+
+
+  env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "aUSR6a5grAsg7a+c/PXU1D+c03IWbtABKedWeZv3Ct05yts5jIfIVHh6pwiZ4CLq+Sn8Q5iwuH6/v0FwbQ4DGN6faVOjXDMbfvJVTzCPoKjrhwPGqvdXfNpr18ftst2z78D1FQgiDMTECsoQ6QyGWNfMG7CHlSSWN30WPXkBZn0="
+
+before_install:
+      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+addons:
+  coverity_scan:
+    project:
+      name: "hpcc-systems/Visualization"
+      description: "Build submitted via Travis CI"
+    notification_email: gordon.smith@lexisnexis.com
+    build_command_prepend: ""
+    build_command:   ""
+    branch_pattern: coverity_scan

@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import * as ResizeSurface from "../common/ResizeSurface"
 import { MultiChart } from "./MultiChart"
-import * as INDChart from "../api/INDChart"
+import { INDChart } from "../api/INDChart"
 
 export class MultiChartSurface extends ResizeSurface {
     constructor() {

@@ -1,10 +1,10 @@
 import * as d3 from "d3"
-import * as SVGWidget from "../common/SVGWidget"
-import * as I2DChart from "../api/I2DChart"
-import * as Text from "../common/Text"
-import * as FAChar from "../common/FAChar"
-import * as Utility from "../common/Utility"
-import * as ITooltip from "../api/ITooltip"
+import { SVGWidget } from "../common/SVGWidget"
+import { I2DChart } from "../api/I2DChart"
+import { Text } from "../common/Text"
+import { FAChar } from "../common/FAChar"
+import { SimpleSelectionMixin } from "../common/Utility"
+import { ITooltip } from "../api/ITooltip"
 import "css!./Bubble"
 
 export class Bubble extends SVGWidget {
@@ -14,7 +14,7 @@ export class Bubble extends SVGWidget {
         SVGWidget.call(this);
         I2DChart.call(this);
         ITooltip.call(this);
-        Utility.SimpleSelectionMixin.call(this);
+        SimpleSelectionMixin.call(this);
 
         this._drawStartPos = "origin";
 
@@ -143,7 +143,7 @@ export class Bubble extends SVGWidget {
 Bubble.prototype._class += " chart_Bubble";
 Bubble.prototype.implements(I2DChart.prototype);
 Bubble.prototype.implements(ITooltip.prototype);
-Bubble.prototype.mixin(Utility.SimpleSelectionMixin);
+Bubble.prototype.mixin(SimpleSelectionMixin);
 
 Bubble.prototype.publish("paletteID", "default", "set", "Palette ID", Bubble.prototype._palette.switch(),{tags:["Basic","Shared"]});
 Bubble.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette",null,{tags:["Intermediate","Shared"]});

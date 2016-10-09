@@ -1,6 +1,6 @@
 import * as d3 from "d3"
 import { SVGWidget } from "../common/SVGWidget"
-import * as Utility from "../common/Utility"
+import { Utility } from "../common/Utility"
 import "css!./Axis"
 
 export class Axis extends SVGWidget {

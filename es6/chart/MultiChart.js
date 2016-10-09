@@ -1,7 +1,7 @@
 import * as d3 from "d3"
-import * as HTMLWidget from "../common/HTMLWidget"
-import * as Utility from "../common/Utility"
-import * as INDChart from "../api/INDChart"
+import { HTMLWidget } from "../common/HTMLWidget"
+import { requireWidget, widgetPath } from "../common/Utility"
+import { INDChart } from "../api/INDChart"
 
 export class MultiChart extends HTMLWidget {
     constructor() {
@@ -98,7 +98,7 @@ export class MultiChart extends HTMLWidget {
     };
 
     requireContent(chartType, callback) {
-        Utility.requireWidget(this._allCharts[chartType].widgetClass).then(function(Widget) {
+        requireWidget(this._allCharts[chartType].widgetClass).then(function(Widget) {
             callback(new Widget());
         });
     };
@@ -291,7 +291,7 @@ MultiChart.prototype._allFamilies = MultiChart.prototype._allMap.keys();
 MultiChart.prototype._allChartTypesMap = {};
 MultiChart.prototype._allChartTypesByClass = {};
 MultiChart.prototype._allChartTypes.forEach(function (item) {
-    item.widgetPath = Utility.widgetPath(item.widgetClass);
+    item.widgetPath = widgetPath(item.widgetClass);
     MultiChart.prototype._allChartTypesMap[item.id] = item;
     MultiChart.prototype._allChartTypesByClass[item.widgetClass] = item;
 }, this);

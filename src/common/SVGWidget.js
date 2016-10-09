@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "./Widget", "./Transition"], function (require, exports, d3, Widget_1, Transition) {
+define(["require", "exports", "d3", "./Widget", "./Transition"], function (require, exports, d3, Widget_1, Transition_1) {
     "use strict";
     var SVGWidget = (function (_super) {
         __extends(SVGWidget, _super);
@@ -11,7 +11,7 @@ define(["require", "exports", "d3", "./Widget", "./Transition"], function (requi
             _super.call(this);
             this._tag = "g";
             this._boundingBox = null;
-            this.transition = new Transition(this);
+            this.transition = new Transition_1.Transition(this);
             this._drawStartPos = "center";
         }
         return SVGWidget;

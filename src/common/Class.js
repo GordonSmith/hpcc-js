@@ -1,15 +1,11 @@
-"use strict";
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        define([], factory);
-    }
-    else {
-        root.common_Class = factory();
-    }
-}(this, function () {
-    function Class() {
-    }
-    Class.prototype.constructor = Class;
+define(["require", "exports"], function (require, exports) {
+    "use strict";
+    var Class = (function () {
+        function Class() {
+        }
+        return Class;
+    }());
+    exports.Class = Class;
     Class.prototype._class = "common_Class";
     Class.prototype.class = function (_) {
         if (!arguments.length)
@@ -49,6 +45,5 @@
         };
         return this;
     };
-    return Class;
-}));
+});
 //# sourceMappingURL=Class.js.map

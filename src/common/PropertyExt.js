@@ -1,24 +1,20 @@
-"use strict";
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        define(["./Class"], factory);
-    } else {
-        root.common_PropertyExt = factory(root.common_Class);
-    }
-}(this, function (Class) {
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+define(["require", "exports", "./Class"], function (require, exports, Class_1) {
+    "use strict";
     var __meta_ = "__meta_";
     var __private_ = "__private_";
     var __prop_ = "__prop_";
     var __default_ = "__default_";
-
     function isMeta(key) {
         return key.indexOf(__meta_) === 0;
     }
-
     function isPrivate(obj, key) {
         return obj[__private_ + key];
     }
-
     function Meta(id, defaultValue, type, description, set, ext) {
         ext = ext || {};
         this.id = id;
@@ -28,7 +24,6 @@
         this.description = description;
         this.set = set;
         this.ext = ext;
-
         switch (type) {
             case "set":
                 this.checkedAssign = function (_) {
@@ -119,7 +114,6 @@
                 break;
         }
     }
-
     function MetaProxy(id, proxy, method, defaultValue, ext) {
         this.id = id;
         this.type = "proxy";
@@ -128,32 +122,31 @@
         this.defaultValue = defaultValue;
         this.ext = ext || {};
     }
-
     var propExtID = 0;
-    function PropertyExt() {
-        Class.call(this);
-
-        this._id = "_pe" + (++propExtID);
-        this._watchArrIdx = 0;
-        this._watchArr = {};
-
-        this.publishedProperties(true).forEach(function (meta) {
-            switch (meta.type) {
-                case "array":
-                case "widgetArray":
-                case "propertyArray":
-                    this[meta.id + "_reset"]();
-                    break;
-            }
-        }, this);
-    }
-    PropertyExt.prototype = Object.create(Class.prototype);
+    var PropertyExt = (function (_super) {
+        __extends(PropertyExt, _super);
+        function PropertyExt() {
+            _super.call(this);
+            this._id = "_pe" + (++propExtID);
+            this._watchArrIdx = 0;
+            this._watchArr = {};
+            this.publishedProperties(true).forEach(function (meta) {
+                switch (meta.type) {
+                    case "array":
+                    case "widgetArray":
+                    case "propertyArray":
+                        this[meta.id + "_reset"]();
+                        break;
+                }
+            }, this);
+        }
+        return PropertyExt;
+    }(Class_1.Class));
+    exports.PropertyExt = PropertyExt;
     PropertyExt.prototype._class += " common_PropertyExt";
-
     PropertyExt.prototype.id = function () {
         return this._id;
     };
-
     // Publish Properties  ---
     PropertyExt.prototype.publishedProperties = function (includePrivate, expandProxies) {
         var retVal = [];
@@ -167,7 +160,7 @@
                         meta = item.publishedProperty(meta.method);
                     }
                     if (meta.id !== this[key].id) {
-                        meta = JSON.parse(JSON.stringify(meta));  //  Clone meta so we can safely replace the id.
+                        meta = JSON.parse(JSON.stringify(meta)); //  Clone meta so we can safely replace the id.
                         meta.id = this[key].id;
                     }
                 }
@@ -176,7 +169,6 @@
         }
         return retVal;
     };
-
     PropertyExt.prototype.propertyWalker = function (filter, visitor) {
         this.publishedProperties(false, true).forEach(function (publishItem) {
             if (typeof (filter) !== "function" || !filter(this, publishItem)) {
@@ -184,17 +176,14 @@
             }
         }, this);
     };
-
     PropertyExt.prototype.publishedProperty = function (id) {
         return this[__meta_ + id];
     };
-
     PropertyExt.prototype.publishedModified = function (id) {
         return this.publishedProperties().some(function (prop) {
             return this[prop.id + "_modified"]();
         }, this);
     };
-
     PropertyExt.prototype.publishReset = function (privateArr, exceptionsArr) {
         privateArr = (privateArr || []).map(function (id) { return __meta_ + id; });
         exceptionsArr = (exceptionsArr || []).map(function (id) { return __meta_ + id; });
@@ -208,7 +197,6 @@
             }
         }
     };
-
     PropertyExt.prototype.publish = function (id, defaultValue, type, description, set, ext) {
         ext = ext || {};
         if (this[__meta_ + id] !== undefined && !ext.override) {
@@ -220,20 +208,24 @@
         }
         this[id + "_call"] = function (_) {
             if (!arguments.length) {
-                if (this[id + "_disabled"]()) return this[id + "_default"]();
+                if (this[id + "_disabled"]())
+                    return this[id + "_default"]();
                 return this[__prop_ + id] !== undefined ? this[__prop_ + id] : this[id + "_default"]();
             }
             if (_ === undefined) {
                 _ = null;
-            } else if (_ === "" && meta.ext.optional) {
+            }
+            else if (_ === "" && meta.ext.optional) {
                 _ = null;
-            } else if (_ !== null) {
+            }
+            else if (_ !== null) {
                 _ = meta.checkedAssign.call(this, _);
             }
             this.broadcast(id, _, this[__prop_ + id]);
             if (_ === null) {
                 delete this[__prop_ + id];
-            } else {
+            }
+            else {
                 this[__prop_ + id] = _;
             }
             return this;
@@ -253,13 +245,15 @@
             return this[__prop_ + id] !== undefined || this[id + "_default"]() !== undefined;
         };
         this[id + "_default"] = function (_) {
-            if (!arguments.length) return this[__default_ + id] !== undefined ? this[__default_ + id] : meta.defaultValue;
+            if (!arguments.length)
+                return this[__default_ + id] !== undefined ? this[__default_ + id] : meta.defaultValue;
             if (_ === "") {
                 _ = null;
             }
             if (_ === null) {
                 delete this[__default_ + id];
-            } else {
+            }
+            else {
                 this[__default_ + id] = _;
             }
             return this;
@@ -279,7 +273,6 @@
                     }
                     break;
             }
-
             switch (type) {
                 case "array":
                 case "widgetArray":
@@ -298,7 +291,6 @@
             return set;
         };
     };
-
     PropertyExt.prototype.publishWidget = function (prefix, WidgetType, id) {
         for (var key in WidgetType.prototype) {
             if (key.indexOf("__meta") === 0) {
@@ -307,7 +299,6 @@
             }
         }
     };
-
     PropertyExt.prototype.publishProxy = function (id, proxy, method, defaultValue) {
         method = method || id;
         if (this[__meta_ + id] !== undefined) {
@@ -315,10 +306,12 @@
         }
         this[__meta_ + id] = new MetaProxy(id, proxy, method, defaultValue);
         this[id + "_call"] = function (_) {
-            if (!arguments.length) return defaultValue === undefined || this[id + "_modified"]() ? this[proxy][method]() : defaultValue;
+            if (!arguments.length)
+                return defaultValue === undefined || this[id + "_modified"]() ? this[proxy][method]() : defaultValue;
             if (defaultValue !== undefined && _ === defaultValue) {
                 this[proxy][method + "_reset"]();
-            } else {
+            }
+            else {
                 this[proxy][method](_);
             }
             return this;
@@ -338,7 +331,8 @@
             return this[proxy][method + "_exists"]();
         };
         this[id + "_default"] = function (_) {
-            if (!arguments.length) return this[proxy][method + "_default"]();
+            if (!arguments.length)
+                return this[proxy][method + "_default"]();
             this[proxy][method + "_default"](_);
             return this;
         };
@@ -350,7 +344,6 @@
             return this[proxy][method + "_options"]();
         };
     };
-
     PropertyExt.prototype.monitorProperty = function (propID, func) {
         var meta = this.publishedProperty(propID);
         switch (meta.type) {
@@ -359,13 +352,13 @@
                     return this[meta.proxy].monitorProperty(meta.method, function (key, newVal, oldVal) {
                         func(meta.id, newVal, oldVal);
                     });
-                } else {
+                }
+                else {
                     return {
                         remove: function () {
                         }
                     };
                 }
-                break;
             default:
                 var idx = this._watchArrIdx++;
                 this._watchArr[idx] = { propertyID: propID, callback: func };
@@ -376,14 +369,12 @@
                     }
                 };
         }
-        return null;
     };
-
     PropertyExt.prototype.monitor = function (func) {
         return {
             _watches: this.publishedProperties().map(function (meta) {
-                    return this.monitorProperty(meta.id, func);
-                }, this),
+                return this.monitorProperty(meta.id, func);
+            }, this),
             remove: function () {
                 this._watches.forEach(function (watch) {
                     watch.remove();
@@ -391,7 +382,6 @@
             }
         };
     };
-
     PropertyExt.prototype.broadcast = function (key, newVal, oldVal, source) {
         source = source || this;
         if (newVal !== oldVal) {
@@ -405,7 +395,6 @@
             }
         }
     };
-
     PropertyExt.prototype.applyTheme = function (theme) {
         if (!theme) {
             return;
@@ -416,7 +405,7 @@
                 for (var paramName in theme[clsArr[i]]) {
                     if (paramName === "overrideTags" && theme[clsArr[i]][paramName] instanceof Object) {
                         for (var param in theme[clsArr[i]][paramName]) {
-                            if(this.publishedProperty(paramName).ext){
+                            if (this.publishedProperty(paramName).ext) {
                                 this.publishedProperty(paramName).ext.tags = theme[clsArr[i]][paramName][param];
                             }
                         }
@@ -429,16 +418,15 @@
             }
         }
     };
-
     PropertyExt.prototype.copyPropsTo = function (other) {
         this.publishedProperties(false).forEach(function (meta) {
             if (this[meta.id + "_exists"]()) {
                 other[meta.id](this[meta.id]());
-            } else {
+            }
+            else {
                 other[meta.id + "_reset"]();
             }
         }, this);
     };
-
-    return PropertyExt;
-}));
+});
+//# sourceMappingURL=PropertyExt.js.map

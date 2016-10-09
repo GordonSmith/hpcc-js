@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import * as _D3Bullet from "d3-bullet"
-import * as HTMLWidget from "../common/HTMLWidget"
-import * as Utility from "../common/Utility"
+import { HTMLWidget } from "../common/HTMLWidget"
+import { Utility } from "../common/Utility"
 import "css!./Bullet"
 
 const D3Bullet = _D3Bullet || d3.bullet || window.d3.bullet;

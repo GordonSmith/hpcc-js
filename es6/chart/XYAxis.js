@@ -1,13 +1,14 @@
 import * as d3 from "d3";
 import { SVGWidget } from "../common/SVGWidget"
 import { Axis } from "./Axis"
-import * as Utility from "../common/Utility"
+import { SimpleSelectionMixin } from "../common/Utility"
 import "css!./XYAxis"
 
 export class XYAxis extends SVGWidget {
     constructor() {
         super();
-        Utility.SimpleSelectionMixin.call(this);
+
+        SimpleSelectionMixin.call(this);
 
         this._drawStartPos = "origin";
 
@@ -464,7 +465,7 @@ export class XYAxis extends SVGWidget {
 }
 
 XYAxis.prototype._class += " chart_XYAxis";
-XYAxis.prototype.mixin(Utility.SimpleSelectionMixin);
+XYAxis.prototype.mixin(SimpleSelectionMixin);
 
 XYAxis.prototype.publish("orientation", "horizontal", "set", "Selects orientation for the axis", ["horizontal", "vertical"]);
 XYAxis.prototype.publish("selectionMode", false, "boolean", "Range Selector");

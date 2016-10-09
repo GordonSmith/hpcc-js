@@ -3,14 +3,14 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITooltip", "css!./Column"], function (require, exports, d3, XYAxis_1, INDChart, ITooltip) {
+define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITooltip", "css!./Column"], function (require, exports, d3, XYAxis_1, INDChart_1, ITooltip_1) {
     "use strict";
     var Column = (function (_super) {
         __extends(Column, _super);
         function Column() {
             _super.call(this);
-            INDChart.call(this);
-            ITooltip.call(this);
+            INDChart_1.INDChart.call(this);
+            ITooltip_1.ITooltip.call(this);
             this._linearGap = 25;
         }
         Column.prototype.enter = function (domNode, element) {
@@ -118,8 +118,8 @@ define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITool
     }(XYAxis_1.XYAxis));
     exports.Column = Column;
     Column.prototype._class += " chart_Column";
-    Column.prototype.implements(INDChart.prototype);
-    Column.prototype.implements(ITooltip.prototype);
+    Column.prototype.implements(INDChart_1.INDChart.prototype);
+    Column.prototype.implements(ITooltip_1.ITooltip.prototype);
     Column.prototype.publish("paletteID", "default", "set", "Palette ID", Column.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
     Column.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
 });

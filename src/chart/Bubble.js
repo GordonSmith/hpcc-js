@@ -3,16 +3,16 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", "../common/Text", "../common/FAChar", "../common/Utility", "../api/ITooltip", "css!./Bubble"], function (require, exports, d3, SVGWidget, I2DChart, Text, FAChar, Utility, ITooltip) {
+define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", "../common/Text", "../common/FAChar", "../common/Utility", "../api/ITooltip", "css!./Bubble"], function (require, exports, d3, SVGWidget_1, I2DChart_1, Text_1, FAChar_1, Utility_1, ITooltip_1) {
     "use strict";
     var Bubble = (function (_super) {
         __extends(Bubble, _super);
         function Bubble() {
             _super.call(this);
-            SVGWidget.call(this);
-            I2DChart.call(this);
-            ITooltip.call(this);
-            Utility.SimpleSelectionMixin.call(this);
+            SVGWidget_1.SVGWidget.call(this);
+            I2DChart_1.I2DChart.call(this);
+            ITooltip_1.ITooltip.call(this);
+            Utility_1.SimpleSelectionMixin.call(this);
             this._drawStartPos = "origin";
             this.labelWidgets = {};
             this.d3Pack = d3.layout.pack()
@@ -63,13 +63,13 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
                     .on("mouseout.tooltip", context.tooltip.hide)
                     .on("mousemove.tooltip", context.tooltip.show);
                 if (d.__viz_faChar) {
-                    context.labelWidgets[d[0]] = new FAChar()
+                    context.labelWidgets[d[0]] = new FAChar_1.FAChar()
                         .char(d.__viz_faChar)
                         .target(this)
                         .render();
                 }
                 else {
-                    context.labelWidgets[d[0]] = new Text()
+                    context.labelWidgets[d[0]] = new Text_1.Text()
                         .text(d[0])
                         .target(this)
                         .render();
@@ -117,12 +117,12 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
             _super.prototype.exit.apply(this, arguments);
         };
         return Bubble;
-    }(SVGWidget));
+    }(SVGWidget_1.SVGWidget));
     exports.Bubble = Bubble;
     Bubble.prototype._class += " chart_Bubble";
-    Bubble.prototype.implements(I2DChart.prototype);
-    Bubble.prototype.implements(ITooltip.prototype);
-    Bubble.prototype.mixin(Utility.SimpleSelectionMixin);
+    Bubble.prototype.implements(I2DChart_1.I2DChart.prototype);
+    Bubble.prototype.implements(ITooltip_1.ITooltip.prototype);
+    Bubble.prototype.mixin(Utility_1.SimpleSelectionMixin);
     Bubble.prototype.publish("paletteID", "default", "set", "Palette ID", Bubble.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
     Bubble.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
 });

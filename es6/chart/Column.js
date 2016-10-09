@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import { XYAxis } from "./XYAxis"
-import * as INDChart from "../api/INDChart"
-import * as ITooltip from "../api/ITooltip"
+import { INDChart } from "../api/INDChart"
+import { ITooltip } from "../api/ITooltip"
 import "css!./Column"
 
 export class Column extends XYAxis {

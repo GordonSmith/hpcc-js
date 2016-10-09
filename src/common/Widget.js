@@ -3,18 +3,18 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", "./Database", "./ARIATable"], function (require, exports, d3, Class, Platform, PropertyExt, Database, ARIATable) {
+define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", "./Database", "./ARIATable"], function (require, exports, d3, Class_1, Platform_1, PropertyExt_1, Database_1, ARIATable_1) {
     "use strict";
     var widgetID = 0;
     var Widget = (function (_super) {
         __extends(Widget, _super);
         function Widget() {
             _super.call(this);
-            Platform.call(this);
-            PropertyExt.call(this);
+            Platform_1.Platform.call(this);
+            PropertyExt_1.PropertyExt.call(this);
             this._class = Object.getPrototypeOf(this)._class;
             this._id = this._idSeed + widgetID++;
-            this._db = new Database.Grid();
+            this._db = new Database_1.Grid();
             this._pos = { x: 0, y: 0 };
             this._size = { width: 0, height: 0 };
             this._scale = 1;
@@ -35,10 +35,10 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
             }
         }
         return Widget;
-    }(Class));
+    }(Class_1.Class));
     exports.Widget = Widget;
-    Widget.prototype.mixin(Platform);
-    Widget.prototype.mixin(PropertyExt);
+    Widget.prototype.mixin(Platform_1.Platform);
+    Widget.prototype.mixin(PropertyExt_1.PropertyExt);
     Widget.prototype._class += " common_Widget";
     Widget.prototype._idSeed = "_w";
     Widget.prototype.publishProxy("fields", "_db", "fields");
@@ -471,17 +471,17 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
             var context = this;
             setTimeout(function () {
                 if (context.screenReaderTable()) {
-                    ARIATable(context.id(), context._ariaElement, context.columns(), context.data());
+                    ARIATable_1.ARIATable(context.id(), context._ariaElement, context.columns(), context.data());
                 }
                 else {
-                    ARIATable(context.id(), context._ariaElement);
+                    ARIATable_1.ARIATable(context.id(), context._ariaElement);
                 }
             }, 0);
         }
     };
     Widget.prototype.exit = function (domNode, element) {
         if (this._ariaElement) {
-            ARIATable(this.id(), this._ariaElement);
+            ARIATable_1.ARIATable(this.id(), this._ariaElement);
         }
     };
 });

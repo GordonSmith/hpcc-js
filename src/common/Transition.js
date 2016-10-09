@@ -1,46 +1,41 @@
-"use strict";
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        define([], factory);
-    } else {
-        root.common_Transition = factory();
-    }
-}(this, function () {
-    function Transition(widget) {
-        this._widget = widget;
-        this._duration = 250;
-        this._delay = 0;
-        this._ease = "cubic-in-out";
-    }
-
+define(["require", "exports"], function (require, exports) {
+    "use strict";
+    var Transition = (function () {
+        function Transition(widget) {
+            this._widget = widget;
+            this._duration = 250;
+            this._delay = 0;
+            this._ease = "cubic-in-out";
+        }
+        return Transition;
+    }());
+    exports.Transition = Transition;
     Transition.prototype.duration = function (_) {
-        if (!arguments.length) return this._duration;
+        if (!arguments.length)
+            return this._duration;
         this._duration = _;
         return this._widget;
     };
-
     Transition.prototype.delay = function (_) {
-        if (!arguments.length) return this._delay;
+        if (!arguments.length)
+            return this._delay;
         this._delay = _;
         return this._widget;
     };
-
     Transition.prototype.ease = function (_) {
-        if (!arguments.length) return this._ease;
+        if (!arguments.length)
+            return this._ease;
         this._ease = _;
         return this._widget;
     };
-
     Transition.prototype.apply = function (selection) {
         if (this._duration || this._delay) {
             return selection.transition()
                 .duration(this._duration)
                 .delay(this._delay)
-                .ease(this._ease)
-            ;
+                .ease(this._ease);
         }
         return selection;
     };
-
-    return Transition;
-}));
+});
+//# sourceMappingURL=Transition.js.map

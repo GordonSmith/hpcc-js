@@ -1,18 +1,18 @@
 import * as d3 from "d3"
-import * as SVGWidget from "../common/SVGWidget"
-import * as I2DChart from "../api/I2DChart"
-import * as Text from "../common/Text"
-import * as FAChar from "../common/FAChar"
-import * as Utility from "../common/Utility"
-import * as ITooltip from "../api/ITooltip"
-import * as Pie from  "css!./Pie"
+import { SVGWidget } from "../common/SVGWidget"
+import { I2DChart } from "../api/I2DChart"
+import { Text } from "../common/Text"
+import { FAChar } from "../common/FAChar"
+import { SimpleSelectionMixin } from "../common/Utility"
+import { ITooltip } from "../api/ITooltip"
+import "css!./Pie"
 
 export class Pie extends SVGWidget {
     constructor() {
         super();
         I2DChart.call(this);
         ITooltip.call(this);
-        Utility.SimpleSelectionMixin.call(this);
+        SimpleSelectionMixin.call(this);
 
         this.labelWidgets = {};
 
@@ -198,7 +198,7 @@ Pie.prototype._class += " chart_Pie";
 
 Pie.prototype.implements(I2DChart.prototype);
 Pie.prototype.implements(ITooltip.prototype);
-Pie.prototype.mixin(Utility.SimpleSelectionMixin);
+Pie.prototype.mixin(SimpleSelectionMixin);
 
 Pie.prototype.publish("paletteID", "default", "set", "Palette ID", Pie.prototype._palette.switch(),{tags:["Basic","Shared"]});
 Pie.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette",null,{tags:["Intermediate","Shared"]});

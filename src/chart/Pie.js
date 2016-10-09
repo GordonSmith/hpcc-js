@@ -3,15 +3,15 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", "../common/Text", "../common/FAChar", "../common/Utility", "../api/ITooltip", "css!./Pie"], function (require, exports, d3, SVGWidget, I2DChart, Text, FAChar, Utility, ITooltip, Pie) {
+define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", "../common/Text", "../common/FAChar", "../common/Utility", "../api/ITooltip", "css!./Pie"], function (require, exports, d3, SVGWidget_1, I2DChart_1, Text_1, FAChar_1, Utility_1, ITooltip_1) {
     "use strict";
     var Pie = (function (_super) {
         __extends(Pie, _super);
         function Pie() {
             _super.call(this);
-            I2DChart.call(this);
-            ITooltip.call(this);
-            Utility.SimpleSelectionMixin.call(this);
+            I2DChart_1.I2DChart.call(this);
+            ITooltip_1.ITooltip.call(this);
+            Utility_1.SimpleSelectionMixin.call(this);
             this.labelWidgets = {};
             this.d3Pie = d3.layout.pie()
                 .padAngle(0.0025)
@@ -87,13 +87,13 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
                     .on("mouseover", arcTween(0, 0))
                     .on("mouseout", arcTween(-5, 150));
                 if (d.data.__viz_faChar) {
-                    context.labelWidgets[d.data[0]] = new FAChar()
+                    context.labelWidgets[d.data[0]] = new FAChar_1.FAChar()
                         .char(d.data.__viz_faChar)
                         .target(this)
                         .render();
                 }
                 else {
-                    context.labelWidgets[d.data[0]] = new Text()
+                    context.labelWidgets[d.data[0]] = new Text_1.Text()
                         .text(d.data[0])
                         .target(this)
                         .render();
@@ -166,12 +166,12 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
         };
         ;
         return Pie;
-    }(SVGWidget));
+    }(SVGWidget_1.SVGWidget));
     exports.Pie = Pie;
     Pie.prototype._class += " chart_Pie";
-    Pie.prototype.implements(I2DChart.prototype);
-    Pie.prototype.implements(ITooltip.prototype);
-    Pie.prototype.mixin(Utility.SimpleSelectionMixin);
+    Pie.prototype.implements(I2DChart_1.I2DChart.prototype);
+    Pie.prototype.implements(ITooltip_1.ITooltip.prototype);
+    Pie.prototype.mixin(Utility_1.SimpleSelectionMixin);
     Pie.prototype.publish("paletteID", "default", "set", "Palette ID", Pie.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
     Pie.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
     Pie.prototype.publish("outerText", false, "boolean", "Sets label position inside or outside chart", null, { tags: ["Basic"] });

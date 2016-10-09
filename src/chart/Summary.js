@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "../common/HTMLWidget", "../api/I2DChart", "css!font-awesome", "css!./Summary"], function (require, exports, d3, HTMLWidget, I2DChart) {
+define(["require", "exports", "d3", "../common/HTMLWidget", "../api/I2DChart", "css!font-awesome", "css!./Summary"], function (require, exports, d3, HTMLWidget_1, I2DChart_1) {
     "use strict";
     var TEXT = "text";
     var HTML = "html";
@@ -144,9 +144,9 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../api/I2DChart", "
             _super.prototype.exit.apply(this, arguments);
         };
         return Summary;
-    }(HTMLWidget));
+    }(HTMLWidget_1.HTMLWidget));
     exports.Summary = Summary;
-    Summary.prototype.implements(I2DChart.prototype);
+    Summary.prototype.implements(I2DChart_1.I2DChart.prototype);
     Summary.prototype._class += " chart_Summary";
     Summary.prototype.publish("iconColumn", null, "set", "Select display value", function () { return this.columns(); }, { optional: true });
     Summary.prototype.publish("icon", "fa-briefcase", "string", "FA Char icon class", null, { disable: function (w) { return w.iconColumn(); } });

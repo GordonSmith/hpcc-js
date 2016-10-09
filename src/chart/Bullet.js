@@ -3,15 +3,15 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "d3-bullet", "../common/HTMLWidget", "../common/Utility", "css!./Bullet"], function (require, exports, d3, _D3Bullet, HTMLWidget, Utility) {
+define(["require", "exports", "d3", "d3-bullet", "../common/HTMLWidget", "../common/Utility", "css!./Bullet"], function (require, exports, d3, _D3Bullet, HTMLWidget_1, Utility_1) {
     "use strict";
     var D3Bullet = _D3Bullet || d3.bullet || window.d3.bullet;
     var Bullet = (function (_super) {
         __extends(Bullet, _super);
         function Bullet() {
             _super.call(this);
-            HTMLWidget.call(this);
-            Utility.SimpleSelectionMixin.call(this, true);
+            HTMLWidget_1.HTMLWidget.call(this);
+            Utility_1.Utility.SimpleSelectionMixin.call(this, true);
         }
         Bullet.prototype.bulletData = function () {
             var columns = this.columns();
@@ -107,7 +107,7 @@ define(["require", "exports", "d3", "d3-bullet", "../common/HTMLWidget", "../com
             console.log("Double click:  " + JSON.stringify(row) + ", " + column + "," + selected);
         };
         return Bullet;
-    }(HTMLWidget));
+    }(HTMLWidget_1.HTMLWidget));
     exports.Bullet = Bullet;
     Bullet.prototype._class += " chart_Bullet";
     Bullet.prototype.publish("titleColumn", null, "set", "Title Column", function () { return this.columns(); }, { optional: true });

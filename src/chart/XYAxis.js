@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/Utility", "css!./XYAxis"], function (require, exports, d3, SVGWidget_1, Axis_1, Utility) {
+define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/Utility", "css!./XYAxis"], function (require, exports, d3, SVGWidget_1, Axis_1, Utility_1) {
     "use strict";
     var XYAxis = (function (_super) {
         __extends(XYAxis, _super);
@@ -22,7 +22,7 @@ define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/
                 }, this);
                 this.selection(selected);
             }, 250);
-            Utility.SimpleSelectionMixin.call(this);
+            Utility_1.SimpleSelectionMixin.call(this);
             this._drawStartPos = "origin";
             this.domainAxis = new Axis_1.Axis()
                 .orientation_default("bottom")
@@ -402,7 +402,7 @@ define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/
     }(SVGWidget_1.SVGWidget));
     exports.XYAxis = XYAxis;
     XYAxis.prototype._class += " chart_XYAxis";
-    XYAxis.prototype.mixin(Utility.SimpleSelectionMixin);
+    XYAxis.prototype.mixin(Utility_1.SimpleSelectionMixin);
     XYAxis.prototype.publish("orientation", "horizontal", "set", "Selects orientation for the axis", ["horizontal", "vertical"]);
     XYAxis.prototype.publish("selectionMode", false, "boolean", "Range Selector");
     XYAxis.prototype.publishProxy("xAxisTickCount", "domainAxis", "tickCount");

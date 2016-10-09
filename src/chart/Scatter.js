@@ -3,14 +3,14 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITooltip", "css!./Scatter"], function (require, exports, d3, XYAxis_1, INDChart, ITooltip) {
+define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITooltip", "css!./Scatter"], function (require, exports, d3, XYAxis_1, INDChart_1, ITooltip_1) {
     "use strict";
     var Scatter = (function (_super) {
         __extends(Scatter, _super);
         function Scatter() {
             _super.call(this);
-            INDChart.call(this);
-            ITooltip.call(this);
+            INDChart_1.INDChart.call(this);
+            ITooltip_1.ITooltip.call(this);
             this
                 .xAxisGuideLines_default(true)
                 .yAxisGuideLines_default(true);
@@ -167,8 +167,8 @@ define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITool
     }(XYAxis_1.XYAxis));
     exports.Scatter = Scatter;
     Scatter.prototype._class += " chart_Scatter";
-    Scatter.prototype.implements(INDChart.prototype);
-    Scatter.prototype.implements(ITooltip.prototype);
+    Scatter.prototype.implements(INDChart_1.INDChart.prototype);
+    Scatter.prototype.implements(ITooltip_1.ITooltip.prototype);
     Scatter.prototype.publish("paletteID", "default", "set", "Palette ID", Scatter.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
     Scatter.prototype.publish("pointShape", "cross", "set", "Shape of the data points", ["circle", "rectangle", "cross"]);
     Scatter.prototype.publish("pointSize", 6, "number", "Point Size");

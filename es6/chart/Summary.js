@@ -1,6 +1,6 @@
 import * as d3 from "d3"
-import * as HTMLWidget from "../common/HTMLWidget"
-import * as I2DChart from "../api/I2DChart"
+import { HTMLWidget } from "../common/HTMLWidget"
+import { I2DChart } from "../api/I2DChart"
 import "css!font-awesome"
 import "css!./Summary"
 
