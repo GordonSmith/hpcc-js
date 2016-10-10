@@ -1,4 +1,4 @@
-export class IMenu {
+export default class IMenu {
     constructor() {
     }
 }

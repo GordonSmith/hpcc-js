@@ -9,8 +9,8 @@ define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITool
         __extends(Scatter, _super);
         function Scatter() {
             _super.call(this);
-            INDChart_1.INDChart.call(this);
-            ITooltip_1.ITooltip.call(this);
+            INDChart_1.default.call(this);
+            ITooltip_1.default.call(this);
             this
                 .xAxisGuideLines_default(true)
                 .yAxisGuideLines_default(true);
@@ -164,11 +164,12 @@ define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITool
         };
         ;
         return Scatter;
-    }(XYAxis_1.XYAxis));
-    exports.Scatter = Scatter;
+    }(XYAxis_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Scatter;
     Scatter.prototype._class += " chart_Scatter";
-    Scatter.prototype.implements(INDChart_1.INDChart.prototype);
-    Scatter.prototype.implements(ITooltip_1.ITooltip.prototype);
+    Scatter.prototype.implements(INDChart_1.default.prototype);
+    Scatter.prototype.implements(ITooltip_1.default.prototype);
     Scatter.prototype.publish("paletteID", "default", "set", "Palette ID", Scatter.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
     Scatter.prototype.publish("pointShape", "cross", "set", "Shape of the data points", ["circle", "rectangle", "cross"]);
     Scatter.prototype.publish("pointSize", 6, "number", "Point Size");

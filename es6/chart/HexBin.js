@@ -1,14 +1,14 @@
 import * as d3 from "d3"
 import * as _D3HexBin from "d3-hexbin"
-import { XYAxis } from "./XYAxis"
+import XYAxis from "./XYAxis"
 import * as Palette from "../common/Palette"
-import { INDChart } from "../api/INDChart"
-import { ITooltip } from "../api/ITooltip"
+import INDChart from "../api/INDChart"
+import ITooltip from "../api/ITooltip"
 import "css!./HexBin"
 
 const D3HexBin = _D3HexBin || d3.hexbin || window.d3.hexbin;
 
-export class HexBin extends XYAxis{
+export default class HexBin extends XYAxis{
     constructor() {
         super();
         INDChart.call(this);

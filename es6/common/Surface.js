@@ -1,13 +1,13 @@
 import * as d3 from "d3"
-import { SVGWidget } from "./SVGWidget"
-import { Icon } from "./Icon"
-import { Shape } from "./Shape"
-import { Text } from "./Text"
-import { FAChar } from "./FAChar"
-import { Menu } from "./Menu"
+import SVGWidget from "./SVGWidget"
+import Icon from "./Icon"
+import Shape from "./Shape"
+import Text from "./Text"
+import FAChar from "./FAChar"
+import Menu from "./Menu"
 import "css!./Surface"
 
-export class Surface extends SVGWidget {
+export default class Surface extends SVGWidget {
     constructor() {
         super();
 

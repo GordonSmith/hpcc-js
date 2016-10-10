@@ -1,6 +1,6 @@
-import { HTMLWidget } from "./HTMLWidget"
+import HTMLWidget from "./HTMLWidget"
 
-export class Image extends HTMLWidget {
+export default class Image extends HTMLWidget {
     constructor() {
         super();
         HTMLWidget.call(this);

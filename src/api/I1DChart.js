@@ -5,7 +5,8 @@ define(["require", "exports"], function (require, exports) {
         }
         return I1DChart;
     }());
-    exports.I1DChart = I1DChart;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = I1DChart;
     I1DChart.prototype._palette = Palette.rainbow("default");
     //  Events  ---
     I1DChart.prototype.click = function (row, column, selected) {

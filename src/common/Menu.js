@@ -9,11 +9,11 @@ define(["require", "exports", "d3", "./SVGWidget", "./IMenu", "./Icon", "./List"
         __extends(Menu, _super);
         function Menu() {
             _super.call(this);
-            IMenu_1.IMenu.call(this);
-            this._icon = new Icon_1.Icon()
+            IMenu_1.default.call(this);
+            this._icon = new Icon_1.default()
                 .shape("square")
                 .diameter(14);
-            this._list = new List_1.List();
+            this._list = new List_1.default();
             var context = this;
             this._list.click = function (d) {
                 d3.event.stopPropagation();
@@ -23,10 +23,11 @@ define(["require", "exports", "d3", "./SVGWidget", "./IMenu", "./Icon", "./List"
             this._open = false;
         }
         return Menu;
-    }(SVGWidget_1.SVGWidget));
-    exports.Menu = Menu;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Menu;
     Menu.prototype._class += " common_Menu";
-    Menu.prototype.implements(IMenu_1.IMenu.prototype);
+    Menu.prototype.implements(IMenu_1.default.prototype);
     Menu.prototype.publishProxy("faChar", "_icon", null, "\uf0c9");
     Menu.prototype.publishProxy("paddingPercent", "_icon", null, 10);
     Menu.prototype.toggleMenu = function () {
@@ -70,7 +71,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./IMenu", "./Icon", "./List"
         this.postHideMenu();
     };
     Menu.prototype.enter = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.enter.apply(this, arguments);
+        SVGWidget_1.default.prototype.enter.apply(this, arguments);
         this._icon
             .target(domNode)
             .render();
@@ -85,7 +86,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./IMenu", "./Icon", "./List"
         });
     };
     Menu.prototype.update = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.update.apply(this, arguments);
+        SVGWidget_1.default.prototype.update.apply(this, arguments);
         element
             .classed("disabled", this.data().length === 0);
         this._icon
@@ -98,7 +99,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./IMenu", "./Icon", "./List"
             .target(null);
         this._list
             .target(null);
-        SVGWidget_1.SVGWidget.prototype.exit.apply(this, arguments);
+        SVGWidget_1.default.prototype.exit.apply(this, arguments);
     };
 });
 //# sourceMappingURL=Menu.js.map

@@ -1,7 +1,7 @@
 import * as d3 from "d3"
-import { SVGWidget } from "./Widget"
+import Widget from "./Widget"
 
-export class CanvasWidget extends Widget {
+export default class CanvasWidget extends Widget {
     constructor() {
         super();
         this._tag = "canvas";

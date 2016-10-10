@@ -11,12 +11,13 @@ define(["require", "exports", "d3", "./Widget", "./Transition"], function (requi
             _super.call(this);
             this._tag = "g";
             this._boundingBox = null;
-            this.transition = new Transition_1.Transition(this);
+            this.transition = new Transition_1.default(this);
             this._drawStartPos = "center";
         }
         return SVGWidget;
-    }(Widget_1.Widget));
-    exports.SVGWidget = SVGWidget;
+    }(Widget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = SVGWidget;
     SVGWidget.prototype._class += " common_SVGWidget";
     //  Properties  ---
     SVGWidget.prototype.move = function (_, transitionDuration) {
@@ -28,14 +29,14 @@ define(["require", "exports", "d3", "./Widget", "./Transition"], function (requi
         return retVal;
     };
     SVGWidget.prototype.size = function (_) {
-        var retVal = Widget_1.Widget.prototype.size.apply(this, arguments);
+        var retVal = Widget_1.default.prototype.size.apply(this, arguments);
         if (arguments.length) {
             this._boundingBox = null;
         }
         return retVal;
     };
     SVGWidget.prototype.resize = function (size) {
-        var retVal = Widget_1.Widget.prototype.resize.apply(this, arguments);
+        var retVal = Widget_1.default.prototype.resize.apply(this, arguments);
         if (this._parentRelativeDiv) {
             this._parentRelativeDiv
                 .style({
@@ -111,13 +112,13 @@ define(["require", "exports", "d3", "./Widget", "./Transition"], function (requi
         return this;
     };
     SVGWidget.prototype.enter = function (domNode, element) {
-        Widget_1.Widget.prototype.enter.apply(this, arguments);
+        Widget_1.default.prototype.enter.apply(this, arguments);
     };
     SVGWidget.prototype.update = function (domNode, element) {
-        Widget_1.Widget.prototype.update.apply(this, arguments);
+        Widget_1.default.prototype.update.apply(this, arguments);
     };
     SVGWidget.prototype.postUpdate = function (domNode, element) {
-        Widget_1.Widget.prototype.postUpdate.apply(this, arguments);
+        Widget_1.default.prototype.postUpdate.apply(this, arguments);
         if (this._drawStartPos === "origin" && this._target instanceof SVGElement) {
             this._element.attr("transform", "translate(" + (this._pos.x - this._size.width / 2) + "," + (this._pos.y - this._size.height / 2) + ")scale(" + this._scale + ")");
         }
@@ -132,7 +133,7 @@ define(["require", "exports", "d3", "./Widget", "./Transition"], function (requi
             this._parentElement.remove();
             this._parentRelativeDiv.remove();
         }
-        Widget_1.Widget.prototype.exit.apply(this, arguments);
+        Widget_1.default.prototype.exit.apply(this, arguments);
     };
     SVGWidget.prototype.getOffsetPos = function () {
         var retVal = { x: 0, y: 0 };
@@ -308,7 +309,7 @@ define(["require", "exports", "d3", "./Widget", "./Transition"], function (requi
                 .attr("fixme-end", null);
         }
     };
-    SVGWidget.prototype._popMarkersDebounced = Widget_1.Widget.prototype.debounce(function (element, d) {
+    SVGWidget.prototype._popMarkersDebounced = Widget_1.default.prototype.debounce(function (element, d) {
         if (this.svgMarkerGlitch) {
             this._popMarkers(element, d);
         }

@@ -1,10 +1,10 @@
 import * as d3 from "d3"
-import { SVGWidget } from "./SVGWidget"
-import { Shape } from "./Shape"
-import { Text } from "./Text"
+import SVGWidget from "./SVGWidget"
+import Shape from "./Shape"
+import Text from "./Text"
 import "css!./TextBox"
 
-export class TextBox extends SVGWidget {
+export default class TextBox extends SVGWidget {
     constructor() {
         super();
 

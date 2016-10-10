@@ -1,6 +1,6 @@
 import { ordinal } from "../common/Palette"
 
-export class ITree {
+export default class ITree {
 }
 ITree.prototype._palette = ordinal("default");
 

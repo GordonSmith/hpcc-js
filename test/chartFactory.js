@@ -10,7 +10,7 @@
         Column: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column.Column()
+                    callback(new Column.default()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );
@@ -18,7 +18,7 @@
             },
             longLabels: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column.Column()                        
+                    callback(new Column.default()
                         .columns(DataFactory.ND.subjects.columns)
                         .data([
                             ["Geography Geography Geography\nGeography Geography", 75, 68, 65],
@@ -39,7 +39,7 @@
             },
             ordinalRange: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column.Column()
+                    callback(new Column.default()
                         .columns(DataFactory.ordinalRange.default.columns)
                         .data(DataFactory.ordinalRange.default.data)
                         
@@ -50,7 +50,7 @@
             },
             linear: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column.Column()
+                    callback(new Column.default()
                         .columns(DataFactory.linear.default.columns)
                         .data(DataFactory.linear.default.data)
                         
@@ -61,7 +61,7 @@
             },
             timeX: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column.Column()
+                    callback(new Column.default()
                         .columns(DataFactory.timeX.default.columns)
                         .data(DataFactory.timeX.default.data)
                         
@@ -73,7 +73,7 @@
             },
             timeY: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column.Column()
+                    callback(new Column.default()
                         .columns(DataFactory.timeY.default.columns)
                         .data(DataFactory.timeY.default.data)
                       
@@ -86,8 +86,8 @@
         },
         Bar: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Bar"], function (DataFactory, chart) {
-                    callback(new chart.Bar()
+                require(["test/DataFactory", "src/chart/Bar"], function (DataFactory, Bar) {
+                    callback(new Bar.default()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );
@@ -97,7 +97,7 @@
         Gantt: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Gantt"], function (DataFactory, Gantt) {
-                    callback(new Gantt.Gantt()
+                    callback(new Gantt.default()
                         .yAxisTypeTimePattern("%Y-%m-%d")
                         .columns(["Project", "Date Range"])
                         .data([
@@ -112,7 +112,7 @@
         Bubble: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Bubble"], function (DataFactory, Bubble) {
-                    callback(new Bubble.Bubble()
+                    callback(new Bubble.default()
                         .columns(DataFactory.TwoD.subjects.columns)
                         .data(DataFactory.TwoD.subjects.data)
                     );
@@ -122,7 +122,7 @@
         Scatter: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Scatter"], function (DataFactory, Scatter) {
-                    callback(new Scatter.Scatter()
+                    callback(new Scatter.default()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );
@@ -136,7 +136,7 @@
                         randomY = d3.random.normal(200, 80),
                         points = d3.range(2000).map(function () { return [randomX(), randomY()]; });
 
-                    callback(new HexBin.HexBin()
+                    callback(new HexBin.default()
                         .xAxisType("linear")
                         .yAxisType("linear")
                         .columns(DataFactory.ND.subjects.columns)
@@ -148,7 +148,7 @@
         Line: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Line"], function (DataFactory, Line) {
-                    callback(new Line.Line()
+                    callback(new Line.default()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );
@@ -156,7 +156,7 @@
             },
             timeX: function (callback) {
                 require(["test/DataFactory", "src/chart/Line"], function (DataFactory, Line) {
-                    callback(new Line.Line()
+                    callback(new Line.default()
                         .columns(DataFactory.timeX.default.columns)
                         .data(DataFactory.timeX.default.data)
                         
@@ -168,7 +168,7 @@
             },
             cardinal_interpolation: function (callback) {
                 require(["test/DataFactory", "src/chart/Line"], function (DataFactory, Line) {
-                    callback(new Line.Line()
+                    callback(new Line.default()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                         .interpolate("cardinal")
@@ -179,7 +179,7 @@
         Area: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Area"], function (DataFactory, Area) {
-                    callback(new Area.Area()
+                    callback(new Area.default()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );
@@ -189,7 +189,7 @@
         Pie: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Pie"], function (DataFactory, Pie) {
-                    callback(new Pie.Pie()
+                    callback(new Pie.default()
                         .columns(DataFactory.TwoD.subjects.columns)
                         .data(DataFactory.TwoD.subjects.data)
                     );
@@ -199,7 +199,7 @@
         Step: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Step"], function (DataFactory, Step) {
-                    callback(new Step.Step()
+                    callback(new Step.default()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );
@@ -209,7 +209,7 @@
         Summary: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Summary"], function (DataFactory, Summary) {
-                    callback(new Summary.Summary()
+                    callback(new Summary.default()
                         .columns(["Summary", "Score", "Details", "Status", "Icon"])
                         .data([
                             ["Elephants", 22, "<a href='http://www.google.com#q=Elephants'>Big an grey</a>", "grey", "fa-info-circle"],
@@ -231,7 +231,7 @@
         MultiChart: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
-                    callback(new MultiChart.MultiChart()
+                    callback(new MultiChart.default()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );
@@ -239,7 +239,7 @@
             },
             dataBreach: function (callback) {
                 require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
-                    callback(new MultiChart.MultiChart()
+                    callback(new MultiChart.default()
                         .chartType("TABLE")
                         .chartTypeDefaults({
                             pagination: true
@@ -251,7 +251,7 @@
             },
             flightPath: function (callback) {
                 require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
-                    callback(new MultiChart.MultiChart()
+                    callback(new MultiChart.default()
                         .chartType("TABLE")
                         .chartTypeDefaults({
                             pagination: true
@@ -263,7 +263,7 @@
             },
             stockMarket: function (callback) {
                 require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
-                    callback(new MultiChart.MultiChart()
+                    callback(new MultiChart.default()
                         .chartType("TABLE")
                         .chartTypeDefaults({
                             pagination: true
@@ -277,7 +277,7 @@
         MultiChartSurface: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/MultiChartSurface"], function (DataFactory, MultiChartSurface) {
-                    callback(new MultiChartSurface.MultiChartSurface()
+                    callback(new MultiChartSurface.default()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );
@@ -287,7 +287,7 @@
         Axis: {
             ordinal: function (callback) {
                 require(["src/chart/Axis"], function (Axis) {
-                    callback(new Axis.Axis()
+                    callback(new Axis.default()
                         .type("ordinal")
                         .ordinals(["Year 1", "Year 2", "Year 3", "Year 4"])
                     );
@@ -295,7 +295,7 @@
             },
             longLabels: function (callback) {
                 require(["src/chart/Axis"], function (Axis) {
-                    callback(new Axis.Axis()
+                    callback(new Axis.default()
                         .type("ordinal")
                         .ordinals(["Geography-Geography-Geography-Geography-Geography", "English-English-English-English-English-English", "Math-Math-Math-Math-Math-Math-Math-Math-Math-Math", "Science-Science-Science-Science-Science-Science"])
                     );
@@ -303,7 +303,7 @@
             },
             linear: function (callback) {
                 require(["src/chart/Axis"], function (Axis) {
-                    callback(new Axis.Axis()
+                    callback(new Axis.default()
                         .type("linear")
                         .low(0)
                         .high(100)
@@ -312,7 +312,7 @@
             },
             time: function (callback) {
                 require(["src/chart/Axis"], function (Axis) {
-                    callback(new Axis.Axis()
+                    callback(new Axis.default()
                         .type("time")
                         .low("2010-03-15")
                         .high("2012-01-14")
@@ -323,7 +323,7 @@
         Bullet: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Bullet"], function (DataFactory, Bullet) {
-                    callback(new Bullet.Bullet()
+                    callback(new Bullet.default()
                         .columns(["title",      "subtitle",             "ranges",           "measures",     "markers"])
                         .data([
                               ["Revenue",       "US$, in thousands",    [150,225,300],      [220,270],      [250, 25]],

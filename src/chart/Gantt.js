@@ -15,8 +15,9 @@ define(["require", "exports", "./Bar"], function (require, exports, Bar_1) {
                 .yAxisType_default("time");
         }
         return Gantt;
-    }(Bar_1.Bar));
-    exports.Gantt = Gantt;
+    }(Bar_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Gantt;
     Gantt.prototype._class += " chart_Gantt";
 });
 //# sourceMappingURL=Gantt.js.map

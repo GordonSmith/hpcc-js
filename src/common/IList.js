@@ -5,7 +5,8 @@ define(["require", "exports"], function (require, exports) {
         }
         return IList;
     }());
-    exports.IList = IList;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = IList;
     //  Properties  ---
     //  Events  ---
     IList.prototype.click = function (d) {

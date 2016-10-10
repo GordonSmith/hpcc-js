@@ -5,7 +5,8 @@ define(["require", "exports", "../common/Palette"], function (require, exports, 
         }
         return ITree;
     }());
-    exports.ITree = ITree;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = ITree;
     ITree.prototype._palette = Palette_1.ordinal("default");
     //  Events  ---
     ITree.prototype.click = function (row, column, selected) {

@@ -1,4 +1,4 @@
-export class IGraph {
+export default class IGraph {
 }
 
 //  Events  ---

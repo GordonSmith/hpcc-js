@@ -3,34 +3,21 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/Utility", "css!./XYAxis"], function (require, exports, d3, SVGWidget_1, Axis_1, Utility_1) {
+define(["require", "exports", "d3", "../common", "./Axis", "../common/Utility", "css!./XYAxis"], function (require, exports, d3, common_1, Axis_1, Utility_1) {
     "use strict";
     var XYAxis = (function (_super) {
         __extends(XYAxis, _super);
         function XYAxis() {
             _super.call(this);
-            this.brushMoved = SVGWidget_1.SVGWidget.prototype.debounce(function brushed() {
-                var selected = this.data().filter(function (d) {
-                    var pos = d[0];
-                    if (this.xAxisType() === "ordinal") {
-                        pos = this.domainAxis.d3Scale(pos) + (this.domainAxis.d3Scale.rangeBand ? this.domainAxis.d3Scale.rangeBand() / 2 : 0);
-                    }
-                    if (this.orientation() === "horizontal") {
-                        return (pos >= this.xBrush.extent()[0] && pos <= this.xBrush.extent()[1]);
-                    }
-                    return (pos >= this.yBrush.extent()[0] && pos <= this.yBrush.extent()[1]);
-                }, this);
-                this.selection(selected);
-            }, 250);
             Utility_1.SimpleSelectionMixin.call(this);
             this._drawStartPos = "origin";
-            this.domainAxis = new Axis_1.Axis()
+            this.domainAxis = new Axis_1.default()
                 .orientation_default("bottom")
                 .type_default("ordinal")
                 .overlapMode_default("stagger")
                 .shrinkToFit_default("high")
                 .extend_default(0);
-            this.valueAxis = new Axis_1.Axis()
+            this.valueAxis = new Axis_1.default()
                 .orientation_default("left")
                 .type_default("linear")
                 .shrinkToFit_default("high");
@@ -81,7 +68,7 @@ define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/
             return retVal;
         };
         XYAxis.prototype.enter = function (domNode, element) {
-            SVGWidget_1.SVGWidget.prototype.enter.apply(this, arguments);
+            common_1.SVGWidget.prototype.enter.apply(this, arguments);
             this.svg = element.append("g");
             this.svgRegions = element.append("g");
             this.svgDomainGuide = this.svg.append("g");
@@ -394,13 +381,14 @@ define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/
         XYAxis.prototype.updateChart = function (domNode, element, margin, width, height, isHorizontal, duration) {
         };
         XYAxis.prototype.exit = function (domNode, element) {
-            SVGWidget_1.SVGWidget.prototype.exit.apply(this, arguments);
+            common_1.SVGWidget.prototype.exit.apply(this, arguments);
         };
         XYAxis.prototype.selection = function (selected) {
         };
         return XYAxis;
-    }(SVGWidget_1.SVGWidget));
-    exports.XYAxis = XYAxis;
+    }(common_1.SVGWidget));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = XYAxis;
     XYAxis.prototype._class += " chart_XYAxis";
     XYAxis.prototype.mixin(Utility_1.SimpleSelectionMixin);
     XYAxis.prototype.publish("orientation", "horizontal", "set", "Selects orientation for the axis", ["horizontal", "vertical"]);
@@ -431,5 +419,18 @@ define(["require", "exports", "d3", "../common/SVGWidget", "./Axis", "../common/
     XYAxis.prototype.publish("yAxisGuideLines", true, "boolean", "Y-Axis Guide Lines");
     XYAxis.prototype.publish("regions", [], "array", "Regions");
     XYAxis.prototype.publish("sampleData", "", "set", "Display Sample Data", ["", "ordinal", "ordinalRange", "linear", "time-x", "time-y"]);
+    XYAxis.prototype.brushMoved = common_1.SVGWidget.prototype.debounce(function brushed() {
+        var selected = this.data().filter(function (d) {
+            var pos = d[0];
+            if (this.xAxisType() === "ordinal") {
+                pos = this.domainAxis.d3Scale(pos) + (this.domainAxis.d3Scale.rangeBand ? this.domainAxis.d3Scale.rangeBand() / 2 : 0);
+            }
+            if (this.orientation() === "horizontal") {
+                return (pos >= this.xBrush.extent()[0] && pos <= this.xBrush.extent()[1]);
+            }
+            return (pos >= this.yBrush.extent()[0] && pos <= this.yBrush.extent()[1]);
+        }, this);
+        this.selection(selected);
+    }, 250);
 });
 //# sourceMappingURL=XYAxis.js.map

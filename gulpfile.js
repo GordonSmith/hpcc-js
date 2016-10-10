@@ -20,6 +20,8 @@ const jshint = require('gulp-jshint');
 const jscs = require('gulp-jscs');
 const mochaPhantomJS = require('gulp-mocha-phantomjs');
 const replace = require('gulp-replace');
+const tsc = require('gulp-typescript');
+const rollup = require('rollup').rollup;
 
 // Consts
 const cfg = {
@@ -189,7 +191,7 @@ gulp.task("copy-amchart-images", function() {
    .pipe(gulp.dest(cfg.distamd + "/" + "img/amcharts"));
 });
 
-gulp.task("build-amd", ["build-amd-src","copy-amchart-images"], function (done) {
+gulp.task("build-amd-old", ["build-amd-src","copy-amchart-images"], function (done) {
     var requireConfig = {
         bundles: amd_bundles
     };
@@ -216,7 +218,7 @@ gulp.task("build-amd", ["build-amd-src","copy-amchart-images"], function (done) 
     ;
 });
 
-gulp.task("build-all", ["build-nonamd", "build-amd"]);
+gulp.task("build-all-old", ["build-nonamd", "build-amd"]);
 
 gulp.task("default", ["build-all"]);
 
@@ -281,4 +283,51 @@ gulp.task("tag-release", ["tag"], function (cb) {
             });
         }
     });
+});
+
+gulp.task('tsc-compile-es6', function () {
+    var tsProject = tsc.createProject("tsconfig.json", {
+        target: "es5",
+        module: "es6",
+        allowJs: true,
+        rootDir: "es6",
+        sourceMap: true,
+        noEmitHelpers: false
+    });
+    var tsResult = tsProject.src()
+        .pipe(tsProject())
+    ;
+    return tsResult.js.pipe(gulp.dest('obj-es6'));
+});
+
+function doRollup(moduleName, format, external) {
+    external = external || [];
+    return rollup({
+        entry: "obj-es6/" + moduleName + ".js",
+        external: libs //.concat(external),
+    }).then(function (bundle) {
+        return bundle.write({
+            moduleName: moduleName,
+            format: format,
+            sourceMap: true,
+            external: libs, //.concat(external),
+            dest: "dist-" + format + "/hpcc-viz-" + moduleName + ".js"
+        });
+    });
+}
+
+function doMultiRollup(moduleName, external) {
+    return Promise.all([
+        doRollup(moduleName, "es", external),
+        doRollup(moduleName, "iife", external),
+        doRollup(moduleName, "amd", external),
+        doRollup(moduleName, "umd", external)
+    ]);
+}
+
+gulp.task("build-all", ["tsc-compile-es6"], function (cb) {
+    return Promise.all([
+        doMultiRollup("common")
+        //doMultiRollup("chart")
+    ]);
 });

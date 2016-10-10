@@ -1,12 +1,12 @@
 import * as d3 from "d3"
-import { Class } from "./Class"
-import { Platform } from "./Platform"
-import { PropertyExt } from "./PropertyExt"
+import Class from "./Class"
+import Platform from "./Platform"
+import PropertyExt from "./PropertyExt"
 import { Grid } from "./Database"
-import { ARIATable } from "./ARIATable"
+import ARIATable from "./ARIATable"
 
 var widgetID = 0;
-export class Widget extends Class {
+export default class Widget extends Class {
     constructor() {
         super();
         Platform.call(this);

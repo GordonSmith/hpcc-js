@@ -1,4 +1,4 @@
-export class IList {
+export default class IList {
 }
 
 //  Properties  ---

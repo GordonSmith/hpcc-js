@@ -24,7 +24,7 @@ import "es6-promise"
 //  Do not touch - updated by gulp bump  ---
 var version = "1.14.2-dev";
 
-export class Platform {
+export default class Platform {
 }
 
 Platform.prototype.version = function () {
@@ -164,4 +164,10 @@ Math.sign = Math.sign || function (x) {
         return x;
     }
     return x > 0 ? 1 : -1;
+};
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };

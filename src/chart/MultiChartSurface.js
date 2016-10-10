@@ -3,15 +3,16 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "../common/ResizeSurface", "./MultiChart", "../api/INDChart"], function (require, exports, ResizeSurface, MultiChart_1, INDChart_1) {
+define(["require", "exports", "../common/ResizeSurface", "./MultiChart", "../api/INDChart"], function (require, exports, ResizeSurface_1, MultiChart_1, INDChart_1) {
     "use strict";
+    debugger;
     var MultiChartSurface = (function (_super) {
         __extends(MultiChartSurface, _super);
         function MultiChartSurface() {
             _super.call(this);
-            INDChart_1.INDChart.call(this);
+            INDChart_1.default.call(this);
             this._title = "MultiChartSurface";
-            this._content = new MultiChart_1.MultiChart();
+            this._content = new MultiChart_1.default();
             var context = this;
             this._content.click = function (row, column) {
                 context.click(row, column);
@@ -61,10 +62,11 @@ define(["require", "exports", "../common/ResizeSurface", "./MultiChart", "../api
             return retVal;
         };
         return MultiChartSurface;
-    }(ResizeSurface));
-    exports.MultiChartSurface = MultiChartSurface;
+    }(ResizeSurface_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = MultiChartSurface;
     MultiChartSurface.prototype._class += " chart_MultiChartSurface";
-    MultiChartSurface.prototype.implements(INDChart_1.INDChart.prototype);
+    MultiChartSurface.prototype.implements(INDChart_1.default.prototype);
     MultiChartSurface.prototype.publish("mode", "2D", "set", "Chart Type", ["1D", "2D", "ND", "all"]);
     MultiChartSurface.prototype.publishProxy("chartType", "_content");
 });

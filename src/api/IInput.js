@@ -11,9 +11,10 @@ define(["require", "exports", "../common/Widget"], function (require, exports, W
             _super.call(this);
         }
         return IInput;
-    }(Widget_1.Widget));
-    exports.IInput = IInput;
-    IInput.prototype = Object.create(Widget_1.Widget.prototype);
+    }(Widget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = IInput;
+    IInput.prototype = Object.create(Widget_1.default.prototype);
     IInput.prototype.publish("name", "", "string", "HTML name for the input");
     IInput.prototype.publish("label", "", "string", "Descriptive label");
     IInput.prototype.publish("value", "", "string", "Input Current Value");

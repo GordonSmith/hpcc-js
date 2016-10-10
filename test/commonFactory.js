@@ -10,7 +10,7 @@
         Text: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/common/Text"], function (DataFactory, Text) {
-                    callback(new Text.Text()
+                    callback(new Text.default()
                         .text(DataFactory.Text.simple.text)
                     );
                 });
@@ -19,7 +19,7 @@
         Shape: {
             simple: function (callback) {
                 require(["src/common/Shape"], function (Shape) {
-                    callback(new Shape.Shape()
+                    callback(new Shape.default()
                     );
                 });
             }
@@ -27,7 +27,7 @@
         FAChar: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/common/FAChar"], function (DataFactory, FAChar) {
-                    callback(new FAChar.FAChar()
+                    callback(new FAChar.default()
                         .char(DataFactory.FAChar.simple.char)
                     );
                 });
@@ -36,7 +36,7 @@
         TextBox: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/common/TextBox"], function (DataFactory, TextBox) {
-                    callback(new TextBox.TextBox()
+                    callback(new TextBox.default()
                         .text(DataFactory.Text.simple.text)
                     );
                 });
@@ -45,7 +45,7 @@
         Image: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/common/Image"], function (DataFactory, Image) {
-                    callback(new Image.Image().source(DataFactory.Image.floorplan));
+                    callback(new Image.default().source(DataFactory.Image.floorplan));
                 });
             },
             layered: function (callback) {
@@ -69,7 +69,7 @@
             },
             url: function (callback) {
                 require(["test/DataFactory", "src/common/Image"], function (DataFactory, Image) {
-                    callback(new Image.Image().source("http://scoop.previewsworld.com/Image/NewsImage/4/41615/88069/1"));
+                    callback(new Image.default().source("http://scoop.previewsworld.com/Image/NewsImage/4/41615/88069/1"));
                 });
             }
             
@@ -77,14 +77,14 @@
         Icon: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/common/Icon"], function (DataFactory, Icon) {
-                    callback(new Icon.Icon()
+                    callback(new Icon.default()
                         .faChar(DataFactory.FAChar.simple.char)
                     );
                 });
             },
             image: function (callback) {
                 require(["test/DataFactory", "src/common/Icon"], function (DataFactory, Icon) {
-                    callback(new Icon.Icon()
+                    callback(new Icon.default()
                         .faChar("")
                         .diameter(64)
                         .imageUrl("https://cdn.discordapp.com/avatars/78237891792216064/e164780723ccb2ea08f6647272d4b92d.jpg")
@@ -95,7 +95,7 @@
         List: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/common/List"], function (DataFactory, List) {
-                    callback(new List.List()
+                    callback(new List.default()
                         .data(DataFactory.List.simple.data)
                     );
                 });
@@ -104,7 +104,7 @@
         Menu: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/common/Menu"], function (DataFactory, Menu) {
-                    callback(new Menu.Menu()
+                    callback(new Menu.default()
                         .data(DataFactory.List.simple.data)
                     );
                 });
@@ -113,11 +113,11 @@
         Surface: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/common/Surface", "src/common/Text"], function (DataFactory, Surface, Text) {
-                    callback(new Surface.Surface()
+                    callback(new Surface.default()
                         .title("Surface")
                         .menu(DataFactory.Surface.simple.menu)
                         //.buttonAnnotations(DataFactory.Surface.simple.buttonAnnotations)
-                        .content(new Text.Text()
+                        .content(new Text.default()
                             .text("Hello\nand\nWelcome!")
                         )
                     );
@@ -127,11 +127,11 @@
         ResizeSurface: {
             simple: function (callback) {
                 require(["test/DataFactory", "src/common/ResizeSurface", "src/common/Text"], function (DataFactory, ResizeSurface, Text) {
-                    callback(new ResizeSurface.ResizeSurface()
+                    callback(new ResizeSurface.default()
                         .title("Resize")
                         .menu(DataFactory.Surface.simple.menu)
                         //.buttonAnnotations(DataFactory.Surface.simple.buttonAnnotations)
-                        .content(new Text.Text()
+                        .content(new Text.default()
                             .text("Hello\nand\nWelcome!")
                         )
                     );
@@ -201,7 +201,7 @@
                         .buttonAnnotations([{id:"export_CSV",label:"CSV",width:"50px", height:"18px",padding:"0px 5px", format:"CSV"},
                             {id:"export_TSV",label:"TSV",width:"50px", height:"18px",padding:"0px 5px", format:"TSV"},
                             {id:"export_CSV",label:"JSON",width:"50px", height:"18px",padding:"0px 5px", format:"JSON"}])
-                        .widget(new Line.Line()
+                        .widget(new Line.default()
                             .columns(DataFactory.ND.subjects.columns)
                             .data(DataFactory.ND.subjects.data)
                         )

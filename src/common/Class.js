@@ -5,7 +5,8 @@ define(["require", "exports"], function (require, exports) {
         }
         return Class;
     }());
-    exports.Class = Class;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Class;
     Class.prototype._class = "common_Class";
     Class.prototype.class = function (_) {
         if (!arguments.length)

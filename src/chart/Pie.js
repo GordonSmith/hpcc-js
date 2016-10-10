@@ -9,8 +9,8 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
         __extends(Pie, _super);
         function Pie() {
             _super.call(this);
-            I2DChart_1.I2DChart.call(this);
-            ITooltip_1.ITooltip.call(this);
+            I2DChart_1.default.call(this);
+            ITooltip_1.default.call(this);
             Utility_1.SimpleSelectionMixin.call(this);
             this.labelWidgets = {};
             this.d3Pie = d3.layout.pie()
@@ -87,13 +87,13 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
                     .on("mouseover", arcTween(0, 0))
                     .on("mouseout", arcTween(-5, 150));
                 if (d.data.__viz_faChar) {
-                    context.labelWidgets[d.data[0]] = new FAChar_1.FAChar()
+                    context.labelWidgets[d.data[0]] = new FAChar_1.default()
                         .char(d.data.__viz_faChar)
                         .target(this)
                         .render();
                 }
                 else {
-                    context.labelWidgets[d.data[0]] = new Text_1.Text()
+                    context.labelWidgets[d.data[0]] = new Text_1.default()
                         .text(d.data[0])
                         .target(this)
                         .render();
@@ -166,11 +166,12 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
         };
         ;
         return Pie;
-    }(SVGWidget_1.SVGWidget));
-    exports.Pie = Pie;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Pie;
     Pie.prototype._class += " chart_Pie";
-    Pie.prototype.implements(I2DChart_1.I2DChart.prototype);
-    Pie.prototype.implements(ITooltip_1.ITooltip.prototype);
+    Pie.prototype.implements(I2DChart_1.default.prototype);
+    Pie.prototype.implements(ITooltip_1.default.prototype);
     Pie.prototype.mixin(Utility_1.SimpleSelectionMixin);
     Pie.prototype.publish("paletteID", "default", "set", "Palette ID", Pie.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
     Pie.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });

@@ -9,25 +9,26 @@ define(["require", "exports", "./SVGWidget", "./Text", "css!font-awesome", "css!
         __extends(FAChar, _super);
         function FAChar() {
             _super.call(this);
-            this._text = new Text_1.Text()
+            this._text = new Text_1.default()
                 .fontFamily("FontAwesome");
         }
         return FAChar;
-    }(SVGWidget_1.SVGWidget));
-    exports.FAChar = FAChar;
-    FAChar.prototype = Object.create(SVGWidget_1.SVGWidget.prototype);
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = FAChar;
+    FAChar.prototype = Object.create(SVGWidget_1.default.prototype);
     FAChar.prototype.constructor = FAChar;
     FAChar.prototype._class += " common_FAChar";
     FAChar.prototype.publish("char", "", "string", "Font Awesome Item", null, { tags: ["Private"] });
     FAChar.prototype.publish("fontSize", null, "number", "Font Size", null, { tags: ["Private"] });
     FAChar.prototype.publishProxy("text_colorFill", "_text", "colorFill");
     FAChar.prototype.enter = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.enter.apply(this, arguments);
+        SVGWidget_1.default.prototype.enter.apply(this, arguments);
         this._text
             .target(domNode);
     };
     FAChar.prototype.update = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.update.apply(this, arguments);
+        SVGWidget_1.default.prototype.update.apply(this, arguments);
         this._text
             .text(this.char())
             .scale((this.fontSize() || 14) / 14) //  Scale rather than fontSize to prevent Chrome glitch  ---
@@ -36,7 +37,7 @@ define(["require", "exports", "./SVGWidget", "./Text", "css!font-awesome", "css!
     FAChar.prototype.exit = function (domNode, element) {
         this._text
             .target(null);
-        SVGWidget_1.SVGWidget.prototype.exit.apply(this, arguments);
+        SVGWidget_1.default.prototype.exit.apply(this, arguments);
     };
 });
 //# sourceMappingURL=FAChar.js.map

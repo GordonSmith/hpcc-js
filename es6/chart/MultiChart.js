@@ -1,9 +1,9 @@
 import * as d3 from "d3"
-import { HTMLWidget } from "../common/HTMLWidget"
+import HTMLWidget from "../common/HTMLWidget"
 import { requireWidget, widgetPath } from "../common/Utility"
-import { INDChart } from "../api/INDChart"
+import INDChart from "../api/INDChart"
 
-export class MultiChart extends HTMLWidget {
+export default class MultiChart extends HTMLWidget {
     constructor() {
         super();
         INDChart.call(this);

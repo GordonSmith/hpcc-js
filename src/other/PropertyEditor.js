@@ -23,8 +23,9 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../other/Persist", 
             this._show_settings = false;
         }
         return PropertyEditor;
-    }(HTMLWidget_1.HTMLWidget));
-    exports.PropertyEditor = PropertyEditor;
+    }(HTMLWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = PropertyEditor;
     PropertyEditor.prototype._class += " other_PropertyEditor";
     PropertyEditor.prototype.publish("showFields", false, "boolean", "If true, widget.fields() will display as if it was a publish parameter.", null, { tags: ["Basic"] });
     PropertyEditor.prototype.publish("showData", false, "boolean", "If true, widget.data() will display as if it was a publish parameter.", null, { tags: ["Basic"] });
@@ -48,7 +49,7 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../other/Persist", 
         var retVal = PropertyEditor.prototype._widgetOrig.apply(this, arguments);
         if (arguments.length) {
             this.watchWidget(_);
-            if (_ instanceof Grid) {
+            if (_ instanceof Grid.default) {
                 var context = this;
                 _.postSelectionChange = function () {
                     context._selectedItems = _._selectionBag.get().map(function (item) { return item.widget; });
@@ -72,7 +73,7 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../other/Persist", 
         return this.show_settings() ? [this] : this.widget() ? [this.widget()] : [];
     };
     PropertyEditor.prototype.update = function (domNode, element) {
-        HTMLWidget_1.HTMLWidget.prototype.update.apply(this, arguments);
+        HTMLWidget_1.default.prototype.update.apply(this, arguments);
         var context = this;
         var rootWidgets = this.rootWidgets().filter(function (w) {
             if (w._owningWidget && w._owningWidget.excludeObjs instanceof Array) {
@@ -119,7 +120,7 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../other/Persist", 
             .remove();
     };
     PropertyEditor.prototype.exit = function (domNode, element) {
-        HTMLWidget_1.HTMLWidget.prototype.exit.apply(this, arguments);
+        HTMLWidget_1.default.prototype.exit.apply(this, arguments);
         this.watchWidget(null);
     };
     var watchDepth = 0;
@@ -467,7 +468,7 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../other/Persist", 
             case "array":
             case "object":
                 element.property("value", JSON.stringify(val, function replacer(key, value) {
-                    if (value instanceof Widget_1.Widget) {
+                    if (value instanceof Widget_1.default) {
                         return Persist.serialize(value);
                     }
                     return value;

@@ -6,6 +6,8 @@
         root.widgets = factory(root.d3, root.test_Factory, root.common_SVGWidget, root.common_Utility, root.require);
     }
 }(this, function (d3, testFactory, SVGWidget, Utility, require) {
+    SVGWidget = SVGWidget.SVGWidget;
+    Utility = Utility.Utility;
     function TestWidget() {
         SVGWidget.call(this);
 

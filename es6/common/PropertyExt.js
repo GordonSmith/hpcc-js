@@ -1,4 +1,4 @@
-import { Class } from "./Class";
+import Class from "./Class";
 
 var __meta_ = "__meta_";
 var __private_ = "__private_";
@@ -124,7 +124,7 @@ function MetaProxy(id, proxy, method, defaultValue, ext) {
 }
 
 var propExtID = 0;
-export class PropertyExt extends Class {
+export default class PropertyExt extends Class {
     constructor() {
         super();
 

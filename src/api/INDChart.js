@@ -5,7 +5,8 @@ define(["require", "exports", "../common/Palette"], function (require, exports, 
         }
         return INDChart;
     }());
-    exports.INDChart = INDChart;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = INDChart;
     INDChart.prototype._palette = Palette_1.ordinal("default");
     //  Events  ---
     INDChart.prototype.click = function (row, column, selected) {

@@ -3,8 +3,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3", "d3-tip", "../common/Widget", "css!./ITooltip"], function (require, exports, d3, d3Tip, Widget_1) {
+define(["require", "exports", "d3", "d3-tip", "../common/Widget", "css!./ITooltip"], function (require, exports, d3, _d3Tip, Widget_1) {
     "use strict";
+    var d3Tip = _d3Tip;
     var ITooltip = (function (_super) {
         __extends(ITooltip, _super);
         function ITooltip() {
@@ -46,8 +47,9 @@ define(["require", "exports", "d3", "d3-tip", "../common/Widget", "css!./IToolti
             }
         }
         return ITooltip;
-    }(Widget_1.Widget));
-    exports.ITooltip = ITooltip;
+    }(Widget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = ITooltip;
     ITooltip.prototype.publish("tooltipStyle", "default", "set", "Style", ["default", "none"], {});
     ITooltip.prototype.publish("tooltipValueFormat", ",.2f", "string", "Value Format", null, {});
     ITooltip.prototype.publish("tooltipSeriesColor", "#EAFFFF", "html-color", "Series Color", null, {});

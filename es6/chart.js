@@ -1,14 +1,14 @@
-﻿export * from "./chart/Area"
-export * from "./chart/Bar"
-export * from "./chart/Bubble"
-export * from "./chart/Bullet"
-export * from "./chart/Column"
-export * from "./chart/Gantt"
-export * from "./chart/HexBin"
-export * from "./chart/Line"
-export * from "./chart/MultiChart"
-export * from "./chart/MultiChartSurface"
-export * from "./chart/Pie"
-export * from "./chart/Scatter"
-export * from "./chart/Step"
-export * from "./chart/Summary"
+﻿export { default as Area } from "./chart/Area";
+export { default as Bar } from "./chart/Bar";
+export { default as Bubble } from "./chart/Bubble";
+export { default as Bullet } from "./chart/Bullet";
+export { default as Column } from "./chart/Column";
+export { default as Gantt } from "./chart/Gantt";
+export { default as HexBin } from "./chart/HexBin";
+export { default as Line } from "./chart/Line";
+export { default as MultiChart } from "./chart/MultiChart";
+export { default as MultiChartSurface } from "./chart/MultiChartSurface";
+export { default as Pie } from "./chart/Pie";
+export { default as Scatter } from "./chart/Scatter";
+export { default as Step } from "./chart/Step";
+export { default as Summary } from "./chart/Summary";

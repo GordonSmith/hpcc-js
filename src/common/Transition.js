@@ -9,7 +9,8 @@ define(["require", "exports"], function (require, exports) {
         }
         return Transition;
     }());
-    exports.Transition = Transition;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Transition;
     Transition.prototype.duration = function (_) {
         if (!arguments.length)
             return this._duration;

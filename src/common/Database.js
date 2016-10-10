@@ -11,13 +11,13 @@ define(["require", "exports", "d3", "./Class", "./PropertyExt"], function (requi
         __extends(Field, _super);
         function Field(id) {
             _super.call(this);
-            PropertyExt_1.PropertyExt.call(this);
+            PropertyExt_1.default.call(this);
             this._id = id || this._id;
         }
         return Field;
-    }(Class_1.Class));
+    }(Class_1.default));
     exports.Field = Field;
-    Field.prototype.mixin(PropertyExt_1.PropertyExt);
+    Field.prototype.mixin(PropertyExt_1.default);
     Field.prototype._class += " common_Database.Field";
     Field.prototype.id = function () {
         return this._id;
@@ -116,16 +116,16 @@ define(["require", "exports", "d3", "./Class", "./PropertyExt"], function (requi
         function Grid(dataChecksum) {
             _super.call(this);
             dataChecksum = dataChecksum || false;
-            Class_1.Class.call(this);
-            PropertyExt_1.PropertyExt.call(this);
+            Class_1.default.call(this);
+            PropertyExt_1.default.call(this);
             this._dataChecksum = dataChecksum;
             this._dataVersion = 0;
             this.clear();
         }
         return Grid;
-    }(Class_1.Class));
+    }(Class_1.default));
     exports.Grid = Grid;
-    Grid.prototype.mixin(PropertyExt_1.PropertyExt);
+    Grid.prototype.mixin(PropertyExt_1.default);
     Grid.prototype._class += " common_Database.Grid";
     Grid.prototype.publish("fields", [], "propertyArray", "Fields");
     Grid.prototype.clear = function () {

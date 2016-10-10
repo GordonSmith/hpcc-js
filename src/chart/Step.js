@@ -13,8 +13,9 @@ define(["require", "exports", "./Scatter"], function (require, exports, Scatter_
                 .interpolate_default("step");
         }
         return Step;
-    }(Scatter_1.Scatter));
-    exports.Step = Step;
+    }(Scatter_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Step;
     Step.prototype._class += " chart_Step";
 });
 //# sourceMappingURL=Step.js.map

@@ -1,6 +1,6 @@
-import { Scatter } from "./Scatter"
+import Scatter from "./Scatter"
 
-export class Step extends Scatter {
+export default class Step extends Scatter {
     constructor() {
         super();
         this

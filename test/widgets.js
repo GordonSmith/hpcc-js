@@ -252,7 +252,7 @@
                                                 .attr("class", "title")
                                                 .text(widgetPath + "-" + sample.key)
                                             ;
-                                            var vizWidget = new ResizeSurface()
+                                            var vizWidget = new ResizeSurface.ResizeSurface()
                                                 .target(widgetDiv.node())
                                                 .content(testWidget)
                                                 .render(function (w) {

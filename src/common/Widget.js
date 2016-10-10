@@ -10,8 +10,8 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
         __extends(Widget, _super);
         function Widget() {
             _super.call(this);
-            Platform_1.Platform.call(this);
-            PropertyExt_1.PropertyExt.call(this);
+            Platform_1.default.call(this);
+            PropertyExt_1.default.call(this);
             this._class = Object.getPrototypeOf(this)._class;
             this._id = this._idSeed + widgetID++;
             this._db = new Database_1.Grid();
@@ -35,10 +35,11 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
             }
         }
         return Widget;
-    }(Class_1.Class));
-    exports.Widget = Widget;
-    Widget.prototype.mixin(Platform_1.Platform);
-    Widget.prototype.mixin(PropertyExt_1.PropertyExt);
+    }(Class_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Widget;
+    Widget.prototype.mixin(Platform_1.default);
+    Widget.prototype.mixin(PropertyExt_1.default);
     Widget.prototype._class += " common_Widget";
     Widget.prototype._idSeed = "_w";
     Widget.prototype.publishProxy("fields", "_db", "fields");
@@ -471,17 +472,17 @@ define(["require", "exports", "d3", "./Class", "./Platform", "./PropertyExt", ".
             var context = this;
             setTimeout(function () {
                 if (context.screenReaderTable()) {
-                    ARIATable_1.ARIATable(context.id(), context._ariaElement, context.columns(), context.data());
+                    ARIATable_1.default(context.id(), context._ariaElement, context.columns(), context.data());
                 }
                 else {
-                    ARIATable_1.ARIATable(context.id(), context._ariaElement);
+                    ARIATable_1.default(context.id(), context._ariaElement);
                 }
             }, 0);
         }
     };
     Widget.prototype.exit = function (domNode, element) {
         if (this._ariaElement) {
-            ARIATable_1.ARIATable(this.id(), this._ariaElement);
+            ARIATable_1.default(this.id(), this._ariaElement);
         }
     };
 });

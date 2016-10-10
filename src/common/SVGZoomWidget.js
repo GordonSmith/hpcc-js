@@ -9,11 +9,12 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "css!./SVGZoomWidge
         __extends(SVGZoomWidget, _super);
         function SVGZoomWidget() {
             _super.call(this);
-            SVGWidget_1.SVGWidget.call(this);
+            SVGWidget_1.default.call(this);
         }
         return SVGZoomWidget;
-    }(SVGWidget_1.SVGWidget));
-    exports.SVGZoomWidget = SVGZoomWidget;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = SVGZoomWidget;
     SVGZoomWidget.prototype._class += " common_SVGZoomWidget";
     SVGZoomWidget.prototype.publish("zoomToolbar", true, "boolean", "Show Zoom Toolbar");
     SVGZoomWidget.prototype.publish("zoomDuration", 250, "number", "Transition Duration");
@@ -39,7 +40,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "css!./SVGZoomWidge
         }
     };
     SVGZoomWidget.prototype.enter = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.enter.apply(this, arguments);
+        SVGWidget_1.default.prototype.enter.apply(this, arguments);
         this._zoomElement = element.append("g");
         this._zoomGrab = this._zoomElement.append("rect")
             .attr("class", "background");
@@ -54,7 +55,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "css!./SVGZoomWidge
         this._zoomElement.call(this._zoom);
     };
     SVGZoomWidget.prototype.update = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.update.apply(this, arguments);
+        SVGWidget_1.default.prototype.update.apply(this, arguments);
         this._zoomGrab
             .attr("width", this.width())
             .attr("height", this.height());
@@ -65,7 +66,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "css!./SVGZoomWidge
         toolbar.enter().append("g")
             .attr("class", "toolbar")
             .each(function (d) {
-            context._buttonToFit = new Icon_1.Icon()
+            context._buttonToFit = new Icon_1.default()
                 .target(this)
                 .faChar("\uf0b2")
                 .shape("square")
@@ -74,7 +75,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "css!./SVGZoomWidge
                 .on("click", function () {
                 context.zoomToFit();
             });
-            context._buttonPlus = new Icon_1.Icon()
+            context._buttonPlus = new Icon_1.default()
                 .target(this)
                 .faChar("\uf067")
                 .shape("square")
@@ -83,7 +84,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "css!./SVGZoomWidge
                 .on("click", function () {
                 context.zoomTo(null, context._zoom.scale() * 1.20);
             });
-            context._buttonMinus = new Icon_1.Icon()
+            context._buttonMinus = new Icon_1.default()
                 .target(this)
                 .faChar("\uf068")
                 .shape("square")
@@ -118,7 +119,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "css!./SVGZoomWidge
             .remove();
     };
     SVGZoomWidget.prototype.exit = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.exit.apply(this, arguments);
+        SVGWidget_1.default.prototype.exit.apply(this, arguments);
     };
 });
 //# sourceMappingURL=SVGZoomWidget.js.map

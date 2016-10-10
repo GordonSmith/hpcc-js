@@ -10,8 +10,8 @@ define(["require", "exports", "d3", "d3-hexbin", "./XYAxis", "../common/Palette"
         __extends(HexBin, _super);
         function HexBin() {
             _super.call(this);
-            INDChart_1.INDChart.call(this);
-            ITooltip_1.ITooltip.call(this);
+            INDChart_1.default.call(this);
+            ITooltip_1.default.call(this);
             this._hexbin = new D3HexBin();
             this
                 .xAxisGuideLines_default(false)
@@ -56,11 +56,12 @@ define(["require", "exports", "d3", "d3-hexbin", "./XYAxis", "../common/Palette"
         };
         ;
         return HexBin;
-    }(XYAxis_1.XYAxis));
-    exports.HexBin = HexBin;
+    }(XYAxis_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = HexBin;
     HexBin.prototype._class += " chart_HexBin";
-    HexBin.prototype.implements(INDChart_1.INDChart.prototype);
-    HexBin.prototype.implements(ITooltip_1.ITooltip.prototype);
+    HexBin.prototype.implements(INDChart_1.default.prototype);
+    HexBin.prototype.implements(ITooltip_1.default.prototype);
     HexBin.prototype._palette = Palette.rainbow("default");
     HexBin.prototype.publish("paletteID", "Blues", "set", "Palette ID", HexBin.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
     HexBin.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });

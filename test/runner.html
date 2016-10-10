@@ -28,7 +28,7 @@
     <script>
         mocha.setup('bdd');
         var assert = chai.assert;
-        require(["./loader", "./publish", "./widgets", "./persist", "./utility", "./datagrid"], function () {
+        require(["./widgets"/*, "./loader", "./publish", "./persist", "./utility", "./datagrid"*/], function () {
             mocha.run();
         });
     </script>

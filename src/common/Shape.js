@@ -13,18 +13,18 @@ define(["require", "exports", "d3", "./SVGWidget", "css!./Shape"], function (req
         Shape.prototype.radius = function (_) {
             var retVal = this.radius_call.apply(this, arguments);
             if (arguments.length) {
-                this.shapeWidth(_);
-                this.shapeHeight(_);
+                this.width(_);
+                this.height(_);
                 return retVal;
             }
-            return Math.max(this.shapeWidth(), this.shapeHeight()) / 2;
+            return Math.max(this.width(), this.height()) / 2;
         };
         Shape.prototype.intersection = function (pointA, pointB) {
             switch (this.shape()) {
                 case "circle":
                     return this.intersectCircle(pointA, pointB);
             }
-            return SVGWidget_1.SVGWidget.prototype.intersection.apply(this, arguments);
+            return SVGWidget_1.default.prototype.intersection.apply(this, arguments);
         };
         Shape.prototype.update = function (domNode, element) {
             var shape = element.selectAll("rect,circle,ellipse").data([this.shape()], function (d) { return d; });
@@ -48,7 +48,7 @@ define(["require", "exports", "d3", "./SVGWidget", "css!./Shape"], function (req
                             .attr("r", radius);
                         break;
                     case "square":
-                        var width = Math.max(context.shapeWidth(), context.shapeHeight());
+                        var width = Math.max(context.width(), context.height());
                         element
                             .attr("x", -width / 2)
                             .attr("y", -width / 2)
@@ -57,23 +57,24 @@ define(["require", "exports", "d3", "./SVGWidget", "css!./Shape"], function (req
                         break;
                     case "rect":
                         element
-                            .attr("x", -context.shapeWidth() / 2)
-                            .attr("y", -context.shapeHeight() / 2)
-                            .attr("width", context.shapeWidth())
-                            .attr("height", context.shapeHeight());
+                            .attr("x", -context.width() / 2)
+                            .attr("y", -context.height() / 2)
+                            .attr("width", context.width())
+                            .attr("height", context.height());
                         break;
                     case "ellipse":
                         element
-                            .attr("rx", context.shapeWidth() / 2)
-                            .attr("ry", context.shapeHeight() / 2);
+                            .attr("rx", context.width() / 2)
+                            .attr("ry", context.height() / 2);
                         break;
                 }
             });
             shape.exit().remove();
         };
         return Shape;
-    }(SVGWidget_1.SVGWidget));
-    exports.Shape = Shape;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Shape;
     Shape.prototype._class += " common_Shape";
     Shape.prototype.publish("shape", "circle", "set", "Shape Type", ["circle", "square", "rect", "ellipse"], { tags: ["Private"] });
     Shape.prototype.publish("shapeWidth", 24, "number", "Width", null, { tags: ["Private"] });

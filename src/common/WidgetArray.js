@@ -11,8 +11,9 @@ define(["require", "exports", "./Widget"], function (require, exports, Widget_1)
             _super.call(this);
         }
         return WidgetArray;
-    }(Widget_1.Widget));
-    exports.WidgetArray = WidgetArray;
+    }(Widget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = WidgetArray;
     WidgetArray.prototype._class += " common_WidgetArray";
     WidgetArray.prototype.publish("content", [], "widgetArray", "Widget Array");
     WidgetArray.prototype.target = function (target) {

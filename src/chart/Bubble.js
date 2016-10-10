@@ -9,9 +9,9 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
         __extends(Bubble, _super);
         function Bubble() {
             _super.call(this);
-            SVGWidget_1.SVGWidget.call(this);
-            I2DChart_1.I2DChart.call(this);
-            ITooltip_1.ITooltip.call(this);
+            SVGWidget_1.default.call(this);
+            I2DChart_1.default.call(this);
+            ITooltip_1.default.call(this);
             Utility_1.SimpleSelectionMixin.call(this);
             this._drawStartPos = "origin";
             this.labelWidgets = {};
@@ -63,13 +63,13 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
                     .on("mouseout.tooltip", context.tooltip.hide)
                     .on("mousemove.tooltip", context.tooltip.show);
                 if (d.__viz_faChar) {
-                    context.labelWidgets[d[0]] = new FAChar_1.FAChar()
+                    context.labelWidgets[d[0]] = new FAChar_1.default()
                         .char(d.__viz_faChar)
                         .target(this)
                         .render();
                 }
                 else {
-                    context.labelWidgets[d[0]] = new Text_1.Text()
+                    context.labelWidgets[d[0]] = new Text_1.default()
                         .text(d[0])
                         .target(this)
                         .render();
@@ -117,11 +117,12 @@ define(["require", "exports", "d3", "../common/SVGWidget", "../api/I2DChart", ".
             _super.prototype.exit.apply(this, arguments);
         };
         return Bubble;
-    }(SVGWidget_1.SVGWidget));
-    exports.Bubble = Bubble;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Bubble;
     Bubble.prototype._class += " chart_Bubble";
-    Bubble.prototype.implements(I2DChart_1.I2DChart.prototype);
-    Bubble.prototype.implements(ITooltip_1.ITooltip.prototype);
+    Bubble.prototype.implements(I2DChart_1.default.prototype);
+    Bubble.prototype.implements(ITooltip_1.default.prototype);
     Bubble.prototype.mixin(Utility_1.SimpleSelectionMixin);
     Bubble.prototype.publish("paletteID", "default", "set", "Palette ID", Bubble.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
     Bubble.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });

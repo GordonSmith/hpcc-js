@@ -1,9 +1,9 @@
-import { SVGWidget } from "./SVGWidget"
+import SVGWidget from "./SVGWidget"
 import "css!./Text"
 
-export class Text extends SVGWidget {
+export default class Text extends SVGWidget {
     constructor() {
-        SVGWidget.call(this);
+        super();
     }
 }
 Text.prototype._class += " common_Text";

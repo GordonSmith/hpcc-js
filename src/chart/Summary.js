@@ -144,9 +144,10 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../api/I2DChart", "
             _super.prototype.exit.apply(this, arguments);
         };
         return Summary;
-    }(HTMLWidget_1.HTMLWidget));
-    exports.Summary = Summary;
-    Summary.prototype.implements(I2DChart_1.I2DChart.prototype);
+    }(HTMLWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Summary;
+    Summary.prototype.implements(I2DChart_1.default.prototype);
     Summary.prototype._class += " chart_Summary";
     Summary.prototype.publish("iconColumn", null, "set", "Select display value", function () { return this.columns(); }, { optional: true });
     Summary.prototype.publish("icon", "fa-briefcase", "string", "FA Char icon class", null, { disable: function (w) { return w.iconColumn(); } });

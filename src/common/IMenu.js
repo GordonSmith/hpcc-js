@@ -5,7 +5,8 @@ define(["require", "exports"], function (require, exports) {
         }
         return IMenu;
     }());
-    exports.IMenu = IMenu;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = IMenu;
     //  Properties  ---
     //  Events  ---
     IMenu.prototype.click = function (d) {

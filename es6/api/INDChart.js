@@ -1,6 +1,6 @@
 import { ordinal } from "../common/Palette"
 
-export class INDChart {
+export default class INDChart {
 }
 INDChart.prototype._palette = ordinal("default");
 

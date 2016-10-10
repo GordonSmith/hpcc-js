@@ -1,6 +1,6 @@
-import { Widget } from "./Widget"
+import Widget from "./Widget"
 
-export class WidgetArray extends Widget {
+export default class WidgetArray extends Widget {
     constructor() {
         super();
     }

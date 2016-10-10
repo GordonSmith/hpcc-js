@@ -8,11 +8,12 @@ define(["require", "exports", "./SVGWidget", "css!./Text"], function (require, e
     var Text = (function (_super) {
         __extends(Text, _super);
         function Text() {
-            SVGWidget_1.SVGWidget.call(this);
+            _super.call(this);
         }
         return Text;
-    }(SVGWidget_1.SVGWidget));
-    exports.Text = Text;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Text;
     Text.prototype._class += " common_Text";
     Text.prototype.publish("text", "", "string", "Display Text", null, { tags: ["Basic"] });
     Text.prototype.publish("fontFamily", null, "string", "Font Family", null, { tags: ["Intermediate"], optional: true });
@@ -21,11 +22,11 @@ define(["require", "exports", "./SVGWidget", "css!./Text"], function (require, e
     Text.prototype.publish("colorFill", null, "html-color", "Fill Color", null, { tags: ["Basic"] });
     Text.prototype.publish("rotation", 0, "number", "Degrees of rotation", null, { tags: ["Basic"] });
     Text.prototype.enter = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.enter.apply(this, arguments);
+        SVGWidget_1.default.prototype.enter.apply(this, arguments);
         this._textElement = element.append("text");
     };
     Text.prototype.update = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.update.apply(this, arguments);
+        SVGWidget_1.default.prototype.update.apply(this, arguments);
         var context = this;
         this._textElement
             .attr("font-family", this.fontFamily())

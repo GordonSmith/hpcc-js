@@ -1,8 +1,8 @@
 import * as d3 from "d3"
-import { Surface } from "./Surface"
+import Surface from "./Surface"
 import "css!./ResizeSurface"
 
-export class ResizeSurface extends Surface {
+export default class ResizeSurface extends Surface {
     constructor() {
         super();
 

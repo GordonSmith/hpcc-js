@@ -9,24 +9,25 @@ define(["require", "exports", "./SVGWidget", "./IList", "./TextBox", "css!./List
         __extends(List, _super);
         function List() {
             _super.call(this);
-            SVGWidget_1.SVGWidget.call(this);
-            IList_1.IList.call(this);
+            SVGWidget_1.default.call(this);
+            IList_1.default.call(this);
             this._listWidgets = {};
         }
         return List;
-    }(SVGWidget_1.SVGWidget));
-    exports.List = List;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = List;
     List.prototype._class += " common_List";
-    List.prototype.implements(IList_1.IList.prototype);
+    List.prototype.implements(IList_1.default.prototype);
     List.prototype.publish("anchor", "start", "set", "Anchor Position", ["", "start", "middle", "end"], { tags: ["Private"] });
     List.prototype.update = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.update.apply(this, arguments);
+        SVGWidget_1.default.prototype.update.apply(this, arguments);
         var context = this;
         var line = element.selectAll(".line").data(this.data(), function (d) { return d; });
         line.enter().append("g")
             .attr("class", "line")
             .each(function (d) {
-            var newTextBox = new TextBox_1.TextBox()
+            var newTextBox = new TextBox_1.default()
                 .target(this)
                 .paddingTop(0)
                 .paddingBottom(0)
@@ -77,7 +78,7 @@ define(["require", "exports", "./SVGWidget", "./IList", "./TextBox", "css!./List
         for (var key in this._listWidgets) {
             this._listWidgets[key].target(null);
         }
-        SVGWidget_1.SVGWidget.prototype.exit.apply(this, arguments);
+        SVGWidget_1.default.prototype.exit.apply(this, arguments);
     };
 });
 //# sourceMappingURL=List.js.map

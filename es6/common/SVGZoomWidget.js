@@ -1,9 +1,9 @@
 ﻿import * as d3 from "d3"
-import { SVGWidget } from "./SVGWidget"
-import { Icon } from "./Icon"
+import SVGWidget from "./SVGWidget"
+import Icon from "./Icon"
 import "css!./SVGZoomWidget"
 
-export class SVGZoomWidget extends SVGWidget {
+export default class SVGZoomWidget extends SVGWidget {
     constructor() {
         super();
         SVGWidget.call(this);

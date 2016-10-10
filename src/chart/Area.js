@@ -14,8 +14,9 @@ define(["require", "exports", "./Scatter"], function (require, exports, Scatter_
                 .interpolateFill_default(true);
         }
         return Area;
-    }(Scatter_1.Scatter));
-    exports.Area = Area;
+    }(Scatter_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Area;
     Area.prototype._class += " chart_Area";
 });
 //# sourceMappingURL=Area.js.map

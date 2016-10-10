@@ -1,8 +1,8 @@
 import * as d3 from "d3"
-import { HTMLWidget } from "../common/HTMLWidget"
+import HTMLWidget from "../common/HTMLWidget"
 import * as Persist from "../other/Persist"
 import * as Grid from "../layout/Grid"
-import { Widget } from "../common/Widget"
+import Widget from "../common/Widget"
 import "css!./PropertyEditor"
 
 function hasProperties(type) {
@@ -15,7 +15,7 @@ function hasProperties(type) {
     return false;
 }
 
-export class PropertyEditor extends HTMLWidget {
+export default class PropertyEditor extends HTMLWidget {
     constructor() {
         super();    
         this._parentPropertyEditor = null;
@@ -52,7 +52,7 @@ export class PropertyEditor extends HTMLWidget {
         var retVal = PropertyEditor.prototype._widgetOrig.apply(this, arguments);
         if (arguments.length) {
             this.watchWidget(_);
-            if (_ instanceof Grid) {
+            if (_ instanceof Grid.default) {
                 var context = this;
                 _.postSelectionChange = function () {
                     context._selectedItems = _._selectionBag.get().map(function (item) { return item.widget; });

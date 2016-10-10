@@ -9,13 +9,14 @@ define(["require", "exports", "./SVGWidget", "./Shape", "./Text", "css!./TextBox
         __extends(TextBox, _super);
         function TextBox() {
             _super.call(this);
-            this._shape = new Shape_1.Shape()
+            this._shape = new Shape_1.default()
                 .shape("rect");
-            this._text = new Text_1.Text();
+            this._text = new Text_1.default();
         }
         return TextBox;
-    }(SVGWidget_1.SVGWidget));
-    exports.TextBox = TextBox;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = TextBox;
     TextBox.prototype._class += " common_TextBox";
     TextBox.prototype.publishProxy("text", "_text");
     TextBox.prototype.publishProxy("shape_colorStroke", "_shape", "colorStroke");
@@ -36,7 +37,7 @@ define(["require", "exports", "./SVGWidget", "./Shape", "./Text", "css!./TextBox
         return this;
     };
     TextBox.prototype.enter = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.enter.apply(this, arguments);
+        SVGWidget_1.default.prototype.enter.apply(this, arguments);
         this._tooltipElement = element.append("title");
         this._shape
             .target(domNode)
@@ -46,7 +47,7 @@ define(["require", "exports", "./SVGWidget", "./Shape", "./Text", "css!./TextBox
             .render();
     };
     TextBox.prototype.update = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.update.apply(this, arguments);
+        SVGWidget_1.default.prototype.update.apply(this, arguments);
         this._tooltipElement.text(this.tooltip());
         this._text
             .render();
@@ -79,7 +80,7 @@ define(["require", "exports", "./SVGWidget", "./Shape", "./Text", "css!./TextBox
             .target(null);
         this._text
             .target(null);
-        SVGWidget_1.SVGWidget.prototype.exit.apply(this, arguments);
+        SVGWidget_1.default.prototype.exit.apply(this, arguments);
     };
 });
 //# sourceMappingURL=TextBox.js.map

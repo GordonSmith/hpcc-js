@@ -1,10 +1,10 @@
 import * as d3 from "d3"
-import { XYAxis } from "./XYAxis"
-import { INDChart } from "../api/INDChart"
-import { ITooltip } from "../api/ITooltip"
+import XYAxis from "./XYAxis"
+import INDChart from "../api/INDChart"
+import ITooltip from "../api/ITooltip"
 import "css!./Column"
 
-export class Column extends XYAxis {
+export default class Column extends XYAxis {
     constructor() {
         super();
 

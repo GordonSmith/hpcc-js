@@ -165,6 +165,12 @@
             baseUrl: ".",
             paths: paths
         });
+        var origLoad = root.hpccsystems.require.load;
+        root.hpccsystems.require.load = function (context, moduleName, url) {
+            var retVal = origLoad.apply(this, arguments);
+            return retVal;
+        }
+
     }
 
     function buildConfig(srcUrl) {

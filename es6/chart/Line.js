@@ -1,7 +1,7 @@
-import { Scatter } from "./Scatter"
+import Scatter from "./Scatter"
 import "css!./Line"
 
-export class Line extends Scatter {
+export default class Line extends Scatter {
     constructor() {
         super();
         this

@@ -1,6 +1,6 @@
-import { Bar } from "./Bar"
+import Bar from "./Bar"
 
-export class Gantt extends Bar{
+export default class Gantt extends Bar{
     constructor() {
         super();
         this

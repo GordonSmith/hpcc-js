@@ -141,8 +141,9 @@ define(["require", "exports", "./Class"], function (require, exports, Class_1) {
             }, this);
         }
         return PropertyExt;
-    }(Class_1.Class));
-    exports.PropertyExt = PropertyExt;
+    }(Class_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = PropertyExt;
     PropertyExt.prototype._class += " common_PropertyExt";
     PropertyExt.prototype.id = function () {
         return this._id;

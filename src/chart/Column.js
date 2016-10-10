@@ -9,8 +9,8 @@ define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITool
         __extends(Column, _super);
         function Column() {
             _super.call(this);
-            INDChart_1.INDChart.call(this);
-            ITooltip_1.ITooltip.call(this);
+            INDChart_1.default.call(this);
+            ITooltip_1.default.call(this);
             this._linearGap = 25;
         }
         Column.prototype.enter = function (domNode, element) {
@@ -115,11 +115,12 @@ define(["require", "exports", "d3", "./XYAxis", "../api/INDChart", "../api/ITool
                 .remove();
         };
         return Column;
-    }(XYAxis_1.XYAxis));
-    exports.Column = Column;
+    }(XYAxis_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Column;
     Column.prototype._class += " chart_Column";
-    Column.prototype.implements(INDChart_1.INDChart.prototype);
-    Column.prototype.implements(ITooltip_1.ITooltip.prototype);
+    Column.prototype.implements(INDChart_1.default.prototype);
+    Column.prototype.implements(ITooltip_1.default.prototype);
     Column.prototype.publish("paletteID", "default", "set", "Palette ID", Column.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
     Column.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
 });

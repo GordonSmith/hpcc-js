@@ -465,8 +465,9 @@ define(["require", "exports", "d3", "../common/SVGWidget", "css!./Axis"], functi
         };
         ;
         return Axis;
-    }(SVGWidget_1.SVGWidget));
-    exports.Axis = Axis;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Axis;
     Axis.prototype._class += " chart_Axis";
     Axis.prototype.publish("title", "", "string", "Title");
     Axis.prototype.publish("orientation", "bottom", "set", "Orientation", ["left", "top", "right", "bottom"]);

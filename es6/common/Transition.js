@@ -1,4 +1,4 @@
-export class Transition {
+export default class Transition {
     constructor(widget) {
         this._widget = widget;
         this._duration = 250;

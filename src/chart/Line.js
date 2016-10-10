@@ -13,8 +13,9 @@ define(["require", "exports", "./Scatter", "css!./Line"], function (require, exp
                 .interpolate_default("linear");
         }
         return Line;
-    }(Scatter_1.Scatter));
-    exports.Line = Line;
+    }(Scatter_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Line;
     Line.prototype._class += " chart_Line";
 });
 //# sourceMappingURL=Line.js.map

@@ -1,8 +1,8 @@
 import * as d3 from "d3"
-import { Widget } from "./Widget"
-import { Transition } from "./Transition"
+import Widget from "./Widget"
+import Transition from "./Transition"
 
-export class SVGWidget extends Widget {
+export default class SVGWidget extends Widget {
     constructor() {
         super();
 

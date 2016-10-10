@@ -5,7 +5,8 @@ define(["require", "exports", "../common/Palette"], function (require, exports, 
         }
         return I2DChart;
     }());
-    exports.I2DChart = I2DChart;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = I2DChart;
     I2DChart.prototype._palette = Palette_1.ordinal("default");
     //  Events  ---
     I2DChart.prototype.click = function (row, column, selected) {

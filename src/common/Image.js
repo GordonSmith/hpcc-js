@@ -9,12 +9,13 @@ define(["require", "exports", "./HTMLWidget"], function (require, exports, HTMLW
         __extends(Image, _super);
         function Image() {
             _super.call(this);
-            HTMLWidget_1.HTMLWidget.call(this);
+            HTMLWidget_1.default.call(this);
             this._drawStartPos = "center";
         }
         return Image;
-    }(HTMLWidget_1.HTMLWidget));
-    exports.Image = Image;
+    }(HTMLWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Image;
     Image.prototype._class += " common_Image";
     Image.prototype.publish("source", null, "string", "Image Source", null, { tags: ["Basic"] });
     Image.prototype.publish("sizing", "actual", "set", "Controls sizing mode", ["actual", "fit", "custom"], { tags: ["Basic"] });
@@ -23,11 +24,11 @@ define(["require", "exports", "./HTMLWidget"], function (require, exports, HTMLW
     Image.prototype.publish("lockAspectRatio", true, "boolean", "Locks the aspect ratio when scaling/stretching", null, { tags: ["Basic"], disable: function (w) { return w.sizing() !== "fit"; } });
     Image.prototype.publish("alignment", "center", "set", "Image Alignment", ["center", "origin"], { tags: ["Basic"] });
     Image.prototype.enter = function (domNode, element) {
-        HTMLWidget_1.HTMLWidget.prototype.enter.apply(this, arguments);
+        HTMLWidget_1.default.prototype.enter.apply(this, arguments);
     };
     Image.prototype.update = function (domNode, element) {
         this._drawStartPos = this.alignment();
-        HTMLWidget_1.HTMLWidget.prototype.update.apply(this, arguments);
+        HTMLWidget_1.default.prototype.update.apply(this, arguments);
         var context = this;
         var img = element.selectAll("img").data(this.source() ? [this.source()] : [], function (d) { return d; });
         img.enter()
@@ -75,7 +76,7 @@ define(["require", "exports", "./HTMLWidget"], function (require, exports, HTMLW
         return retVal;
     };
     Image.prototype.exit = function (domNode, element) {
-        HTMLWidget_1.HTMLWidget.prototype.exit.apply(this, arguments);
+        HTMLWidget_1.default.prototype.exit.apply(this, arguments);
     };
 });
 //# sourceMappingURL=Image.js.map

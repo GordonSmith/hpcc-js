@@ -1,16 +1,16 @@
 import * as d3 from "d3"
 import * as _D3Bullet from "d3-bullet"
-import { HTMLWidget } from "../common/HTMLWidget"
-import { Utility } from "../common/Utility"
+import { HTMLWidget } from "../common"
+import { SimpleSelectionMixin } from "../common/Utility"
 import "css!./Bullet"
 
 const D3Bullet = _D3Bullet || d3.bullet || window.d3.bullet;
 
-export class Bullet extends HTMLWidget {
+export default class Bullet extends HTMLWidget {
     constructor() {
         super();
         HTMLWidget.call(this);
-        Utility.SimpleSelectionMixin.call(this, true);
+        SimpleSelectionMixin.call(this, true);
     }
 
     bulletData() {

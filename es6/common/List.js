@@ -1,10 +1,10 @@
 import * as d3 from "d3"
-import { SVGWidget } from "./SVGWidget"
-import { IList } from "./IList"
-import { TextBox } from "./TextBox"
+import SVGWidget from "./SVGWidget"
+import IList from "./IList"
+import TextBox from "./TextBox"
 import "css!./List"
 
-export class List extends SVGWidget {
+export default class List extends SVGWidget {
     constructor() {
         super();
         SVGWidget.call(this);

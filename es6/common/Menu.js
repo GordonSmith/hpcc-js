@@ -1,11 +1,11 @@
 import * as d3 from "d3"
-import { SVGWidget } from "./SVGWidget"
-import { IMenu } from "./IMenu"
-import { Icon } from "./Icon"
-import { List } from "./List"
+import SVGWidget from "./SVGWidget"
+import IMenu from "./IMenu"
+import Icon from "./Icon"
+import List from "./List"
 import "css!./Menu"
 
-export class Menu extends SVGWidget {
+export default class Menu extends SVGWidget {
     constructor() {
         super();
         IMenu.call(this);

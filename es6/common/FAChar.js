@@ -1,9 +1,9 @@
-import { SVGWidget } from "./SVGWidget"
-import { Text } from "./Text"
+import SVGWidget from "./SVGWidget"
+import Text from "./Text"
 import "css!font-awesome"
 import "css!./FAChar"
 
-export class FAChar extends SVGWidget {
+export default class FAChar extends SVGWidget {
     constructor() {
         super();
 

@@ -1,9 +1,10 @@
 import * as d3 from "d3"
-import * as d3Tip from "d3-tip"
-import { Widget } from "../common/Widget"
+import * as _d3Tip from "d3-tip"
+import Widget from "../common/Widget"
 import "css!./ITooltip"
 
-export class ITooltip extends Widget {
+var d3Tip = _d3Tip;
+export default class ITooltip extends Widget {
     constructor() {
         super();
 

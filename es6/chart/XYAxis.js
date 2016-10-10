@@ -1,10 +1,10 @@
 import * as d3 from "d3";
-import { SVGWidget } from "../common/SVGWidget"
-import { Axis } from "./Axis"
+import { SVGWidget } from "../common"
+import Axis from "./Axis"
 import { SimpleSelectionMixin } from "../common/Utility"
 import "css!./XYAxis"
 
-export class XYAxis extends SVGWidget {
+export default class XYAxis extends SVGWidget {
     constructor() {
         super();
 
@@ -145,20 +145,6 @@ export class XYAxis extends SVGWidget {
                 "H" + (2 * x - 8);
         }
     };
-
-    brushMoved = SVGWidget.prototype.debounce(function brushed() {
-        var selected = this.data().filter(function (d) {
-            var pos = d[0];
-            if (this.xAxisType() ==="ordinal") {
-                pos = this.domainAxis.d3Scale(pos) + (this.domainAxis.d3Scale.rangeBand ? this.domainAxis.d3Scale.rangeBand() / 2 : 0);
-            }
-            if (this.orientation() === "horizontal") {
-                return (pos >= this.xBrush.extent()[0] && pos <= this.xBrush.extent()[1]);
-            }
-            return (pos >= this.yBrush.extent()[0] && pos <= this.yBrush.extent()[1]);
-        }, this);
-        this.selection(selected);
-    }, 250);
 
     dataPos(d) {
         return this.domainAxis.scalePos(d);
@@ -499,3 +485,17 @@ XYAxis.prototype.publish("yAxisGuideLines", true, "boolean", "Y-Axis Guide Lines
 XYAxis.prototype.publish("regions", [], "array", "Regions");
 
 XYAxis.prototype.publish("sampleData", "", "set", "Display Sample Data", ["", "ordinal", "ordinalRange", "linear", "time-x", "time-y"]);
+
+XYAxis.prototype.brushMoved = SVGWidget.prototype.debounce(function brushed() {
+    var selected = this.data().filter(function (d) {
+        var pos = d[0];
+        if (this.xAxisType() === "ordinal") {
+            pos = this.domainAxis.d3Scale(pos) + (this.domainAxis.d3Scale.rangeBand ? this.domainAxis.d3Scale.rangeBand() / 2 : 0);
+        }
+        if (this.orientation() === "horizontal") {
+            return (pos >= this.xBrush.extent()[0] && pos <= this.xBrush.extent()[1]);
+        }
+        return (pos >= this.yBrush.extent()[0] && pos <= this.yBrush.extent()[1]);
+    }, this);
+    this.selection(selected);
+}, 250);

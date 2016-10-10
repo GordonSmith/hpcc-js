@@ -1,6 +1,6 @@
-import { Widget } from "../common/Widget"
+import Widget from "../common/Widget"
 
-export class IInput extends Widget {
+export default class IInput extends Widget {
     constructor() {
         super();
     }

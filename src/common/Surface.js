@@ -9,18 +9,18 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "./Shape", "./Text"
         __extends(Surface, _super);
         function Surface() {
             _super.call(this);
-            this._icon = new Icon_1.Icon()
+            this._icon = new Icon_1.default()
                 .faChar("\uf07b")
                 .paddingPercent(50);
-            this._container = new Shape_1.Shape()
+            this._container = new Shape_1.default()
                 .class("container")
                 .shape("rect");
-            this._titleRect = new Shape_1.Shape()
+            this._titleRect = new Shape_1.default()
                 .class("title")
                 .shape("rect");
-            this._text = new Text_1.Text()
+            this._text = new Text_1.default()
                 .class("title");
-            this._menu = new Menu_1.Menu()
+            this._menu = new Menu_1.default()
                 .paddingPercent(0);
             var context = this;
             this._menu.preShowMenu = function () {
@@ -36,8 +36,9 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "./Shape", "./Text"
             this._surfaceButtons = [];
         }
         return Surface;
-    }(SVGWidget_1.SVGWidget));
-    exports.Surface = Surface;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Surface;
     Surface.prototype._class += " common_Surface";
     Surface.prototype.publish("showTitle", true, "boolean", "Show Title", null, { tags: ["Basic"] });
     Surface.prototype.publish("title", "", "string", "Title", null, { tags: ["Basic"] });
@@ -71,7 +72,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "./Shape", "./Text"
         return retVal;
     };
     Surface.prototype.enter = function (_domNode, _element) {
-        SVGWidget_1.SVGWidget.prototype.enter.apply(this, arguments);
+        SVGWidget_1.default.prototype.enter.apply(this, arguments);
         var element = _element.append("g").attr("class", "frame");
         var domNode = element.node();
         this._clipRect = element.append("defs").append("clipPath")
@@ -97,7 +98,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "./Shape", "./Text"
         this.buttonContainer = d3.select(this._target).append("div").attr("class", "svg-button-container");
     };
     Surface.prototype.update = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.update.apply(this, arguments);
+        SVGWidget_1.default.prototype.update.apply(this, arguments);
         var context = this;
         var width = this.width() - 1;
         var height = this.height() - 1;
@@ -237,7 +238,7 @@ define(["require", "exports", "d3", "./SVGWidget", "./Icon", "./Shape", "./Text"
         if (this.content()) {
             this.content().target(null);
         }
-        SVGWidget_1.SVGWidget.prototype.exit.apply(this, arguments);
+        SVGWidget_1.default.prototype.exit.apply(this, arguments);
     };
     Surface.prototype.intersection = function (pointA, pointB) {
         var hits = [];

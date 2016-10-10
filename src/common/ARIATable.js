@@ -32,6 +32,7 @@ define(["require", "exports", "d3", "css!./ARIATable"], function (require, expor
         rows.exit().remove();
         table.exit().remove();
     }
-    exports.ARIATable = ARIATable;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = ARIATable;
 });
 //# sourceMappingURL=ARIATable.js.map

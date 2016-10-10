@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import "css!./ARIATable"
 
-export function ARIATable(id, element, columns, data) {
+export default function ARIATable(id, element, columns, data) {
     var root = columns ? ["dummy"] : [];
     var table = element.selectAll("table").data(root);
     table.enter().append("table")

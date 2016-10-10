@@ -1,6 +1,6 @@
 import { ordinal } from "../common/Palette"
 
-export class I1DChart {
+export default class I1DChart {
 }
 I1DChart.prototype._palette = Palette.rainbow("default");
 

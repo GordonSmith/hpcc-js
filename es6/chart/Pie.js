@@ -1,13 +1,13 @@
 import * as d3 from "d3"
-import { SVGWidget } from "../common/SVGWidget"
-import { I2DChart } from "../api/I2DChart"
-import { Text } from "../common/Text"
-import { FAChar } from "../common/FAChar"
+import SVGWidget from "../common/SVGWidget"
+import I2DChart from "../api/I2DChart"
+import Text from "../common/Text"
+import FAChar from "../common/FAChar"
 import { SimpleSelectionMixin } from "../common/Utility"
-import { ITooltip } from "../api/ITooltip"
+import ITooltip from "../api/ITooltip"
 import "css!./Pie"
 
-export class Pie extends SVGWidget {
+export default class Pie extends SVGWidget {
     constructor() {
         super();
         I2DChart.call(this);

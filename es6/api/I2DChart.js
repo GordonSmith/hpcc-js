@@ -1,6 +1,6 @@
 import { ordinal } from "../common/Palette"
 
-export class I2DChart {
+export default class I2DChart {
 }
 I2DChart.prototype._palette = ordinal("default");
 

@@ -27,14 +27,14 @@
     Main.prototype.initGrid = function () {
         d3.select("#switch-design").property("checked", this.urlParams["designMode"] === "true");
 
-        this._propEditor = new PropertyEditor.PropertyEditor()
+        this._propEditor = new PropertyEditor.default()
             .target("properties")
             .show_settings(true);
         ;
 
         this._main = null;
 
-        this._cloneSurface = new Surface()
+        this._cloneSurface = new Surface.default()
             .target("clone")
         ;
     };

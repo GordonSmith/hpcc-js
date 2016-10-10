@@ -1,9 +1,9 @@
 import * as d3 from "d3"
-import * as ResizeSurface from "../common/ResizeSurface"
-import { MultiChart } from "./MultiChart"
-import { INDChart } from "../api/INDChart"
-
-export class MultiChartSurface extends ResizeSurface {
+import ResizeSurface from "../common/ResizeSurface"
+import MultiChart from "./MultiChart"
+import INDChart from "../api/INDChart"
+debugger
+export default class MultiChartSurface extends ResizeSurface {
     constructor() {
         super();
         INDChart.call(this);
@@ -66,3 +66,4 @@ MultiChartSurface.prototype.implements(INDChart.prototype);
 
 MultiChartSurface.prototype.publish("mode", "2D", "set", "Chart Type", ["1D", "2D", "ND", "all"]);
 MultiChartSurface.prototype.publishProxy("chartType", "_content");
+

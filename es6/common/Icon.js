@@ -1,9 +1,9 @@
-import { SVGWidget } from "./SVGWidget"
-import { Shape } from "./Shape"
-import { FAChar } from "./FAChar"
+import SVGWidget from "./SVGWidget"
+import Shape from "./Shape"
+import FAChar from "./FAChar"
 import "css!./Icon"
 
-export class Icon extends SVGWidget {
+export default class Icon extends SVGWidget {
     constructor() {
         super();
 

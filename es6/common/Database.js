@@ -1,6 +1,6 @@
 import * as d3 from "d3"
-import { Class } from "./Class"
-import { PropertyExt } from "./PropertyExt"
+import Class from "./Class"
+import PropertyExt from "./PropertyExt"
 //import {} from "./Utility"
 
 //  Field  ---

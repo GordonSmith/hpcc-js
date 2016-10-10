@@ -26,7 +26,8 @@ define(["require", "exports", "es6-promise"], function (require, exports) {
         }
         return Platform;
     }());
-    exports.Platform = Platform;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Platform;
     Platform.prototype.version = function () {
         return version;
     };

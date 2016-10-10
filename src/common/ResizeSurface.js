@@ -109,17 +109,18 @@ define(["require", "exports", "d3", "./Surface", "css!./ResizeSurface"], functio
             });
         }
         return ResizeSurface;
-    }(Surface_1.Surface));
-    exports.ResizeSurface = ResizeSurface;
+    }(Surface_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = ResizeSurface;
     ResizeSurface.prototype._class += " common_ResizeSurface";
     ResizeSurface.prototype.publish("allowResize", true, "boolean", "Sets if surface can be resized", null, { tags: ["Private", "Shared"] });
     ResizeSurface.prototype.move = function (_) {
-        var retVal = Surface_1.Surface.prototype.move.apply(this, arguments);
+        var retVal = Surface_1.default.prototype.move.apply(this, arguments);
         this.updateHandles(this._domNode, this._element);
         return retVal;
     };
     ResizeSurface.prototype.update = function (domNode, element) {
-        Surface_1.Surface.prototype.update.apply(this, arguments);
+        Surface_1.default.prototype.update.apply(this, arguments);
         this.updateHandles(domNode, element);
     };
     ResizeSurface.prototype.updateHandles = function (domNode, element) {

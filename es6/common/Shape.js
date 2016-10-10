@@ -1,19 +1,19 @@
 import * as d3 from "d3"
-import { SVGWidget } from "./SVGWidget"
+import SVGWidget from "./SVGWidget"
 import "css!./Shape"
 
-export class Shape extends SVGWidget {
+export default class Shape extends SVGWidget {
     constructor() {
         super();
     }
     radius(_) {
         var retVal = this.radius_call(...arguments);
         if (arguments.length) {
-            this.shapeWidth(_);
-            this.shapeHeight(_);
+            this.width(_);
+            this.height(_);
             return retVal;
         }
-        return Math.max(this.shapeWidth(), this.shapeHeight()) / 2;
+        return Math.max(this.width(), this.height()) / 2;
     }
 
     intersection(pointA, pointB) {
@@ -49,7 +49,7 @@ export class Shape extends SVGWidget {
                             ;
                         break;
                     case "square":
-                        var width = Math.max(context.shapeWidth(), context.shapeHeight());
+                        var width = Math.max(context.width(), context.height());
                         element
                             .attr("x", -width / 2)
                             .attr("y", -width / 2)
@@ -59,17 +59,17 @@ export class Shape extends SVGWidget {
                         break;
                     case "rect":
                         element
-                            .attr("x", -context.shapeWidth() / 2)
-                            .attr("y", -context.shapeHeight() / 2)
-                            .attr("width", context.shapeWidth())
-                            .attr("height", context.shapeHeight())
+                            .attr("x", -context.width() / 2)
+                            .attr("y", -context.height() / 2)
+                            .attr("width", context.width())
+                            .attr("height", context.height())
                             ;
                         break;
                     case "ellipse":
                         element
-                            .attr("rx", context.shapeWidth() / 2)
-                            .attr("ry", context.shapeHeight() / 2)
-                            ;
+                            .attr("rx", context.width() / 2)
+                            .attr("ry", context.height() / 2)
+                        ;
                         break;
                 }
             })

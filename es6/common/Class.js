@@ -1,4 +1,4 @@
-export class Class {
+export default class Class {
 }
 Class.prototype._class = "common_Class";
 

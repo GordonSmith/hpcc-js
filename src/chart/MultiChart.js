@@ -9,7 +9,7 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../common/Utility",
         __extends(MultiChart, _super);
         function MultiChart() {
             _super.call(this);
-            INDChart_1.INDChart.call(this);
+            INDChart_1.default.call(this);
             this._tag = "div";
             this._allCharts = {};
             this._allChartTypes.forEach(function (item) {
@@ -207,7 +207,7 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../common/Utility",
                 var context = this;
                 var args = arguments;
                 this.switchChart(function () {
-                    HTMLWidget_1.HTMLWidget.prototype.render.apply(context, args);
+                    HTMLWidget_1.default.prototype.render.apply(context, args);
                 });
                 return this;
             }
@@ -215,10 +215,11 @@ define(["require", "exports", "d3", "../common/HTMLWidget", "../common/Utility",
         };
         ;
         return MultiChart;
-    }(HTMLWidget_1.HTMLWidget));
-    exports.MultiChart = MultiChart;
+    }(HTMLWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = MultiChart;
     MultiChart.prototype._class += " chart_MultiChart";
-    MultiChart.prototype.implements(INDChart_1.INDChart.prototype);
+    MultiChart.prototype.implements(INDChart_1.default.prototype);
     MultiChart.prototype._1DChartTypes = [
         { id: "C3_GAUGE", display: "Gauge (C3)", widgetClass: "c3chart_Gauge" }
     ].map(function (item) { item.family = "1D"; return item; });

@@ -14,8 +14,9 @@ define(["require", "exports", "d3", "./Widget"], function (require, exports, d3,
             this._boundingBox = null;
         }
         return HTMLWidget;
-    }(Widget_1.Widget));
-    exports.HTMLWidget = HTMLWidget;
+    }(Widget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = HTMLWidget;
     HTMLWidget.prototype._class += " common_HTMLWidget";
     HTMLWidget.prototype.calcFrameWidth = function (element) {
         var retVal = parseFloat(element.style("padding-left")) +
@@ -84,7 +85,7 @@ define(["require", "exports", "d3", "./Widget"], function (require, exports, d3,
         };
     };
     HTMLWidget.prototype.resize = function (size) {
-        var retVal = Widget_1.Widget.prototype.resize.apply(this, arguments);
+        var retVal = Widget_1.default.prototype.resize.apply(this, arguments);
         this._parentElement
             .style("width", this._size.width + "px")
             .style("height", this._size.height + "px");
@@ -144,7 +145,7 @@ define(["require", "exports", "d3", "./Widget"], function (require, exports, d3,
         return this;
     };
     HTMLWidget.prototype.postUpdate = function (domNode, element) {
-        Widget_1.Widget.prototype.postUpdate.apply(this, arguments);
+        Widget_1.default.prototype.postUpdate.apply(this, arguments);
         if (this._drawStartPos === "origin") {
             this._element.style({
                 position: "relative",
@@ -173,7 +174,7 @@ define(["require", "exports", "d3", "./Widget"], function (require, exports, d3,
         if (this._parentElement) {
             this._parentElement.remove();
         }
-        Widget_1.Widget.prototype.exit.apply(this, arguments);
+        Widget_1.default.prototype.exit.apply(this, arguments);
     };
 });
 //# sourceMappingURL=HTMLWidget.js.map

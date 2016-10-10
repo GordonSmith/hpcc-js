@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "d3"], function (require, exports, d3) {
+define(["require", "exports", "d3", "./Widget"], function (require, exports, d3, Widget_1) {
     "use strict";
     var CanvasWidget = (function (_super) {
         __extends(CanvasWidget, _super);
@@ -12,11 +12,12 @@ define(["require", "exports", "d3"], function (require, exports, d3) {
             this._tag = "canvas";
         }
         return CanvasWidget;
-    }(Widget));
-    exports.CanvasWidget = CanvasWidget;
+    }(Widget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = CanvasWidget;
     CanvasWidget.prototype._class += " common_CanvasWidget";
     CanvasWidget.prototype.resize = function (size) {
-        var retVal = Widget.prototype.resize.apply(this, arguments);
+        var retVal = Widget_1.default.prototype.resize.apply(this, arguments);
         this._parentElement
             .style("width", this._size.width + "px")
             .style("height", this._size.height + "px");
@@ -57,7 +58,7 @@ define(["require", "exports", "d3"], function (require, exports, d3) {
         if (this._parentElement) {
             this._parentElement.remove();
         }
-        Widget.prototype.exit.apply(this, arguments);
+        Widget_1.default.prototype.exit.apply(this, arguments);
     };
 });
 //# sourceMappingURL=CanvasWidget.js.map

@@ -1,8 +1,8 @@
 import * as d3 from "d3"
-import { Widget } from "./Widget"
+import Widget from "./Widget"
 import * as Transition from "./Transition"
 
-export class HTMLWidget extends Widget {
+export default class HTMLWidget extends Widget {
     constructor() {
         super();
         this._drawStartPos = "origin";

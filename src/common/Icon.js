@@ -9,12 +9,13 @@ define(["require", "exports", "./SVGWidget", "./Shape", "./FAChar", "css!./Icon"
         __extends(Icon, _super);
         function Icon() {
             _super.call(this);
-            this._shapeWidget = new Shape_1.Shape();
-            this._faChar = new FAChar_1.FAChar();
+            this._shapeWidget = new Shape_1.default();
+            this._faChar = new FAChar_1.default();
         }
         return Icon;
-    }(SVGWidget_1.SVGWidget));
-    exports.Icon = Icon;
+    }(SVGWidget_1.default));
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = Icon;
     Icon.prototype._class += " common_Icon";
     Icon.prototype.publish("shape", "circle", "set", "Shape Type", ["circle", "square"], { tags: ["Private"] });
     Icon.prototype.publishProxy("faChar", "_faChar", "char");
@@ -29,7 +30,7 @@ define(["require", "exports", "./SVGWidget", "./Shape", "./FAChar", "css!./Icon"
         return this._shapeWidget.intersection(pointA, pointB);
     };
     Icon.prototype.enter = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.enter.apply(this, arguments);
+        SVGWidget_1.default.prototype.enter.apply(this, arguments);
         this._defs = element.append("defs");
         this._defs.append("clipPath")
             .attr("id", "clip_" + this.id() + "_circle")
@@ -63,7 +64,7 @@ define(["require", "exports", "./SVGWidget", "./Shape", "./FAChar", "css!./Icon"
         console.log("Double clicked the icon");
     };
     Icon.prototype.update = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.update.apply(this, arguments);
+        SVGWidget_1.default.prototype.update.apply(this, arguments);
         var diameter = this.diameter();
         var radius = diameter / 2;
         this._defs.select("circle")
@@ -96,7 +97,7 @@ define(["require", "exports", "./SVGWidget", "./Shape", "./FAChar", "css!./Icon"
         this._tooltipElement.text(this.tooltip());
     };
     Icon.prototype.exit = function (domNode, element) {
-        SVGWidget_1.SVGWidget.prototype.exit.apply(this, arguments);
+        SVGWidget_1.default.prototype.exit.apply(this, arguments);
         this._shapeWidget
             .target(null);
         this._faChar

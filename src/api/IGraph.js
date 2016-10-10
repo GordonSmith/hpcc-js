@@ -5,7 +5,8 @@ define(["require", "exports"], function (require, exports) {
         }
         return IGraph;
     }());
-    exports.IGraph = IGraph;
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = IGraph;
     //  Events  ---
     IGraph.prototype.vertex_click = function (row, col, sel, more) {
         if (more && more.vertex) {
