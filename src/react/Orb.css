@@ -1,3 +1,8 @@
-.react_Orb td.cell {
+.react_Orb .cell {
     display: table-cell;
+    border-radius: 0px;
+    border-style:none;
+    border-width:0px;
 }
+
+
