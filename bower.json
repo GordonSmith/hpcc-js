@@ -29,7 +29,8 @@
   "ignore": [
     "apps",
     "demos",
-    "src",
+    "test",
+    "templates",
     ".*",
     "gulpfile.js",
     "rjs.noop.js",
