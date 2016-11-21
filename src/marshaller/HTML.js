@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../layout/Grid", "./HipieDDLMixin"], factory);
+        define(["d3", "../layout/Tabbed", "../layout/Grid", "./HipieDDLMixin"], factory);
     } else {
-        root.marshaller_HTML = factory(root.d3, root.layout_Grid, root.marshaller_HipieDDLMixin);
+        root.marshaller_HTML = factory(root.d3, root.layout_Tabbed, root.layout_Grid, root.marshaller_HipieDDLMixin);
     }
-}(this, function (d3, Grid, HipieDDLMixin) {
+} (this, function (d3, Tabbed, Grid, HipieDDLMixin) {
     function HTML() {
         Grid.call(this);
         HipieDDLMixin.call(this);
@@ -18,35 +18,45 @@
     HTML.prototype._class += " marshaller_HTML";
 
     HTML.prototype.populateContent = function () {
-        var cellRow = 0;
-        var cellCol = 0;
         var cellDensity = this.cellDensity();
+        var tabbed = new Tabbed();
         this._ddlDashboards.forEach(function (dashboard) {
+            var grid = new Grid();
+            tabbed.addTab(grid, dashboard.dashboard.title);
+            var cellRow = 0;
+            var cellCol = 0;
             var maxCol = Math.floor(Math.sqrt(dashboard.visualizations.length));
             dashboard.visualizations.forEach(function (viz) {
                 if (viz.newWidgetSurface) {
-                    while (this.getCell(cellRow * cellDensity, cellCol * cellDensity) !== null) {
+                    while (grid.getCell(cellRow * cellDensity, cellCol * cellDensity) !== null) {
                         cellCol++;
                         if (cellCol % maxCol === 0) {
                             cellRow++;
                             cellCol = 0;
                         }
                     }
-                    this.setContent(cellRow, cellCol, viz.newWidgetSurface);
+                    grid.setContent(cellRow, cellCol, viz.newWidgetSurface);
                 }
             }, this);
         }, this);
+        this.setContent(0, 0, tabbed, "", cellDensity, cellDensity);
 
         var vizCellMap = {};
-        this.content().forEach(function (cell) {
-            var widget = cell.widget();
+        tabbed.widgets().forEach(function (tab) {
+            var widget = tab.widget();
             if (widget && widget.classID() === "layout_Surface") {
                 widget = widget.widget();
             }
-            if (widget) {
-                vizCellMap[widget.id()] = cell;
-            }
-        });
+            widget.content().forEach(function (cell) {
+                var widget = cell.widget();
+                if (widget && widget.classID() === "layout_Surface") {
+                    widget = widget.widget();
+                }
+                if (widget) {
+                    vizCellMap[widget.id()] = cell;
+                }
+            });
+        }, this);
 
         this._ddlDashboards.forEach(function (dashboard) {
             dashboard.visualizations.forEach(function (viz, idx) {
