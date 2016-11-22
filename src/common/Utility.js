@@ -421,6 +421,18 @@
                 return dest;
             }
         },
+        stringify: function(obj) {
+            var cache = [];
+            return JSON.stringify(obj, function (key, value) {
+                if (typeof value === 'object' && value !== null) {
+                    if (cache.indexOf(value) !== -1) {
+                        return;
+                    }
+                    cache.push(value);
+                }
+                return value;
+            });
+        },
         exists: function (prop, scope) {
             if (!prop || !scope) {
                 return false;
