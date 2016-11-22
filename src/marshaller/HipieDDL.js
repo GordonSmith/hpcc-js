@@ -9,19 +9,6 @@
     var LOADING = "...loading...";
     var _CHANGED = "_changed";
 
-    function exists(prop, scope) {
-        var propParts = prop.split(".");
-        var testScope = scope;
-        for (var i = 0; i < propParts.length; ++i) {
-            var item = propParts[i];
-            if (!testScope || testScope[item] === undefined) {
-                return false;
-            }
-            testScope = testScope[item];
-        }
-        return true;
-    }
-
     function faCharFix(faChar) {
         if (faChar) {
             return String.fromCharCode(parseInt(faChar));
@@ -1514,16 +1501,16 @@
                 //  Temp workaround for older services  ---
                 from = this.outputs[key].id.toLowerCase();
             }
-            if (exists(from, response)) {
-                if (!exists(from + _CHANGED, response) || (exists(from + _CHANGED, response) && response[from + _CHANGED].length && response[from + _CHANGED][0][from + _CHANGED])) {
+            if (Utility.exists(from, response)) {
+                if (!Utility.exists(from + _CHANGED, response) || (Utility.exists(from + _CHANGED, response) && response[from + _CHANGED].length && response[from + _CHANGED][0][from + _CHANGED])) {
                     promises.push(this.outputs[key].setData(response[from], updates));
                 } else {
                     //  TODO - I Suspect there is a HIPIE/Roxie issue here (empty request)
                     promises.push(this.outputs[key].vizNotify(updates));
                 }
-            } else if (exists(from, lowerResponse)) {
+            } else if (Utility.exists(from, lowerResponse)) {
                 console.log("DDL 'DataSource.From' case is Incorrect");
-                if (!exists(from + _CHANGED, lowerResponse) || (exists(from + _CHANGED, lowerResponse) && response[from + _CHANGED].length && lowerResponse[from + _CHANGED][0][from + _CHANGED])) {
+                if (!Utility.exists(from + _CHANGED, lowerResponse) || (Utility.exists(from + _CHANGED, lowerResponse) && response[from + _CHANGED].length && lowerResponse[from + _CHANGED][0][from + _CHANGED])) {
                     promises.push(this.outputs[key].setData(lowerResponse[from], updates));
                 } else {
                     //  TODO - I Suspect there is a HIPIE/Roxie issue here (empty request)
@@ -1746,7 +1733,7 @@
 
         var context = this;
         transport.fetchResults().then(function (response) {
-            if (exists(hipieResultName, response)) {
+            if (Utility.exists(hipieResultName, response)) {
                 return transport.fetchResult(hipieResultName).then(function (ddlResponse) {
                     var json = ddlResponse[0][hipieResultName];
                     context.parse(json, function () {
@@ -1915,7 +1902,6 @@
     };
 
     return {
-        exists: exists,
         Marshaller: Marshaller,
         Dashboard: Dashboard,
         DataSource: DataSource,
