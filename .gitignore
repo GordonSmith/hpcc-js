@@ -1,7 +1,6 @@
 node_modules
 bower_components
-dist
-dist-amd
+dist*
 Web.config
 nbproject
 out
@@ -9,4 +8,4 @@ out
 lib-es6/
 lib-test/
 lib-umd/
-tmp/
+tmp/.vs*
