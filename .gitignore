@@ -4,6 +4,7 @@ dist
 dist-amd
 Web.config
 nbproject
+out
 .project
 lib-es6/
 lib-test/
