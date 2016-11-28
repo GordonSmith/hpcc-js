@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Chrome File",
+            "name": "Debug Chrome",
             "type": "chrome",
             "request": "launch",
-            "url": "file:///${workspaceRoot}/demos/tmp.html",
+            "url": "file:///${workspaceRoot}/demos/dermatology.html",
             "sourceMaps": true,
             "webRoot": "${workspaceRoot}/demos"
         },
