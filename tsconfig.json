@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"module": "amd",
-		"target": "es6",
+		"target": "es5",
 		"rootDir": "./src",
 		"outDir": "out",
 		"sourceMap": true,
@@ -15,7 +15,9 @@
 		"demos",
 		"dist",
 		"dist-amd",
+		"dist-iife",
 		"node_modules",
+		"out",
 		"templates",
 		"test",
 		"util"
