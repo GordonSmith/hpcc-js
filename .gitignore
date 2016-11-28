@@ -4,4 +4,5 @@ dist
 dist-amd
 Web.config
 nbproject
+out
 .project

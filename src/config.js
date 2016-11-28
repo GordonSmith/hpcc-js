@@ -80,7 +80,7 @@ require.config({
                 AmCharts.isReady = true;
             }
         },
-        'amcharts.gantt': {
+        'amcharts-gantt': {
             deps: [ 'amcharts', 'amcharts-serial' ],
             exports: 'AmCharts',
             init: function() {
@@ -128,7 +128,7 @@ case "cdn.rawgit.com":
             "amcharts-xy": "//" + window.location.hostname + "/amcharts/amcharts3/3.18.0/amcharts/xy",
             "amcharts-gantt": "//" + window.location.hostname + "/amcharts/amcharts3/3.18.0/amcharts/gantt",
             "amcharts-plugins-responsive": "//" + window.location.hostname + "/amcharts/amcharts3/3.18.0/amcharts/plugins/responsive/responsive",
-            "amcharts.plugins-dataloader": "//" + window.location.hostname + "/amcharts/amcharts3/3.18.0/amcharts/plugins/dataloader",
+            "amcharts-plugins-dataloader": "//" + window.location.hostname + "/amcharts/amcharts3/3.18.0/amcharts/plugins/dataloader",
             "amcharts-images": "//" + window.location.hostname + "/amcharts/amcharts3/3.18.0/amcharts/images/",
 
             "simpleheat": "//" + window.location.hostname + "/mourner/simpleheat/v0.3.0/simpleheat",
