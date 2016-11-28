@@ -11,6 +11,7 @@ declare module "autoComplete";
 declare module "dagre";
 declare module "grid-list";
 declare module "c3";
+declare module "handsontable";
 declare module "amcharts-serial";
 declare module "amcharts-funnel";
 declare module "amcharts-radar";
