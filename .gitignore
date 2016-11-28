@@ -1,8 +1,8 @@
 node_modules
 bower_components
-dist
-dist-amd
+dist*
 Web.config
 nbproject
 out
 .project
+.vs*

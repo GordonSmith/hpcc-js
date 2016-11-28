@@ -1,7 +1,7 @@
 ﻿"use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "require", "../src/other/Persist", "./amchartFactory", "./c3chartFactory", "./chartFactory", "./compositeFactory", "./commonFactory", "./formFactory", "./googleFactory", "./graphFactory", "./layoutFactory", "./mapFactory", "./marshallerFactory", "./otherFactory", "./treeFactory", "./templatesFactory", "./handsonFactory", "./reactFactory"], factory);
+        define(["d3", "require", "src/other/Persist", "./amchartFactory", "./c3chartFactory", "./chartFactory", "./compositeFactory", "./commonFactory", "./formFactory", "./googleFactory", "./graphFactory", "./layoutFactory", "./mapFactory", "./marshallerFactory", "./otherFactory", "./treeFactory", "./templatesFactory", "./handsonFactory", "./reactFactory"], factory);
     } else {
         root.test_Factory = factory(root.d3, root.require, root.other_Persist, root.test_amchartFactory, root.test_c3chartFactory, root.test_chartFactory, root.test_compositeFactory, root.test_commonFactory, root.test_formFactory, root.test_googleFactory, root.test_graphFactory, root.test_layoutFactory, root.test_mapFactory, root.test_marshallerFactory, root.test_otherFactory, root.test_treeFactory, root.test_templatesFactory, root.test_handsonFactory, root.test_reactFactory);
     }
@@ -127,7 +127,7 @@
                             }
                         }
                     }
-                    callback(widget, widgetPath + (widgetTest    ? "." + widgetTest : ""));
+                    callback(widget, widgetPath + (widgetTest ? "." + widgetTest : ""));
                 });
             } else {
                 callback(null);

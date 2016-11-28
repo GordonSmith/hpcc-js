@@ -166,7 +166,7 @@
                                     new Shape().shape("circle").size({ width: 32, height: 32 }),
                                     new FAChar().char("\uf080"),
                                     new Icon().shape("circle").faChar("\uf080"),
-                                    new Shape().class("Shape2").shape("rect").size({ width: 32, height: 32 }),
+                                    new Shape().classed({ "Shape2": true }).shape("rect").size({ width: 32, height: 32 }),
                                     new Text().text("Multi\nLine\nText"),
                                     new TextBox().text("Text\nBox"),
                                     new Vertex().text("Graph\nVertex").faChar("\uf080"),

@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "./Factory", "src/common/Utility", "require"], factory);
+        define(["d3", "./Factory", "src/common/Utility", "./es6Require"], factory);
     } else {
-        root.widgets = factory(root.d3, root.test_Factory, root.common_Utility, root.require);
+        root.widgets = factory(root.d3, root.test_Factory, root.common_Utility, root.es6Require);
     }
-}(this, function (d3, testFactory, Utility, require) {
+}(this, function (d3, testFactory, Utility, es6Require) {
     var params = Utility.urlParams();
     var someWidgets = [];
     for (var key in params) {
@@ -101,7 +101,7 @@
                 var pathClassID = pathParts[1] + "_" + pathParts[2];
 
                 it("require load", function (done) {
-                    require([path], function (Widget) {
+                    es6Require([path], function (Widget) {
                         done();
                     });
                 });
@@ -109,7 +109,7 @@
                 it("features", function (done) {
                     var pathParts = path.split("/");
                     var className = pathParts[1] + "_" + pathParts[2];
-                    require([path], function (Widget) {
+                    es6Require([path], function (Widget) {
                         assert.isFunction(Widget);
                         assert.isFunction(Widget.prototype.constructor, "constructor");
                         assert.isNotFunction(Widget.prototype.testData, "has testData");
@@ -121,7 +121,7 @@
                 var knownMixins = ["PropertyExt"];
                 if (!window.skipHierarchTest) {
                     it("Class Hierarchy", function (done) {
-                        require(["src/common/Widget", path], function (Widget, TestWidget) {
+                        es6Require(["src/common/Widget", path], function (Widget, TestWidget) {
                             var proto = TestWidget.prototype;
                             while (proto) {
                                 var className = getClassName(proto);
@@ -140,7 +140,7 @@
                 }
 
                 it("Clone Palette", function (done) {
-                    require([path], function (Widget) {
+                    es6Require([path], function (Widget) {
                         if (typeof (Widget.prototype.paletteID) === "function") {
                             assert.isFunction(Widget.prototype.useClonedPalette, 'has useClonedPalette');
                         }
@@ -149,7 +149,7 @@
                 });
 
                 it("Property Tags", function (done) {
-                    require([path, "src/other/Persist"], function (Widget, Persist) {
+                    es6Require([path, "src/other/Persist"], function (Widget, Persist) {
                         var widget = new Widget();
                         Persist.discover(widget).forEach(function (prop) {
                             if (prop.ext && prop.ext.tags) {
@@ -199,14 +199,14 @@
                                         var element = d3.select("#testWidget");
                                         var testDiv = element.append("div")
                                             .attr("class", "widgetTest")
-                                        ;
+                                            ;
                                         var widgetDiv = testDiv.append("div")
                                             .attr("class", "widget")
-                                        ;
+                                            ;
                                         testDiv.append("center")
                                             .attr("class", "title")
                                             .text(widgetPath + "-" + sample.key)
-                                        ;
+                                            ;
                                         testWidget
                                             .target(widgetDiv.node())
                                             .render(function (w) {
@@ -214,7 +214,7 @@
                                                 assert.isAbove(noSurfaceHTML.length, 0);
                                                 done();
                                             })
-                                        ;
+                                            ;
                                     });
                                 });
                         }
@@ -239,19 +239,19 @@
                                 break;
                             default:
                                 it("Surface Node:  " + widgetPath + "-" + sample.key, function (done) {
-                                    require(["src/common/ResizeSurface"], function (ResizeSurface) {
+                                    es6Require(["src/common/ResizeSurface"], function (ResizeSurface) {
                                         sample.value.factory(function (testWidget) {
                                             var element = d3.select("#testWidget");
                                             var testDiv = element.append("div")
                                                 .attr("class", "widgetTest")
-                                            ;
+                                                ;
                                             var widgetDiv = testDiv.append("div")
                                                 .attr("class", "widget")
-                                            ;
+                                                ;
                                             testDiv.append("center")
                                                 .attr("class", "title")
                                                 .text(widgetPath + "-" + sample.key)
-                                            ;
+                                                ;
                                             var vizWidget = new ResizeSurface()
                                                 .target(widgetDiv.node())
                                                 .content(testWidget)
@@ -260,7 +260,7 @@
                                                     assert.equal(noSurfaceHTML.length, surfaceHTML.length);
                                                     done();
                                                 })
-                                            ;
+                                                ;
                                         });
                                     });
                                 });

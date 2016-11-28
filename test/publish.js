@@ -1,11 +1,12 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "./Factory", "src/common/SVGWidget", "src/common/Utility", "require"], factory);
+        define(["d3", "./Factory", "src/common/SVGWidget", "src/common/Utility"], factory);
     } else {
-        root.widgets = factory(root.d3, root.test_Factory, root.common_SVGWidget, root.common_Utility, root.require);
+        root.widgets = factory(root.d3, root.test_Factory, root.common_SVGWidget, root.common_Utility);
     }
-}(this, function (d3, testFactory, SVGWidget, Utility, require) {
+}(this, function (d3, testFactory, SVGWidget, Utility) {
+    SVGWidget = SVGWidget.SVGWidget;
     function TestWidget() {
         SVGWidget.call(this);
 
