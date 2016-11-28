@@ -1,7 +1,7 @@
-"use strict";
 (function (root) {
     root.hpccsystems = root.hpccsystems || {};
     root.hpccsystems.cache = root.hpccsystems.cache || {};
+    root.hpccsystems.es6Require = root.hpccsystems.es6Require || null;
 
     //  Keep at the top for the optimizer to find (optimizer requires 100% JSON in require.config call) ---
     function optimizerConfig(require) {
@@ -47,7 +47,7 @@
                 "simpleheat": "../bower_components/simpleheat/index",
                 "autoComplete": "../bower_components/javascript-auto-complete/auto-complete",
 
-                "src": "../src"
+                "src": "../out"
             },
             shim: {
                 "amcharts-funnel": {
@@ -234,7 +234,7 @@
             myInfo.url = document.currentScript.src;
         } else {
             var scripts = document.getElementsByTagName('script');
-            for (var i = scripts.length - 1; i >= 0 ; --i) {
+            for (var i = scripts.length - 1; i >= 0; --i) {
                 var script = scripts[i];
                 var url = script.getAttribute.length !== undefined ? script.src : script.getAttribute('src', -1);
                 if (url.indexOf("loader.js") > 0 || url.indexOf("hpcc-viz.js") > 0) {
@@ -273,7 +273,7 @@
                 }
             }
         }
-    }());
+    } ());
 
     if (!root.hpccsystems.redirect) {
         root.hpccsystems.redirect = (function () {
@@ -298,7 +298,7 @@
             }
 
             return {
-                cdnHost: function(_) {
+                cdnHost: function (_) {
                     if (!arguments.length) return cdnHost;
                     cdnHost = _;
                     return this;
@@ -308,10 +308,10 @@
                     switch (arguments.length) {
                         case 1:
                             branch = "master";
-                            /* falls through */
+                        /* falls through */
                         case 2:
                             org = "hpcc-systems";
-                            /* falls through */
+                        /* falls through */
                         case 3:
                             repo = "Visualization";
                             break;
@@ -358,6 +358,6 @@
                     }
                 }
             };
-        }());
+        } ());
     }
-}(this));
+} (this));
