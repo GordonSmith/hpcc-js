@@ -1,7 +1,7 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "topojson", "./Choropleth", "./us-states"], factory);
+        define(["d3", "topojson", "./Choropleth", "json!./TopoJSON/us-states.json"], factory);
     } else {
         root.map_ChoroplethStates = factory(root.d3, root.topojson, root.map_Choropleth, root.map_usStates);
     }

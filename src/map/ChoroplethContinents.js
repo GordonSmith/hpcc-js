@@ -1,7 +1,7 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "topojson", "./Choropleth", "./countries"], factory);
+        define(["d3", "topojson", "./Choropleth", "json!./TopoJSON/countries.json"], factory);
     } else {
         root.map_ChoroplethContinents = factory(root.d3, root.topojson, root.map_Choropleth, root.map_countries);
     }
