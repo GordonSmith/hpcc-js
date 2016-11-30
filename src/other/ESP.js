@@ -370,12 +370,12 @@
             if (response) {
                 if (context._resultName) {
                     if (response && response[context._resultName] && response[context._resultName].Row) {
-                        return nestedRowFix(postFilter(response[context._resultName].Row), filter);
+                    return nestedRowFix(postFilter(response[context._resultName].Row, filter));
                     }
                 } else {
                     for (var key in response) {
                         if (response[key].Row) {
-                            return nestedRowFix(postFilter(response[key].Row), filter);
+                        return nestedRowFix(postFilter(response[key].Row, filter));
                         }
                     }
                 }
