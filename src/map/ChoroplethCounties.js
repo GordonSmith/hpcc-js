@@ -1,26 +1,19 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "topojson", "./Choropleth", "./us-counties"], factory);
+        define(["d3", "topojson", "./Choropleth"], factory);
     } else {
-        root.map_ChoroplethCounties = factory(root.d3, root.topojson, root.map_Choropleth, root.map_usCounties);
+        root.map_ChoroplethCounties = factory(root.d3, root.topojson, root.map_Choropleth);
     }
-}(this, function (d3, topojson, Choropleth, usCounties) {
-    var features = topojson.feature(usCounties.topology, usCounties.topology.objects.counties).features;
-    var rFeatures = {};
-    for (var key in features) {
-        if (features[key].id) {
-            rFeatures[features[key].id] = features[key];
-        }
-    }
+}(this, function (d3, topojson, Choropleth) {
+    var usCounties = null;
+    var features = null;
+    var rFeatures = null;
     var fipsFormatter = d3.format("05d");
     function ChoroplethCounties() {
         Choropleth.call(this);
 
         this.projection("albersUsaPr");
-
-        this._choroTopology = usCounties.topology;
-        this._choroTopologyObjects = usCounties.topology.objects.counties;
     }
     ChoroplethCounties.prototype = Object.create(Choropleth.prototype);
     ChoroplethCounties.prototype.constructor = ChoroplethCounties;
@@ -30,6 +23,8 @@
 
     ChoroplethCounties.prototype.layerEnter = function (base, svgElement, domElement) {
         Choropleth.prototype.layerEnter.apply(this, arguments);
+        this._choroTopology = usCounties.topology;
+        this._choroTopologyObjects = usCounties.topology.objects.counties;
 
         this._selection.widgetElement(this._choroplethData);
         this.choroPaths = d3.select(null);
@@ -82,6 +77,28 @@
             })
         ;
         this.choroPaths.exit().remove();
+    };
+
+    ChoroplethCounties.prototype.layerPreRender = function () {
+        if (!this._topoJsonPromise) {
+            this._topoJsonPromise = new Promise(function (resolve, reject) {
+                if (usCounties) {
+                    resolve();
+                }
+                require(["json!src/map/TopoJSON/us-counties.json"], function (_usCounties) {
+                    usCounties = _usCounties;
+                    features = topojson.feature(usCounties.topology, usCounties.topology.objects.counties).features;
+                    rFeatures = {};
+                    for (var key in features) {
+                        if (features[key].id) {
+                            rFeatures[features[key].id] = features[key];
+                        }
+                    }
+                    resolve();
+                });
+            });
+        }
+        return this._topoJsonPromise;
     };
 
     return ChoroplethCounties;
