@@ -173,26 +173,36 @@
         ;
     };
 
+    Layered.prototype.preRender = function (callback) {
+        return Promise.all(this.layers().filter(function (layer) {
+            return layer.visible();
+        }).map(function (layer) {
+            return layer.layerPreRender();
+        }));
+    };
+
     Layered.prototype.render = function (callback) {
         var context = this;
-        var retVal = SVGWidget.prototype.render.call(this, function (w) {
-            if (context._layersTarget && ((context._renderCount && context._autoScaleOnNextRender) || context._prevAutoScaleMode !== context.autoScaleMode())) {
-                context._prevAutoScaleMode = context.autoScaleMode();
-                context._autoScaleOnNextRender = false;
-                setTimeout(function () {
-                    context.autoScale();
-                    context.autoScale();  //TODO Fix math in autoScale 
+        this.preRender().then(function () {
+            SVGWidget.prototype.render.call(context, function (w) {
+                if (context._layersTarget && ((context._renderCount && context._autoScaleOnNextRender) || context._prevAutoScaleMode !== context.autoScaleMode())) {
+                    context._prevAutoScaleMode = context.autoScaleMode();
+                    context._autoScaleOnNextRender = false;
+                    setTimeout(function () {
+                        context.autoScale();
+                        context.autoScale();  //TODO Fix math in autoScale 
+                        if (callback) {
+                            callback(w);
+                        }
+                    }, 0);
+                } else {
                     if (callback) {
                         callback(w);
                     }
-                }, 0);
-            } else {
-                if (callback) {
-                    callback(w);
                 }
-            }
+            });
         });
-        return retVal;
+        return this;
     };
 
     Layered.prototype.project = function (lat, long) {
