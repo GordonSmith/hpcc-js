@@ -1,6 +1,8 @@
 import * as d3 from "d3";
 import { HTMLWidget } from "../common/HTMLWidget";
+import { getScrollbarWidth } from "../common/Platform";
 import { Cell } from "./Cell";
+import { debounce } from "../common/Utility";
 import "css!./Border";
 
 export function Border() {
@@ -65,7 +67,7 @@ Border.prototype.watchWidget = function (widget) {
     }
 };
 
-Border.prototype.lazyPostUpdate = Border.prototype.debounce(function () {
+Border.prototype.lazyPostUpdate = debounce(function () {
     this.postUpdate();
 }, 100);
 
@@ -420,7 +422,7 @@ Border.prototype.enter = function (domNode, element) {
     var context = this;
     element.style("position", "relative");
     this.contentDiv = element.append("div").classed("border-content", true);
-    this._scrollBarWidth = this.getScrollbarWidth();
+    this._scrollBarWidth = getScrollbarWidth();
     this._borderHandles = ["top", "left", "right", "bottom"];
 
     var handles = element.selectAll("div.borderHandle").data(this._borderHandles);

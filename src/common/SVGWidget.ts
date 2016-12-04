@@ -1,6 +1,8 @@
 import * as d3 from "d3";
 import { Widget } from "./Widget";
+import { svgMarkerGlitch } from "./Platform";
 import { Transition } from "./Transition";
+import { debounce } from "./Utility";
 
 export function SVGWidget() {
     Widget.call(this);
@@ -306,7 +308,7 @@ SVGWidget.prototype.distance = function (pointA, pointB) {
 
 //  IE Fixers  ---
 SVGWidget.prototype._pushMarkers = function (element, d) {
-    if (this.svgMarkerGlitch) {
+    if (svgMarkerGlitch) {
         element = element || this._element;
         element.selectAll("path[marker-start],path[marker-end]")
             .attr("fixme-start", function (d) { return this.getAttribute("marker-start"); })
@@ -318,7 +320,7 @@ SVGWidget.prototype._pushMarkers = function (element, d) {
 };
 
 SVGWidget.prototype._popMarkers = function (element, d) {
-    if (this.svgMarkerGlitch) {
+    if (svgMarkerGlitch) {
         element = element || this._element;
         element.selectAll("path[fixme-start],path[fixme-end]")
             .attr("marker-start", function (d) {
@@ -331,14 +333,14 @@ SVGWidget.prototype._popMarkers = function (element, d) {
     }
 };
 
-SVGWidget.prototype._popMarkersDebounced = Widget.prototype.debounce(function (element, d) {
-    if (this.svgMarkerGlitch) {
+SVGWidget.prototype._popMarkersDebounced = debounce(function (element, d) {
+    if (svgMarkerGlitch) {
         this._popMarkers(element, d);
     }
 }, 250);
 
 SVGWidget.prototype._fixIEMarkers = function (element, d) {
-    if (this.svgMarkerGlitch) {
+    if (svgMarkerGlitch) {
         this._pushMarkers(element, d);
         this._popMarkersDebounced(element, d);
     }

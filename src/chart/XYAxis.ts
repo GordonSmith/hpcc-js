@@ -1,12 +1,12 @@
 import * as d3 from "d3";
 import { SVGWidget } from "../common/SVGWidget";
-import * as Utility from "../common/Utility";
+import { SimpleSelectionMixin, debounce } from "../common/Utility";
 import { Axis } from "./Axis";
 import "css!./XYAxis";
 
 export function XYAxis() {
     SVGWidget.call(this);
-    Utility.SimpleSelectionMixin.call(this);
+    SimpleSelectionMixin.call(this);
 
     this._drawStartPos = "origin";
 
@@ -39,7 +39,7 @@ export function XYAxis() {
 XYAxis.prototype = Object.create(SVGWidget.prototype);
 XYAxis.prototype.constructor = XYAxis;
 XYAxis.prototype._class += " chart_XYAxis";
-XYAxis.prototype.mixin(Utility.SimpleSelectionMixin);
+XYAxis.prototype.mixin(SimpleSelectionMixin);
 
 XYAxis.prototype.publish("orientation", "horizontal", "set", "Selects orientation for the axis", ["horizontal", "vertical"]);
 XYAxis.prototype.publish("selectionMode", false, "boolean", "Range Selector");
@@ -183,7 +183,7 @@ XYAxis.prototype.resizeBrushHandle = function (d, width, height) {
     }
 };
 
-XYAxis.prototype.brushMoved = SVGWidget.prototype.debounce(function brushed() {
+XYAxis.prototype.brushMoved = debounce(function brushed() {
     var selected = this.data().filter(function (d) {
         var pos = d[0];
         if (this.xAxisType() === "ordinal") {

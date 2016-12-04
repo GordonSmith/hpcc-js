@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import * as GridList from "grid-list";
 import { HTMLWidget } from "../common/HTMLWidget";
+import { getScrollbarWidth } from "../common/Platform";
 import * as Utility from "../common/Utility";
 import { Cell } from "./Cell";
 import "css!./Grid";
@@ -185,7 +186,7 @@ Grid.prototype.killGridList = function () {
 Grid.prototype.enter = function (domNode, element) {
     HTMLWidget.prototype.enter.apply(this, arguments);
 
-    this._scrollBarWidth = this.getScrollbarWidth();
+    this._scrollBarWidth = getScrollbarWidth();
 
     var context = this;
     this._d3Drag = d3.behavior.drag()

@@ -441,7 +441,7 @@ export function mixin(dest, sources) {
                 if (typeof value === 'object' && value !== null) {
                     if (cache.indexOf(value) !== -1) {
                         return;
-                    }
+}
 
                     cache.push(value);
                 }
@@ -450,3 +450,18 @@ export function mixin(dest, sources) {
         }
     };
 }));
+export function debounce(func, threshold = 100, execAsap = false) {
+    return function debounced() {
+        var obj = this || {}, args = arguments;
+        function delayed() {
+            if (!execAsap)
+                func.apply(obj, args);
+            obj.__hpcc_debounce_timeout = null;
+        }
+        if (obj.__hpcc_debounce_timeout)
+            clearTimeout(obj.__hpcc_debounce_timeout);
+        else if (execAsap)
+            func.apply(obj, args);
+        obj.__hpcc_debounce_timeout = setTimeout(delayed, threshold);
+    };
+};

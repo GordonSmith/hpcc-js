@@ -14,15 +14,15 @@ export function Surface() {
         .paddingPercent(50)
         ;
     this._container = new Shape()
-        .class("container")
+        .classed({ "container": true })
         .shape("rect")
         ;
     this._titleRect = new Shape()
-        .class("title")
+        .classed({ "title": true })
         .shape("rect")
         ;
     this._text = new Text()
-        .class("title")
+        .classed({ "title": true })
         ;
     this._menu = new Menu()
         .paddingPercent(0)
