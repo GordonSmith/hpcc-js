@@ -22,23 +22,23 @@ export class Widget extends PropertyExt {
     protected _id: string = Widget._idSeed + (++widgetID);
     protected _tag: string;
 
-    private _db = new Grid();
-    private _pos: IPos = { x: 0, y: 0 };
-    private _prevPos: IPos & ISize;
-    private _size: ISize = { width: 0, height: 0 };
-    private _scale = 1;
-    private _visible = true;
-    private _display = true;
+    protected _db = new Grid();
+    protected _pos: IPos = { x: 0, y: 0 };
+    protected _prevPos: IPos & ISize;
+    protected _size: ISize = { width: 0, height: 0 };
+    protected _scale = 1;
+    protected _visible = true;
+    protected _display = true;
 
-    private _target = null;
-    private _parentElement = null;
-    private _parentWidget = null;
+    protected _target = null;
+    protected _parentElement = null;
+    protected _parentWidget = null;
 
-    private _element = d3.select();
+    protected _element = d3.select();
 
-    private _renderCount = 0;
+    protected _renderCount = 0;
 
-    private _overlayElement = null;
+    protected _overlayElement = null;
 
     constructor() {
         super();

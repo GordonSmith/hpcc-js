@@ -451,7 +451,7 @@ export function mixin(dest, sources) {
     };
 }));
 export function debounce(func, threshold = 100, execAsap = false) {
-    return function debounced() {
+    return function debounced(...dummyArgs) {
         var obj = this || {}, args = arguments;
         function delayed() {
             if (!execAsap)
