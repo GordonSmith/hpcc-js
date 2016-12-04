@@ -1,185 +1,8 @@
 import * as d3 from "d3";
 import { Widget } from "./Widget";
+import { svgMarkerGlitch } from "./Platform";
 import { Transition } from "./Transition";
-
-export function SVGWidget() {
-    Widget.call(this);
-
-    this._tag = "g";
-
-    this._boundingBox = null;
-
-    this.transition = new Transition(this);
-
-    this._drawStartPos = "center";
-}
-SVGWidget.prototype = Object.create(Widget.prototype);
-SVGWidget.prototype.constructor = SVGWidget;
-SVGWidget.prototype._class += " common_SVGWidget";
-
-//  Properties  ---
-SVGWidget.prototype.move = function (_, transitionDuration) {
-    var retVal = this.pos.apply(this, arguments);
-    if (arguments.length) {
-        (transitionDuration ? this._element.transition().duration(transitionDuration) : this._element)
-            .attr("transform", "translate(" + _.x + " " + _.y + ")")
-            ;
-    }
-    return retVal;
-};
-
-SVGWidget.prototype.size = function (_) {
-    var retVal = Widget.prototype.size.apply(this, arguments);
-    if (arguments.length) {
-        this._boundingBox = null;
-    }
-    return retVal;
-};
-
-SVGWidget.prototype.resize = function (size) {
-    var retVal = Widget.prototype.resize.apply(this, arguments);
-    if (this._parentRelativeDiv) {
-        this._parentRelativeDiv
-            .style({
-                width: this._size.width + "px",
-                height: this._size.height + "px"
-            })
-            ;
-        switch (this._drawStartPos) {
-            case "origin":
-                this.pos({
-                    x: 0,
-                    y: 0
-                });
-                break;
-            case "center":
-            /* falls through */
-            default:
-                this.pos({
-                    x: this._size.width / 2,
-                    y: this._size.height / 2
-                });
-                break;
-        }
-    }
-    this._parentElement
-        .attr("width", this._size.width)
-        .attr("height", this._size.height)
-        ;
-    return retVal;
-};
-
-SVGWidget.prototype.target = function (_) {
-    if (!arguments.length) return this._target;
-    if (this._target && _ && (this._target.__data__.id !== _.__data__.id)) {
-        throw "Target can only be assigned once.";
-    }
-    this._target = _;
-
-    //  Target is a DOM Node ID ---
-    if (typeof (this._target) === "string" || this._target instanceof String) {
-        this._target = document.getElementById(this._target);
-    }
-
-    if (this._target instanceof SVGElement) {
-        this._parentElement = d3.select(this._target);
-        this._parentWidget = this._parentElement.datum();
-        if (!this._parentWidget || this._parentWidget._id === this._id) {
-            this._parentWidget = this.locateParentWidget(this._target.parentNode);
-        }
-        this._parentOverlay = this.locateOverlayNode();
-    } else if (this._target) {
-        //  Target is a DOM Node, so create a SVG Element  ---
-        this._parentRelativeDiv = d3.select(this._target).append("div")
-            .style({
-                position: "relative"
-            })
-            ;
-        this._parentElement = this._parentRelativeDiv.append("svg")
-            .style({
-                position: "absolute",
-                top: 0,
-                left: 0
-            })
-            ;
-        this._parentOverlay = this._parentRelativeDiv.append("div")
-            .style({
-                position: "absolute",
-                top: 0,
-                left: 0
-            })
-            ;
-        this.resize(this._size);
-    } else {
-        this.exit();
-    }
-    return this;
-};
-
-SVGWidget.prototype.enter = function (domNode, element) {
-    Widget.prototype.enter.apply(this, arguments);
-};
-
-SVGWidget.prototype.update = function (domNode, element) {
-    Widget.prototype.update.apply(this, arguments);
-};
-
-SVGWidget.prototype.postUpdate = function (domNode, element) {
-    Widget.prototype.postUpdate.apply(this, arguments);
-    if (this._drawStartPos === "origin" && this._target instanceof SVGElement) {
-        this._element.attr("transform", "translate(" + (this._pos.x - this._size.width / 2) + "," + (this._pos.y - this._size.height / 2) + ")scale(" + this._scale + ")");
-    } else {
-        this._element.attr("transform", "translate(" + this._pos.x + "," + this._pos.y + ")scale(" + this._scale + ")");
-    }
-};
-
-SVGWidget.prototype.exit = function (domNode, element) {
-    if (this._parentRelativeDiv) {
-        this._parentOverlay.remove();
-        this._parentElement.remove();
-        this._parentRelativeDiv.remove();
-    }
-    Widget.prototype.exit.apply(this, arguments);
-};
-
-SVGWidget.prototype.getOffsetPos = function () {
-    var retVal = { x: 0, y: 0 };
-    if (this._parentWidget) {
-        retVal = this._parentWidget.getOffsetPos();
-        retVal.x += this._pos.x;
-        retVal.y += this._pos.y;
-        return retVal;
-    }
-    return retVal;
-};
-
-SVGWidget.prototype.getBBox = function (refresh, round) {
-    if (refresh || this._boundingBox === null) {
-        var svgNode: SVGElement = this._element.node();
-        if (svgNode instanceof SVGElement) {
-            this._boundingBox = (svgNode as any).getBBox();
-        }
-    }
-    if (this._boundingBox === null) {
-        return {
-            x: 0,
-            y: 0,
-            width: 0,
-            height: 0
-        };
-    }
-    return {
-        x: (round ? Math.round(this._boundingBox.x) : this._boundingBox.x) * this._scale,
-        y: (round ? Math.round(this._boundingBox.y) : this._boundingBox.y) * this._scale,
-        width: (round ? Math.round(this._boundingBox.width) : this._boundingBox.width) * this._scale,
-        height: (round ? Math.round(this._boundingBox.height) : this._boundingBox.height) * this._scale
-    };
-};
-
-//  Intersections  ---
-SVGWidget.prototype.intersection = function (pointA, pointB) {
-    return this.intersectRect(pointA, pointB);
-};
+import { debounce } from "./Utility";
 
 var lerp = function (point, that, t) {
     //  From https://github.com/thelonious/js-intersections
@@ -218,35 +41,6 @@ var intersectLineLine = function (a1, a2, b1, b2) {
     }
 
     return result;
-};
-
-SVGWidget.prototype.intersectRect = function (pointA, pointB) {
-    var center = this.getOffsetPos();
-    var size = this.getBBox();
-    if (pointA.x === pointB.x && pointA.y === pointB.y) {
-        return pointA;
-    }
-    var TL = { x: center.x - size.width / 2, y: center.y - size.height / 2 };
-    var TR = { x: center.x + size.width / 2, y: center.y - size.height / 2 };
-    var BR = { x: center.x + size.width / 2, y: center.y + size.height / 2 };
-    var BL = { x: center.x - size.width / 2, y: center.y + size.height / 2 };
-    var intersection = intersectLineLine(TL, TR, pointA, pointB);
-    if (intersection.points.length) {
-        return { x: intersection.points[0].x, y: intersection.points[0].y };
-    }
-    intersection = intersectLineLine(TR, BR, pointA, pointB);
-    if (intersection.points.length) {
-        return { x: intersection.points[0].x, y: intersection.points[0].y };
-    }
-    intersection = intersectLineLine(BR, BL, pointA, pointB);
-    if (intersection.points.length) {
-        return { x: intersection.points[0].x, y: intersection.points[0].y };
-    }
-    intersection = intersectLineLine(BL, TL, pointA, pointB);
-    if (intersection.points.length) {
-        return { x: intersection.points[0].x, y: intersection.points[0].y };
-    }
-    return null;
 };
 
 var intersectCircleLine = function (c, r, a1, a2) {
@@ -290,56 +84,264 @@ var intersectCircleLine = function (c, r, a1, a2) {
     return result;
 };
 
-SVGWidget.prototype.intersectCircle = function (pointA, pointB) {
-    var center = this.getOffsetPos();
-    var radius = this.radius();
-    var intersection = intersectCircleLine(center, radius, pointA, pointB);
-    if (intersection.points.length) {
-        return { x: intersection.points[0].x, y: intersection.points[0].y };
+export class SVGWidget extends Widget {
+    static _class = "common_SVGWidget";
+
+    _tag = "g";
+
+    private _boundingBox = null;
+    private transition = new Transition(this);
+    private _drawStartPos = "center";
+    private _parentRelativeDiv;
+    private _parentOverlay;
+
+    constructor() {
+        super();
     }
-    return null;
-};
 
-SVGWidget.prototype.distance = function (pointA, pointB) {
-    return Math.sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y));
-};
+    //  Properties  ---
+    move(_, transitionDuration?) {
+        var retVal = this.pos(_);
+        if (arguments.length) {
+            (transitionDuration ? this._element.transition().duration(transitionDuration) : this._element)
+                .attr("transform", "translate(" + _.x + " " + _.y + ")")
+                ;
+        }
+        return retVal;
+    };
 
-//  IE Fixers  ---
-SVGWidget.prototype._pushMarkers = function (element, d) {
-    if (this.svgMarkerGlitch) {
-        element = element || this._element;
-        element.selectAll("path[marker-start],path[marker-end]")
-            .attr("fixme-start", function (d) { return this.getAttribute("marker-start"); })
-            .attr("fixme-end", function (d) { return this.getAttribute("marker-end"); })
-            .attr("marker-start", null)
-            .attr("marker-end", null)
+    size(_?) {
+        var retVal = super.size.apply(this, arguments);
+        if (arguments.length) {
+            this._boundingBox = null;
+        }
+        return retVal;
+    };
+
+    resize(size?) {
+        var retVal = super.resize.apply(this, arguments);
+        if (this._parentRelativeDiv) {
+            this._parentRelativeDiv
+                .style({
+                    width: this._size.width + "px",
+                    height: this._size.height + "px"
+                })
+                ;
+            switch (this._drawStartPos) {
+                case "origin":
+                    this.pos({
+                        x: 0,
+                        y: 0
+                    });
+                    break;
+                case "center":
+                /* falls through */
+                default:
+                    this.pos({
+                        x: this._size.width / 2,
+                        y: this._size.height / 2
+                    });
+                    break;
+            }
+        }
+        this._parentElement
+            .attr("width", this._size.width)
+            .attr("height", this._size.height)
             ;
-    }
-};
+        return retVal;
+    };
 
-SVGWidget.prototype._popMarkers = function (element, d) {
-    if (this.svgMarkerGlitch) {
-        element = element || this._element;
-        element.selectAll("path[fixme-start],path[fixme-end]")
-            .attr("marker-start", function (d) {
-                return this.getAttribute("fixme-start");
-            })
-            .attr("marker-end", function (d) { return this.getAttribute("fixme-end"); })
-            .attr("fixme-start", null)
-            .attr("fixme-end", null)
-            ;
-    }
-};
+    target(_) {
+        if (!arguments.length) return this._target;
+        if (this._target && _ && (this._target.__data__.id !== _.__data__.id)) {
+            throw "Target can only be assigned once.";
+        }
+        this._target = _;
 
-SVGWidget.prototype._popMarkersDebounced = Widget.prototype.debounce(function (element, d) {
-    if (this.svgMarkerGlitch) {
-        this._popMarkers(element, d);
-    }
-}, 250);
+        //  Target is a DOM Node ID ---
+        if (typeof (this._target) === "string") {
+            this._target = document.getElementById(this._target);
+        }
 
-SVGWidget.prototype._fixIEMarkers = function (element, d) {
-    if (this.svgMarkerGlitch) {
-        this._pushMarkers(element, d);
-        this._popMarkersDebounced(element, d);
-    }
-};
+        if (this._target instanceof SVGElement) {
+            this._parentElement = d3.select(this._target);
+            this._parentWidget = this._parentElement.datum();
+            if (!this._parentWidget || this._parentWidget._id === this._id) {
+                this._parentWidget = this.locateParentWidget(this._target.parentNode);
+            }
+            this._parentOverlay = this.locateOverlayNode();
+        } else if (this._target) {
+            //  Target is a DOM Node, so create a SVG Element  ---
+            this._parentRelativeDiv = d3.select(this._target).append("div")
+                .style({
+                    position: "relative"
+                })
+                ;
+            this._parentElement = this._parentRelativeDiv.append("svg")
+                .style({
+                    position: "absolute",
+                    top: 0,
+                    left: 0
+                })
+                ;
+            this._parentOverlay = this._parentRelativeDiv.append("div")
+                .style({
+                    position: "absolute",
+                    top: 0,
+                    left: 0
+                })
+                ;
+            this.resize(this._size);
+        } else {
+            this.exit();
+        }
+        return this;
+    };
+
+    enter(domNode, element) {
+        super.enter(domNode, element);
+    };
+
+    update(domNode, element) {
+        super.update(domNode, element);
+    };
+
+    postUpdate(domNode, element) {
+        super.postUpdate(domNode, element);
+        if (this._drawStartPos === "origin" && this._target instanceof SVGElement) {
+            this._element.attr("transform", "translate(" + (this._pos.x - this._size.width / 2) + "," + (this._pos.y - this._size.height / 2) + ")scale(" + this._scale + ")");
+        } else {
+            this._element.attr("transform", "translate(" + this._pos.x + "," + this._pos.y + ")scale(" + this._scale + ")");
+        }
+    };
+
+    exit(domNode?, element?) {
+        if (this._parentRelativeDiv) {
+            this._parentOverlay.remove();
+            this._parentElement.remove();
+            this._parentRelativeDiv.remove();
+        }
+        super.exit(domNode, element);
+    };
+
+    getOffsetPos() {
+        var retVal = { x: 0, y: 0 };
+        if (this._parentWidget) {
+            retVal = this._parentWidget.getOffsetPos();
+            retVal.x += this._pos.x;
+            retVal.y += this._pos.y;
+            return retVal;
+        }
+        return retVal;
+    };
+
+    getBBox(refresh = false, round = false) {
+        if (refresh || this._boundingBox === null) {
+            var svgNode: SVGElement = this._element.node();
+            if (svgNode instanceof SVGElement) {
+                this._boundingBox = (svgNode as any).getBBox();
+            }
+        }
+        if (this._boundingBox === null) {
+            return {
+                x: 0,
+                y: 0,
+                width: 0,
+                height: 0
+            };
+        }
+        return {
+            x: (round ? Math.round(this._boundingBox.x) : this._boundingBox.x) * this._scale,
+            y: (round ? Math.round(this._boundingBox.y) : this._boundingBox.y) * this._scale,
+            width: (round ? Math.round(this._boundingBox.width) : this._boundingBox.width) * this._scale,
+            height: (round ? Math.round(this._boundingBox.height) : this._boundingBox.height) * this._scale
+        };
+    };
+
+    //  Intersections  ---
+    intersection(pointA, pointB) {
+        return this.intersectRect(pointA, pointB);
+    };
+
+    intersectRect(pointA, pointB) {
+        var center = this.getOffsetPos();
+        var size = this.getBBox();
+        if (pointA.x === pointB.x && pointA.y === pointB.y) {
+            return pointA;
+        }
+        var TL = { x: center.x - size.width / 2, y: center.y - size.height / 2 };
+        var TR = { x: center.x + size.width / 2, y: center.y - size.height / 2 };
+        var BR = { x: center.x + size.width / 2, y: center.y + size.height / 2 };
+        var BL = { x: center.x - size.width / 2, y: center.y + size.height / 2 };
+        var intersection = intersectLineLine(TL, TR, pointA, pointB);
+        if (intersection.points.length) {
+            return { x: intersection.points[0].x, y: intersection.points[0].y };
+        }
+        intersection = intersectLineLine(TR, BR, pointA, pointB);
+        if (intersection.points.length) {
+            return { x: intersection.points[0].x, y: intersection.points[0].y };
+        }
+        intersection = intersectLineLine(BR, BL, pointA, pointB);
+        if (intersection.points.length) {
+            return { x: intersection.points[0].x, y: intersection.points[0].y };
+        }
+        intersection = intersectLineLine(BL, TL, pointA, pointB);
+        if (intersection.points.length) {
+            return { x: intersection.points[0].x, y: intersection.points[0].y };
+        }
+        return null;
+    };
+
+    intersectCircle(radius, pointA, pointB) {
+        var center = this.getOffsetPos();
+        var intersection = intersectCircleLine(center, radius, pointA, pointB);
+        if (intersection.points.length) {
+            return { x: intersection.points[0].x, y: intersection.points[0].y };
+        }
+        return null;
+    };
+
+    distance(pointA, pointB) {
+        return Math.sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y));
+    };
+
+    //  IE Fixers  ---
+    _pushMarkers(element, d) {
+        if (svgMarkerGlitch) {
+            element = element || this._element;
+            element.selectAll("path[marker-start],path[marker-end]")
+                .attr("fixme-start", function (d) { return this.getAttribute("marker-start"); })
+                .attr("fixme-end", function (d) { return this.getAttribute("marker-end"); })
+                .attr("marker-start", null)
+                .attr("marker-end", null)
+                ;
+        }
+    };
+
+    _popMarkers(element, d) {
+        if (svgMarkerGlitch) {
+            element = element || this._element;
+            element.selectAll("path[fixme-start],path[fixme-end]")
+                .attr("marker-start", function (d) {
+                    return this.getAttribute("fixme-start");
+                })
+                .attr("marker-end", function (d) { return this.getAttribute("fixme-end"); })
+                .attr("fixme-start", null)
+                .attr("fixme-end", null)
+                ;
+        }
+    };
+
+    _popMarkersDebounced = debounce(function (element, d) {
+        if (svgMarkerGlitch) {
+            this._popMarkers(element, d);
+        }
+    }, 250);
+
+    _fixIEMarkers(element, d) {
+        if (svgMarkerGlitch) {
+            this._pushMarkers(element, d);
+            this._popMarkersDebounced(element, d);
+        }
+    };
+}

@@ -1,4 +1,4 @@
-import * as d3 from 'd3';
+import * as d3 from "d3";
 
 function _naturalSort(a, b, order, idx, sortCaseSensitive) {
     var re = /(^([+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)?$|^0x[0-9a-f]+$|\d+)/gi,
@@ -330,13 +330,13 @@ export function downloadBlob(format, blob, id?, ext?) {
             mimeType = "text/csv";
     }
 
-    var a = document.createElement('a');
+    var a = document.createElement("a");
     if (navigator.msSaveBlob) { // IE10+
         a = null;
         return navigator.msSaveBlob(new Blob([blob], { type: mimeType }), filename);
-    } else if ('download' in a) { // html 5
-        a.href = 'data:' + mimeType + ',' + encodeURIComponent(blob);
-        a.setAttribute('download', filename);
+    } else if ("download" in a) { // html 5
+        a.href = "data:" + mimeType + "," + encodeURIComponent(blob);
+        a.setAttribute("download", filename);
         document.body.appendChild(a);
         setTimeout(function () {
             a.click();
@@ -345,9 +345,9 @@ export function downloadBlob(format, blob, id?, ext?) {
         return true;
     } else { // old chrome and FF:
         a = null;
-        var frame = document.createElement('iframe');
+        var frame = document.createElement("iframe");
         document.body.appendChild(frame);
-        frame.src = 'data:' + mimeType + ',' + encodeURIComponent(blob);
+        frame.src = "data:" + mimeType + "," + encodeURIComponent(blob);
 
         setTimeout(function () {
             document.body.removeChild(frame);
@@ -408,18 +408,19 @@ export function mixin(dest, sources) {
         _mixin(dest, arguments[i]);
     }
     return dest;
-
-    function _mixin(dest, source) {
-        var s, empty = {};
-        for (var key in source) {
-            s = source[key];
-            if (!(key in dest) || (dest[key] !== s && (!(key in empty) || empty[key] !== s))) {
-                dest[key] = s;
-            }
-        }
-        return dest;
-    }
 }
+
+function _mixin(dest, source) {
+    var s, empty = {};
+    for (var key in source) {
+        s = source[key];
+        if (!(key in dest) || (dest[key] !== s && (!(key in empty) || empty[key] !== s))) {
+            dest[key] = s;
+        }
+    }
+    return dest;
+}
+
 export function exists(prop, scope) {
     if (!prop || !scope) {
         return false;
@@ -435,10 +436,11 @@ export function exists(prop, scope) {
     }
     return true;
 }
+
 export function logStringify(obj) {
     var cache = [];
     return JSON.stringify(obj, function (key, value) {
-        if (typeof value === 'object' && value !== null) {
+        if (typeof value === "object" && value !== null) {
             if (cache.indexOf(value) !== -1) {
                 return;
             }
@@ -449,3 +451,18 @@ export function logStringify(obj) {
     });
 }
 
+export function debounce(func, threshold = 100, execAsap = false) {
+    return function debounced(...dummyArgs) {
+        var obj = this || {}, args = arguments;
+        function delayed() {
+            if (!execAsap)
+                func.apply(obj, args);
+            obj.__hpcc_debounce_timeout = null;
+        }
+        if (obj.__hpcc_debounce_timeout)
+            clearTimeout(obj.__hpcc_debounce_timeout);
+        else if (execAsap)
+            func.apply(obj, args);
+        obj.__hpcc_debounce_timeout = setTimeout(delayed, threshold);
+    };
+};

@@ -1,8 +1,8 @@
 import * as d3 from "d3";
 import * as topojson from "topojson";
-import { Layer } from './Layer';
-import * as Palette from '../common/Palette';
-import * as Utility from '../common/Utility';
+import { Layer } from "./Layer";
+import * as Palette from "../common/Palette";
+import * as Utility from "../common/Utility";
 import "css!./Choropleth";
 
 export function Choropleth() {

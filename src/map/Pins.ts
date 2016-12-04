@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { Layer } from './Layer';
+import { isIE } from "../common/Platform";
 import * as MapUtility from './Utility';
 import * as Utility from '../common/Utility';
 import "css!./Pins";
@@ -90,7 +91,7 @@ Pins.prototype.layerUpdate = function (base) {
             context.dblclick(context.rowToObj(d[2].origRow), "geohash", context._selection.selected(this));
         })
         .on('mouseover', function (d) {
-            if (!context.isIE) {
+            if (!isIE) {
                 this.parentNode.appendChild(this);
             }
         })

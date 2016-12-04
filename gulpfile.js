@@ -16,6 +16,7 @@ gulp.task('serve', function () {
 //  ===========================================================================
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
+const gulp_tslint = require('gulp-tslint');
 
 var tsDevProject = ts.createProject('tsconfig.json');
 
@@ -54,7 +55,11 @@ gulp.task('watch', ['dev-css', 'dev-tsc'], function () {
 
 gulp.task("build-tsc", ['dev-css', 'dev-json', 'dev-tsc']);
 
-
+gulp.task('tslint', () => {
+    return gulp.src(['**/*.ts', '!**/*.d.ts', '!node_modules/**'])
+        .pipe(gulp_tslint())
+        .pipe(gulp_tslint.report());
+});
 //  ================================================================
 
 const fs = require('fs')

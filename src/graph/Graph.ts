@@ -1,5 +1,6 @@
 ﻿import * as d3 from 'd3';
 import { SVGWidget } from "../common/SVGWidget";
+import { svgMarkerGlitch } from "../common/Platform";
 import { IGraph } from "../api/IGraph";
 import { Vertex } from "./Vertex";
 import { Edge } from "./Edge";
@@ -252,7 +253,7 @@ Graph.prototype.enter = function (domNode, element) {
                 var forceNode = context.forceLayout.vertexMap[d.id()];
                 forceNode.fixed = true;
             }
-            if (context.svgMarkerGlitch) {
+            if (svgMarkerGlitch) {
                 context.graphData.nodeEdges(d.id()).forEach(function (id) {
                     var edge = context.graphData.edge(id);
                     context._pushMarkers(edge.element(), edge);
@@ -286,7 +287,7 @@ Graph.prototype.enter = function (domNode, element) {
                 var forceNode = context.forceLayout.vertexMap[d.id()];
                 forceNode.fixed = false;
             }
-            if (context.svgMarkerGlitch) {
+            if (svgMarkerGlitch) {
                 context.graphData.nodeEdges(d.id()).forEach(function (id) {
                     var edge = context.graphData.edge(id);
                     context._popMarkers(edge.element(), edge);

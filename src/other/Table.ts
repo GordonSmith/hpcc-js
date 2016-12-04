@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import { HTMLWidget } from "../common/HTMLWidget";
 import { Widget } from "../common//Widget";
 import { Paginator } from "./Paginator";
+import { getScrollbarWidth } from "../common/Platform";
 import * as Utility from "../common/Utility";
 import "css!./Table";
 
@@ -663,8 +664,8 @@ Table.prototype.update = function (domNode, element) {
     this._paginator.render();
     setTimeout(function () {
         context._paginator
-            .right((context.hasVScroll(element) ? context.getScrollbarWidth() : 0) + context._paginatorTableSpacing)
-            .bottom((context.hasHScroll(element) ? context.getScrollbarWidth() : 0) + context._paginatorTableSpacing)
+            .right((context.hasVScroll(element) ? getScrollbarWidth() : 0) + context._paginatorTableSpacing)
+            .bottom((context.hasHScroll(element) ? getScrollbarWidth() : 0) + context._paginatorTableSpacing)
             .render()
             ;
     }, 0);
@@ -787,7 +788,7 @@ Table.prototype._calcRowsPerPage = function (th) {
     var tcellHeight = tmpRow.node().clientHeight;
     tmpRow.remove();
     var paginatorHeight = this.calcHeight(this._paginator.element());
-    var ipp = Math.floor((this.height() - thHeight - tfootHeight - paginatorHeight - (this.table.style("width") >= this.table.style("width") ? this.getScrollbarWidth() : 0) - this._paginatorTableSpacing * 2) / tcellHeight) || 1;
+    var ipp = Math.floor((this.height() - thHeight - tfootHeight - paginatorHeight - (this.table.style("width") >= this.table.style("width") ? getScrollbarWidth() : 0) - this._paginatorTableSpacing * 2) / tcellHeight) || 1;
     if (this.totalledColumns().length !== 0) {
         ipp -= 1;
     }
