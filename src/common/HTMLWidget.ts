@@ -126,7 +126,7 @@ HTMLWidget.prototype.target = function (_) {
 
         var context = this;
         this.oldPos = null;
-        this.observer = new this.MutationObserver(function (mutation) {
+        this.observer = new (window as any).MutationObserver(function (mutation) {
             context.syncOverlay();
         });
 

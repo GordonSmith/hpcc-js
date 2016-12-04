@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import { SVGWidget } from "../common/SVGWidget";
+import { svgMarkerGlitch } from "../common/Platform";
 import { TextBox } from "../common/TextBox";
 import "css!./Edge";
 
@@ -84,7 +85,7 @@ Edge.prototype.enter = function (domNode, element) {
 Edge.prototype.update = function (domNode, element, transitionDuration, skipPushMarkers) {
     SVGWidget.prototype.update.apply(this, arguments);
     var context = this;
-    if (this.svgMarkerGlitch && !skipPushMarkers) {
+    if (svgMarkerGlitch && !skipPushMarkers) {
         element.transition().duration((transitionDuration ? transitionDuration : 0) + 100)
             .each("start", function (d) {
                 context._pushMarkers(element, d);
