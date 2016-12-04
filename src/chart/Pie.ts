@@ -70,7 +70,7 @@ Pie.prototype.calcRadius = function (_) {
 };
 
 Pie.prototype.intersection = function (pointA, pointB) {
-    return this.intersectCircle(pointA, pointB);
+    return this.intersectCircle(this.radius(), pointA, pointB);
 };
 
 Pie.prototype.enter = function (domNode, element) {

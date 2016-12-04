@@ -408,18 +408,19 @@ export function mixin(dest, sources) {
         _mixin(dest, arguments[i]);
     }
     return dest;
-
-    function _mixin(dest, source) {
-        var s, empty = {};
-        for (var key in source) {
-            s = source[key];
-            if (!(key in dest) || (dest[key] !== s && (!(key in empty) || empty[key] !== s))) {
-                dest[key] = s;
-            }
-        }
-        return dest;
-    }
 }
+
+function _mixin(dest, source) {
+    var s, empty = {};
+    for (var key in source) {
+        s = source[key];
+        if (!(key in dest) || (dest[key] !== s && (!(key in empty) || empty[key] !== s))) {
+            dest[key] = s;
+        }
+    }
+    return dest;
+}
+
 export function exists(prop, scope) {
     if (!prop || !scope) {
         return false;
@@ -435,6 +436,7 @@ export function exists(prop, scope) {
     }
     return true;
 }
+
 export function logStringify(obj) {
     var cache = [];
     return JSON.stringify(obj, function (key, value) {
@@ -448,3 +450,19 @@ export function logStringify(obj) {
         return value;
     });
 }
+
+export function debounce(func, threshold = 100, execAsap = false) {
+    return function debounced(...dummyArgs) {
+        var obj = this || {}, args = arguments;
+        function delayed() {
+            if (!execAsap)
+                func.apply(obj, args);
+            obj.__hpcc_debounce_timeout = null;
+        }
+        if (obj.__hpcc_debounce_timeout)
+            clearTimeout(obj.__hpcc_debounce_timeout);
+        else if (execAsap)
+            func.apply(obj, args);
+        obj.__hpcc_debounce_timeout = setTimeout(delayed, threshold);
+    };
+};

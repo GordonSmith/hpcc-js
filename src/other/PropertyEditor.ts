@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import { HTMLWidget } from "../common/HTMLWidget";
 import { Widget } from "../common/Widget";
+import { isIE } from "../common/Platform";
 import * as Persist from "../other/Persist";
 import { Grid } from "../layout/Grid";
 import "css!./PropertyEditor";
@@ -501,7 +502,7 @@ PropertyEditor.prototype.enterInputs = function (widget, cell, param) {
                     context.setProperty(widget, param.id, this.value);
                 })
                 ;
-            if (param.type === "html-color" && !this.isIE) {
+            if (param.type === "html-color" && !isIE) {
                 cell.append("input")
                     .attr("id", this.id() + "_" + param.id + "_2")
                     .classed("property-input", true)

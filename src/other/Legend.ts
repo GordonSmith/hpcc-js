@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import * as Palette from "../common/Palette";
 import { Table } from "./Table";
+import { getScrollbarWidth } from "../common/Platform";
 import "css!./Legend";
 
 export function Legend() {
@@ -73,8 +74,8 @@ Legend.prototype.getBBox = function (refresh, round) {
     var table = this.element().select(".tableDiv > table");
     if (!table.empty()) {
         var tableRect = table.node().getBoundingClientRect();
-        var width = tableRect.width + 8 + (this.hasVScroll(this._parentElement) ? this.getScrollbarWidth() : 0);
-        var height = tableRect.height + 8 + (this.hasHScroll(this._parentElement) ? this.getScrollbarWidth() : 0);
+        var width = tableRect.width + 8 + (this.hasVScroll(this._parentElement) ? getScrollbarWidth() : 0);
+        var height = tableRect.height + 8 + (this.hasHScroll(this._parentElement) ? getScrollbarWidth() : 0);
         return {
             x: retVal.x,
             y: retVal.y,

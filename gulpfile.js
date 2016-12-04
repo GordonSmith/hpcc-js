@@ -16,6 +16,7 @@ gulp.task('serve', function () {
 //  ===========================================================================
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
+const gulp_tslint = require('gulp-tslint');
 
 var tsDevProject = ts.createProject('tsconfig.json');
 
