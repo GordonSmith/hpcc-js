@@ -81,7 +81,7 @@ function Meta(id, defaultValue, type, description, set, ext) {
             break;
         case "widget":
             this.checkedAssign = function (_) {
-                if (!_._class || _._class.indexOf("common_PropertyExt") < 0) {
+                if (!_.class() || _.class().indexOf("common_PropertyExt") < 0) {
                     console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
                 }
                 return _;
@@ -89,7 +89,7 @@ function Meta(id, defaultValue, type, description, set, ext) {
             break;
         case "widgetArray":
             this.checkedAssign = function (_) {
-                if (_.some(function (row) { return (!row._class || row._class.indexOf("common_Widget") < 0); })) {
+                if (_.some(function (row) { return (!row.class() || row.class().indexOf("common_Widget") < 0); })) {
                     console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
                 }
                 return _;
@@ -206,7 +206,7 @@ export class PropertyExt extends Class {
         }
     };
 
-    publish(id, defaultValue, type, description, set?, ext: any = {}) {
+    publish(id, defaultValue, type?, description?, set?, ext: any = {}) {
         if (this[__meta_ + id] !== undefined && !ext.override) {
             throw id + " is already published.";
         }
@@ -299,7 +299,7 @@ export class PropertyExt extends Class {
         }
     };
 
-    publishProxy(id, proxy, method, defaultValue?) {
+    publishProxy(id, proxy, method?, defaultValue?) {
         method = method || id;
         if (this[__meta_ + id] !== undefined) {
             throw id + " is already published.";

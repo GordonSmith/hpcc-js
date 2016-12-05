@@ -6,6 +6,8 @@ import * as Utility from './Utility';
 //  Field  ---
 export class Field extends PropertyExt {
     static _class = "common_Database.Field";
+    idx;
+    label_default;
 
     constructor(id?) {
         super();
@@ -104,11 +106,10 @@ export class Field extends PropertyExt {
         };
         return retVal;
     };
-
-    label(_?): string | Field { throw "unimplemented" };
-    type(_?): any | Field { throw "unimplemented" };
-    mask(_?): string | Field { throw "unimplemented" };
-    format(_?): string | Field { throw "unimplemented" };
+    label: { (): string; (x: string): Field; }
+    type: { (): string; (x: string): Field; }
+    mask: { (): string; (x: string): Field; }
+    format: { (): string; (x: string): Field; }
 }
 Field.prototype.publish("label", "", "string", "Label", null, { optional: true });
 Field.prototype.publish("type", "", "set", "Type", ["", "string", "number", "boolean", "time", "hidden"], { optional: true });
@@ -267,7 +268,7 @@ export class Grid extends PropertyExt {
         return this;
     };
 
-    columns(_?) {
+    columns(_?): any | Grid {
         if (!arguments.length) return this.fields().map(function (col, idx) {
             return this.column(idx);
         }, this);
@@ -610,8 +611,7 @@ export class Grid extends PropertyExt {
         return this;
     };
 
-
-    fields(_?, clone?): any | Grid { throw "unimplemented"; }
+    fields: { (): Field[]; (_, clone?): Grid }
 }
 
 Grid.prototype.publish("fields", [], "propertyArray", "Fields");
