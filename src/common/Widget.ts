@@ -2,16 +2,16 @@ import * as d3 from "d3";
 import { Class } from "./Class";
 import { debounce } from "./Utility";
 import { PropertyExt } from "./PropertyExt";
-import { Grid } from "./Database";
+import { Field, Grid } from "./Database";
 
-interface IPos {
-    x: number,
-    y: number
+export interface IPos {
+    x: number;
+    y: number;
 }
 
-interface ISize {
-    width: number,
-    height: number
+export interface ISize {
+    width: number;
+    height: number;
 }
 
 var widgetID = 0;
@@ -67,9 +67,9 @@ export class Widget extends PropertyExt {
     leakCheck(newNode) {
         var context = this;
         var watchArray = [newNode];
-        var destructObserver = new MutationObserver(function (mutations) {
+        var destructObserver = new MutationObserver(function(mutations) {
             var leaks = false;
-            mutations.forEach(function (mutation) {
+            mutations.forEach(function(mutation) {
                 for (var i = 0; i < mutation.removedNodes.length; ++i) {
                     var node = mutation.removedNodes.item(i);
                     if (watchArray.indexOf(node) >= 0 && context._target) {
@@ -93,7 +93,7 @@ export class Widget extends PropertyExt {
     //  Events  ---
     on(eventID, func, stopPropagation) {
         var context = this;
-        this.overrideMethod(eventID, function (origFunc, args) {
+        this.overrideMethod(eventID, function(origFunc, args) {
             var retVal;
             if (stopPropagation) {
                 if (d3.event) {
@@ -129,13 +129,13 @@ export class Widget extends PropertyExt {
     };
 
     cloneData() {
-        return this.data().map(function (row) { return row.slice(0); });
+        return this.data().map(function(row) { return row.slice(0); });
     };
 
     flattenData() {
         var retVal = [];
-        this.data().forEach(function (row, rowIdx) {
-            this.columns().filter(function (col, idx) { return idx > 0; }).forEach(function (col, idx) {
+        this.data().forEach(function(row, rowIdx) {
+            this.columns().filter(function(col, idx) { return idx > 0; }).forEach(function(col, idx) {
                 var val = row[idx + 1];
                 if (val) {
                     var newItem = {
@@ -153,7 +153,7 @@ export class Widget extends PropertyExt {
 
     rowToObj(row) {
         var retVal: any = {};
-        this.fields().forEach(function (field, idx) {
+        this.fields().forEach(function(field, idx) {
             retVal[field.label_default() || field.label()] = row[idx];
         });
         if (row.length === this.columns().length + 1) {
@@ -162,7 +162,9 @@ export class Widget extends PropertyExt {
         return retVal;
     };
 
-    pos(_?): IPos | Widget {
+    pos(): IPos;
+    pos(_): this;
+    pos(_?): IPos | this {
         if (!arguments.length) return this._pos;
         this._pos = _;
         if (this._overlayElement) {
@@ -173,6 +175,8 @@ export class Widget extends PropertyExt {
         return this;
     };
 
+    x(): number;
+    x(_): Widget;
     x(_?): number | Widget {
         if (!arguments.length) return this._pos.x;
         this.pos({ x: _, y: this._pos.y });
@@ -197,20 +201,23 @@ export class Widget extends PropertyExt {
         return this;
     };
 
+    width(): number;
+    width(_): Widget;
     width(_?): number | Widget {
         if (!arguments.length) return this._size.width;
         this.size({ width: _, height: this._size.height });
         return this;
     };
 
+    height(): number;
+    height(_): Widget;
     height(_?): number | Widget {
         if (!arguments.length) return this._size.height;
         this.size({ width: this._size.width, height: _ });
         return this;
     };
 
-    resize(size, delta) {
-        delta = delta || { width: 0, height: 0 };
+    resize(size: ISize, delta: ISize = { width: 0, height: 0 }) {
         var width, height;
         if (size && size.width && size.height) {
             width = size.width;
@@ -227,6 +234,8 @@ export class Widget extends PropertyExt {
         return this;
     };
 
+    scale(): number;
+    scale(_): Widget;
     scale(_?): number | Widget {
         if (!arguments.length) return this._scale;
         this._scale = _;
@@ -249,8 +258,9 @@ export class Widget extends PropertyExt {
         }
         return this;
     };
-
-    display(_?): boolean | Widget {
+    display(): boolean;
+    display(_): this;
+    display(_?): boolean | this {
         if (!arguments.length) return this._display;
         this._display = _;
         if (this._element) {
@@ -392,7 +402,7 @@ export class Widget extends PropertyExt {
 
     //  Render  ---
     private _prevNow = 0;
-    render(callback) {
+    render(callback?) {
         if ((window as any).__hpcc_debug) {
             var now = Date.now();
             if (now - this._prevNow < 500) {
@@ -401,7 +411,7 @@ export class Widget extends PropertyExt {
             this._prevNow = now;
         }
 
-        callback = callback || function () { };
+        callback = callback || function() { };
         if (!this._parentElement || !this.visible()) {
             callback(this);
             return this;
@@ -410,12 +420,12 @@ export class Widget extends PropertyExt {
             if (!this._tag)
                 throw "No DOM tag specified";
 
-            var elements = this._parentElement.selectAll("#" + this._id).data([this], function (d) { return d._id; });
+            var elements = this._parentElement.selectAll("#" + this._id).data([this], function(d) { return d._id; });
             elements.enter().append(this._tag)
                 .attr("class", this.class())
                 .attr("id", this._id)
                 //.attr("opacity", 0.50)  //  Uncomment to debug position offsets  ---
-                .each(function (context) {
+                .each(function(context) {
                     context._element = d3.select(this);
                     context.enter(this, context._element);
                     if ((window as any).__hpcc_debug) {
@@ -425,14 +435,14 @@ export class Widget extends PropertyExt {
                 ;
             elements
                 .classed(this.classed())
-                .each(function (context) {
+                .each(function(context) {
                     context.preUpdate(this, context._element);
                     context.update(this, context._element);
                     context.postUpdate(this, context._element);
                 })
                 ;
             elements.exit()
-                .each(function (context) {
+                .each(function(context) {
                     d3.select(this).datum(null);
                     context.exit(this, context._element);
                 })
@@ -443,7 +453,7 @@ export class Widget extends PropertyExt {
 
         //  ASync Render Contained Widgets  ---
         var widgets = [];
-        this.publishedProperties(true).forEach(function (meta) {
+        this.publishedProperties(true).forEach(function(meta) {
             if (!meta.ext || meta.ext.render !== false) {
                 switch (meta.type) {
                     case "widget":
@@ -465,15 +475,15 @@ export class Widget extends PropertyExt {
                 callback(this);
                 break;
             case 1:
-                widgets[0].render(function () {
+                widgets[0].render(function() {
                     callback(context);
                 });
                 break;
             default:
                 var renderCount = widgets.length;
-                widgets.forEach(function (widget, idx) {
-                    setTimeout(function () {
-                        widget.render(function () {
+                widgets.forEach(function(widget, idx) {
+                    setTimeout(function() {
+                        widget.render(function() {
                             if (--renderCount === 0) {
                                 callback(context);
                             }
@@ -485,7 +495,7 @@ export class Widget extends PropertyExt {
         return this;
     };
 
-    lazyRender = debounce(function () {
+    lazyRender = debounce(function() {
         this.render();
     }, 100);
 
@@ -495,8 +505,8 @@ export class Widget extends PropertyExt {
     postUpdate(domNode, element) { };
     exit(domNode, element) { };
 
-    fields(_?): any | Widget { throw "unimplemented"; };
-    classed(_?): any | Widget { throw "unimplemented"; };
+    fields: { (): Field[]; (_: Field[]): Widget };
+    classed: (_?) => any | this;
 }
 Widget.prototype.publishProxy("fields", "_db", "fields");
 Widget.prototype.publish("classed", {}, "object", "HTML Classes", null, { tags: ["Private"] });

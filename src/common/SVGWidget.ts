@@ -100,8 +100,8 @@ export class SVGWidget extends Widget {
     }
 
     //  Properties  ---
-    move(_, transitionDuration) {
-        var retVal = this.pos.apply(this, arguments);
+    move(_, transitionDuration?) {
+        var retVal = this.pos(_);
         if (arguments.length) {
             (transitionDuration ? this._element.transition().duration(transitionDuration) : this._element)
                 .attr("transform", "translate(" + _.x + " " + _.y + ")")
@@ -110,8 +110,8 @@ export class SVGWidget extends Widget {
         return retVal;
     };
 
-    size(_) {
-        var retVal = Widget.prototype.size.apply(this, arguments);
+    size(_?) {
+        var retVal = super.size.apply(this, arguments);
         if (arguments.length) {
             this._boundingBox = null;
         }
@@ -119,7 +119,7 @@ export class SVGWidget extends Widget {
     };
 
     resize(size?) {
-        var retVal = Widget.prototype.resize.apply(this, arguments);
+        var retVal = super.resize.apply(this, arguments);
         if (this._parentRelativeDiv) {
             this._parentRelativeDiv
                 .style({
@@ -156,12 +156,11 @@ export class SVGWidget extends Widget {
         if (this._target && _ && (this._target.__data__.id !== _.__data__.id)) {
             throw "Target can only be assigned once.";
         }
+        this._target = _;
 
         //  Target is a DOM Node ID ---
-        if (typeof (_) === "string") {
-            this._target = document.getElementById(_);
-        } else {
-            this._target = _;
+        if (typeof (this._target) === "string") {
+            this._target = document.getElementById(this._target);
         }
 
         if (this._target instanceof SVGElement) {
@@ -200,15 +199,15 @@ export class SVGWidget extends Widget {
     };
 
     enter(domNode, element) {
-        Widget.prototype.enter.apply(this, arguments);
+        super.enter(domNode, element);
     };
 
     update(domNode, element) {
-        Widget.prototype.update.apply(this, arguments);
+        super.update(domNode, element);
     };
 
     postUpdate(domNode, element) {
-        Widget.prototype.postUpdate.apply(this, arguments);
+        super.postUpdate(domNode, element);
         if (this._drawStartPos === "origin" && this._target instanceof SVGElement) {
             this._element.attr("transform", "translate(" + (this._pos.x - this._size.width / 2) + "," + (this._pos.y - this._size.height / 2) + ")scale(" + this._scale + ")");
         } else {
@@ -222,7 +221,7 @@ export class SVGWidget extends Widget {
             this._parentElement.remove();
             this._parentRelativeDiv.remove();
         }
-        Widget.prototype.exit.apply(this, arguments);
+        super.exit(domNode, element);
     };
 
     getOffsetPos() {
@@ -346,4 +345,3 @@ export class SVGWidget extends Widget {
         }
     };
 }
-

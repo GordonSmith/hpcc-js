@@ -74,3 +74,10 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
         });
     });
 }
+
+/*
+MyClass.prototype.test = function (_?) {
+    if (!arguments.length) return 22;
+    return this;
+}
+*/
