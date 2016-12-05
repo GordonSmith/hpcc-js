@@ -1,3 +1,4 @@
+import "../common/Platform";    //  Promise  ---
 import * as Comms from "./Comms";
 import * as Utility from "../common/Utility";
 
@@ -37,7 +38,7 @@ BasicComms.prototype.jsonp = function (url, request) {
 };
 
 //  WsWorkunits  ---
-function WsWorkunits(baseUrl) {
+export function WsWorkunits(baseUrl) {
     BasicComms.call(this);
 
     this.url(baseUrl + "WsWorkunits/");
