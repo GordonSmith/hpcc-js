@@ -38,7 +38,7 @@
     Table.prototype._class += " handson_Table";
     Table.prototype.Column = Column;
     Table.prototype.publish("columnFormatting", [], "propertyArray", "Source Columns", null, {autoExpand: Column});
-    Table.prototype.publish("editLastRow", true, "boolean", "To make last row editable", null, {tags: ["Basic"], optional: true});
+    Table.prototype.publish("editLastRow", false, "boolean", "To make last row editable", null, {tags: ["Basic"], optional: true});
     Table.prototype.publish("renderHtmlDataCells", false, "boolean", "enable or disable HTML within cells", null, {tags: ["Basic"]});
     Table.prototype.publish("fixedColumn", false, "boolean", "Enable or disable fixed first column", null, {tags: ["Basic"]});
     Table.prototype.publish("multiSelect", false, "boolean", "Multiple Selection", null, {tags: ["Basic"]});
