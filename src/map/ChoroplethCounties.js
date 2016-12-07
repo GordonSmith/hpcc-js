@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "topojson", "./Choropleth"], factory);
+        define(["d3", "topojson", "./Choropleth", "require"], factory);
     } else {
-        root.map_ChoroplethCounties = factory(root.d3, root.topojson, root.map_Choropleth);
+        root.map_ChoroplethCounties = factory(root.d3, root.topojson, root.map_Choropleth, root.require);
     }
-}(this, function (d3, topojson, Choropleth) {
+} (this, function (d3, topojson, Choropleth, require) {
     var usCounties = null;
     var features = null;
     var rFeatures = null;
@@ -33,7 +33,7 @@
             .tooltipHTML(function (d) {
                 return context.tooltipFormat({ label: usCounties.countyNames[d[0]], value: context._dataMap[d[0]] ? context._dataMap[d[0]][1] : "N/A" });
             })
-        ;
+            ;
     };
 
     ChoroplethCounties.prototype.layerUpdate = function (base) {
@@ -62,7 +62,7 @@
             })
             .on("mouseout.tooltip", this.tooltip.hide)
             .on("mousemove.tooltip", this.tooltip.show)
-        ;
+            ;
         this.choroPaths
             .attr("d", function (d) {
                 var retVal = base._d3GeoPath(rFeatures[d[0]]);
@@ -75,7 +75,7 @@
                 var retVal = context._palette(d[1], context._dataMinWeight, context._dataMaxWeight);
                 return retVal;
             })
-        ;
+            ;
         this.choroPaths.exit().remove();
     };
 
