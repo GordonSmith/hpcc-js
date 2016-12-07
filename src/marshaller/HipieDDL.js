@@ -1616,7 +1616,7 @@
             visualization.clear();
             visualization.update();
             if (state && state[visualization.id]) {
-                if (exists("source.mappings.mappings", visualization)) {
+                if (Utility.exists("source.mappings.mappings", visualization)) {
                     for (var key in visualization.source.mappings.mappings) {
                         if (state[visualization.id][visualization.source.mappings.mappings[key]]) {
                             visualization._widgetState.row[key] = state[visualization.id][visualization.source.mappings.mappings[key]];
