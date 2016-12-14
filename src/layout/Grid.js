@@ -5,7 +5,7 @@
     } else {
         root.layout_Grid = factory(root.d3, root.GridList, root.common_HTMLWidget, root.layout_Cell, root.common_TextBox, root.common_Utility);
     }
-}(this, function (d3, GridList, HTMLWidget, Cell, TextBox, Utility) {
+} (this, function (d3, GridList, HTMLWidget, Cell, TextBox, Utility) {
 
     function Grid() {
         HTMLWidget.call(this);
@@ -23,7 +23,7 @@
     Grid.prototype.publish("fitTo", "all", "set", "Sizing Strategy", ["all", "width"], { tags: ["Basic"] });
     Grid.prototype.publish("snapping", "vertical", "set", "Snapping Strategy", ["vertical", "horizontal", "none"]);
     Grid.prototype.publish("snappingColumns", 12, "number", "Snapping Columns");
-    Grid.prototype.publish("snappingRows", 24, "number", "Snapping Rows");
+    Grid.prototype.publish("snappingRows", 16, "number", "Snapping Rows");
 
     Grid.prototype.publish("gutter", 6, "number", "Gap Between Widgets", null, { tags: ["Basic"] });
 
@@ -32,7 +32,7 @@
     Grid.prototype.publish("surfaceBorderWidth", 1, "number", "Width (px) of Cell Border", null, { tags: ["Intermediate"] });
     Grid.prototype.publish("surfaceBackgroundColor", null, "html-color", "Surface Background Color", null, { tags: ["Advanced"] });
 
-    Grid.prototype.publish("content", [], "widgetArray", "widgets", null, { tags: ["Basic"], render: false});
+    Grid.prototype.publish("content", [], "widgetArray", "widgets", null, { tags: ["Basic"], render: false });
 
     Grid.prototype.getDimensions = function () {
         var size = { width: 0, height: 0 };
@@ -84,7 +84,7 @@
                 .title(title)
                 .gridRowSpan(rowSpan)
                 .gridColSpan(colSpan)
-            ;
+                ;
             this.content().push(cell);
         }
         return this;
@@ -136,7 +136,7 @@
         return retVal;
     };
 
-    Grid.prototype.cellToGridItem = function(cell) {
+    Grid.prototype.cellToGridItem = function (cell) {
         return {
             x: cell.gridCol(),
             y: cell.gridRow(),
@@ -153,7 +153,7 @@
             .gridRow(item.y)
             .gridColSpan(item.w)
             .gridRowSpan(item.h)
-        ;
+            ;
     };
 
     Grid.prototype.initGridList = function () {
@@ -196,7 +196,7 @@
                     .style("transform", function () { return "translate(" + d.x * context.cellWidth + "px, " + d.y * context.cellHeight + "px)"; })
                     .style("width", function () { return d.w * context.cellWidth - context.gutter() + "px"; })
                     .style("height", function () { return d.h * context.cellHeight - context.gutter() + "px"; })
-                ;
+                    ;
                 context.selectionBagClick(_d);
             })
             .on("drag", function (_d) {
@@ -225,7 +225,7 @@
                     .style("transform", function () { return "translate(" + d3.event.x + "px, " + d3.event.y + "px)"; })
                     .style("width", function () { return d.w * context.cellWidth + "px"; })
                     .style("height", function () { return d.h * context.cellHeight + "px"; })
-                ;
+                    ;
             })
             .on("dragend", function () {
                 if (!context.designMode()) return;
@@ -234,7 +234,7 @@
                 context.dragItem = null;
                 context.killGridList();
             })
-        ;
+            ;
 
         this._d3DragResize = d3.behavior.drag()
             .origin(function (_d) {
@@ -251,7 +251,7 @@
                     .style("transform", function () { return "translate(" + d.x * context.cellWidth + "px, " + d.y * context.cellHeight + "px)"; })
                     .style("width", function () { return d.w * context.cellWidth - context.gutter() + "px"; })
                     .style("height", function () { return d.h * context.cellHeight - context.gutter() + "px"; })
-                ;
+                    ;
                 context.dragItemPos = { x: d.x, y: d.y };
             })
             .on("drag", function (_d) {
@@ -271,7 +271,7 @@
                 context.dragItem
                     .style("width", function () { return (-d.x + 1) * context.cellWidth + d3.event.x - context.gutter() + "px"; })
                     .style("height", function () { return (-d.y + 1) * context.cellHeight + d3.event.y - context.gutter() + "px"; })
-                ;
+                    ;
             })
             .on("dragend", function () {
                 if (!context.designMode()) return;
@@ -280,7 +280,7 @@
                 context.dragItem = null;
                 context.killGridList();
             })
-        ;
+            ;
     };
 
     Grid.prototype.updateGrid = function (resize, transitionDuration, noRender) {
@@ -299,16 +299,16 @@
                     .surfacePadding_default(context.surfacePadding())
                     .surfaceBorderWidth_default(context.surfaceBorderWidth())
                     .surfaceBackgroundColor_default(context.surfaceBackgroundColor())
-                ;
+                    ;
 
                 if (resize === true || resize === d.id()) {
                     d
                         .resize()
                         .lazyRender()
-                    ;
+                        ;
                 }
             })
-        ;
+            ;
     };
 
     Grid.prototype.update = function (domNode, element) {
@@ -327,8 +327,6 @@
 
         //  Grid  ---
         var context = this;
-        this._parentElement.style("overflow-x", "hidden");
-        this._parentElement.style("overflow-y", this.designMode() ? "scroll" : "hidden");
         this.divItems = element.selectAll("#" + this.id() + " > .ddCell").data(this.content(), function (d) { return d.id(); });
         this.divItems.enter().append("div")
             .attr("class", "ddCell")
@@ -352,13 +350,13 @@
                     .attr("class", "resizeHandle")
                     .call(context._d3DragResize)
                     .append("div")
-                        .attr("class", "resizeHandleDisplay")
-                ;
+                    .attr("class", "resizeHandleDisplay")
+                    ;
             })
-        ;
+            ;
         this.divItems.select(".resizeHandle")
             .style("display", this.designMode() ? null : "none")
-        ;
+            ;
 
         this.updateGrid(true);
         this.divItems.exit()
@@ -369,7 +367,7 @@
                 }
             })
             .remove()
-        ;
+            ;
 
         //  Snapping  ---
         var lanesBackground = element.selectAll("#" + this.id() + " > .laneBackground").data(this.designMode() ? [""] : []);
@@ -380,33 +378,33 @@
             .on("click", function () {
                 context.selectionBagClear();
             })
-        ;
+            ;
         lanesBackground
             .style("width", (this.snappingColumns() * this.cellWidth) + "px")
             .style("height", (this.snappingRows() * this.cellWidth) + "px")
-        ;
+            ;
         lanesBackground.exit()
             .each(function (d) {
                 context.selectionBagClear();
             })
             .remove()
-        ;
+            ;
 
         var lanes = element.selectAll("#" + this.id() + " > .lane").data(this.designMode() ? [""] : []);
         lanes.enter().append("div")
             .attr("class", "lane")
             .style("left", "1px")
             .style("top", "1px")
-        ;
+            ;
         lanes
             .style("width", (this.snappingColumns() * this.cellWidth) + "px")
             .style("height", (this.snappingRows() * this.cellWidth) + "px")
             .style("background-image", "linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px)")
             .style("background-size", this.cellWidth + "px " + this.cellHeight + "px")
-        ;
+            ;
         lanes.exit()
             .remove()
-        ;
+            ;
     };
 
     Grid.prototype.exit = function (domNode, element) {

@@ -5,6 +5,7 @@
 .layout_Grid > .laneBackground {
     position: absolute;
     border-style: solid;
+    background: whitesmoke;
 }
 
 .layout_Grid > .lane {
