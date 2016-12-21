@@ -1,8 +1,8 @@
 import * as d3 from "d3";
 import * as topojson from "topojson";
-import { Layer } from './Layer';
-import * as Palette from '../common/Palette';
-import * as Utility from '../common/Utility';
+import { Layer } from "./Layer";
+import * as Palette from "../common/Palette";
+import * as Utility from "../common/Utility";
 import "css!./Choropleth";
 
 export function Choropleth() {
@@ -30,7 +30,7 @@ Choropleth.prototype.publish("meshStrokeWidth", 0.25, "number", "Stroke Width");
 Choropleth.prototype.publish("internalOnly", false, "boolean", "Internal mesh only");
 Choropleth.prototype.publish("autoScaleMode", "mesh", "set", "Auto Scale", ["none", "mesh", "data"], { tags: ["Basic"], override: true });
 
-Choropleth.prototype.data = function(_) {
+Choropleth.prototype.data = function (_) {
     var retVal = Layer.prototype.data.apply(this, arguments);
     if (arguments.length) {
         this._dataMap = {};
@@ -38,7 +38,7 @@ Choropleth.prototype.data = function(_) {
         this._dataMaxWeight = null;
 
         var context = this;
-        this.data().forEach(function(item) {
+        this.data().forEach(function (item) {
             context._dataMap[item[0]] = item;
             if (!context._dataMinWeight || item[1] < context._dataMinWeight) {
                 context._dataMinWeight = item[1];
@@ -51,7 +51,7 @@ Choropleth.prototype.data = function(_) {
     return retVal;
 };
 
-Choropleth.prototype.getDataBounds = function() {
+Choropleth.prototype.getDataBounds = function () {
     var bbox = this._choroplethData.node().getBBox();
     var retVal = {
         x: bbox.x,
@@ -70,7 +70,7 @@ Choropleth.prototype.getDataBounds = function() {
     return retVal;
 };
 
-Choropleth.prototype.autoScale = function() {
+Choropleth.prototype.autoScale = function () {
     switch (this.autoScaleMode()) {
         case "none":
             return;
@@ -83,7 +83,7 @@ Choropleth.prototype.autoScale = function() {
     }
 };
 
-Choropleth.prototype.layerEnter = function(base, svgElement, domElement) {
+Choropleth.prototype.layerEnter = function (base, svgElement, domElement) {
     Layer.prototype.layerEnter.apply(this, arguments);
 
     this._choroplethTransform = svgElement;
@@ -93,7 +93,7 @@ Choropleth.prototype.layerEnter = function(base, svgElement, domElement) {
         ;
 };
 
-Choropleth.prototype.layerUpdate = function(base, forcePath) {
+Choropleth.prototype.layerUpdate = function (base, forcePath) {
     Layer.prototype.layerUpdate.apply(this, arguments);
 
     this._palette = this._palette.switch(this.paletteID());
@@ -109,7 +109,7 @@ Choropleth.prototype.layerUpdate = function(base, forcePath) {
 
     if (forcePath || this._prevProjection !== base.projection() || this._prevInternalOnly !== this.internalOnly()) {
         this._choropleth
-            .attr("d", base._d3GeoPath(topojson.mesh(this._choroTopology, this._choroTopologyObjects, this.internalOnly() ? function(a, b) { return a !== b; } : function(a, b) { return true; })))
+            .attr("d", base._d3GeoPath(topojson.mesh(this._choroTopology, this._choroTopologyObjects, this.internalOnly() ? function (a, b) { return a !== b; } : function (a, b) { return true; })))
             ;
         this._prevProjection = base.projection();
         this._prevInternalOnly = this.internalOnly();
@@ -120,12 +120,12 @@ Choropleth.prototype.layerUpdate = function(base, forcePath) {
         ;
 };
 
-Choropleth.prototype.layerExit = function(base) {
+Choropleth.prototype.layerExit = function (base) {
     delete this._prevProjection;
     delete this._prevInternalOnly;
 };
 
-Choropleth.prototype.layerZoomed = function(base) {
+Choropleth.prototype.layerZoomed = function (base) {
     Layer.prototype.layerZoomed.apply(this, arguments);
 
     this._choroplethTransform
@@ -135,10 +135,10 @@ Choropleth.prototype.layerZoomed = function(base) {
 };
 
 //  Events  ---
-Choropleth.prototype.click = function(row, column, selected) {
+Choropleth.prototype.click = function (row, column, selected) {
     console.log("Click:  " + JSON.stringify(row) + ", " + column + ", " + selected);
 };
 
-Choropleth.prototype.dblclick = function(row, column, selected) {
+Choropleth.prototype.dblclick = function (row, column, selected) {
     console.log("Double click:  " + JSON.stringify(row) + ", " + column + ", " + selected);
 };
