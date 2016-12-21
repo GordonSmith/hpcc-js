@@ -429,14 +429,23 @@ export function flattenResult(result) {
     };
     if (result && result.length) {
         var colIdx = {};
+        if (mappings && mappings.length) {
+            mappings.forEach(function (mapping) {
+                colIdx[mapping.value.toLowerCase()] = retVal.columns.length;
+                retVal.columns.push(mapping.key);
+            });
+        } else {
+            for (var key in result[0]) {
+                colIdx[key.toLowerCase()] = retVal.columns.length;
+                retVal.columns.push(key);
+            }
+        }
         result.forEach(function (row, rowIdx) {
             var rowArr = [];
             for (var key in row) {
-                if (rowIdx === 0) {
-                    colIdx[key] = retVal.columns.length;
-                    retVal.columns.push(key);
+                if (colIdx[key.toLowerCase()] !== undefined) {
+                    rowArr[colIdx[key.toLowerCase()]] = row[key];
                 }
-                rowArr[colIdx[key]] = row[key];
             }
             retVal.data.push(rowArr);
         });
