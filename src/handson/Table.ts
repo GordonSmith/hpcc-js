@@ -80,8 +80,8 @@ Table.prototype.enter = function (domNode, element) {
         manualRowResize: true,
         formulas: true,
         colHeaders: true,
-        stretchH: 'all',
-        currentRowClassName: 'currentRow',
+        stretchH: "all",
+        currentRowClassName: "currentRow",
         rowHeights: function (row) {
             if (context._table.sortIndex.length) {
                 row = context._table.sortIndex[row][0];
@@ -133,7 +133,7 @@ Table.prototype.enter = function (domNode, element) {
                         var width = Math.max(context._table.getColWidth(col) || 50, context.minWidgetWidth()) - 8;
                         var height = Math.max(context._table.getRowHeight(row) || 16, context.minWidgetHeight());
                         if (retVal.get(context) && !value.get(context).domNode) {
-                            retVal.get(context).domNode = document.createElement('DIV');
+                            retVal.get(context).domNode = document.createElement("DIV");
                             retVal.get(context).widget
                                 .width(width)
                                 .height(height)

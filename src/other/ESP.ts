@@ -319,7 +319,7 @@ RoxieQuery.prototype = Object.create(BasicComms.prototype);
 
 function trimRight(str) {
     if (str && str.replace) {
-        return str.replace(/ +$/, '');
+        return str.replace(/ +$/, "");
     }
     return str;
 }
@@ -422,7 +422,7 @@ export function createConnection(url) {
     }
     return null;
 }
-export function flattenResult(result) {
+export function flattenResult(result, mappings) {
     var retVal = {
         columns: [],
         data: []

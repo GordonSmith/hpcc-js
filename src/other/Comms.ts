@@ -1,4 +1,4 @@
-import * as Utility from '../common/Utility';
+import * as Utility from "../common/Utility";
 
 var TIMEOUT_DEFAULT = 60;
 function espValFix(val) {
@@ -239,7 +239,7 @@ Comms.prototype.ajax = function (method, url, request) {
         if (method === "GET" && request) {
             uri += "?" + serialize(request);
         }
-        var xhr = new XMLHttpRequest();
+        var xhr: any = new XMLHttpRequest();
         xhr.onload = function (e) {
             if (this.status >= 200 && this.status < 300) {
                 resolve(JSON.parse(this.response));

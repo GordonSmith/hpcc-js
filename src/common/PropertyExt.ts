@@ -156,9 +156,9 @@ export class PropertyExt extends Class {
         var retVal = [];
         for (var key in this) {
             if (isMeta(key) && (includePrivate || !isPrivate(this, key))) {
-                var meta = this[key];
+                var meta: any = this[key];
                 if (expandProxies && meta.type) {
-                    var item: any = this;
+                    var item = this;
                     while (meta.type === "proxy") {
                         item = item[meta.proxy];
                         meta = item.publishedProperty(meta.method);
