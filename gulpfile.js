@@ -3,10 +3,9 @@
 const gulp = require('gulp');
 const webserver = require('gulp-webserver');
 
-gulp.task('serve', function () {
+gulp.task('webserver', function () {
     gulp.src('.')
         .pipe(webserver({
-            host: "0.0.0.0",
             livereload: false,
             directoryListing: true,
             open: false
@@ -16,7 +15,6 @@ gulp.task('serve', function () {
 //  ===========================================================================
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
-const gulp_tslint = require('gulp-tslint');
 
 var tsDevProject = ts.createProject('tsconfig.json');
 
