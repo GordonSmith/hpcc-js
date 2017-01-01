@@ -231,7 +231,11 @@
         if (row === 0) {
             var fieldsArr = this.fields();
             this.fields(_.map(function (label, idx) {
-                return (fieldsArr[idx] || new Field()).label_default(label);
+                if (fieldsArr[idx]) {
+                    return fieldsArr[idx].label_default(label)
+                } else {
+                    return new Field().label(label);
+                }
             }, this));
         } else {
             this._data[row - 1] = _;
