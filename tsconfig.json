@@ -8,18 +8,7 @@
 		"allowJs": true
 	},
 	"compileOnSave": true,
-	"exclude": [
-		"./*.*",
-		"apps",
-		"bower_components",
-		"demos",
-		"dist",
-		"dist-amd",
-		"dist-iife",
-		"node_modules",
-		"out",
-		"templates",
-		"test",
-		"util"
+	"include": [
+		"./src/**/*.ts"
 	]
 }
