@@ -1,9 +1,20 @@
 "use strict";
 /// <binding />
 const gulp = require('gulp');
+const webserver = require('gulp-webserver');
+
+gulp.task('webserver', function () {
+    gulp.src('.')
+        .pipe(webserver({
+            livereload: false,
+            directoryListing: true,
+            open: false
+        }));
+});
+
+//  ===========================================================================
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
-const gulp_tslint = require('gulp-tslint');
 
 var tsDevProject = ts.createProject('tsconfig.json');
 
@@ -42,15 +53,13 @@ gulp.task('watch', ['dev-css', 'dev-tsc'], function () {
 
 gulp.task("build-tsc", ['dev-css', 'dev-json', 'dev-tsc']);
 
-gulp.task('tslint', () => {
-    return gulp.src(['**/*.ts', '!**/*.d.ts', '!node_modules/**'])
-        .pipe(gulp_tslint())
-        .pipe(gulp_tslint.report());
-});
+//const gulp_tslint = require('gulp-tslint');
+//gulp.task('tslint', () => {
+//    return gulp.src(['**/*.ts', '! **/*.d.ts', '!node_modules/**'])
+//        .pipe(gulp_tslint())
+//        .pipe(gulp_tslint.report());
+//});
 //  ================================================================
-
-
-
 
 const fs = require('fs')
 const gutil = require('gulp-util')
