@@ -11,7 +11,7 @@
  *
  * ------------------------------------------------
  *  author:  Bartek Szopka
- *  version: 0.5.3
+ *  version: 0.6.0
  *  url:     http://bartaz.github.com/impress.js/
  *  source:  http://github.com/bartaz/impress.js/
  */
@@ -22,7 +22,7 @@
 // You are one of those who like to know how things work inside?
 // Let me show you the cogs that make impress.js run...
 (function ( document, window ) {
-    'use strict';
+    "use strict";
     
     // HELPER FUNCTIONS
     
@@ -31,15 +31,15 @@
     // The code is heavily inspired by Modernizr http://www.modernizr.com/
     var pfx = (function () {
         
-        var style = document.createElement('dummy').style,
-            prefixes = 'Webkit Moz O ms Khtml'.split(' '),
+        var style = document.createElement( "dummy" ).style,
+            prefixes = "Webkit Moz O ms Khtml".split( " " ),
             memory = {};
         
         return function ( prop ) {
             if ( typeof memory[ prop ] === "undefined" ) {
                 
                 var ucProp  = prop.charAt(0).toUpperCase() + prop.substr(1),
-                    props   = (prop + ' ' + prefixes.join(ucProp + ' ') + ucProp).split(' ');
+                    props   = ( prop + " " + prefixes.join( ucProp + " " ) + ucProp ).split( " " );
                 
                 memory[ prop ] = null;
                 for ( var i in props ) {
@@ -56,7 +56,7 @@
     
     })();
     
-    // `arraify` takes an array-like object and turns it into real Array
+    // `arrayify` takes an array-like object and turns it into real Array
     // to make all the Array.prototype goodness available.
     var arrayify = function ( a ) {
         return [].slice.call( a );
@@ -133,10 +133,6 @@
         return " scale(" + s + ") ";
     };
     
-    // `perspective` builds a perspective transform string for given data.
-    var perspective = function ( p ) {
-        return " perspective(" + p + "px) ";
-    };
     
     // `getElementFromHash` returns an element located by id from hash part of
     // window location.
@@ -172,7 +168,7 @@
                           // browser should support CSS 3D transtorms 
                            ( pfx("perspective") !== null ) &&
                            
-                          // and `classList` and `dataset` APIs
+                          // Browser should support `classList` and `dataset` APIs
                            ( body.classList ) &&
                            ( body.dataset ) &&
                            
@@ -337,7 +333,7 @@
             var meta = $("meta[name='viewport']") || document.createElement("meta");
             meta.content = "width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no";
             if (meta.parentNode !== document.head) {
-                meta.name = 'viewport';
+                meta.name = "viewport";
                 document.head.appendChild(meta);
             }
             
@@ -349,7 +345,9 @@
                 maxScale: toNumber( rootData.maxScale, defaults.maxScale ),
                 minScale: toNumber( rootData.minScale, defaults.minScale ),                
                 perspective: toNumber( rootData.perspective, defaults.perspective ),
-                transitionDuration: toNumber( rootData.transitionDuration, defaults.transitionDuration )
+                transitionDuration: toNumber(
+                  rootData.transitionDuration, defaults.transitionDuration
+                )
             };
             
             windowScale = computeWindowScale( config );
@@ -379,7 +377,8 @@
             css(root, {
                 top: "50%",
                 left: "50%",
-                transform: perspective( config.perspective/windowScale ) + scale( windowScale )
+                perspective: ( config.perspective / windowScale ) + "px",
+                transform: scale( windowScale )
             });
             css(canvas, rootStyles);
             
@@ -418,8 +417,9 @@
         // used to reset timeout for `impress:stepenter` event
         var stepEnterTimeout = null;
         
-        // `goto` API function that moves to step given with `el` parameter (by index, id or element),
-        // with a transition `duration` optionally given as second parameter.
+        // `goto` API function that moves to step given with `el` parameter
+        // (by index, id or element), with a transition `duration` optionally
+        // given as second parameter.
         var goto = function ( el, duration ) {
             
             if ( !initialized || !(el = getStep(el)) ) {
@@ -434,7 +434,8 @@
             // So, as a lousy (and lazy) workaround we will make the page scroll back to the top
             // whenever slide is selected
             //
-            // If you are reading this and know any better way to handle it, I'll be glad to hear about it!
+            // If you are reading this and know any better way to handle it, I'll be glad to hear
+            // about it!
             window.scrollTo(0, 0);
             
             var step = stepsData["impress-" + el.id];
@@ -495,9 +496,12 @@
             // visually nice and 'natural' looking transitions), so we need to know
             // that both of them are finished.
             css(root, {
+                // For IE 11 support we must specify perspective independent
+                // of transform.
+                perspective: ( config.perspective / targetScale ) + "px",
                 // to keep the perspective look similar for different scales
                 // we need to 'scale' the perspective, too
-                transform: perspective( config.perspective / targetScale ) + scale( targetScale ),
+                transform: scale( targetScale ),
                 transitionDuration: duration + "ms",
                 transitionDelay: (zoomin ? delay : 0) + "ms"
             });
@@ -510,17 +514,22 @@
             
             // Here is a tricky part...
             //
-            // If there is no change in scale or no change in rotation and translation, it means there was actually
-            // no delay - because there was no transition on `root` or `canvas` elements.
-            // We want to trigger `impress:stepenter` event in the correct moment, so here we compare the current
-            // and target values to check if delay should be taken into account.
+            // If there is no change in scale or no change in rotation and translation, it means
+            // there was actually no delay - because there was no transition on `root` or `canvas`
+            // elements. We want to trigger `impress:stepenter` event in the correct moment, so
+            // here we compare the current and target values to check if delay should be taken into
+            // account.
             //
-            // I know that this `if` statement looks scary, but it's pretty simple when you know what is going on
+            // I know that this `if` statement looks scary, but it's pretty simple when you know
+            // what is going on
             // - it's simply comparing all the values.
             if ( currentState.scale === target.scale ||
-                (currentState.rotate.x === target.rotate.x && currentState.rotate.y === target.rotate.y &&
-                 currentState.rotate.z === target.rotate.z && currentState.translate.x === target.translate.x &&
-                 currentState.translate.y === target.translate.y && currentState.translate.z === target.translate.z) ) {
+                ( currentState.rotate.x === target.rotate.x &&
+                  currentState.rotate.y === target.rotate.y &&
+                  currentState.rotate.z === target.rotate.z &&
+                  currentState.translate.x === target.translate.x &&
+                  currentState.translate.y === target.translate.y &&
+                  currentState.translate.z === target.translate.z ) ) {
                 delay = 0;
             }
             
@@ -529,17 +538,23 @@
             activeStep = el;
             
             // And here is where we trigger `impress:stepenter` event.
-            // We simply set up a timeout to fire it taking transition duration (and possible delay) into account.
+            // We simply set up a timeout to fire it taking transition duration
+            // (and possible delay) into account.
             //
-            // I really wanted to make it in more elegant way. The `transitionend` event seemed to be the best way
-            // to do it, but the fact that I'm using transitions on two separate elements and that the `transitionend`
-            // event is only triggered when there was a transition (change in the values) caused some bugs and 
-            // made the code really complicated, cause I had to handle all the conditions separately. And it still
-            // needed a `setTimeout` fallback for the situations when there is no transition at all.
-            // So I decided that I'd rather make the code simpler than use shiny new `transitionend`.
+            // I really wanted to make it in more elegant way. The `transitionend` event seemed to
+            // be the best way to do it, but the fact that I'm using transitions on two separate
+            // elements and that the `transitionend` event is only triggered when there was a
+            // transition (change in the values) caused some bugs and made the code really
+            // complicated, cause I had to handle all the conditions separately. And it still
+            // needed a `setTimeout` fallback for the situations when there is no transition at
+            // all.
+            // So I decided that I'd rather make the code simpler than use shiny new
+            // `transitionend`.
             //
-            // If you want learn something interesting and see how it was done with `transitionend` go back to
-            // version 0.5.2 of impress.js: http://github.com/bartaz/impress.js/blob/0.5.2/js/impress.js
+            // If you want learn something interesting and see how it was done with `transitionend`
+            // go back to
+            // version 0.5.2 of impress.js:
+            // http://github.com/bartaz/impress.js/blob/0.5.2/js/impress.js
             window.clearTimeout(stepEnterTimeout);
             stepEnterTimeout = window.setTimeout(function() {
                 onStepEnter(activeStep);
@@ -654,7 +669,7 @@
 // In future I think about moving it to make them optional, move to separate files
 // and treat more like a 'plugins'.
 (function ( document, window ) {
-    'use strict';
+    "use strict";
     
     // throttling function calls, by Remy Sharp
     // http://remysharp.com/2010/07/21/throttling-function-calls/
@@ -682,7 +697,9 @@
         // Prevent default keydown action when one of supported key is pressed.
         /*GJS
         document.addEventListener("keydown", function ( event ) {
-            if ( event.keyCode === 9 || ( event.keyCode >= 32 && event.keyCode <= 34 ) || (event.keyCode >= 37 && event.keyCode <= 40) ) {
+            if ( event.keyCode === 9 ||
+               ( event.keyCode >= 32 && event.keyCode <= 34 ) ||
+               ( event.keyCode >= 37 && event.keyCode <= 40 ) ) {
                 event.preventDefault();
             }
         }, false);
@@ -705,16 +722,22 @@
         //   consistency I should add [shift+tab] as opposite action...
         /*GJS
         document.addEventListener("keyup", function ( event ) {
-            if ( event.keyCode === 9 || ( event.keyCode >= 32 && event.keyCode <= 34 ) || (event.keyCode >= 37 && event.keyCode <= 40) ) {
+
+            if ( event.shiftKey || event.altKey || event.ctrlKey || event.metaKey ) {
+                return;
+            }
+            if ( event.keyCode === 9 ||
+               ( event.keyCode >= 32 && event.keyCode <= 34 ) ||
+               ( event.keyCode >= 37 && event.keyCode <= 40 ) ) {
                 switch( event.keyCode ) {
-                    case 33: // pg up
+                    case 33: // Page up
                     case 37: // left
                     case 38: // up
                              api.prev();
                              break;
                     case 9:  // tab
                     case 32: // space
-                    case 34: // pg down
+                    case 34: // Page down
                     case 39: // right
                     case 40: // down
                              api.next();
@@ -740,7 +763,7 @@
                 var href = target.getAttribute("href");
                 
                 // if it's a link to presentation step, target this step
-                if ( href && href[0] === '#' ) {
+                if ( href && href[ 0 ] === "#" ) {
                     target = document.getElementById( href.slice(1) );
                 }
             }
@@ -755,7 +778,8 @@
         document.addEventListener("click", function ( event ) {
             var target = event.target;
             // find closest step element that is not active
-            while ( !(target.classList.contains("step") && !target.classList.contains("active")) &&
+            while ( !( target.classList.contains( "step" ) &&
+                      !target.classList.contains( "active" ) ) &&
                     (target !== document.documentElement) ) {
                 target = target.parentNode;
             }
@@ -802,3 +826,246 @@
 //
 // I've learnt a lot when building impress.js and I hope this code and comments
 // will help somebody learn at least some part of it.
+
+
+/**
+ * Add dataset support to elements
+ * No globals, no overriding prototype with non-standard methods, 
+ *   handles CamelCase properly, attempts to use standard 
+ *   Object.defineProperty() (and Function bind()) methods, 
+ *   falls back to native implementation when existing
+ * Inspired by http://code.eligrey.com/html5/dataset/ 
+ *   (via https://github.com/adalgiso/html5-dataset/blob/master/html5-dataset.js )
+ * Depends on Function.bind and Object.defineProperty/Object.getOwnPropertyDescriptor (polyfills below)
+ * All code below is Licensed under the X11/MIT License
+*/
+
+// Inspired by https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/bind#Compatibility
+if (!Function.prototype.bind) {
+    Function.prototype.bind = function (oThis) {
+        'use strict';
+        if (typeof this !== "function") {
+            // closest thing possible to the ECMAScript 5 internal IsCallable function
+            throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+        }
+
+        var aArgs = Array.prototype.slice.call(arguments, 1),
+            fToBind = this,
+            FNOP = function () {},
+            fBound = function () {
+                return fToBind.apply(
+                    this instanceof FNOP && oThis ? this : oThis,
+                   aArgs.concat(Array.prototype.slice.call(arguments))
+               );
+            };
+
+        FNOP.prototype = this.prototype;
+        fBound.prototype = new FNOP();
+
+        return fBound;
+    };
+}
+
+/*
+ * Xccessors Standard: Cross-browser ECMAScript 5 accessors
+ * http://purl.eligrey.com/github/Xccessors
+ * 
+ * 2010-06-21
+ * 
+ * By Eli Grey, http://eligrey.com
+ * 
+ * A shim that partially implements Object.defineProperty,
+ * Object.getOwnPropertyDescriptor, and Object.defineProperties in browsers that have
+ * legacy __(define|lookup)[GS]etter__ support.
+ * 
+ * Licensed under the X11/MIT License
+ *   See LICENSE.md
+*/
+
+// Removed a few JSLint options as Notepad++ JSLint validator complaining and 
+//   made comply with JSLint; also moved 'use strict' inside function
+/*jslint white: true, undef: true, plusplus: true,
+  bitwise: true, regexp: true, newcap: true, maxlen: 90 */
+
+/*! @source http://purl.eligrey.com/github/Xccessors/blob/master/xccessors-standard.js*/
+
+(function () {
+    'use strict';
+    var ObjectProto = Object.prototype,
+    defineGetter = ObjectProto.__defineGetter__,
+    defineSetter = ObjectProto.__defineSetter__,
+    lookupGetter = ObjectProto.__lookupGetter__,
+    lookupSetter = ObjectProto.__lookupSetter__,
+    hasOwnProp = ObjectProto.hasOwnProperty;
+    
+    if (defineGetter && defineSetter && lookupGetter && lookupSetter) {
+
+        if (!Object.defineProperty) {
+            Object.defineProperty = function (obj, prop, descriptor) {
+                if (arguments.length < 3) { // all arguments required
+                    throw new TypeError("Arguments not optional");
+                }
+                
+                prop += ""; // convert prop to string
+
+                if (hasOwnProp.call(descriptor, "value")) {
+                    if (!lookupGetter.call(obj, prop) && !lookupSetter.call(obj, prop)) {
+                        // data property defined and no pre-existing accessors
+                        obj[prop] = descriptor.value;
+                    }
+
+                    if ((hasOwnProp.call(descriptor, "get") ||
+                         hasOwnProp.call(descriptor, "set"))) 
+                    {
+                        // descriptor has a value prop but accessor already exists
+                        throw new TypeError("Cannot specify an accessor and a value");
+                    }
+                }
+
+                // can't switch off these features in ECMAScript 3
+                // so throw a TypeError if any are false
+                if (!(descriptor.writable && descriptor.enumerable && 
+                    descriptor.configurable))
+                {
+                    throw new TypeError(
+                        "This implementation of Object.defineProperty does not support" +
+                        " false for configurable, enumerable, or writable."
+                    );
+                }
+                
+                if (descriptor.get) {
+                    defineGetter.call(obj, prop, descriptor.get);
+                }
+                if (descriptor.set) {
+                    defineSetter.call(obj, prop, descriptor.set);
+                }
+            
+                return obj;
+            };
+        }
+
+        if (!Object.getOwnPropertyDescriptor) {
+            Object.getOwnPropertyDescriptor = function (obj, prop) {
+                if (arguments.length < 2) { // all arguments required
+                    throw new TypeError("Arguments not optional.");
+                }
+                
+                prop += ""; // convert prop to string
+
+                var descriptor = {
+                    configurable: true,
+                    enumerable  : true,
+                    writable    : true
+                },
+                getter = lookupGetter.call(obj, prop),
+                setter = lookupSetter.call(obj, prop);
+
+                if (!hasOwnProp.call(obj, prop)) {
+                    // property doesn't exist or is inherited
+                    return descriptor;
+                }
+                if (!getter && !setter) { // not an accessor so return prop
+                    descriptor.value = obj[prop];
+                    return descriptor;
+                }
+
+                // there is an accessor, remove descriptor.writable;
+                // populate descriptor.get and descriptor.set (IE's behavior)
+                delete descriptor.writable;
+                descriptor.get = descriptor.set = undefined;
+                
+                if (getter) {
+                    descriptor.get = getter;
+                }
+                if (setter) {
+                    descriptor.set = setter;
+                }
+                
+                return descriptor;
+            };
+        }
+
+        if (!Object.defineProperties) {
+            Object.defineProperties = function (obj, props) {
+                var prop;
+                for (prop in props) {
+                    if (hasOwnProp.call(props, prop)) {
+                        Object.defineProperty(obj, prop, props[prop]);
+                    }
+                }
+            };
+        }
+    }
+}());
+
+// Begin dataset code
+
+if (!document.documentElement.dataset && 
+         // FF is empty while IE gives empty object
+        (!Object.getOwnPropertyDescriptor(Element.prototype, 'dataset')  ||
+        !Object.getOwnPropertyDescriptor(Element.prototype, 'dataset').get)
+    ) {
+    var propDescriptor = {
+        enumerable: true,
+        get: function () {
+            'use strict';
+            var i, 
+                that = this,
+                HTML5_DOMStringMap, 
+                attrVal, attrName, propName,
+                attribute,
+                attributes = this.attributes,
+                attsLength = attributes.length,
+                toUpperCase = function (n0) {
+                    return n0.charAt(1).toUpperCase();
+                },
+                getter = function () {
+                    return this;
+                },
+                setter = function (attrName, value) {
+                    return (typeof value !== 'undefined') ? 
+                        this.setAttribute(attrName, value) : 
+                        this.removeAttribute(attrName);
+                };
+            try { // Simulate DOMStringMap w/accessor support
+                // Test setting accessor on normal object
+                ({}).__defineGetter__('test', function () {});
+                HTML5_DOMStringMap = {};
+            }
+            catch (e1) { // Use a DOM object for IE8
+                HTML5_DOMStringMap = document.createElement('div');
+            }
+            for (i = 0; i < attsLength; i++) {
+                attribute = attributes[i];
+                // Fix: This test really should allow any XML Name without 
+                //         colons (and non-uppercase for XHTML)
+                if (attribute && attribute.name && 
+                    (/^data-\w[\w\-]*$/).test(attribute.name)) {
+                    attrVal = attribute.value;
+                    attrName = attribute.name;
+                    // Change to CamelCase
+                    propName = attrName.substr(5).replace(/-./g, toUpperCase);
+                    try {
+                        Object.defineProperty(HTML5_DOMStringMap, propName, {
+                            enumerable: this.enumerable,
+                            get: getter.bind(attrVal || ''),
+                            set: setter.bind(that, attrName)
+                        });
+                    }
+                    catch (e2) { // if accessors are not working
+                        HTML5_DOMStringMap[propName] = attrVal;
+                    }
+                }
+            }
+            return HTML5_DOMStringMap;
+        }
+    };
+    try {
+        // FF enumerates over element's dataset, but not 
+        //   Element.prototype.dataset; IE9 iterates over both
+        Object.defineProperty(Element.prototype, 'dataset', propDescriptor);
+    } catch (e) {
+        propDescriptor.enumerable = false; // IE8 does not allow setting to true
+        Object.defineProperty(Element.prototype, 'dataset', propDescriptor);
+    }
+}
