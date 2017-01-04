@@ -3,9 +3,10 @@
 const gulp = require('gulp');
 const webserver = require('gulp-webserver');
 
-gulp.task('webserver', function () {
+gulp.task('serve', function () {
     gulp.src('.')
         .pipe(webserver({
+            host: "0.0.0.0",
             livereload: false,
             directoryListing: true,
             open: false
@@ -84,7 +85,7 @@ const replace = require('gulp-replace');
 
 // Consts
 const cfg = {
-    src: 'src',
+    src: 'out',
     dist: 'dist',
     distamd: 'dist-amd',
     test: 'test',
@@ -230,7 +231,7 @@ const amd_modules = bundles.map(function (bundle, idx) {
     };
 });
 
-gulp.task("build-amd-src", function (done) {
+gulp.task("build-amd-src", ["build-tsc"], function (done) {
     var opts = {
         baseUrl: ".",
         appDir: "out",
