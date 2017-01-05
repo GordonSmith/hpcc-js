@@ -1,4 +1,4 @@
-﻿import * as d3 from 'd3';
+﻿import * as d3 from "d3";
 import { SVGWidget } from "../common/SVGWidget";
 import { svgMarkerGlitch } from "../common/Platform";
 import { IGraph } from "../api/IGraph";
@@ -690,7 +690,7 @@ Graph.prototype.getLayoutEngine = function () {
                 ranksep: this.hierarchyRankSeparation()
             });
     }
-    return null;//new GraphLayouts.None(this.graphData, this._size.width, this._size.height);
+    return null; //new GraphLayouts.None(this.graphData, this._size.width, this._size.height);
 };
 
 Graph.prototype.getNeighborMap = function (vertex) {

@@ -27,92 +27,106 @@ function espRowFix(row) {
     return row;
 }
 
-export function ESPUrl() {
-    this._protocol = "http:";
-    this._hostname = "localhost";
-}
+export class ESPUrl {
+    private _protocol = "http:";
+    private _hostname = "localhost";
+    private _url;
+    private _port;
+    private _search;
+    private _pathname;
+    private _params;
+    private _hash;
+    private _host;
 
-ESPUrl.prototype.url = function (_) {
-    if (!arguments.length) return this._url;
-    this._url = _;
-    var parser = document.createElement("a");
-    parser.href = this._url;
-    parser.href = parser.href; //This fixes an IE9/IE10 DOM value issue
+    constructor() {
+    }
 
-    var params = {};
-    if (parser.search.length) {
-        var tmp: any = parser.search;
-        if (tmp[0] === "?") {
-            tmp = tmp.substring(1);
+    url(_) {
+        if (!arguments.length) return this._url;
+        this._url = _;
+        var parser = document.createElement("a");
+        parser.href = this._url;
+        parser.href = parser.href; //This fixes an IE9/IE10 DOM value issue
+
+        var params = {};
+        if (parser.search.length) {
+            var tmp: any = parser.search;
+            if (tmp[0] === "?") {
+                tmp = tmp.substring(1);
+            }
+            tmp = tmp.split("&");
+            tmp.map(function (item) {
+                var tmpItem = item.split("=");
+                params[decodeURIComponent(tmpItem[0])] = decodeURIComponent(tmpItem[1]);
+            });
         }
-        tmp = tmp.split("&");
-        tmp.map(function (item) {
-            var tmpItem = item.split("=");
-            params[decodeURIComponent(tmpItem[0])] = decodeURIComponent(tmpItem[1]);
-        });
+        this._protocol = parser.protocol;
+        this._hostname = parser.hostname;
+        this._port = parser.port;
+        this._pathname = parser.pathname;
+        while (this._pathname.length && this._pathname[0] === "/") {
+            this._pathname = this._pathname.substring(1);
+        }
+        this._search = parser.search;
+        this._params = params;
+        this._hash = parser.hash;
+        this._host = parser.host;
+
+        return this;
+    };
+
+    protocol(_): string | this {
+        if (!arguments.length) return this._protocol;
+        this._protocol = _;
+        return this;
+    };
+
+    hostname(_): string | this {
+        if (!arguments.length) return this._hostname;
+        this._hostname = _;
+        return this;
+    };
+
+    port(_) {
+        if (!arguments.length) return this._port;
+        this._port = _;
+        return this;
+    };
+
+    pathname(_) {
+        if (!arguments.length) return this._pathname;
+        this._pathname = _;
+        return this;
+    };
+
+    param(key: string) {
+        return this._params[key];
     }
-    this._protocol = parser.protocol;
-    this._hostname = parser.hostname;
-    this._port = parser.port;
-    this._pathname = parser.pathname;
-    while (this._pathname.length && this._pathname[0] === "/") {
-        this._pathname = this._pathname.substring(1);
-    }
-    this._search = parser.search;
-    this._params = params;
-    this._hash = parser.hash;
-    this._host = parser.host;
 
-    return this;
-};
+    isWsWorkunits() {
+        return this._pathname.toLowerCase().indexOf("wsworkunits") >= 0 || this._params["Wuid"];
+    };
 
-ESPUrl.prototype.protocol = function (_) {
-    if (!arguments.length) return this._protocol;
-    this._protocol = _;
-    return this;
-};
+    isWorkunitResult() {
+        return this.isWsWorkunits() && (this._params["Sequence"] || this._params["ResultName"]);
+    };
 
-ESPUrl.prototype.hostname = function (_) {
-    if (!arguments.length) return this._hostname;
-    this._hostname = _;
-    return this;
-};
+    isWsEcl() {
+        return this._pathname.toLowerCase().indexOf("wsecl") >= 0 || (this._params["QuerySetId"] && this._params["Id"]);
+    };
 
-ESPUrl.prototype.port = function (_) {
-    if (!arguments.length) return this._port;
-    this._port = _;
-    return this;
-};
+    isWsWorkunits_GetStats() {
+        return this._pathname.toLowerCase().indexOf("wsworkunits/wugetstats") >= 0 && this._params["WUID"];
+    };
 
-ESPUrl.prototype.pathname = function (_) {
-    if (!arguments.length) return this._pathname;
-    this._pathname = _;
-    return this;
-};
-
-ESPUrl.prototype.isWsWorkunits = function () {
-    return this._pathname.toLowerCase().indexOf("wsworkunits") >= 0 || this._params["Wuid"];
-};
-
-ESPUrl.prototype.isWorkunitResult = function () {
-    return this.isWsWorkunits() && (this._params["Sequence"] || this._params["ResultName"]);
-};
-
-ESPUrl.prototype.isWsEcl = function () {
-    return this._pathname.toLowerCase().indexOf("wsecl") >= 0 || (this._params["QuerySetId"] && this._params["Id"]);
-};
-
-ESPUrl.prototype.isWsWorkunits_GetStats = function () {
-    return this._pathname.toLowerCase().indexOf("wsworkunits/wugetstats") >= 0 && this._params["WUID"];
-};
-
-ESPUrl.prototype.getUrl = function (overrides) {
-    overrides = overrides || {};
-    return (overrides.protocol !== undefined ? overrides.protocol : this._protocol) + "//" +
-        (overrides.hostname !== undefined ? overrides.hostname : this._hostname) + ":" +
-        (overrides.port !== undefined ? overrides.port : this._port) + "/" +
-        (overrides.pathname !== undefined ? overrides.pathname : this._pathname);
-};
+    getUrl(overrides) {
+        overrides = overrides || {};
+        return (overrides.protocol !== undefined ? overrides.protocol : this._protocol) + "//" +
+            (overrides.hostname !== undefined ? overrides.hostname : this._hostname) + ":" +
+            (overrides.port !== undefined ? overrides.port : this._port) + "/" +
+            (overrides.pathname !== undefined ? overrides.pathname : this._pathname);
+    };
+}
 
 export function ESPMappings(mappings) {
     this._mappings = mappings;
