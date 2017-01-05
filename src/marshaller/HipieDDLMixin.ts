@@ -46,13 +46,13 @@ HipieDDLMixin.prototype._gatherDashboards = function (marshaller, databomb) {
                     popupVisualizations: []
                 };
                 context._ddlDashboards.push(curr);
-            } else if (item instanceof HipieDDL.DataSource) {
+            } else if (item instanceof HipieDDL.Datasource) {
                 if (item.databomb && databomb[item.id]) {
                     item.comms.databomb(databomb[item.id]);
                 }
             } else if (item instanceof HipieDDL.Output) {
-                if (item.dataSource.databomb) {
-                    item.dataSource.comms.databombOutput(item.from, item.id);
+                if (item.datasource.databomb) {
+                    item.datasource.comms.databombOutput(item.from, item.id);
                 }
             } else if (item instanceof HipieDDL.Visualization) {
                 if (item.widget) {

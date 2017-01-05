@@ -50,13 +50,13 @@ function walkDashboards(marshaller, databomb) {
                     visualizations: []
                 };
                 dashboards[item.getQualifiedID()] = curr;
-            } else if (item instanceof HipieDDL.DataSource) {
+            } else if (item instanceof HipieDDL.Datasource) {
                 if (item.databomb && databomb[item.id]) {
                     item.comms.databomb(databomb[item.id]);
                 }
             } else if (item instanceof HipieDDL.Output) {
-                if (item.dataSource.databomb) {
-                    item.dataSource.comms.databombOutput(item.from, item.id);
+                if (item.datasource.databomb) {
+                    item.datasource.comms.databombOutput(item.from, item.id);
                 }
             } else if (item instanceof HipieDDL.Visualization) {
                 if (item.widget) {
