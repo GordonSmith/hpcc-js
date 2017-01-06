@@ -73,13 +73,13 @@ export class ESPUrl {
         return this;
     };
 
-    protocol(_) {
+    protocol(_): string | this {
         if (!arguments.length) return this._protocol;
         this._protocol = _;
         return this;
     };
 
-    hostname(_) {
+    hostname(_): string | this {
         if (!arguments.length) return this._hostname;
         this._hostname = _;
         return this;

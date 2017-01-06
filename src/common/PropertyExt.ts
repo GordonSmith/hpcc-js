@@ -163,9 +163,10 @@ export class PropertyExt extends Class {
                         item = item[meta.proxy];
                         meta = item.publishedProperty(meta.method);
                     }
-                    if (meta.id !== this[key].id) {
+                    var selfProp: any = this[key];
+                    if (meta.id !== selfProp.id) {
                         meta = JSON.parse(JSON.stringify(meta));  //  Clone meta so we can safely replace the id.
-                        meta.id = this[key].id;
+                        meta.id = selfProp.id;
                     }
                 }
                 retVal.push(meta);
