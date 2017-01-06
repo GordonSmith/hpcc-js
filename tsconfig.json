@@ -5,7 +5,7 @@
 		"rootDir": "./src",
 		"outDir": "out",
 		"sourceMap": true,
-		"allowJs": true
+		"allowJs": false
 	},
 	"compileOnSave": true,
 	"include": [

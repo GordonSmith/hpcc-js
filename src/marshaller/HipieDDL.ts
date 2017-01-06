@@ -1828,18 +1828,18 @@ export class Dashboard {
 
 //  Marshaller  ---
 export class Marshaller extends Class {
-    private _proxyMappings = {};
+    private _proxyMappings: any = {};
     private _widgetMappings = d3.map();
-    private _clearDataOnUpdate = true;
-    private _propogateClear = false;
-    private id = "Marshaller";
-    private _missingDataString = "";
-    dashboards = {};
+    private _clearDataOnUpdate: boolean = true;
+    private _propogateClear: boolean = false;
+    private id: string = "Marshaller";
+    private _missingDataString: string = "";
+    dashboards: { [key: string]: Dashboard } = {};
     dashboardArray: Dashboard[] = [];
-    private _json;
-    private _jsonParsed;
-    private _visualizationArray: Visualization[] = [];
     private _visualizations: { [key: string]: Visualization } = {};
+    private _visualizationArray: Visualization[] = [];
+    private _json: string;
+    private _jsonParsed: any;
     dashboardTotal: number;
     espUrl: ESPUrl;
     private _timeout: number;
@@ -1910,37 +1910,37 @@ export class Marshaller extends Class {
         });
     }
 
-    proxyMappings(_) {
+    proxyMappings(_): any | this {
         if (!arguments.length) return this._proxyMappings;
         this._proxyMappings = _;
         return this;
     }
 
-    timeout(_) {
+    timeout(_): number | this {
         if (!arguments.length) return this._timeout;
         this._timeout = _;
         return this;
     }
 
-    widgetMappings(_) {
+    widgetMappings(_): any | this {
         if (!arguments.length) return this._widgetMappings;
         this._widgetMappings = _;
         return this;
     }
 
-    clearDataOnUpdate(_) {
+    clearDataOnUpdate(_): boolean | this {
         if (!arguments.length) return this._clearDataOnUpdate;
         this._clearDataOnUpdate = _;
         return this;
     }
 
-    propogateClear(_) {
+    propogateClear(_): boolean | this {
         if (!arguments.length) return this._propogateClear;
         this._propogateClear = _;
         return this;
     }
 
-    missingDataString(_) {
+    missingDataString(_): string | this {
         if (!arguments.length) return this._missingDataString;
         this._missingDataString = _;
         return this;
@@ -2063,4 +2063,3 @@ export class Marshaller extends Class {
         return this;
     }
 }
-
