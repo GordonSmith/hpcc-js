@@ -6,6 +6,12 @@ import { Widget } from "../common/Widget";
 import { ESPUrl, HIPIEWorkunit, HIPIERoxie, HIPIEDatabomb } from "../other/Comms";
 import { MultiChart } from "../chart/MultiChart";
 import { Table } from "../other/Table";
+import {
+    IDashboard, IDatasource, IOutput, IEvent, IEventUpdate, VisualizationType,
+    IAnyVisualization, IPieVisualization, ILineVisualization, ITableVisualization, IGraphVisualization, IChoroVisualization, ISliderVisualization,
+    IAnySource, IPieSource, ILineSource, ITableSource, IGraphSource, IGraphLink, IChoroSource,
+    IAnyMapping, IPieMapping, ILineMapping, ITableMapping, IGraphMapping, IGraphLinkMapping, IAnyChoroMapping, IChoroUSStateMapping, IChoroUSCountyMapping, IChoroGeohashMapping
+} from "./DDLApi";
 
 const LOADING = "...loading...";
 const _CHANGED = "_changed";
@@ -61,17 +67,17 @@ class SourceMappings {
 
     hasMappings = false;
     reverseMappings = {};
-    columns = [];
-    columnsIdx = {};
-    columnsRHS = [];
-    columnsRHSIdx = {};
+    columns: string[] = [];
+    columnsIdx: { [key: string]: number } = {};
+    columnsRHS: string[] = [];
+    columnsRHSIdx: { [key: string]: number } = {};
 
-    constructor(visualization: Visualization, mappings) {
+    constructor(visualization: Visualization, mappings: { [key: string]: string | string[] } | IPieMapping | IAnyChoroMapping | IGraphLinkMapping) {
         this.visualization = visualization;
         var newMappings = {};
         for (var key in mappings) {
             if (mappings[key] instanceof Array) {
-                mappings[key].forEach(function (mapingItem, idx) {
+                (<string[]>mappings[key]).forEach(function (mapingItem, idx) {
                     newMappings[idx === 0 ? key : key + "_" + idx] = mapingItem;
                 });
             } else {
@@ -165,10 +171,14 @@ class SourceMappings {
     getReverseMap(key) {
         return this.reverseMappings[key];
     }
+
+    toDDL(): IPieMapping {
+        return this.mappings;
+    }
 }
 
 class ChartMappings extends SourceMappings {
-    constructor(visualization, mappings) {
+    constructor(visualization: Visualization, mappings: IPieMapping) {
         super(visualization, mappings);
         this.columns = ["label", "weight"];
         this.columnsIdx = { label: 0, weight: 1 };
@@ -176,16 +186,27 @@ class ChartMappings extends SourceMappings {
     }
 }
 
+function isUSStateMapping(mappings: IAnyChoroMapping) {
+    return (<IChoroUSStateMapping>mappings).state !== undefined;
+}
+
+function isUSCountyMapping(mappings: IAnyChoroMapping) {
+    return (<IChoroUSCountyMapping>mappings).county !== undefined;
+}
+
+function isGeohashMapping(mappings: IAnyChoroMapping) {
+    return (<IChoroGeohashMapping>mappings).geohash !== undefined;
+}
 class ChoroMappings extends SourceMappings {
-    constructor(visualization, mappings) {
+    constructor(visualization: Visualization, mappings: IAnyChoroMapping) {
         super(visualization, mappings);
-        if (mappings.state) {
+        if (isUSStateMapping(mappings)) {
             this.columns = ["state", "weight"];
             this.columnsIdx = { state: 0, weight: 1 };
-        } else if (mappings.county) {
+        } else if (isUSStateMapping(mappings)) {
             this.columns = ["county", "weight"];
             this.columnsIdx = { county: 0, weight: 1 };
-        } else if (mappings.geohash) {
+        } else if (isGeohashMapping(mappings)) {
             this.columns = ["geohash", "weight"];
             this.columnsIdx = { geohash: 0, weight: 1 };
         }
@@ -194,29 +215,31 @@ class ChoroMappings extends SourceMappings {
 }
 
 class ChoroMappings2 extends SourceMappings {
-    constructor(visualization, mappings) {
+    constructor(visualization: Visualization, mappings: IAnyChoroMapping) {
         super(visualization, mappings);
-        if (mappings.state) {
+        if (isUSStateMapping(mappings)) {
             this.columns = ["state"];
             this.columnsIdx = { state: 0 };
-        } else if (mappings.county) {
+        } else if (isUSStateMapping(mappings)) {
             this.columns = ["county"];
             this.columnsIdx = { county: 0 };
-        } else if (mappings.geohash) {
+        } else if (isGeohashMapping(mappings)) {
             this.columns = ["geohash", "label"];
             this.columnsIdx = { geohash: 0, label: 1 };
         }
         var weightOffset = this.columns.length;
-        mappings.weight.forEach(function (w, i) {
-            this.columns.push(w);
-            this.columnsIdx[i === 0 ? "weight" : "weight_" + i] = i + weightOffset;
-        }, this);
+        if (mappings.weight instanceof Array) {
+            mappings.weight.forEach(function (w, i) {
+                this.columns.push(w);
+                this.columnsIdx[i === 0 ? "weight" : "weight_" + i] = i + weightOffset;
+            }, this);
+        }
         this.init();
     }
 }
 
 class HeatMapMappings extends SourceMappings {
-    constructor(visualization, mappings) {
+    constructor(visualization: Visualization, mappings) {
         super(visualization, mappings);
         this.columns = ["x", "y", "weight"];
         this.columnsIdx = { x: 0, y: 1, weight: 2 };
@@ -225,7 +248,7 @@ class HeatMapMappings extends SourceMappings {
 }
 
 class LineMappings extends SourceMappings {
-    constructor(visualization, mappings) {
+    constructor(visualization: Visualization, mappings: ILineMapping) {
         var newMappings = {
             label: mappings.x[0]
         };
@@ -238,8 +261,8 @@ class LineMappings extends SourceMappings {
 }
 
 class TableMappings extends SourceMappings {
-    constructor(visualization, mappings) {
-        var newMappings = {};
+    constructor(visualization: Visualization, mappings: ITableMapping) {
+        var newMappings: { [key: string]: string } = {};
         for (var key in mappings) {
             mappings[key].forEach(function (mapingItem, idx) {
                 newMappings[visualization.label[idx]] = mapingItem;
@@ -330,11 +353,11 @@ class GraphMappings extends SourceMappings {
     fields;
     columns = ["uid", "label", "weight", "flags"];
     columnsIdx = { uid: 0, label: 1, weight: 2, flags: 3 };
-    link;
+    link: IGraphLink;
     linkMappings;
-    visualization;
+    visualization: Visualization;
 
-    constructor(visualization, mappings, link) {
+    constructor(visualization, mappings: IGraphMapping, link: IGraphLink) {
         super(visualization, mappings);
         this.icon = visualization.icon || {};
         this.fields = visualization.fields || [];
@@ -347,6 +370,7 @@ class GraphMappings extends SourceMappings {
         this.linkMappings.columnsIdx = { uid: 0 };
         this.visualization = visualization;
     }
+
     calcIconInfo(field, origItem, forAnnotation) {
         var retVal = {};
         function mapStruct(struct, retVal) {
@@ -383,7 +407,7 @@ class GraphMappings extends SourceMappings {
         var context = this;
         var vertexMap = {};
         var vertices = [];
-        var graph = this.visualization.widget;
+        var graph: any = this.visualization.widget;
         function getVertex(item, origItem?) {
             var id = "uid_" + item[0];
             var retVal = vertexMap[id];
@@ -451,15 +475,16 @@ class GraphMappings extends SourceMappings {
 
 //  Viz Source ---
 class Source {
-    visualization;
-    private _id;
+    visualization: Visualization;
+    private _id: string;
     private _output;
-    mappings;
+    mappings: ChartMappings | LineMappings | TableMappings | GraphMappings | ChoroMappings | ChoroMappings2 | HeatMapMappings;
+    properties;
     first;
     reverse;
     sort;
 
-    constructor(visualization, source) {
+    constructor(visualization: Visualization, source: IAnySource) {
         this.visualization = visualization;
         if (source) {
             this._id = source.id;
@@ -470,34 +495,35 @@ class Source {
             }
             switch (this.visualization.type) {
                 case "LINE":
-                    this.mappings = new LineMappings(this.visualization, source.mappings);
+                    this.mappings = new LineMappings(this.visualization, (<ILineMapping>source.mappings));
                     break;
                 case "TABLE":
-                    this.mappings = new TableMappings(this.visualization, source.mappings);
+                    this.mappings = new TableMappings(this.visualization, (<ITableSource>source).mappings);
                     break;
                 case "GRAPH":
-                    this.mappings = new GraphMappings(this.visualization, source.mappings, source.link);
+                    this.mappings = new GraphMappings(this.visualization, (<IGraphSource>source).mappings, (<IGraphSource>source).link);
                     break;
                 case "CHORO":
-                    if (source.mappings.weight instanceof Array && source.mappings.weight.length) {
-                        this.mappings = new ChoroMappings2(this.visualization, source.mappings);
-                        if (source.mappings.weight.length > 1) {
+                    if ((<IChoroSource>source).mappings.weight instanceof Array && (<IChoroSource>source).mappings.weight.length) {
+                        this.mappings = new ChoroMappings2(this.visualization, (<IChoroSource>source).mappings);
+                        if ((<IChoroSource>source).mappings.weight.length > 1) {
                             this.visualization.type = "LINE";
                         }
                     } else {
-                        this.mappings = new ChoroMappings(this.visualization, source.mappings);
+                        this.mappings = new ChoroMappings(this.visualization, (<IChoroSource>source).mappings);
                     }
                     break;
                 case "HEAT_MAP":
                     this.mappings = new HeatMapMappings(this.visualization, source.mappings);
                     break;
                 default:
-                    this.mappings = new ChartMappings(this.visualization, source.mappings);
+                    this.mappings = new ChartMappings(this.visualization, (<IPieSource>source).mappings);
                     break;
             }
             this.first = source.first;
             this.reverse = source.reverse;
             this.sort = source.sort;
+            this.properties = source.properties;
         }
     }
 
@@ -510,13 +536,13 @@ class Source {
     }
 
     getDatasource() {
-        return this.visualization.dashboard.datasources[this._id];
+        return this.visualization.dashboard.getDataSource(this._id);
     }
 
     getOutput() {
         var datasource = this.getDatasource();
-        if (datasource && datasource.outputs) {
-            return datasource.outputs[this._output];
+        if (datasource && datasource._outputs) {
+            return datasource._outputs[this._output];
         }
         return null;
     }
@@ -572,20 +598,41 @@ class Source {
     getReverseMap(col) {
         return (this.mappings && this.mappings.hasMappings) ? this.mappings.getReverseMap(col) : col;
     }
+
+    toDDL(): IAnySource {
+        let retVal: IPieSource = {
+            id: this._id,
+            output: this._output,
+            sort: this.sort,
+            first: this.first,
+            reverse: this.reverse,
+            mappings: (<ChartMappings>this.mappings).toDDL(),
+            properties: this.properties
+        };
+        return {
+            id: this._id,
+            output: this._output,
+            sort: this.sort,
+            first: this.first,
+            reverse: this.reverse,
+            mappings: this.mappings.toDDL(),
+            properties: this.properties
+        };
+    }
 }
 
 //  Viz Events ---
 class EventUpdate {
-    event;
-    dashboard;
-    private _col;
+    event: Event;
+    dashboard: Dashboard;
+    _col;
     private _visualization;
     private _instance;
     private _datasource;
     private _merge;
     private _mappings;
 
-    constructor(event, update, defMappings) {
+    constructor(event: Event, update: IEventUpdate, defMappings) {
         this.event = event;
         this.dashboard = event.visualization.dashboard;
         this._col = update.col;
@@ -597,7 +644,7 @@ class EventUpdate {
     }
 
     getDatasource() {
-        return this.dashboard.getDatasource(this._datasource);
+        return this.dashboard.getDataSource(this._datasource);
     }
 
     getVisualization() {
@@ -655,17 +702,30 @@ class EventUpdate {
         });
         return retVal;
     }
+
+    toDDL(): IEventUpdate {
+        return {
+            visualization: this._visualization,
+            instance: this._instance,
+            datasource: this._datasource,
+            merge: this._merge,
+            col: this._col,
+            mappings: this._mappings
+        };
+    }
 }
 
 class Event {
-    visualization;
+    visualization: Visualization;
     eventID;
-    private _updates;
+    private _updates: EventUpdate[];
+    private _mappings: { [key: string]: string };
 
-    constructor(visualization, eventID, event) {
+    constructor(visualization: Visualization, eventID: string, event: IEvent) {
         this.visualization = visualization;
         this.eventID = eventID;
         this._updates = [];
+        this._mappings = event.mappings;
         if (event) {
             this._updates = event.updates.map(function (updateInfo) {
                 return new EventUpdate(this, updateInfo, event.mappings);
@@ -717,13 +777,23 @@ class Event {
         }, this);
         return fetchDataOptimizer.fetchData();
     }
+
+    toDDL(): IEvent {
+        return {
+            mappings: this._mappings,
+            updates: this._updates.map((eventUpdate) => {
+                return eventUpdate.toDDL();
+            })
+        };
+    }
 }
 
 class Events {
-    visualization;
-    events = {};
+    visualization: Visualization;
+    events: { [key: string]: Event } = {};
     private _updates;
-    constructor(visualization, events) {
+
+    constructor(visualization: Visualization, events: { [key: string]: IEvent }) {
         this.visualization = visualization;
         this.events = {};
         for (var key in events) {
@@ -773,6 +843,14 @@ class Events {
         }
         return retVal;
     }
+
+    toDDL(): { [key: string]: IEvent } {
+        let retVal = {};
+        for (let key in this.events) {
+            retVal[key] = this.events[key].toDDL();
+        }
+        return retVal;
+    }
 }
 
 //  Visualization ---
@@ -790,38 +868,46 @@ function es6Require(deps, callback, errback?, _require?) {
 }
 
 export class Visualization extends Class {
-    dashboard;
-    parentVisualization;
-    id;
+    id: string;
+    type: VisualizationType;
+    title: string;
+
+    dashboard: Dashboard;
+    parentVisualization: Visualization;
 
     label;
-    title;
-    type;
     icon;
     flag;
     fields;
     fieldsMap;
     properties;
-    source;
-    events;
+    source: Source;
+    events: Events;
     layers = [];
     hasVizDeclarations = false;
     vizDeclarations = {};
-    widget;
-    private _widgetState;
+    widget: Widget;
+    _widgetState;
 
-    constructor(dashboard, visualization, parentVisualization) {
+    constructor(dashboard: Dashboard, visualization: IAnyVisualization, parentVisualization: Visualization) {
         super();
 
         this.dashboard = dashboard;
         this.parentVisualization = parentVisualization;
+        this.type = visualization.type;
         this.id = visualization.id;
 
-        this.label = visualization.label;
+        switch (this.type) {
+            case "TABLE":
+                this.label = (<ITableVisualization>visualization).label;
+                break;
+            case "GRAPH":
+                this.label = (<IGraphVisualization>visualization).label;
+                this.icon = (<IGraphVisualization>visualization).icon || {};
+                this.flag = (<IGraphVisualization>visualization).flag || [];
+                break;
+        }
         this.title = visualization.title || visualization.id;
-        this.type = visualization.type;
-        this.icon = visualization.icon || {};
-        this.flag = visualization.flag || [];
         this.fields = visualization.fields || [];
         this.fieldsMap = {};
         this.fields.forEach(function (d) {
@@ -835,11 +921,11 @@ export class Visualization extends Class {
         this.hasVizDeclarations = false;
         this.vizDeclarations = {};
         if (this.type === "CHORO") {
-            this.layers = (visualization.visualizations || []).map(function (innerViz) {
+            this.layers = ((<IChoroVisualization>visualization).visualizations || []).map(function (innerViz) {
                 return dashboard.createVisualization(innerViz, this);
             }, this);
         } else {
-            (visualization.visualizations || []).forEach(function (innerViz) {
+            ((<IChoroVisualization>visualization).visualizations || []).forEach(function (innerViz) {
                 this.vizDeclarations[innerViz.id] = dashboard.createVisualization(innerViz, this);
                 this.hasVizDeclarations = true;
             }, this);
@@ -858,7 +944,7 @@ export class Visualization extends Class {
                                         .columns(context.source.getColumns())
                                         .geohashColumn("geohash")
                                         .tooltipColumn("label")
-                                        .fillColor(visualization.color ? visualization.color : null)
+                                        .fillColor((<IChoroVisualization>visualization).color ? (<IChoroVisualization>visualization).color : null)
                                         .projection("albersUsaPr")
                                         ;
                                 } catch (e) {
@@ -958,16 +1044,16 @@ export class Visualization extends Class {
                         widget
                             .id(visualization.id)
                             ;
-                        if (visualization.range) {
+                        if ((<ISliderVisualization>visualization).range) {
                             var selectionLabel = "";
                             for (var key in visualization.source.mappings) {
                                 selectionLabel = key;
                                 break;
                             }
                             widget
-                                .low_default(+visualization.range[0])
-                                .high_default(+visualization.range[1])
-                                .step_default(+visualization.range[2])
+                                .low_default(+(<ISliderVisualization>visualization).range[0])
+                                .high_default(+(<ISliderVisualization>visualization).range[1])
+                                .step_default(+(<ISliderVisualization>visualization).range[2])
                                 .selectionLabel_default(selectionLabel)
                                 ;
                         }
@@ -1136,9 +1222,9 @@ export class Visualization extends Class {
 
         var context = this;
         es6Require(widgetPaths, function (Widget) {
-            var existingWidget = context.dashboard.marshaller._widgetMappings.get(context.id);
+            var existingWidget = context.dashboard.marshaller.getWidget(context.id);
             if (existingWidget) {
-                if (Widget.prototype._class !== existingWidget._class) {
+                if (Widget.prototype._class !== existingWidget.classID()) {
                     console.log("Unexpected persisted widget type (old persist string?)");
                 }
                 context.setWidget(existingWidget);
@@ -1243,7 +1329,7 @@ export class Visualization extends Class {
                     })
                     ;
             } else {
-                var ddlViz = context;
+                var ddlViz: Visualization = context;
                 while (ddlViz.parentVisualization) {
                     ddlViz = ddlViz.parentVisualization;
                 }
@@ -1300,7 +1386,7 @@ export class Visualization extends Class {
         return this;
     }
 
-    calcRequestFor(visualization) {
+    calcRequestFor(visualization): any {
         var retVal = {};
         this.getUpdatesForVisualization(visualization).forEach(function (updatesObj) {
             //  TODO:  When we support more than "click" this will need enhancment...
@@ -1356,8 +1442,8 @@ export class Visualization extends Class {
             widgetState: this._widgetState
         };
         if (this.widget) {
-            if (this.widget.serializeState) {
-                state.widget = this.widget.serializeState();
+            if ((<any>this.widget).serializeState) {
+                state.widget = (<any>this.widget).serializeState();
             } else if (this.widget.data) {
                 state.widget = {
                     data: this.widget.data()
@@ -1371,8 +1457,8 @@ export class Visualization extends Class {
         if (state) {
             this._widgetState = state.widgetState;
             if (this.widget && state.widget) {
-                if (this.widget.deserializeState) {
-                    this.widget.deserializeState(state.widget);
+                if ((<any>this.widget).deserializeState) {
+                    (<any>this.widget).deserializeState(state.widget);
                 } else if (this.widget.data && state.widget.data) {
                     this.widget.data(state.widget.data);
                 }
@@ -1380,19 +1466,31 @@ export class Visualization extends Class {
         }
         return this;
     }
+
+    toDDL(): IAnyVisualization {
+        return {
+            id: this.id,
+            type: this.type,
+            title: this.title,
+            properties: this.properties,
+            source: (<any>this.source.toDDL()), //TODO
+            events: this.events.toDDL()
+        };
+    }
 }
 
 //  Output  ---
 export class Output {
-    dataSource;
-    id;
-    from;
-    notify;
-    filter;
-    db;
+    id: string;
+    from: string;
+    notify: string[];
+    filter: string[];
 
-    constructor(dataSource, output) {
-        this.dataSource = dataSource;
+    datasource: Datasource;
+    db: Grid;
+
+    constructor(datasource: Datasource, output: IOutput) {
+        this.datasource = datasource;
         this.id = output.id;
         this.from = output.from;
         this.notify = output.notify || [];
@@ -1400,13 +1498,13 @@ export class Output {
     }
 
     getQualifiedID() {
-        return this.dataSource.getQualifiedID() + "." + this.id;
+        return this.datasource.getQualifiedID() + "." + this.id;
     }
 
     getUpdatesVisualizations() {
         var retVal = [];
         this.notify.forEach(function (item) {
-            retVal.push(this.dataSource.dashboard.getVisualization(item));
+            retVal.push(this.datasource.dashboard.getVisualization(item));
         }, this);
         return retVal;
     }
@@ -1420,7 +1518,7 @@ export class Output {
         this.notify.filter(function (item) {
             return !updates || updates.indexOf(item) >= 0;
         }).forEach(function (item) {
-            var viz = this.dataSource.dashboard.getVisualization(item);
+            var viz = this.datasource.dashboard.getVisualization(item);
             promises.push(viz.notify());
         }, this);
         return Promise.all(promises);
@@ -1429,6 +1527,15 @@ export class Output {
     setData(data, updates) {
         this.db = new Grid().jsonObj(data);
         return this.vizNotify(updates);
+    }
+
+    toDDL(): IOutput {
+        return {
+            id: this.id,
+            from: this.from,
+            filter: this.filter,
+            notify: this.notify
+        };
     }
 }
 
@@ -1507,33 +1614,34 @@ class VisualizationRequestOptimizer {
     }
 }
 
-//  DataSource  ---
-export class DataSource {
+//  Datasource  ---
+export class Datasource {
+    id: string;
+    databomb: boolean;
+    filter: string[];
+
     dashboard;
-    id;
-    filter;
     WUID;
     URL;
-    databomb;
     private _loadedCount = 0;
-    outputs = {};
+    _outputs: { [key: string]: Output } = {};
+    _outputArray: Output[] = [];
     comms;
     db;
 
-    constructor(dashboard, dataSource, proxyMappings, timeout) {
+    constructor(dashboard, datasource: IDatasource, proxyMappings, timeout) {
         this.dashboard = dashboard;
-        this.id = dataSource.id;
-        this.filter = dataSource.filter || [];
-        this.WUID = dataSource.WUID;
-        this.URL = dashboard.marshaller.espUrl && dashboard.marshaller.espUrl._url ? dashboard.marshaller.espUrl._url : dataSource.URL;
-        this.databomb = dataSource.databomb;
-        this._loadedCount = 0;
+        this.id = datasource.id;
+        this.filter = datasource.filter || [];
+        this.WUID = datasource.WUID;
+        this.URL = dashboard.marshaller.espUrl && dashboard.marshaller.espUrl._url ? dashboard.marshaller.espUrl._url : datasource.URL;
+        this.databomb = datasource.databomb;
 
         var context = this;
-        this.outputs = {};
         var hipieResults = [];
-        dataSource.outputs.forEach(function (item) {
-            context.outputs[item.id] = new Output(context, item);
+        datasource.outputs.forEach(function (item) {
+            context._outputs[item.id] = new Output(context, item);
+            context._outputArray.push(context._outputs[item.id]);
             hipieResults.push({
                 id: item.id,
                 from: item.from,
@@ -1554,7 +1662,7 @@ export class DataSource {
                 ;
         } else {
             this.comms = new HIPIERoxie()
-                .url(dataSource.URL)
+                .url(datasource.URL)
                 .proxyMappings(proxyMappings)
                 .timeout(timeout)
                 ;
@@ -1565,10 +1673,14 @@ export class DataSource {
         return this.dashboard.getQualifiedID() + "." + this.id;
     }
 
+    getOutputs() {
+        return this._outputs;
+    }
+
     getUpdatesVisualizations() {
         var retVal = [];
-        for (var key in this.outputs) {
-            this.outputs[key].getUpdatesVisualizations().forEach(function (visualization) {
+        for (var key in this._outputs) {
+            this._outputs[key].getUpdatesVisualizations().forEach(function (visualization) {
                 retVal.push(visualization);
             });
         }
@@ -1577,16 +1689,16 @@ export class DataSource {
 
     accept(visitor) {
         visitor.visit(this);
-        for (var key in this.outputs) {
-            this.outputs[key].accept(visitor);
+        for (var key in this._outputs) {
+            this._outputs[key].accept(visitor);
         }
     }
 
     static transactionID = 0;
     static transactionQueue = [];
     fetchData(request, updates) {
-        var myTransactionID = ++DataSource.transactionID;
-        DataSource.transactionQueue.push(myTransactionID);
+        var myTransactionID = ++Datasource.transactionID;
+        Datasource.transactionQueue.push(myTransactionID);
 
         var dsRequest: any = {};
         this.filter.forEach(function (item) {
@@ -1612,10 +1724,10 @@ export class DataSource {
             context.comms.call(dsRequest).then(function (_response) {
                 var response = JSON.parse(JSON.stringify(_response));
                 var intervalHandle = setInterval(function () {
-                    if (DataSource.transactionQueue[0] === myTransactionID && Date.now() - now >= 500) {  //  500 is to allow for all "clear" transitions to complete...
+                    if (Datasource.transactionQueue[0] === myTransactionID && Date.now() - now >= 500) {  //  500 is to allow for all "clear" transitions to complete...
                         clearTimeout(intervalHandle);
                         context.processResponse(response, request, updates).then(function () {
-                            DataSource.transactionQueue.shift();
+                            Datasource.transactionQueue.shift();
                             resolve(response);
                             context.dashboard.marshaller.commsEvent(context, "response", dsRequest, response);
                             ++context._loadedCount;
@@ -1635,26 +1747,26 @@ export class DataSource {
             lowerResponse[responseKey.toLowerCase()] = response[responseKey];
         }
         var promises = [];
-        for (var key in this.outputs) {
-            var from = this.outputs[key].from;
+        for (var key in this._outputs) {
+            var from = this._outputs[key].from;
             if (!from) {
                 //  Temp workaround for older services  ---
-                from = this.outputs[key].id.toLowerCase();
+                from = this._outputs[key].id.toLowerCase();
             }
             if (exists(from, response)) {
                 if (!exists(from + _CHANGED, response) || (exists(from + _CHANGED, response) && response[from + _CHANGED].length && response[from + _CHANGED][0][from + _CHANGED])) {
-                    promises.push(this.outputs[key].setData(response[from], updates));
+                    promises.push(this._outputs[key].setData(response[from], updates));
                 } else {
                     //  TODO - I Suspect there is a HIPIE/Roxie issue here (empty request)
-                    promises.push(this.outputs[key].vizNotify(updates));
+                    promises.push(this._outputs[key].vizNotify(updates));
                 }
             } else if (exists(from, lowerResponse)) {
-                console.log("DDL 'DataSource.From' case is Incorrect");
+                console.log("DDL 'Datasource.From' case is Incorrect");
                 if (!exists(from + _CHANGED, lowerResponse) || (exists(from + _CHANGED, lowerResponse) && response[from + _CHANGED].length && lowerResponse[from + _CHANGED][0][from + _CHANGED])) {
-                    promises.push(this.outputs[key].setData(lowerResponse[from], updates));
+                    promises.push(this._outputs[key].setData(lowerResponse[from], updates));
                 } else {
                     //  TODO - I Suspect there is a HIPIE/Roxie issue here (empty request)
-                    promises.push(this.outputs[key].vizNotify(updates));
+                    promises.push(this._outputs[key].vizNotify(updates));
                 }
             } else {
                 var responseItems = [];
@@ -1665,6 +1777,10 @@ export class DataSource {
             }
         }
         return Promise.all(promises);
+    }
+
+    isLoaded(): boolean {
+        return this._loadedCount > 0;
     }
 
     isRoxie() {
@@ -1679,47 +1795,68 @@ export class DataSource {
     deserializeState(state) {
         if (!state) return;
     }
+
+    toDDL(): IDatasource {
+        return {
+            id: this.id,
+            databomb: this.databomb,
+            WUID: this.WUID,
+            URL: this.URL,
+            filter: this.filter,
+            outputs: this._outputArray.map((output) => {
+                return output.toDDL();
+            })
+        };
+    }
 }
 
 //  Dashboard  ---
 export class Dashboard {
-    marshaller;
-    id;
-    title;
+    marshaller: Marshaller;
+    id: string;
+    title: string;
 
-    datasources = {};
-    datasourceTotal = 0;
-    private _visualizations = {};
-    private _visualizationArray = [];
-    private _visualizationTotal;
+    private _datasources: { [key: string]: Datasource } = {};
+    private _datasourceArray: Datasource[] = [];
+    private _datasourceTotal: number = 0;
+    private _visualizations: { [key: string]: Visualization } = {};
+    private _visualizationArray: Visualization[] = [];
+    private _visualizationTotal: number = 0;
 
-    constructor(marshaller, dashboard, proxyMappings, timeout?) {
+    constructor(marshaller, dashboard: IDashboard, proxyMappings, timeout?) {
         this.marshaller = marshaller;
         this.id = dashboard.id;
         this.title = dashboard.title;
 
         var context = this;
-        this.datasources = {};
-        this.datasourceTotal = 0;
-        dashboard.datasources.forEach(function (item) {
-            context.datasources[item.id] = new DataSource(context, item, proxyMappings, timeout);
-            ++context.datasourceTotal;
+        this._datasources = {};
+        this._datasourceTotal = 0;
+        dashboard.datasources.forEach((item) => {
+            this.createDatasource(item, proxyMappings, timeout);
         });
+        this._datasourceTotal = this._datasourceArray.length;
 
         this._visualizations = {};
         this._visualizationArray = [];
-        dashboard.visualizations.forEach(function (item) {
+        dashboard.visualizations.forEach((item) => {
             this.createVisualization(item);
-        }, this);
+        });
         this._visualizationTotal = this._visualizationArray.length;
     }
 
-    createVisualization(ddlVisualization, parentVisualization) {
+    createDatasource(ddlDatasource, proxyMappings, timeout?) {
+        var retVal = new Datasource(this, ddlDatasource, proxyMappings, timeout);
+        this._datasources[ddlDatasource.id] = retVal;
+        this._datasourceArray.push(retVal);
+        this.marshaller.appendDataSource(retVal);
+        return retVal;
+    }
+
+    createVisualization(ddlVisualization: IAnyVisualization, parentVisualization?) {
         var retVal = new Visualization(this, ddlVisualization, parentVisualization);
         this._visualizations[ddlVisualization.id] = retVal;
         this._visualizationArray.push(retVal);
-        this.marshaller._visualizations[ddlVisualization.id] = retVal;
-        this.marshaller._visualizationArray.push(retVal);
+        this.marshaller.appendVisualization(retVal);
         return retVal;
     }
 
@@ -1731,8 +1868,16 @@ export class Dashboard {
         return this.id;
     }
 
-    getDatasource(id) {
-        return this.datasources[id];
+    getDataSources() {
+        return this._datasources;
+    }
+
+    getDataSourceArray() {
+        return this._datasourceArray;
+    }
+
+    getDataSource(id): Datasource {
+        return this._datasources[id];
     }
 
     getVisualization(id) {
@@ -1753,8 +1898,8 @@ export class Dashboard {
 
     accept(visitor) {
         visitor.visit(this);
-        for (var key in this.datasources) {
-            this.datasources[key].accept(visitor);
+        for (var key in this._datasources) {
+            this._datasources[key].accept(visitor);
         }
         this._visualizationArray.forEach(function (item) {
             item.accept(visitor);
@@ -1802,8 +1947,8 @@ export class Dashboard {
             datasources: {},
             visualizations: {}
         };
-        for (var key in this.datasources) {
-            retVal.datasources[key] = this.datasources[key].serializeState();
+        for (var key in this._datasources) {
+            retVal.datasources[key] = this._datasources[key].serializeState();
         }
         for (var vizKey in this._visualizations) {
             retVal.visualizations[vizKey] = this._visualizations[vizKey].serializeState();
@@ -1813,9 +1958,9 @@ export class Dashboard {
 
     deserializeState(state) {
         if (!state) return;
-        for (var key in this.datasources) {
+        for (var key in this._datasources) {
             if (state.datasources[key]) {
-                this.datasources[key].deserializeState(state.datasources[key]);
+                this._datasources[key].deserializeState(state.datasources[key]);
             }
         }
         for (var vizKey in this._visualizations) {
@@ -1824,25 +1969,43 @@ export class Dashboard {
             }
         }
     }
+
+    toDDL(): IDashboard {
+        return {
+            id: this.id,
+            title: this.title,
+            visualizations: this._visualizationArray.map((visualization) => {
+                return visualization.toDDL();
+            }),
+            datasources: this._datasourceArray.map((datasource) => {
+                return datasource.toDDL();
+            })
+
+        };
+    }
 }
 
 //  Marshaller  ---
 export class Marshaller extends Class {
     private _proxyMappings: any = {};
-    private _widgetMappings = d3.map();
+    private _widgetMappings: { [key: string]: Widget } = {};
     private _clearDataOnUpdate: boolean = true;
     private _propogateClear: boolean = false;
     private id: string = "Marshaller";
     private _missingDataString: string = "";
     dashboards: { [key: string]: Dashboard } = {};
     dashboardArray: Dashboard[] = [];
-    private _visualizations: { [key: string]: Visualization } = {};
-    private _visualizationArray: Visualization[] = [];
+    dashboardTotal: number;
+
     private _json: string;
     private _jsonParsed: any;
-    dashboardTotal: number;
     espUrl: ESPUrl;
     private _timeout: number;
+
+    private _datasources: { [key: string]: Datasource } = {};
+    private _datasourceArray: Datasource[] = [];
+    private _visualizations: { [key: string]: Visualization } = {};
+    private _visualizationArray: Visualization[] = [];
 
     constructor() {
         super();
@@ -1850,8 +2013,8 @@ export class Marshaller extends Class {
 
     commsDataLoaded() {
         for (var i = 0; i < this.dashboardArray.length; i++) {
-            for (var ds in this.dashboardArray[i].datasources) {
-                if (this.dashboardArray[i].datasources[ds]._loadedCount === 0) {
+            for (var ds in this.dashboardArray[i].getDataSources()) {
+                if (!this.dashboardArray[i].getDataSource(ds).isLoaded()) {
                     return false;
                 }
             }
@@ -1910,37 +2073,37 @@ export class Marshaller extends Class {
         });
     }
 
-    proxyMappings(_): any | this {
+    proxyMappings(_?): any | this {
         if (!arguments.length) return this._proxyMappings;
         this._proxyMappings = _;
         return this;
     }
 
-    timeout(_): number | this {
+    timeout(_?): number | this {
         if (!arguments.length) return this._timeout;
         this._timeout = _;
         return this;
     }
 
-    widgetMappings(_): any | this {
+    widgetMappings(_?): any | this {
         if (!arguments.length) return this._widgetMappings;
         this._widgetMappings = _;
         return this;
     }
 
-    clearDataOnUpdate(_): boolean | this {
+    clearDataOnUpdate(_?): boolean | this {
         if (!arguments.length) return this._clearDataOnUpdate;
         this._clearDataOnUpdate = _;
         return this;
     }
 
-    propogateClear(_): boolean | this {
+    propogateClear(_?): boolean | this {
         if (!arguments.length) return this._propogateClear;
         this._propogateClear = _;
         return this;
     }
 
-    missingDataString(_): string | this {
+    missingDataString(_?): string | this {
         if (!arguments.length) return this._missingDataString;
         this._missingDataString = _;
         return this;
@@ -1966,11 +2129,36 @@ export class Marshaller extends Class {
             });
         });
         this.ready(callback);
+        let debug = this.toDDL();
         return this;
+    }
+
+    toDDL(): IDashboard[] {
+        return this.dashboardArray.map((dashboard) => {
+            return dashboard.toDDL();
+        });
     }
 
     dashboardsLoaded() {
         return Promise.all(this.dashboardArray.map(function (dashboard) { return dashboard.loadedPromise(); }));
+    }
+
+    appendDataSource(datasource: Datasource) {
+        this._datasources[datasource.id] = datasource;
+        this._datasourceArray.push(datasource);
+    }
+
+    getDataSources() {
+        return this._datasources;
+    }
+
+    getDataSourceArray() {
+        return this._datasourceArray;
+    }
+
+    appendVisualization(visualization: Visualization) {
+        this._visualizations[visualization.id] = visualization;
+        this._visualizationArray.push(visualization);
     }
 
     getVisualizations() {
@@ -1979,6 +2167,10 @@ export class Marshaller extends Class {
 
     getVisualizationArray() {
         return this._visualizationArray;
+    }
+
+    getWidget(id): Widget {
+        return this._widgetMappings[id];
     }
 
     on(eventID, func) {
@@ -2028,8 +2220,8 @@ export class Marshaller extends Class {
     createDatabomb() {
         var retVal = {};
         this.dashboardArray.forEach(function (dashboard) {
-            for (var key in dashboard.datasources) {
-                var comms = dashboard.datasources[key].comms;
+            for (var key in dashboard.getDataSources()) {
+                var comms = dashboard.getDataSource(key).comms;
                 retVal[key] = {};
                 for (var key2 in comms._hipieResults) {
                     var hipieResult = comms._hipieResults[key2];
