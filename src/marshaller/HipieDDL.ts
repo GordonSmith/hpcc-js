@@ -7,23 +7,24 @@ import { ESPUrl, HIPIEWorkunit, HIPIERoxie, HIPIEDatabomb } from "../other/Comms
 import { MultiChart } from "../chart/MultiChart";
 import { Table } from "../other/Table";
 import {
-    IDashboard, IDatasource, IOutput, IEvent, IEventUpdate, VisualizationType,
+    IDashboard, IDatasource, IOutput, IEvent, IEventUpdate, VisualizationType, IVisualizationField, VisualizationFieldType, IVisualizationIcon,
     IAnyVisualization, IPieVisualization, ILineVisualization, ITableVisualization, IGraphVisualization, IChoroVisualization, ISliderVisualization,
-    IAnySource, IPieSource, ILineSource, ITableSource, IGraphSource, IGraphLink, IChoroSource,
-    IAnyMapping, IPieMapping, ILineMapping, ITableMapping, IGraphMapping, IGraphLinkMapping, IAnyChoroMapping, IChoroUSStateMapping, IChoroUSCountyMapping, IChoroGeohashMapping
+    IAnySource, IPieSource, ILineSource, ITableSource, IGraphSource, IGraphLink, IChoroSource, IHeatMapSource,
+    IAnyMapping, IPieMapping, ILineMapping, ITableMapping, IGraphMapping, IGraphLinkMapping, IAnyChoroMapping, IChoroUSStateMapping, IChoroUSCountyMapping, IChoroGeohashMapping, IHeatMapMapping,
+    isUSStateMapping, isUSCountyMapping, isGeohashMapping
 } from "./DDLApi";
 
 const LOADING = "...loading...";
 const _CHANGED = "_changed";
 
-function faCharFix(faChar) {
+function faCharFix(faChar: string) {
     if (faChar) {
         return String.fromCharCode(parseInt(faChar));
     }
     return faChar;
 }
 
-function hipieType2DBType(hipieType) {
+function hipieType2DBType(hipieType: VisualizationFieldType) {
     switch (hipieType) {
         case "bool":
         case "boolean":
@@ -63,16 +64,16 @@ function hipieType2DBType(hipieType) {
 //  Mappings ---
 class SourceMappings {
     visualization: Visualization;
-    mappings;
+    mappings: { [key: string]: string };
 
     hasMappings = false;
-    reverseMappings = {};
+    reverseMappings: { [key: string]: string } = {};
     columns: string[] = [];
     columnsIdx: { [key: string]: number } = {};
     columnsRHS: string[] = [];
     columnsRHSIdx: { [key: string]: number } = {};
 
-    constructor(visualization: Visualization, mappings: { [key: string]: string | string[] } | IPieMapping | IAnyChoroMapping | IGraphLinkMapping) {
+    constructor(visualization: Visualization, mappings: { [key: string]: string | string[] } | IPieMapping | IAnyChoroMapping | IGraphLinkMapping | IHeatMapMapping) {
         this.visualization = visualization;
         var newMappings = {};
         for (var key in mappings) {
@@ -173,7 +174,7 @@ class SourceMappings {
     }
 
     toDDL(): IPieMapping {
-        return this.mappings;
+        return (<any>(this.mappings)); //TODO
     }
 }
 
@@ -186,17 +187,6 @@ class ChartMappings extends SourceMappings {
     }
 }
 
-function isUSStateMapping(mappings: IAnyChoroMapping) {
-    return (<IChoroUSStateMapping>mappings).state !== undefined;
-}
-
-function isUSCountyMapping(mappings: IAnyChoroMapping) {
-    return (<IChoroUSCountyMapping>mappings).county !== undefined;
-}
-
-function isGeohashMapping(mappings: IAnyChoroMapping) {
-    return (<IChoroGeohashMapping>mappings).geohash !== undefined;
-}
 class ChoroMappings extends SourceMappings {
     constructor(visualization: Visualization, mappings: IAnyChoroMapping) {
         super(visualization, mappings);
@@ -239,7 +229,7 @@ class ChoroMappings2 extends SourceMappings {
 }
 
 class HeatMapMappings extends SourceMappings {
-    constructor(visualization: Visualization, mappings) {
+    constructor(visualization: Visualization, mappings: IHeatMapMapping) {
         super(visualization, mappings);
         this.columns = ["x", "y", "weight"];
         this.columnsIdx = { x: 0, y: 1, weight: 2 };
@@ -349,17 +339,17 @@ class TableMappings extends SourceMappings {
 }
 
 class GraphMappings extends SourceMappings {
-    icon;
-    fields;
+    visualization: Visualization;
+    icon: IVisualizationIcon;
+    fields: IVisualizationField[];
     columns = ["uid", "label", "weight", "flags"];
     columnsIdx = { uid: 0, label: 1, weight: 2, flags: 3 };
     link: IGraphLink;
-    linkMappings;
-    visualization: Visualization;
+    linkMappings: SourceMappings;
 
-    constructor(visualization, mappings: IGraphMapping, link: IGraphLink) {
+    constructor(visualization: Visualization, mappings: IGraphMapping, link: IGraphLink) {
         super(visualization, mappings);
-        this.icon = visualization.icon || {};
+        this.icon = visualization.icon || { faChar: "\uf128" };
         this.fields = visualization.fields || [];
         this.columns = ["uid", "label", "weight", "flags"];
         this.columnsIdx = { uid: 0, label: 1, weight: 2, flags: 3 };
@@ -371,7 +361,7 @@ class GraphMappings extends SourceMappings {
         this.visualization = visualization;
     }
 
-    calcIconInfo(field, origItem, forAnnotation) {
+    calcIconInfo(flag: IVisualizationIcon, origItem, forAnnotation) {
         var retVal = {};
         function mapStruct(struct, retVal) {
             if (struct) {
@@ -391,8 +381,8 @@ class GraphMappings extends SourceMappings {
                 }
             }
         }
-        if (origItem && origItem[field.fieldid] && field.valuemappings) {
-            var annotationInfo = field.valuemappings[origItem[field.fieldid]];
+        if (origItem && origItem[flag.fieldid] && flag.valuemappings) {
+            var annotationInfo = flag.valuemappings[origItem[flag.fieldid]];
             mapStruct(annotationInfo, retVal);
         }
 
@@ -433,8 +423,8 @@ class GraphMappings extends SourceMappings {
 
                 // Annotations  ---
                 var annotations = [];
-                context.visualization.flag.forEach(function (field) {
-                    var iconInfo = context.calcIconInfo(field, origItem, true);
+                context.visualization.flags.forEach(function (flag) {
+                    var iconInfo = context.calcIconInfo(flag, origItem, true);
                     if (iconInfo) {
                         annotations.push(iconInfo);
                     }
@@ -477,12 +467,12 @@ class GraphMappings extends SourceMappings {
 class Source {
     visualization: Visualization;
     private _id: string;
-    private _output;
+    private _output: string;
     mappings: ChartMappings | LineMappings | TableMappings | GraphMappings | ChoroMappings | ChoroMappings2 | HeatMapMappings;
-    properties;
-    first;
-    reverse;
-    sort;
+    properties: { [key: string]: string };
+    first: number;
+    reverse: boolean;
+    sort: string[];
 
     constructor(visualization: Visualization, source: IAnySource) {
         this.visualization = visualization;
@@ -514,7 +504,7 @@ class Source {
                     }
                     break;
                 case "HEAT_MAP":
-                    this.mappings = new HeatMapMappings(this.visualization, source.mappings);
+                    this.mappings = new HeatMapMappings(this.visualization, (<IHeatMapSource>source).mappings);
                     break;
                 default:
                     this.mappings = new ChartMappings(this.visualization, (<IPieSource>source).mappings);
@@ -600,15 +590,6 @@ class Source {
     }
 
     toDDL(): IAnySource {
-        let retVal: IPieSource = {
-            id: this._id,
-            output: this._output,
-            sort: this.sort,
-            first: this.first,
-            reverse: this.reverse,
-            mappings: (<ChartMappings>this.mappings).toDDL(),
-            properties: this.properties
-        };
         return {
             id: this._id,
             output: this._output,
@@ -625,14 +606,14 @@ class Source {
 class EventUpdate {
     event: Event;
     dashboard: Dashboard;
-    _col;
-    private _visualization;
-    private _instance;
-    private _datasource;
-    private _merge;
-    private _mappings;
+    _col: string;
+    private _visualization: string;
+    private _instance: string;
+    private _datasource: string;
+    private _merge: boolean;
+    private _mappings: { [key: string]: string };
 
-    constructor(event: Event, update: IEventUpdate, defMappings) {
+    constructor(event: Event, update: IEventUpdate, defMappings: { [key: string]: string }) {
         this.event = event;
         this.dashboard = event.visualization.dashboard;
         this._col = update.col;
@@ -717,7 +698,7 @@ class EventUpdate {
 
 class Event {
     visualization: Visualization;
-    eventID;
+    eventID: string;
     private _updates: EventUpdate[];
     private _mappings: { [key: string]: string };
 
@@ -868,24 +849,24 @@ function es6Require(deps, callback, errback?, _require?) {
 }
 
 export class Visualization extends Class {
-    id: string;
     type: VisualizationType;
+    id: string;
     title: string;
 
     dashboard: Dashboard;
     parentVisualization: Visualization;
 
     label;
-    icon;
-    flag;
-    fields;
-    fieldsMap;
+    icon: IVisualizationIcon;
+    flags: IVisualizationIcon[];
+    fields: IVisualizationField[];
+    fieldsMap: { [key: string]: IVisualizationField };
     properties;
     source: Source;
     events: Events;
-    layers = [];
+    layers: Visualization[] = [];
     hasVizDeclarations = false;
-    vizDeclarations = {};
+    vizDeclarations: { [key: string]: Visualization } = {};
     widget: Widget;
     _widgetState;
 
@@ -903,8 +884,8 @@ export class Visualization extends Class {
                 break;
             case "GRAPH":
                 this.label = (<IGraphVisualization>visualization).label;
-                this.icon = (<IGraphVisualization>visualization).icon || {};
-                this.flag = (<IGraphVisualization>visualization).flag || [];
+                this.icon = (<IGraphVisualization>visualization).icon || { faChar: "\uf128" };
+                this.flags = (<IGraphVisualization>visualization).flag || [];
                 break;
         }
         this.title = visualization.title || visualization.id;
@@ -1473,8 +1454,9 @@ export class Visualization extends Class {
             type: this.type,
             title: this.title,
             properties: this.properties,
+            events: this.events.toDDL(),
             source: (<any>this.source.toDDL()), //TODO
-            events: this.events.toDDL()
+            fields: this.fields
         };
     }
 }
