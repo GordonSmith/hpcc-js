@@ -205,16 +205,16 @@ export interface IDashboard {
 
 //  Helpers  ==================================================================
 export type IAnyChoroMapping = IChoroUSStateMapping | IChoroUSCountyMapping | IChoroGeohashMapping;
-export function isUSStateMapping(mappings: IAnyChoroMapping) {
+export function isUSStateMapping(mappings: IAnyChoroMapping): mappings is IChoroUSStateMapping {
     return (<IChoroUSStateMapping>mappings).state !== undefined;
 }
-export function isUSCountyMapping(mappings: IAnyChoroMapping) {
+export function isUSCountyMapping(mappings: IAnyChoroMapping): mappings is IChoroUSCountyMapping {
     return (<IChoroUSCountyMapping>mappings).county !== undefined;
 }
-export function isGeohashMapping(mappings: IAnyChoroMapping) {
+export function isGeohashMapping(mappings: IAnyChoroMapping): mappings is IChoroGeohashMapping {
     return (<IChoroGeohashMapping>mappings).geohash !== undefined;
 }
 export type IAnyMapping = IPieMapping | ILineMapping | IGraphMapping | IAnyChoroMapping | ITableMapping | IHeatMapMapping;
 export type IAnySource = IPieSource | ILineSource | ITableSource | IChoroSource | IGraphSource | IHeatMapSource;
-export type IAnyVisualization = IPieVisualization | ILineVisualization | ITableVisualization | IChoroVisualization | IGraphVisualization | IHeatMapVisualization;
 
+export type IAnyVisualization = IPieVisualization | ILineVisualization | ITableVisualization | IChoroVisualization | IGraphVisualization | IHeatMapVisualization;

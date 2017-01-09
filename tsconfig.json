@@ -4,6 +4,8 @@
 		"target": "es5",
 		"rootDir": "./src",
 		"outDir": "out",
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": false,
 		"sourceMap": true,
 		"allowJs": false
 	},
