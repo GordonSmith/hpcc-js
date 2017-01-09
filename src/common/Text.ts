@@ -1,14 +1,34 @@
 import { SVGWidget } from "./SVGWidget";
 import "css!./Text";
 
+function publish(defValue, type, description, stuff, other) {
+    return (target: any, propertyKey: string) => {
+        target.publish(propertyKey, defValue, type, description, stuff, other);
+    };
+}
+type publish<T, C> = { (): T; (_: T): C; };
 export class Text extends SVGWidget {
     static _class = "common_Text";
 
     private _textElement;
 
+    @publish("", "string", "Display Text", null, { tags: ["Basic"] })
+    text: publish<string, this>;
+    @publish(null, "string", "Font Family", null, { tags: ["Intermediate"], optional: true })
+    fontFamily: publish<string, this>;
+    @publish(null, "number", "Font Size (px)", null, { tags: ["Intermediate"] })
+    fontSize: publish<number, this>;
+    @publish("middle", "set", "Anchor Position", ["start", "middle", "end"], { tags: ["Intermediate"] })
+    anchor: publish<string, this>;
+    @publish(null, "html-color", "Fill Color", null, { tags: ["Basic"] })
+    colorFill: publish<string, this>;
+    @publish(0, "number", "Degrees of rotation", null, { tags: ["Basic"] })
+    rotation: publish<number, this>;
+
     constructor() {
         super();
     }
+
 
     enter(domNode, element) {
         super.enter(domNode, element);
@@ -62,20 +82,5 @@ export class Text extends SVGWidget {
             .attr("transform", function (d) { return "translate(" + xOffset + "," + yOffset + ")rotate(" + context.rotation() + ")"; })
             ;
     };
-
-    text: { (): string; (_: string): Text; };
-    fontFamily: { (): string; (_: string): Text; };
-    fontSize: { (): number; (_: number): Text; };
-    anchor: { (): string; (_: string): Text; };
-    colorFill: { (): string; (_: string): Text; };
-    rotation: { (): number; (_: number): Text; };
 }
-
-Text.prototype.publish("text", "", "string", "Display Text", null, { tags: ["Basic"] });
-Text.prototype.publish("fontFamily", null, "string", "Font Family", null, { tags: ["Intermediate"], optional: true });
-Text.prototype.publish("fontSize", null, "number", "Font Size (px)", null, { tags: ["Intermediate"] });
-Text.prototype.publish("anchor", "middle", "set", "Anchor Position", ["start", "middle", "end"], { tags: ["Intermediate"] });
-Text.prototype.publish("colorFill", null, "html-color", "Fill Color", null, { tags: ["Basic"] });
-
-Text.prototype.publish("rotation", 0, "number", "Degrees of rotation", null, { tags: ["Basic"] });
 
