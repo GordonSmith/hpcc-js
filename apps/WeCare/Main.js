@@ -8,8 +8,9 @@
     var demomode = params.demomode !== undefined ? params.demomode : true;
 
     function Main() {
-        var baseUrl = "http://10.239.190.101:8002/WsEcl/forms/default/query/myroxie_dataland";
-        this.connWeCare = Comms.createESPConnection(baseUrl + "/wecare");
+        //10.173.3.1:8002/WsEcl/forms/ecl/query/roxie_devoneway_1_dataland/wecares.serialoffenderfinder
+        var baseUrl = "http://10.173.3.1:8002/WsEcl/forms/default/query/roxie_devoneway_1_dataland";
+        this.connWeCare = Comms.createESPConnection(baseUrl + "/wecares.serialoffenderfinder");
         this.connPersonAddresses = Comms.createESPConnection(baseUrl + "/personaddresses");
         this.connPersonToLocations = Comms.createESPConnection(baseUrl + "/personstolocations")
         this.geoDecode = new Comms.Basic().url("http://maps.googleapis.com/maps/api/geocode/json");
@@ -133,7 +134,7 @@
             .name("zip1")
             .label("Location 1")
             .type("textarea")
-            .value(33428)
+            .value("20007")
             .on("change", function (w) {
                 context.refreshLocations();
             })
@@ -142,7 +143,7 @@
             .name("zip2")
             .label("Location 2")
             .type("textarea")
-            .value(33473)
+            .value("99501")
             .on("change", function (w) {
                 context.refreshLocations();
             })
@@ -151,7 +152,7 @@
             .name("zip3")
             .label("Location 3")
             .type("textarea")
-            .value("33445")
+            .value("")
             .on("change", function (w) {
                 context.refreshLocations();
             })
@@ -166,7 +167,7 @@
                         .name("zip1Date")
                         .label("Date")
                         .type("date")
-                        .value("2009-12-01")
+                        .value("2005-10-05")
                         .on("change", function (w) {
                             context.formatDate(w);
                         }),
@@ -174,7 +175,7 @@
                         .name("zip1DateRange")
                         .label("+/- Months")
                         .type("number")
-                        .value(6)
+                        .value(7)
                         .on("change", function (w) {
                             context.refreshLocations(w);
                         }),
@@ -193,7 +194,7 @@
                         .name("zip2Date")
                         .label("Date")
                         .type("date")
-                        .value("2010-12-01")
+                        .value("2008-08-24")
                         .on("change", function (w) {
                             context.formatDate(w);
                         }),
@@ -220,7 +221,7 @@
                         .name("zip3Date")
                         .label("Date")
                         .type("date")
-                        .value("2001-06-01")
+                        .value("")
                         .on("change", function (w) {
                             context.formatDate(w);
                         }),
@@ -255,7 +256,7 @@
                     .high(100)
                     .step(1)
                     .allowRange(true)
-                    .value([35, 50])
+                    .value([31, 51])
             ])
             .showSubmit(true)
             .omitBlank(true)
