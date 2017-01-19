@@ -56,6 +56,10 @@
                     ]
                 }
             },
+            "required": [
+                "geohash",
+                "weight"
+            ],
             "type": "object"
         },
         "IChoroSource": {
@@ -99,6 +103,11 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "mappings",
+                "id",
+                "output"
+            ],
             "type": "object"
         },
         "IChoroUSCountyMapping": {
@@ -121,6 +130,10 @@
                     ]
                 }
             },
+            "required": [
+                "county",
+                "weight"
+            ],
             "type": "object"
         },
         "IChoroUSStateMapping": {
@@ -143,6 +156,10 @@
                     ]
                 }
             },
+            "required": [
+                "state",
+                "weight"
+            ],
             "type": "object"
         },
         "IChoroVisualization": {
@@ -166,6 +183,8 @@
                 "id": {
                     "type": "string"
                 },
+                "onSelect": {
+                },
                 "properties": {
                     "additionalProperties": false,
                     "properties": {
@@ -173,6 +192,9 @@
                             "type": "string"
                         }
                     },
+                    "required": [
+                        "charttype"
+                    ],
                     "type": "object"
                 },
                 "source": {
@@ -191,6 +213,12 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "source",
+                "type",
+                "id",
+                "title"
+            ],
             "type": "object"
         },
         "IDatasource": {
@@ -221,6 +249,10 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "id",
+                "outputs"
+            ],
             "type": "object"
         },
         "IEvent": {
@@ -239,6 +271,10 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "mappings",
+                "updates"
+            ],
             "type": "object"
         },
         "IEventUpdate": {
@@ -266,6 +302,12 @@
                     "type": "string"
                 }
             },
+            "required": [
+                "visualization",
+                "instance",
+                "datasource",
+                "merge"
+            ],
             "type": "object"
         },
         "IGraphLink": {
@@ -278,6 +320,10 @@
                     "$ref": "#/definitions/IGraphLinkMapping"
                 }
             },
+            "required": [
+                "mappings",
+                "childfile"
+            ],
             "type": "object"
         },
         "IGraphLinkMapping": {
@@ -287,6 +333,9 @@
                     "type": "string"
                 }
             },
+            "required": [
+                "uid"
+            ],
             "type": "object"
         },
         "IGraphMapping": {
@@ -305,6 +354,12 @@
                     "type": "string"
                 }
             },
+            "required": [
+                "uid",
+                "label",
+                "weight",
+                "flags"
+            ],
             "type": "object"
         },
         "IGraphSource": {
@@ -341,11 +396,19 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "mappings",
+                "link",
+                "id",
+                "output"
+            ],
             "type": "object"
         },
         "IGraphVisualization": {
             "additionalProperties": false,
             "properties": {
+                "color": {
+                },
                 "events": {
                     "additionalProperties": {
                         "$ref": "#/definitions/IEvent"
@@ -376,6 +439,8 @@
                     },
                     "type": "array"
                 },
+                "onSelect": {
+                },
                 "properties": {
                     "additionalProperties": false,
                     "properties": {
@@ -383,6 +448,9 @@
                             "type": "string"
                         }
                     },
+                    "required": [
+                        "charttype"
+                    ],
                     "type": "object"
                 },
                 "source": {
@@ -395,6 +463,15 @@
                     "$ref": "#/definitions/VisualizationType"
                 }
             },
+            "required": [
+                "source",
+                "label",
+                "icon",
+                "flag",
+                "type",
+                "id",
+                "title"
+            ],
             "type": "object"
         },
         "IHeatMapMapping": {
@@ -410,6 +487,11 @@
                     "type": "string"
                 }
             },
+            "required": [
+                "x",
+                "y",
+                "weight"
+            ],
             "type": "object"
         },
         "IHeatMapSource": {
@@ -443,11 +525,18 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "mappings",
+                "id",
+                "output"
+            ],
             "type": "object"
         },
         "IHeatMapVisualization": {
             "additionalProperties": false,
             "properties": {
+                "color": {
+                },
                 "events": {
                     "additionalProperties": {
                         "$ref": "#/definitions/IEvent"
@@ -463,6 +552,8 @@
                 "id": {
                     "type": "string"
                 },
+                "onSelect": {
+                },
                 "properties": {
                     "additionalProperties": false,
                     "properties": {
@@ -470,6 +561,9 @@
                             "type": "string"
                         }
                     },
+                    "required": [
+                        "charttype"
+                    ],
                     "type": "object"
                 },
                 "source": {
@@ -482,6 +576,12 @@
                     "$ref": "#/definitions/VisualizationType"
                 }
             },
+            "required": [
+                "source",
+                "type",
+                "id",
+                "title"
+            ],
             "type": "object"
         },
         "ILineMapping": {
@@ -500,6 +600,10 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "x",
+                "y"
+            ],
             "type": "object"
         },
         "ILineSource": {
@@ -533,11 +637,18 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "mappings",
+                "id",
+                "output"
+            ],
             "type": "object"
         },
         "ILineVisualization": {
             "additionalProperties": false,
             "properties": {
+                "color": {
+                },
                 "events": {
                     "additionalProperties": {
                         "$ref": "#/definitions/IEvent"
@@ -553,6 +664,8 @@
                 "id": {
                     "type": "string"
                 },
+                "onSelect": {
+                },
                 "properties": {
                     "additionalProperties": false,
                     "properties": {
@@ -560,6 +673,9 @@
                             "type": "string"
                         }
                     },
+                    "required": [
+                        "charttype"
+                    ],
                     "type": "object"
                 },
                 "source": {
@@ -572,6 +688,12 @@
                     "$ref": "#/definitions/VisualizationType"
                 }
             },
+            "required": [
+                "source",
+                "type",
+                "id",
+                "title"
+            ],
             "type": "object"
         },
         "IOutput": {
@@ -596,6 +718,10 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "id",
+                "from"
+            ],
             "type": "object"
         },
         "IPieMapping": {
@@ -608,6 +734,10 @@
                     "type": "string"
                 }
             },
+            "required": [
+                "label",
+                "weight"
+            ],
             "type": "object"
         },
         "IPieSource": {
@@ -641,11 +771,18 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "mappings",
+                "id",
+                "output"
+            ],
             "type": "object"
         },
         "IPieVisualization": {
             "additionalProperties": false,
             "properties": {
+                "color": {
+                },
                 "events": {
                     "additionalProperties": {
                         "$ref": "#/definitions/IEvent"
@@ -661,6 +798,8 @@
                 "id": {
                     "type": "string"
                 },
+                "onSelect": {
+                },
                 "properties": {
                     "additionalProperties": false,
                     "properties": {
@@ -668,6 +807,9 @@
                             "type": "string"
                         }
                     },
+                    "required": [
+                        "charttype"
+                    ],
                     "type": "object"
                 },
                 "source": {
@@ -680,6 +822,12 @@
                     "$ref": "#/definitions/VisualizationType"
                 }
             },
+            "required": [
+                "source",
+                "type",
+                "id",
+                "title"
+            ],
             "type": "object"
         },
         "ITableMapping": {
@@ -692,6 +840,9 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "value"
+            ],
             "type": "object"
         },
         "ITableSource": {
@@ -725,11 +876,18 @@
                     "type": "array"
                 }
             },
+            "required": [
+                "mappings",
+                "id",
+                "output"
+            ],
             "type": "object"
         },
         "ITableVisualization": {
             "additionalProperties": false,
             "properties": {
+                "color": {
+                },
                 "events": {
                     "additionalProperties": {
                         "$ref": "#/definitions/IEvent"
@@ -751,6 +909,8 @@
                     },
                     "type": "array"
                 },
+                "onSelect": {
+                },
                 "properties": {
                     "additionalProperties": false,
                     "properties": {
@@ -758,6 +918,9 @@
                             "type": "string"
                         }
                     },
+                    "required": [
+                        "charttype"
+                    ],
                     "type": "object"
                 },
                 "source": {
@@ -770,6 +933,13 @@
                     "$ref": "#/definitions/VisualizationType"
                 }
             },
+            "required": [
+                "label",
+                "source",
+                "type",
+                "id",
+                "title"
+            ],
             "type": "object"
         },
         "IVisualizationField": {
@@ -805,9 +975,22 @@
                             "$ref": "#/definitions/VisualizationFieldType"
                         }
                     },
+                    "required": [
+                        "type",
+                        "charttype",
+                        "label",
+                        "enumvals",
+                        "default",
+                        "localVisualizationID"
+                    ],
                     "type": "object"
                 }
             },
+            "required": [
+                "id",
+                "label",
+                "properties"
+            ],
             "type": "object"
         },
         "IVisualizationIcon": {
@@ -826,6 +1009,9 @@
                     "type": "object"
                 }
             },
+            "required": [
+                "faChar"
+            ],
             "type": "object"
         },
         "VisualizationFieldType": {
@@ -869,8 +1055,17 @@
             },
             "type": "array"
         },
+        "enable": {
+            "type": "string"
+        },
         "id": {
             "type": "string"
+        },
+        "label": {
+            "type": "string"
+        },
+        "primary": {
+            "type": "boolean"
         },
         "title": {
             "type": "string"
@@ -901,6 +1096,15 @@
             "type": "array"
         }
     },
+    "required": [
+        "id",
+        "title",
+        "enable",
+        "label",
+        "primary",
+        "visualizations",
+        "datasources"
+    ],
     "type": "object"
 }
 
