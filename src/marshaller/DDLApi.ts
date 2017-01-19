@@ -1,19 +1,19 @@
-type StringStringDict = { [key: string]: string; }
+type StringStringDict = { [key: string]: string; };
 
 //  Datasource  ===============================================================
 export interface IOutput {
     id: string;
     from: string;
-    filter: string[];
-    notify: string[];
+    filter?: string[];
+    notify?: string[];
 }
 
 export interface IDatasource {
     id: string;
-    databomb: boolean;
-    WUID: boolean;
-    URL: string;
-    filter: string[];
+    databomb?: boolean;
+    WUID?: boolean;
+    URL?: string;
+    filter?: string[];
     outputs: IOutput[];
 }
 
@@ -22,9 +22,9 @@ export interface IEventUpdate {
     visualization: string;
     instance: string;
     datasource: string;
-    col: string;
+    col?: string;
     merge: boolean;
-    mappings: StringStringDict;
+    mappings?: StringStringDict;
 }
 
 export interface IEvent {
@@ -84,9 +84,9 @@ export interface IHeatMapMapping {
 export interface ISource {
     id: string;
     output: string;
-    sort: string[];
-    first: number;
-    reverse: boolean;
+    sort?: string[];
+    first?: number;
+    reverse?: boolean;
     properties?: StringStringDict;  //  TODO Needed?
 }
 
@@ -141,15 +141,17 @@ export interface IVisualization {
     type: VisualizationType;
     id: string;
     title: string;
-    properties: {
+    properties?: {
         charttype: string,
 
         //  TODO Split Known Properties  ---
         [key: string]: string
     };
-    events: { [key: string]: IEvent };
+    events?: { [key: string]: IEvent };
+    onSelect?: any;  //legacy
 
-    fields: IVisualizationField[];
+    fields?: IVisualizationField[];
+    color?: any; // legacy
 }
 
 export interface IPieVisualization extends IVisualization {
@@ -165,7 +167,7 @@ export interface IChoroVisualization extends IVisualization {
     source: IChoroSource;
 
     visualizations?: IChoroVisualization[];
-    color: ChoroColor;
+    color?: ChoroColor;
 }
 
 export interface ITableVisualization extends IVisualization {
@@ -199,6 +201,9 @@ export interface IHeatMapVisualization extends IVisualization {
 export interface IDashboard {
     id: string;
     title: string;
+    enable: string;
+    label: string;
+    primary: boolean;
     visualizations: IAnyVisualization[];
     datasources: IDatasource[];
 }
