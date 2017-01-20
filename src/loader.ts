@@ -47,6 +47,8 @@
                 "simpleheat": "../bower_components/simpleheat/index",
                 "autoComplete": "../bower_components/javascript-auto-complete/auto-complete",
 
+                "ajv": "../node_modules/ajv/dist/ajv.bundle",
+
                 "src": "../out"
             },
             shim: {

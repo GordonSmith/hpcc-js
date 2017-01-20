@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "additionalProperties": false,
     "definitions": {
         "ChoroColor": {
             "enum": [
@@ -215,9 +214,70 @@
             },
             "required": [
                 "source",
-                "type",
                 "id",
-                "title"
+                "title",
+                "type"
+            ],
+            "type": "object"
+        },
+        "IDashboard": {
+            "additionalProperties": false,
+            "properties": {
+                "datasources": {
+                    "items": {
+                        "$ref": "#/definitions/IDatasource"
+                    },
+                    "type": "array"
+                },
+                "enable": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "primary": {
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "visualizations": {
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/IPieVisualization"
+                            },
+                            {
+                                "$ref": "#/definitions/ILineVisualization"
+                            },
+                            {
+                                "$ref": "#/definitions/IChoroVisualization"
+                            },
+                            {
+                                "$ref": "#/definitions/ITableVisualization"
+                            },
+                            {
+                                "$ref": "#/definitions/IGraphVisualization"
+                            },
+                            {
+                                "$ref": "#/definitions/IHeatMapVisualization"
+                            }
+                        ]
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "id",
+                "title",
+                "enable",
+                "label",
+                "primary",
+                "visualizations",
+                "datasources"
             ],
             "type": "object"
         },
@@ -468,9 +528,9 @@
                 "label",
                 "icon",
                 "flag",
-                "type",
                 "id",
-                "title"
+                "title",
+                "type"
             ],
             "type": "object"
         },
@@ -578,9 +638,9 @@
             },
             "required": [
                 "source",
-                "type",
                 "id",
-                "title"
+                "title",
+                "type"
             ],
             "type": "object"
         },
@@ -690,9 +750,9 @@
             },
             "required": [
                 "source",
-                "type",
                 "id",
-                "title"
+                "title",
+                "type"
             ],
             "type": "object"
         },
@@ -819,12 +879,15 @@
                     "type": "string"
                 },
                 "type": {
-                    "$ref": "#/definitions/VisualizationType"
+                    "enum": [
+                        "PIE"
+                    ],
+                    "type": "string"
                 }
             },
             "required": [
-                "source",
                 "type",
+                "source",
                 "id",
                 "title"
             ],
@@ -936,9 +999,9 @@
             "required": [
                 "label",
                 "source",
-                "type",
                 "id",
-                "title"
+                "title",
+                "type"
             ],
             "type": "object"
         },
@@ -1048,63 +1111,9 @@
             "type": "string"
         }
     },
-    "properties": {
-        "datasources": {
-            "items": {
-                "$ref": "#/definitions/IDatasource"
-            },
-            "type": "array"
-        },
-        "enable": {
-            "type": "string"
-        },
-        "id": {
-            "type": "string"
-        },
-        "label": {
-            "type": "string"
-        },
-        "primary": {
-            "type": "boolean"
-        },
-        "title": {
-            "type": "string"
-        },
-        "visualizations": {
-            "items": {
-                "anyOf": [
-                    {
-                        "$ref": "#/definitions/IPieVisualization"
-                    },
-                    {
-                        "$ref": "#/definitions/ILineVisualization"
-                    },
-                    {
-                        "$ref": "#/definitions/IChoroVisualization"
-                    },
-                    {
-                        "$ref": "#/definitions/ITableVisualization"
-                    },
-                    {
-                        "$ref": "#/definitions/IGraphVisualization"
-                    },
-                    {
-                        "$ref": "#/definitions/IHeatMapVisualization"
-                    }
-                ]
-            },
-            "type": "array"
-        }
+    "items": {
+        "$ref": "#/definitions/IDashboard"
     },
-    "required": [
-        "id",
-        "title",
-        "enable",
-        "label",
-        "primary",
-        "visualizations",
-        "datasources"
-    ],
-    "type": "object"
+    "type": "array"
 }
 

@@ -138,9 +138,9 @@ export interface IVisualizationField {
 }
 
 export interface IVisualization {
-    type: VisualizationType;
     id: string;
     title: string;
+    type: VisualizationType;
     properties?: {
         charttype: string,
 
@@ -154,7 +154,9 @@ export interface IVisualization {
     color?: any; // legacy
 }
 
+export type PieType = "PIE";
 export interface IPieVisualization extends IVisualization {
+    type: PieType;
     source: IPieSource;
 }
 
@@ -207,6 +209,9 @@ export interface IDashboard {
     visualizations: IAnyVisualization[];
     datasources: IDatasource[];
 }
+
+//  DDL  ======================================================================
+export type DDLSchema = IDashboard[];
 
 //  Helpers  ==================================================================
 export type IAnyChoroMapping = IChoroUSStateMapping | IChoroUSCountyMapping | IChoroGeohashMapping;
