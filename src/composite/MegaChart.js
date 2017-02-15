@@ -121,7 +121,7 @@
         this._maximizeButton = new Button()
             .classed({ "composite_MegaChart-Maximize": true })
             .id(this.id() + "_maximize")
-            .value("")
+            .value("\uf2d0")
         ;
         this._maximizeButton.click = function (buttonWidget) {
             var target = context.target();
@@ -136,6 +136,7 @@
                 node = document.body;
             }
             
+            var targetElement = d3.select(context.target());
             if(isMaximized){
                 //Restore from maximized to natural size/position
                 var targetParentBox = target.parentElement.getBoundingClientRect();
@@ -143,26 +144,32 @@
                 var targetPaddingLeft = parseInt(getComputedStyle(target, null).getPropertyValue('padding-left').replace('px',''));
                 var targetPaddingRight = parseInt(getComputedStyle(target, null).getPropertyValue('padding-right').replace('px',''));
                 var targetPaddingBottom = parseInt(getComputedStyle(target, null).getPropertyValue('padding-bottom').replace('px',''));
-                context.element()
+                context.contentDiv.style("opacity", 0).transition(100);
+                targetElement.transition()//.duration(3000)
                     .style({
-                        "position":target.__old_position,
                         "top": targetParentBox.top+'px',
                         "left": targetParentBox.left+'px',
                         "width": (targetParentBox.width - targetPaddingLeft - targetPaddingRight)+'px',
-                        "height": (targetParentBox.height - targetPaddingTop - targetPaddingBottom)+'px',
-                        "z-index": target.__old_zindex,
-                        "background-color": target.__old_backgroundColor,
-                        "box-shadow": target.__old_boxshadow
+                        "height": (targetParentBox.height - targetPaddingTop - targetPaddingBottom)+'px'
+                    }).each("end", function () {
+                        targetElement.style({
+                            "position": target.__old_position,
+                            "z-index": target.__old_zindex,
+                            "background-color": target.__old_backgroundColor,
+                            "box-shadow": target.__old_boxshadow
                     })
                 ;
-                context
-                    .resize({
-                        "width": targetParentBox.width - targetPaddingLeft - targetPaddingRight,
-                        "height": targetParentBox.height - targetPaddingTop - targetPaddingBottom
-                    })
-                    .render()
-                ;
-                buttonWidget.value("").render();
+                        context
+                            .resize({
+                                "width": targetParentBox.width - targetPaddingLeft - targetPaddingRight,
+                                "height": targetParentBox.height - targetPaddingTop - targetPaddingBottom
+                            })
+                            .render(function () {
+                                context.contentDiv.transition()
+                                    .style("opacity", 1);
+                            });
+                        buttonWidget.value("\uf2d0").render();
+                    });
             } else {
                 //Maximize this MegaChart
                 target.__old_position = target.style.position;
@@ -176,26 +183,35 @@
                 var gridPaddingLeft = parseInt(getComputedStyle(gridTarget, null).getPropertyValue('padding-left').replace('px',''));
                 var gridPaddingRight = parseInt(getComputedStyle(gridTarget, null).getPropertyValue('padding-right').replace('px',''));
                 var gridPaddingBottom = parseInt(getComputedStyle(gridTarget, null).getPropertyValue('padding-bottom').replace('px',''));
-                
-                context.element()
+                context.contentDiv.style("opacity", 0).transition(100);
+                targetElement
                     .style({
                         "position":"fixed",
+                        "z-index": 999999,
+                        "box-shadow": "0 8px 8px 0 rgba(0,0,0,.14),0 12px 4px -8px rgba(0,0,0,.2),0 4px 20px 0 rgba(0,0,0,.12)",
+                        "background-color": target.__old_backgroundColor
+                    })
+                    .transition()//.duration(3000)
+                    .style({
                         "top": (gridBox.top + gridPaddingTop)+'px',
                         "left": (gridBox.left + gridPaddingLeft)+'px',
                         "width": (gridBox.width - gridPaddingLeft - gridPaddingRight)+'px',
-                        "height": (gridBox.height - gridPaddingTop - gridPaddingBottom)+'px',
-                        "z-index": 999999,
-                        "box-shadow": "0 8px 8px 0 rgba(0,0,0,.14),0 12px 4px -8px rgba(0,0,0,.2),0 4px 20px 0 rgba(0,0,0,.12)",
+                        "height": (gridBox.height - gridPaddingTop - gridPaddingBottom)+'px'
+                    }).each("end", function () {
+                        targetElement.style({
                         "background-color": context.maximizedBackgroundColor()
+                        });
+                        context
+                            .resize({
+                                "width": (gridBox.width - gridPaddingLeft - gridPaddingRight),
+                                "height": (gridBox.height - gridPaddingTop - gridPaddingBottom)
+                            })
+                            .render(function () {
+                                context.contentDiv.transition()
+                                    .style("opacity", 1);
+                            });
+                        buttonWidget.value("\uf2d1").render();
                     });
-                context
-                    .resize({
-                        "width": (gridBox.width - gridPaddingLeft - gridPaddingRight),
-                        "height": (gridBox.height - gridPaddingTop - gridPaddingBottom)
-                    })
-                    .render()
-                ;
-                buttonWidget.value("").render();
             }
             
             d3.select(target).classed('__hpccisMaximized',!isMaximized);
