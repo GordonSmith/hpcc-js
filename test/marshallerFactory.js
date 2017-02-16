@@ -52,7 +52,7 @@
             wu: function (callback) {
                 es6Require(["test/DataFactory", "src/marshaller/HTML"], function (DataFactory, HTML) {
                     callback(new HTML()
-                        .ddlUrl_default("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20161207-112811&ResultName=issue_1727_colselect_Comp_Ins003_DDL")
+                        .ddlUrl_default("http://10.241.100.157:8010/WsWorkunits/WUResult.json?Wuid=W20170209-151711&ResultName=suspectaddresssearchv2_Comp_Ins92117_DDL")
                     );
                 });
             },

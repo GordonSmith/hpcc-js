@@ -11,7 +11,7 @@ export function XYAxis() {
     this._drawStartPos = "origin";
 
     this.domainAxis = new Axis()
-            .classed({"domain": true})
+        .classed({ "domain": true })
         .orientation_default("bottom")
         .type_default("ordinal")
         .overlapMode_default("stagger")
@@ -19,7 +19,7 @@ export function XYAxis() {
         .extend_default(0)
         ;
     this.valueAxis = new Axis()
-            .classed({ "value": true })
+        .classed({ "value": true })
         .orientation_default("left")
         .type_default("linear")
         .shrinkToFit_default("high")
@@ -184,7 +184,7 @@ XYAxis.prototype.resizeBrushHandle = function (d, width, height) {
 };
 
 XYAxis.prototype.brushMoved = debounce(function brushed() {
-    var selected = this.data().filter(function (d) {
+    var selected = this.parsedData().filter(function (d) {
         var pos = d[0];
         if (this.xAxisType() === "ordinal") {
             pos = this.domainAxis.d3Scale(pos) + (this.domainAxis.d3Scale.rangeBand ? this.domainAxis.d3Scale.rangeBand() / 2 : 0);
@@ -301,7 +301,7 @@ XYAxis.prototype.update = function (domNode, element) {
     this.yAxis = isHorizontal ? this.valueAxis : this.domainAxis;
     var xBrush = isHorizontal ? this.xBrush : this.yBrush;
     var yBrush = isHorizontal ? this.yBrush : this.xBrush;
-        var xBrushExtent = xBrush.extent();
+    var xBrushExtent = xBrush.extent();
     var yBrushExtent = yBrush.extent();
 
     //  Update Domain  ---
@@ -394,26 +394,26 @@ XYAxis.prototype.update = function (domNode, element) {
                     xBrush.extent(yBrushExtent);
                     break;
             }
-            } else {
-                switch (this.xAxisType()) {
-                    case "ordinal":
-                        if (this._prevBrush) {
-                            var ratio = maxCurrExtent / this._prevBrush.maxCurrExtent;
-                            xBrush.extent([xBrushExtent[0] * ratio, xBrushExtent[1] * ratio]);
-                        }
-                        break;
-                    default:
-                        var domain = this.domainAxis.d3Scale.domain();
-                        if (xBrushExtent[0] < domain[0] || xBrushExtent[0] > domain[1]) {
-                            xBrushExtent[0] = domain[0];
-                        }
-                        if (xBrushExtent[1] < domain[0] || xBrushExtent[1] > domain[1]) {
-                            xBrushExtent[1] = domain[1];
-                        }
-                        xBrush.extent(xBrushExtent);
-                        break;
-                }
+        } else {
+            switch (this.xAxisType()) {
+                case "ordinal":
+                    if (this._prevBrush) {
+                        var ratio = maxCurrExtent / this._prevBrush.maxCurrExtent;
+                        xBrush.extent([xBrushExtent[0] * ratio, xBrushExtent[1] * ratio]);
+                    }
+                    break;
+                default:
+                    var domain = this.domainAxis.d3Scale.domain();
+                    if (xBrushExtent[0] < domain[0] || xBrushExtent[0] > domain[1]) {
+                        xBrushExtent[0] = domain[0];
+                    }
+                    if (xBrushExtent[1] < domain[0] || xBrushExtent[1] > domain[1]) {
+                        xBrushExtent[1] = domain[1];
+                    }
+                    xBrush.extent(xBrushExtent);
+                    break;
             }
+        }
         this._prevBrush = {
             orientation: this.orientation(),
             maxCurrExtent: maxCurrExtent
@@ -449,7 +449,7 @@ XYAxis.prototype.updateFocusChart = function (domNode, element, margin, width, h
     var focusChart = this.svgFocus.selectAll("#" + this.id() + "_focusChart").data(this.xAxisFocus() ? [true] : []);
     focusChart.enter().append("g")
         .attr("id", this.id() + "_focusChart")
-            .attr("class", "focus")
+        .attr("class", "focus")
         .each(function (d) {
             context.focusChart = new context.constructor()
                 .target(this)

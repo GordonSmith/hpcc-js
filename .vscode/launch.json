@@ -5,9 +5,9 @@
             "name": "Debug Chrome",
             "type": "chrome",
             "request": "launch",
-            "url": "http://localhost:8000/demos/dermatology.html?src/chart/Column",
+            "url": "http://localhost:8000/apps/WeCare/index.html",
             "sourceMaps": true,
-            "webRoot": "${workspaceRoot}/demos",
+            "webRoot": "http://localhost:8000/apps/WeCare",
             "pathMapping": {
                 "/": "${workspaceRoot}"
             }

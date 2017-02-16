@@ -40,7 +40,6 @@
         "gulp-typescript": "^3.1.5",
         "gulp-util": "^3.0.8",
         "gulp-webserver": "^0.9.1",
-        "hpcc-platform-comms": "^0.0.17",
         "jshint": "^2.9.4",
         "jshint-stylish": "^2.2.1",
         "lodash": "^4.17.4",
