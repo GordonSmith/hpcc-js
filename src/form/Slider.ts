@@ -93,7 +93,9 @@ Slider.prototype.publishProxy("loopDiameter", "_loopIcon", "diameter", 24);
 Slider.prototype.publish("loopGutter", 4, "number", "Play Gutter");
 
 Slider.prototype.name = function (_) {
-    return Slider.prototype.columns.apply(this, arguments);
+    if (!arguments.length) return this._name;
+    this._name = _;
+    return this;
 };
 
 var value = Slider.prototype.value;

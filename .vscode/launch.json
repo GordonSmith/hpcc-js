@@ -5,9 +5,12 @@
             "name": "Debug Chrome File",
             "type": "chrome",
             "request": "launch",
-            "url": "file:///${workspaceRoot}/demos/dermatology.html",
+            "url": "http://localhost:8000/apps/WeCare/index.html",
             "sourceMaps": true,
-            "webRoot": "${workspaceRoot}/demos"
+            "webRoot": "http://localhost:8000/apps/WeCare",
+            "outFiles": [
+                "${workspaceRoot}/out/**/*"
+            ]
         },
         {
             "name": "ECL Watch",
