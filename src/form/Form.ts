@@ -90,7 +90,7 @@ Form.prototype.submit = function () {
         isValid = this.checkValidation();
     }
     if (!this.allowEmptyRequest() && !this.inputs().some(function (w) {
-        if (w._class.indexOf("WidgetArray") !== -1) {
+        if (w.class().indexOf("WidgetArray") !== -1) {
             return w.content().some(function (wa) {
                 return wa.hasValue();
             });
@@ -245,7 +245,7 @@ Form.prototype.update = function (domNode, element) {
     if (!this.allowEmptyRequest()) {
         setTimeout(function () {
             context._controls[0].disable(!context.allowEmptyRequest() && !context.inputs().some(function (w) {
-                if (w._class.indexOf("WidgetArray") !== -1) {
+                if (w.class().indexOf("WidgetArray") !== -1) {
                     return w.content().some(function (wa) {
                         return wa.hasValue();
                     });
