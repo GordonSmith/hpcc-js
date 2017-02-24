@@ -1057,12 +1057,13 @@ export class Visualization extends Class {
                 });
                 break;
             case "FORM":
-                this.loadWidgets(["src/form/Form", "src/form/Input", "src/form/Button", "src/form/CheckBox", "src/form/ColorInput", "src/form/Radio", "src/form/Range", "src/form/Select", "src/form/Slider", "src/form/TextArea"], function (widget, widgetClasses) {
+                this.loadWidgets(["src/form/Form", "src/form/Input", "src/form/Button", "src/form/CheckBox", "src/form/ColorInput", "src/form/Radio", "src/form/Range", "src/form/Select", "src/form/Slider", "src/form/TextArea", "src/form/InputRange"], function (widget, widgetClasses) {
                     var Input = widgetClasses[1];
                     var CheckBox = widgetClasses[3];
                     var Radio = widgetClasses[5];
                     var Select = widgetClasses[7];
                     var TextArea = widgetClasses[9];
+                    var InputRange = widgetClasses[10];
 
                     try {
                         widget
@@ -1091,6 +1092,9 @@ export class Visualization extends Class {
                                         inp = new Input()
                                             .type_default("hidden")
                                             ;
+                                        break;
+                                    case "RANGE":
+                                        inp = new InputRange();
                                         break;
                                     default:
                                         if (field.properties.enumvals) {
@@ -1909,14 +1913,14 @@ export class Dashboard {
             var inputVisualizations = visualization.getInputVisualizations();
             var datasource = visualization.source.getDatasource();
             var hasInputSelection = false;
-                inputVisualizations.forEach(function (inViz) {
-                    if (inViz.hasSelection()) {
-                        var request = inViz.calcRequestFor(visualization);
-                        request.refresh = true;
-                        fetchDataOptimizer.appendRequest(datasource, request, visualization);
+            inputVisualizations.forEach(function (inViz) {
+                if (inViz.hasSelection()) {
+                    var request = inViz.calcRequestFor(visualization);
+                    request.refresh = true;
+                    fetchDataOptimizer.appendRequest(datasource, request, visualization);
                     hasInputSelection = true;
-                    }
-                });
+                }
+            });
             if (!hasInputSelection && ((datasource && datasource.isRoxie()) || inputVisualizations.length === 0)) {
                 fetchDataOptimizer.appendRequest(datasource, { refresh: true }, visualization);
             }

@@ -45,14 +45,14 @@
             roxie: function (callback) {
                 es6Require(["test/DataFactory", "src/marshaller/HTML"], function (DataFactory, HTML) {
                     callback(new HTML()
-                        .ddlUrl_default("http://10.241.100.159:8002/WsEcl/submit/query/roxie/zz_speriasamy_SuspectAddressDemo.Ins011_Service_1/json")
+                        .ddlUrl_default("http://10.173.147.1:8002/WsEcl/submit/query/roxie/leeddx_issue_670_filterrangebetween.Ins002_Service_1/json")
                     );
                 });
             },
             wu: function (callback) {
                 es6Require(["test/DataFactory", "src/marshaller/HTML"], function (DataFactory, HTML) {
                     callback(new HTML()
-                        .ddlUrl_default("http://10.241.100.157:8010/WsWorkunits/WUResult.json?Wuid=W20170209-151711&ResultName=suspectaddresssearchv2_Comp_Ins92117_DDL")
+                        .ddlUrl_default("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170223-131331&ResultName=issue_670_filterrangebetweenwuid_Comp_Ins002_DDL")
                     );
                 });
             },

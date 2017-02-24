@@ -5,11 +5,11 @@
     } else {
         root.test_commonFactory = factory(root.es6Require);
     }
-} (this, function (es6Require) {
+}(this, function (es6Require) {
     return {
         Form: {
             simple: function (callback) {
-                es6Require(["test/DataFactory", "src/form/Button", "src/form/ColorInput", "src/form/Radio", "src/form/CheckBox", "src/form/Form", "src/form/Input", "src/form/Select", "src/form/TextArea", "src/common/WidgetArray", "src/form/Slider"], function (DataFactory, Button, ColorInput, Radio, CheckBox, Form, Input, Select, TextArea, WidgetArray, Slider) {
+                es6Require(["test/DataFactory", "src/form/Button", "src/form/ColorInput", "src/form/Radio", "src/form/CheckBox", "src/form/Form", "src/form/Input", "src/form/InputRange", "src/form/Select", "src/form/TextArea", "src/common/WidgetArray", "src/form/Slider"], function (DataFactory, Button, ColorInput, Radio, CheckBox, Form, Input, InputRange, Select, TextArea, WidgetArray, Slider) {
                     callback(new Form()
                         .inputs([
                             new Input()
@@ -18,6 +18,10 @@
                                 .type("text")
                                 .validate("^[A-Za-z0-9]+$")
                                 .value("SomeString123"),
+                            new InputRange()
+                                .name("textbox-range-test")
+                                .label("Range")
+                                .value("SomeString001|SomeString100"),
                             new Input()
                                 .name("number-test")
                                 .label("Number Test")
