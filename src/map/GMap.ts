@@ -1,6 +1,6 @@
 import * as d3 from "d3";
-import { HTMLWidget } from '../common/HTMLWidget';
-import { AbsoluteSurface } from '../layout/AbsoluteSurface';
+import { HTMLWidget } from "../common/HTMLWidget";
+import { AbsoluteSurface } from "../layout/AbsoluteSurface";
 import "css!./GMap";
 
 function createOverlay(map, worldSurface, viewportSurface) {
@@ -148,7 +148,7 @@ UserShapeSelectionBag.prototype.load = function (_) {
 };
 
 UserShapeSelectionBag.prototype._saveShape = function (_) {
-    var retVal = {};
+    var retVal: any = {};
 
     var createShapes = {
         "circle": function (_) {
@@ -267,7 +267,7 @@ UserShapeSelectionBag.prototype._deserializeShapes = function (_) {
     }
 };
 
-function GMap() {
+export function GMap() {
     HTMLWidget.call(this);
 
     this._tag = "div";
@@ -446,7 +446,7 @@ GMap.prototype.update = function (domNode, element) {
 
     if (this.centerAddress_exists() && this._prevCenterAddress !== this.centerAddress()) {
         this._prevCenterAddress = this.centerAddress();
-        this._googleGeocoder.geocode({ 'address': this.centerAddress() }, function (results, status) {
+        this._googleGeocoder.geocode({ "address": this.centerAddress() }, function (results, status) {
             if (status === google.maps.GeocoderStatus.OK) {
                 context._googleMap.fitBounds(results[0].geometry.bounds);
             } else {
@@ -682,17 +682,17 @@ GMap.prototype.onDrawingComplete = function (event) {
         this._userShapes.add(newShape);
         var context = this;
         var ctrl = false;
-        window.addEventListener('keydown', function (e) {
+        window.addEventListener("keydown", function (e: any) {
             if (e.keyIdentifier === "Control" || e.ctrlKey === true) {
                 ctrl = true;
             }
         });
-        window.addEventListener('keyup', function (e) {
+        window.addEventListener("keyup", function (e) {
             if (e.ctrlKey === false) {
                 ctrl = false;
             }
         });
-        google.maps.event.addListener(newShape, 'click', function (ev) {
+        google.maps.event.addListener(newShape, "click", function (ev) {
             context.userShapeSelection(newShape);
             if (ev && ctrl === true) {
                 context.deleteUserShape(newShape);
@@ -706,6 +706,3 @@ GMap.prototype.onDrawingComplete = function (event) {
             JSON.stringify(this._userShapes.save()));
     }
 };
-
-return GMap;
-

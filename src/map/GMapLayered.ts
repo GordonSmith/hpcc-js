@@ -1,6 +1,6 @@
 import * as d3 from "d3";
-import { GMap } from './GMap';
-import { SVGWidget } from '../common/SVGWidget';
+import { GMap } from "./GMap";
+import { SVGWidget } from "../common/SVGWidget";
 
 var zoomFactor = 1 / (1 << 4);
 var projectionFactor = 1 << 12;
@@ -37,20 +37,20 @@ Layered.prototype.update = function (domNode, element) {
     }
 };
 
-    Layered.prototype.preRender = function (callback) {
-        return Promise.all(this.gmap.layers().filter(function (layer) {
-            return layer.visible();
-        }).map(function (layer) {
-            return layer.layerPreRender();
-        }));
-    };
+Layered.prototype.preRender = function (callback) {
+    return Promise.all(this.gmap.layers().filter(function (layer) {
+        return layer.visible();
+    }).map(function (layer) {
+        return layer.layerPreRender();
+    }));
+};
 
 Layered.prototype.fullRender = function () {
     if (!this._hasZoomed) return;
     this._hasRendered = true;
 
     this.size(this.gmap.size());
-        var layers = this._element.selectAll(".layerContainer").data(this.gmap.layers().filter(function (layer) { return layer.visible(); }), function (d) { return d.id(); });
+    var layers = this._element.selectAll(".layerContainer").data(this.gmap.layers().filter(function (layer) { return layer.visible(); }), function (d) { return d.id(); });
     var context = this;
     layers.enter().append("g")
         .attr("class", "layerContainer")
@@ -138,12 +138,13 @@ GMapLayered.prototype.enter = function () {
 
 GMapLayered.prototype.render = function (callback) {
     var context = this;
-        var retVal = GMap.prototype.render.call(this, function (w) {
-	        context.layered.preRender().then(function () {
-	            context.layered.fullRender();
-	            if (callback) {
-	                callback(w);
-	            }
-            });        });
+    var retVal = GMap.prototype.render.call(this, function (w) {
+        context.layered.preRender().then(function () {
+            context.layered.fullRender();
+            if (callback) {
+                callback(w);
+            }
+        });
+    });
     return retVal;
 };

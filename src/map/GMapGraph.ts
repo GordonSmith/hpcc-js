@@ -1,7 +1,7 @@
-import { GMap } from './GMap';
-import { Graph } from '../graph/Graph';
-import { Edge } from '../graph/Edge';
-import { Shape } from '../common/Shape';
+import { GMap } from "./GMap";
+import { Graph } from "../graph/Graph";
+import { Edge } from "../graph/Edge";
+import { Shape } from "../common/Shape";
 
 export function GMapGraph() {
     GMap.call(this);
