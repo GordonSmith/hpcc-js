@@ -19,6 +19,7 @@ declare module "amcharts-xy";
 declare module "amcharts-gantt";
 declare module "amcharts-gauge";
 declare module "amcharts-pie";
+declare module "React";
 
 /*
 declare const clearInterval;
@@ -43,3 +44,4 @@ declare const google;
 declare const AmCharts;
 declare const simpleheat;
 declare const Promise;
+declare const React;
