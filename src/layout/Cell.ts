@@ -46,7 +46,7 @@ Cell.prototype.onMouseEnter = function (widgetArr) {
     var indicatorGlowColor = this.indicatorGlowColor();
     for (var i = 0; i < arr.length; i++) {
         var otherElement = d3.select("#" + arr[i]);
-        try {
+        try {  //  Throws when other element is hidden or has not been rendered fully (tabs)
             var otherWidget = otherElement.datum();
             if (otherElement) {
                 otherElement.append("div")

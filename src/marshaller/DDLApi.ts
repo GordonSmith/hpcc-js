@@ -3,7 +3,7 @@ type StringStringDict = { [key: string]: string; };
 //  Datasource  ===============================================================
 export interface IFilter {
     fieldid: string;
-    nuillable: boolean;
+    nullable: boolean;
 }
 
 export interface IOutput {
@@ -216,7 +216,12 @@ export interface IDashboard {
 }
 
 //  DDL  ======================================================================
-export type DDLSchema = IDashboard[];
+export interface DDLSchema {
+    datasources: IDatasource[];
+    dashboards: IDashboard[];
+    hipieversion: string;
+    visualizationversion: string;
+}
 
 //  Helpers  ==================================================================
 export type IAnyChoroMapping = IChoroUSStateMapping | IChoroUSCountyMapping | IChoroGeohashMapping;

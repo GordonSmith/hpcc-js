@@ -7,7 +7,7 @@ import { ESPUrl, HIPIEWorkunit, HIPIERoxie, HIPIEDatabomb } from "../other/Comms
 import { MultiChart } from "../chart/MultiChart";
 import { Table } from "../other/Table";
 import {
-    IDashboard, IDatasource, IOutput, IEvent, IEventUpdate, IFilter, VisualizationType, IVisualizationField, VisualizationFieldType, IVisualizationIcon,
+    DDLSchema, IDashboard, IDatasource, IOutput, IEvent, IEventUpdate, IFilter, VisualizationType, IVisualizationField, VisualizationFieldType, IVisualizationIcon,
     IAnyVisualization, IPieVisualization, ILineVisualization, ITableVisualization, IGraphVisualization, IChoroVisualization, ISliderVisualization,
     IAnySource, IPieSource, ILineSource, ITableSource, IGraphSource, IGraphLink, IChoroSource, IHeatMapSource,
     IAnyMapping, IPieMapping, ILineMapping, ITableMapping, IGraphMapping, IGraphLinkMapping, IAnyChoroMapping, IChoroUSStateMapping, IChoroUSCountyMapping, IChoroGeohashMapping, IHeatMapMapping,
@@ -1986,7 +1986,7 @@ export class Marshaller extends Class {
     dashboardTotal: number;
 
     private _json: string;
-    private _jsonParsed: any;
+    private _jsonParsed: DDLSchema;
     espUrl: ESPUrl;
     private _timeout: number;
 
@@ -2113,23 +2113,20 @@ export class Marshaller extends Class {
         var context = this;
         this._json = json;
         this._jsonParsed = JSON.parse(this._json);
-        this.testJSON(this._jsonParsed);
+        //this.testJSON(this._jsonParsed);
 
         //  Global Datasources  ---
         this._datasources = {};
         this._datasourceArray = [];
-        if (this._jsonParsed.datasources) {
-            this._jsonParsed.datasources.forEach(function (item) {
-                context.createDatasource(item);
-            });
-        }
+        this._jsonParsed.datasources.forEach(function (item) {
+            context.createDatasource(item);
+        });
 
         this.dashboards = {};
         this.dashboardArray = [];
         this._visualizations = {};
         this._visualizationArray = [];
-        var dashboards = this._jsonParsed.dashboards ? this._jsonParsed.dashboards : this._jsonParsed;
-        dashboards.forEach(function (item) {
+        this._jsonParsed.dashboards.forEach(function (item) {
             var newDashboard = new Dashboard(context, item, context._proxyMappings, context._timeout);
             context.dashboards[item.id] = newDashboard;
             context.dashboardArray.push(newDashboard);
