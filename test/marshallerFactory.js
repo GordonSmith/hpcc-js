@@ -5,7 +5,7 @@
     } else {
         root.test_commonFactory = factory(root.es6Require);
     }
-} (this, function (es6Require) {
+}(this, function (es6Require) {
     return {
         HTML: {
             databomb: function (callback) {
@@ -60,6 +60,15 @@
                 es6Require(["test/DataFactory", "src/marshaller/HTML"], function (DataFactory, HTML) {
                     callback(new HTML()
                         .ddlUrl("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20151102-091253&ResultName=leeddx_issue_986_formddl_Comp_Ins002_DDL")
+                    );
+                });
+            }
+        },
+        Tabbed: {
+            wu: function (callback) {
+                es6Require(["test/DataFactory", "src/marshaller/Tabbed"], function (DataFactory, Tabbed) {
+                    callback(new Tabbed()
+                        .ddlUrl_default("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170227-183052&ResultName=issue_2229_multipledash_Comp_Ins002_DDL")
                     );
                 });
             }

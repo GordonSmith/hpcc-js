@@ -1,10 +1,15 @@
 type StringStringDict = { [key: string]: string; };
 
 //  Datasource  ===============================================================
+export interface IFilter {
+    fieldid: string;
+    nuillable: boolean;
+}
+
 export interface IOutput {
     id: string;
     from: string;
-    filter?: string[];
+    filter?: IFilter[];
     notify?: string[];
 }
 
@@ -13,7 +18,7 @@ export interface IDatasource {
     databomb?: boolean;
     WUID?: boolean;
     URL?: string;
-    filter?: string[];
+    filter?: IFilter[];
     outputs: IOutput[];
 }
 

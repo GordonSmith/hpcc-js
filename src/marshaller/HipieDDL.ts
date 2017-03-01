@@ -7,7 +7,7 @@ import { ESPUrl, HIPIEWorkunit, HIPIERoxie, HIPIEDatabomb } from "../other/Comms
 import { MultiChart } from "../chart/MultiChart";
 import { Table } from "../other/Table";
 import {
-    IDashboard, IDatasource, IOutput, IEvent, IEventUpdate, VisualizationType, IVisualizationField, VisualizationFieldType, IVisualizationIcon,
+    IDashboard, IDatasource, IOutput, IEvent, IEventUpdate, IFilter, VisualizationType, IVisualizationField, VisualizationFieldType, IVisualizationIcon,
     IAnyVisualization, IPieVisualization, ILineVisualization, ITableVisualization, IGraphVisualization, IChoroVisualization, ISliderVisualization,
     IAnySource, IPieSource, ILineSource, ITableSource, IGraphSource, IGraphLink, IChoroSource, IHeatMapSource,
     IAnyMapping, IPieMapping, ILineMapping, ITableMapping, IGraphMapping, IGraphLinkMapping, IAnyChoroMapping, IChoroUSStateMapping, IChoroUSCountyMapping, IChoroGeohashMapping, IHeatMapMapping,
@@ -109,16 +109,16 @@ class SourceMappings {
 
     getFields() {
         if (this.visualization.fields) {
-            return Object.keys(this.mappings).map(function (key) {
-                return this.visualization.fields.filter(function (field) {
+            return Object.keys(this.mappings).map((key) => {
+                return this.visualization.fields.filter((field) => {
                     return field.id === this.mappings[key];
-                }, this).map(function (field) {
+                }).map((field) => {
                     return new Field(field.id)
                         .type(hipieType2DBType(field.properties.type))
                         .label(this.reverseMappings[field.id])
                         ;
-                }, this)[0];
-            }, this);
+                })[0];
+            });
         }
         return null;
     }
@@ -219,10 +219,10 @@ class ChoroMappings2 extends SourceMappings {
         }
         var weightOffset = this.columns.length;
         if (mappings.weight instanceof Array) {
-            mappings.weight.forEach(function (w, i) {
+            mappings.weight.forEach((w, i) => {
                 this.columns.push(w);
                 this.columnsIdx[i === 0 ? "weight" : "weight_" + i] = i + weightOffset;
-            }, this);
+            });
         }
         this.init();
     }
@@ -263,27 +263,27 @@ class TableMappings extends SourceMappings {
     }
 
     init() {
-        this.visualization.label.forEach(function (label, idx) {
+        this.visualization.label.forEach((label, idx) => {
             this.reverseMappings[this.mappings[label]] = label;
             this.columns.push(label);
             this.columnsIdx[label] = idx;
             this.columnsRHS[idx] = this.mappings[label];
             this.columnsRHSIdx[this.mappings[label]] = idx;
             this.hasMappings = true;
-        }, this);
+        });
     }
 
     doMapAll(data) {
         var retVal = SourceMappings.prototype.doMapAll.apply(this, arguments);
         if (retVal instanceof Array) {
             var columnsRHSIdx = this.visualization.source.getColumnsRHSIdx();
-            this.visualization.fields.forEach(function (field) {
+            this.visualization.fields.forEach((field) => {
                 var fieldType = (!field || !field.properties) ? "unknown" : hipieType2DBType(field.properties.type);
                 var colIdx = columnsRHSIdx[field.id];
                 if (colIdx === undefined) {
                     console.log("Invalid Mapping:  " + field.id);
                 } else {
-                    retVal = retVal.map(function (row) {
+                    retVal = retVal.map((row) => {
                         var cell = row[colIdx];
                         if (cell && cell.Row) {
                             cell = cell.Row;
@@ -330,9 +330,9 @@ class TableMappings extends SourceMappings {
                             }
                         }
                         return row;
-                    }, this);
+                    });
                 }
-            }, this);
+            });
         }
         return retVal;
     }
@@ -708,9 +708,9 @@ class Event {
         this._updates = [];
         this._mappings = event.mappings;
         if (event) {
-            this._updates = event.updates.map(function (updateInfo) {
+            this._updates = event.updates.map((updateInfo) => {
                 return new EventUpdate(this, updateInfo, event.mappings);
-            }, this);
+            });
         }
     }
 
@@ -719,43 +719,43 @@ class Event {
     }
 
     getUpdates() {
-        return this._updates.filter(function (updateInfo) {
+        return this._updates.filter((updateInfo) => {
             if (!updateInfo._col) return true;
             return updateInfo._col === updateInfo.getMap(this.visualization._widgetState.col);
-        }, this);
+        });
     }
 
     getUpdatesDatasources() {
         var dedup = {};
         var retVal = [];
-        this.getUpdatesVisualizations().forEach(function (item, idx) {
+        this.getUpdatesVisualizations().forEach((item, idx) => {
             var datasource = item.source.getDatasource();
             if (datasource && !dedup[datasource.id]) {
                 dedup[datasource.id] = true;
                 retVal.push(datasource);
             }
-        }, this);
+        });
         return retVal;
     }
 
     getUpdatesVisualizations() {
         var dedup = {};
         var retVal = [];
-        this._updates.forEach(function (updateObj, idx) {
+        this._updates.forEach((updateObj, idx) => {
             var visualization = updateObj.getVisualization();
             if (!dedup[visualization.id]) {
                 dedup[visualization.id] = true;
                 retVal.push(visualization);
             }
-        }, this);
+        });
         return retVal;
     }
 
     fetchData() {
         var fetchDataOptimizer = new VisualizationRequestOptimizer();
-        this.getUpdates().forEach(function (updateObj) {
+        this.getUpdates().forEach((updateObj) => {
             fetchDataOptimizer.appendRequest(updateObj.getDatasource(), updateObj.calcRequestFor(this.visualization), updateObj.getVisualization());
-        }, this);
+        });
         return fetchDataOptimizer.fetchData();
     }
 
@@ -891,9 +891,9 @@ export class Visualization extends Class {
         this.title = visualization.title || visualization.id;
         this.fields = visualization.fields || [];
         this.fieldsMap = {};
-        this.fields.forEach(function (d) {
+        this.fields.forEach((d) => {
             this.fieldsMap[d.id] = d;
-        }, this);
+        });
 
         this.properties = visualization.properties || (visualization.source ? visualization.source.properties : null) || {};
         this.source = new Source(this, visualization.source);
@@ -902,14 +902,14 @@ export class Visualization extends Class {
         this.hasVizDeclarations = false;
         this.vizDeclarations = {};
         if (this.type === "CHORO") {
-            this.layers = ((<IChoroVisualization>visualization).visualizations || []).map(function (innerViz) {
+            this.layers = ((<IChoroVisualization>visualization).visualizations || []).map((innerViz) => {
                 return dashboard.createVisualization(innerViz, this);
-            }, this);
+            });
         } else {
-            ((<IChoroVisualization>visualization).visualizations || []).forEach(function (innerViz) {
+            ((<IChoroVisualization>visualization).visualizations || []).forEach((innerViz) => {
                 this.vizDeclarations[innerViz.id] = dashboard.createVisualization(innerViz, this);
                 this.hasVizDeclarations = true;
-            }, this);
+            });
         }
         var context = this;
         switch (this.type) {
@@ -1272,7 +1272,7 @@ export class Visualization extends Class {
             var paramsArr = [];
             var dedupParams = {};
             var updatedBy = this.getInputVisualizations();
-            updatedBy.forEach(function (viz) {
+            updatedBy.forEach((viz) => {
                 if (viz.hasSelection()) {
                     viz.getUpdatesForVisualization(this).forEach(function (updateObj) {
                         var mappedData = updateObj.mapSelected();
@@ -1286,7 +1286,7 @@ export class Visualization extends Class {
                         }
                     });
                 }
-            }, this);
+            });
             params = paramsArr.join(", ");
         }
 
@@ -1340,12 +1340,12 @@ export class Visualization extends Class {
             row: {},
             selected: false
         };
-        this.fields.forEach(function (field) {
+        this.fields.forEach((field) => {
             if (field.properties && field.properties.default !== undefined) {
                 this._widgetState.row[field.id] = field.properties.default;
                 this._widgetState.selected = true;
             }
-        }, this);
+        });
         if (this.widget && this.dashboard.marshaller.clearDataOnUpdate()) {
             this.widget.data([]);
         }
@@ -1409,13 +1409,13 @@ export class Visualization extends Class {
     }
 
     getInputVisualizations() {
-        return this.dashboard.marshaller.getVisualizationArray().filter(function (viz) {
+        return this.dashboard.marshaller.getVisualizationArray().filter((viz) => {
             var updates = viz.events.getUpdatesVisualizations();
             if (updates.indexOf(this) >= 0) {
                 return true;
             }
             return false;
-        }, this);
+        });
     }
 
     serializeState() {
@@ -1466,7 +1466,7 @@ export class Output {
     id: string;
     from: string;
     notify: string[];
-    filter: string[];
+    filter: IFilter[];
 
     datasource: Datasource;
     db: Grid;
@@ -1485,9 +1485,9 @@ export class Output {
 
     getUpdatesVisualizations() {
         var retVal = [];
-        this.notify.forEach(function (item) {
-            retVal.push(this.datasource.dashboard.getVisualization(item));
-        }, this);
+        this.notify.forEach((item) => {
+            retVal.push(this.datasource.marshaller.getVisualization(item));
+        });
         return retVal;
     }
 
@@ -1499,10 +1499,10 @@ export class Output {
         var promises = [];
         this.notify.filter(function (item) {
             return !updates || updates.indexOf(item) >= 0;
-        }).forEach(function (item) {
-            var viz = this.datasource.dashboard.getVisualization(item);
+        }).forEach((item) => {
+            var viz = this.datasource.marshaller.getVisualization(item);
             promises.push(viz.notify());
-        }, this);
+        });
         return Promise.all(promises);
     }
 
@@ -1600,7 +1600,7 @@ class VisualizationRequestOptimizer {
 export class Datasource {
     id: string;
     databomb: boolean;
-    filter: string[];
+    filter: IFilter[];
 
     marshaller: Marshaller;
     WUID;
@@ -1621,7 +1621,7 @@ export class Datasource {
 
         var context = this;
         var hipieResults = [];
-        datasource.outputs.forEach(function (item) {
+        datasource.outputs.forEach((item) => {
             context._outputs[item.id] = new Output(context, item);
             context._outputArray.push(context._outputs[item.id]);
             hipieResults.push({
@@ -1629,7 +1629,7 @@ export class Datasource {
                 from: item.from,
                 filter: item.filter || this.filter
             });
-        }, this);
+        });
 
         if (this.WUID) {
             this.comms = new HIPIEWorkunit()
@@ -1684,10 +1684,10 @@ export class Datasource {
 
         var dsRequest: any = {};
         this.filter.forEach(function (item) {
-            dsRequest[item + _CHANGED] = request[item + _CHANGED] || false;
-            var value = request[item] === undefined ? null : request[item];
-            if (dsRequest[item] !== value) {
-                dsRequest[item] = value;
+            dsRequest[item.fieldid + _CHANGED] = request[item.fieldid + _CHANGED] || false;
+            var value = request[item.fieldid] === undefined ? null : request[item.fieldid];
+            if (dsRequest[item.fieldid] !== value) {
+                dsRequest[item.fieldid] = value;
             }
         });
         dsRequest.refresh = request.refresh || false;
@@ -1886,9 +1886,9 @@ export class Dashboard {
         for (var key in this._datasources) {
             this._datasources[key].accept(visitor);
         }
-        this._visualizationArray.forEach(function (item) {
+        this._visualizationArray.forEach((item) => {
             item.accept(visitor);
-        }, this);
+        });
     }
 
     primeData(state) {
@@ -2115,7 +2115,7 @@ export class Marshaller extends Class {
         this._jsonParsed = JSON.parse(this._json);
         this.testJSON(this._jsonParsed);
 
-        //  Global Datasources  --- 
+        //  Global Datasources  ---
         this._datasources = {};
         this._datasourceArray = [];
         if (this._jsonParsed.datasources) {

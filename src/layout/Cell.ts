@@ -46,20 +46,23 @@ Cell.prototype.onMouseEnter = function (widgetArr) {
     var indicatorGlowColor = this.indicatorGlowColor();
     for (var i = 0; i < arr.length; i++) {
         var otherElement = d3.select("#" + arr[i]);
-        var otherWidget = otherElement.datum();
-        if (otherElement) {
-            otherElement.append("div")
-                .attr("class", "update-indicator")
-                .style({
-                    width: otherWidget.width() + "px",
-                    height: otherWidget.height() + "px",
-                    opacity: opacity,
-                    "border-color": indicatorBorderColor,
-                    "-webkit-box-shadow": "inset 0px 0px 30px 0px " + indicatorGlowColor,
-                    "-moz-box-shadow": "inset 0px 0px 30px 0px " + indicatorGlowColor,
-                    "box-shadow": "inset 0px 0px 30px 0px " + indicatorGlowColor,
-                })
-                ;
+        try {
+            var otherWidget = otherElement.datum();
+            if (otherElement) {
+                otherElement.append("div")
+                    .attr("class", "update-indicator")
+                    .style({
+                        width: otherWidget.width() + "px",
+                        height: otherWidget.height() + "px",
+                        opacity: opacity,
+                        "border-color": indicatorBorderColor,
+                        "-webkit-box-shadow": "inset 0px 0px 30px 0px " + indicatorGlowColor,
+                        "-moz-box-shadow": "inset 0px 0px 30px 0px " + indicatorGlowColor,
+                        "box-shadow": "inset 0px 0px 30px 0px " + indicatorGlowColor,
+                    })
+                    ;
+            }
+        } catch (e) {
         }
     }
 };
