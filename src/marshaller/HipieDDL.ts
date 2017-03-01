@@ -1602,7 +1602,7 @@ export class Datasource {
     databomb: boolean;
     filter: string[];
 
-    dashboard;
+    marshaller: Marshaller;
     WUID;
     URL;
     private _loadedCount = 0;
@@ -1611,12 +1611,12 @@ export class Datasource {
     comms;
     db;
 
-    constructor(dashboard, datasource: IDatasource, proxyMappings, timeout) {
-        this.dashboard = dashboard;
+    constructor(marshaller: Marshaller, datasource: IDatasource, proxyMappings, timeout) {
+        this.marshaller = marshaller;
         this.id = datasource.id;
         this.filter = datasource.filter || [];
         this.WUID = datasource.WUID;
-        this.URL = dashboard.marshaller.espUrl && dashboard.marshaller.espUrl._url ? dashboard.marshaller.espUrl._url : datasource.URL;
+        this.URL = marshaller.espUrl && marshaller.espUrl.url() ? marshaller.espUrl.url() : datasource.URL;
         this.databomb = datasource.databomb;
 
         var context = this;
@@ -1652,7 +1652,7 @@ export class Datasource {
     }
 
     getQualifiedID() {
-        return this.dashboard.getQualifiedID() + "." + this.id;
+        return this.id;
     }
 
     getOutputs() {
@@ -1700,7 +1700,7 @@ export class Datasource {
             }
         }
         var now = Date.now();
-        this.dashboard.marshaller.commsEvent(this, "request", dsRequest);
+        this.marshaller.commsEvent(this, "request", dsRequest);
         var context = this;
         return new Promise(function (resolve, reject) {
             context.comms.call(dsRequest).then(function (_response) {
@@ -1711,13 +1711,13 @@ export class Datasource {
                         context.processResponse(response, request, updates).then(function () {
                             Datasource.transactionQueue.shift();
                             resolve(response);
-                            context.dashboard.marshaller.commsEvent(context, "response", dsRequest, response);
+                            context.marshaller.commsEvent(context, "response", dsRequest, response);
                             ++context._loadedCount;
                         });
                     }
                 }, 100);
             }).catch(function (e) {
-                context.dashboard.marshaller.commsEvent(context, "error", dsRequest, e);
+                context.marshaller.commsEvent(context, "error", dsRequest, e);
                 reject(e);
             });
         });
@@ -1814,7 +1814,7 @@ export class Dashboard {
         this._datasources = {};
         this._datasourceTotal = 0;
         dashboard.datasources.forEach((item) => {
-            this.createDatasource(item, proxyMappings, timeout);
+            this.createDatasource(item);
         });
         this._datasourceTotal = this._datasourceArray.length;
 
@@ -1826,11 +1826,14 @@ export class Dashboard {
         this._visualizationTotal = this._visualizationArray.length;
     }
 
-    createDatasource(ddlDatasource, proxyMappings, timeout?) {
-        var retVal = new Datasource(this, ddlDatasource, proxyMappings, timeout);
-        this._datasources[ddlDatasource.id] = retVal;
-        this._datasourceArray.push(retVal);
-        this.marshaller.appendDataSource(retVal);
+    createDatasource(ddlDatasouce) {
+        var retVal = this._datasources[ddlDatasouce.id];
+        if (!retVal) {
+            retVal = this.marshaller.createDatasource(ddlDatasouce);
+            this._datasources[ddlDatasouce.id] = retVal;
+            this._datasourceArray.push(retVal);
+        }
+        this._datasourceTotal = this._datasourceArray.length;
         return retVal;
     }
 
@@ -1909,14 +1912,14 @@ export class Dashboard {
             var inputVisualizations = visualization.getInputVisualizations();
             var datasource = visualization.source.getDatasource();
             var hasInputSelection = false;
-                inputVisualizations.forEach(function (inViz) {
-                    if (inViz.hasSelection()) {
-                        var request = inViz.calcRequestFor(visualization);
-                        request.refresh = true;
-                        fetchDataOptimizer.appendRequest(datasource, request, visualization);
+            inputVisualizations.forEach(function (inViz) {
+                if (inViz.hasSelection()) {
+                    var request = inViz.calcRequestFor(visualization);
+                    request.refresh = true;
+                    fetchDataOptimizer.appendRequest(datasource, request, visualization);
                     hasInputSelection = true;
-                    }
-                });
+                }
+            });
             if (!hasInputSelection && ((datasource && datasource.isRoxie()) || inputVisualizations.length === 0)) {
                 fetchDataOptimizer.appendRequest(datasource, { refresh: true }, visualization);
             }
@@ -1989,6 +1992,7 @@ export class Marshaller extends Class {
 
     private _datasources: { [key: string]: Datasource } = {};
     private _datasourceArray: Datasource[] = [];
+    private _datasourceTotal: number;
     private _visualizations: { [key: string]: Visualization } = {};
     private _visualizationArray: Visualization[] = [];
 
@@ -2110,12 +2114,23 @@ export class Marshaller extends Class {
         this._json = json;
         this._jsonParsed = JSON.parse(this._json);
         this.testJSON(this._jsonParsed);
+
+        //  Global Datasources  --- 
+        this._datasources = {};
+        this._datasourceArray = [];
+        if (this._jsonParsed.datasources) {
+            this._jsonParsed.datasources.forEach(function (item) {
+                context.createDatasource(item);
+            });
+        }
+
         this.dashboards = {};
         this.dashboardArray = [];
         this._visualizations = {};
         this._visualizationArray = [];
-        this._jsonParsed.forEach(function (item) {
-            var newDashboard = new Dashboard(context, item, context._proxyMappings);
+        var dashboards = this._jsonParsed.dashboards ? this._jsonParsed.dashboards : this._jsonParsed;
+        dashboards.forEach(function (item) {
+            var newDashboard = new Dashboard(context, item, context._proxyMappings, context._timeout);
             context.dashboards[item.id] = newDashboard;
             context.dashboardArray.push(newDashboard);
         });
@@ -2140,16 +2155,26 @@ export class Marshaller extends Class {
         return Promise.all(this.dashboardArray.map(function (dashboard) { return dashboard.loadedPromise(); }));
     }
 
-    appendDataSource(datasource: Datasource) {
-        this._datasources[datasource.id] = datasource;
-        this._datasourceArray.push(datasource);
+    createDatasource(ddlDatasouce) {
+        var retVal = this._datasources[ddlDatasouce.id];
+        if (!retVal) {
+            retVal = new Datasource(this, ddlDatasouce, this._proxyMappings, this._timeout);
+            this._datasources[ddlDatasouce.id] = retVal;
+            this._datasourceArray.push(retVal);
+        }
+        this._datasourceTotal = this._datasourceArray.length;
+        return retVal;
     }
 
-    getDataSources() {
+    getDatasource(id) {
+        return this._datasources[id];
+    }
+
+    getDatasources() {
         return this._datasources;
     }
 
-    getDataSourceArray() {
+    getDatasourceArray() {
         return this._datasourceArray;
     }
 
@@ -2192,7 +2217,7 @@ export class Marshaller extends Class {
         console.log("Marshaller.vizEvent:  " + sourceWidget.id() + "-" + eventID);
     }
 
-    commsEvent(ddlSource, eventID, request, response) {
+    commsEvent(ddlSource, eventID, request, response?) {
         switch (eventID) {
             case "request":
                 if ((window as any).__hpcc_debug) {
@@ -2210,7 +2235,6 @@ export class Marshaller extends Class {
                     console.log("Marshaller.commsEvent:  " + JSON.stringify(arguments));
                 }
                 break;
-
         }
     }
 

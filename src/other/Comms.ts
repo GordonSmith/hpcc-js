@@ -41,7 +41,9 @@ export class ESPUrl {
     constructor() {
     }
 
-    url(_) {
+    url(_: string): this;
+    url(): string;
+    url(_?): string | this {
         if (!arguments.length) return this._url;
         this._url = _;
         var parser = document.createElement("a");
@@ -75,25 +77,33 @@ export class ESPUrl {
         return this;
     };
 
-    protocol(_): string | this {
+    protocol(_: string): this;
+    protocol(): string;
+    protocol(_?: string): string | this {
         if (!arguments.length) return this._protocol;
         this._protocol = _;
         return this;
     };
 
-    hostname(_): string | this {
+    hostname(_: string): this;
+    hostname(): string;
+    hostname(_?: string): string | this {
         if (!arguments.length) return this._hostname;
         this._hostname = _;
         return this;
     };
 
-    port(_) {
+    port(_: string): this;
+    port(): string;
+    port(_?: string) {
         if (!arguments.length) return this._port;
         this._port = _;
         return this;
     };
 
-    pathname(_) {
+    pathname(_: string): this;
+    pathname(): string;
+    pathname(_?: string) {
         if (!arguments.length) return this._pathname;
         this._pathname = _;
         return this;
@@ -238,8 +248,8 @@ Comms.prototype.jsonp = function (url, request, callback) {
                 .url(url)
                 ;
             url = newUrl + this._proxyMappings[key];
-            request.IP = espUrl._hostname;
-            request.PORT = espUrl._port;
+            request.IP = espUrl.hostname();
+            request.PORT = espUrl.port();
             if (newUrlParts.length > 0) {
                 request.PATH = newUrlParts[1];
             }
