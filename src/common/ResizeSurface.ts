@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { Surface } from "./Surface";
-import "css!./ResizeSurface";
+import "css!./ResizeSurface.css";
 
 export class ResizeSurface extends Surface {
     // tslint:disable-next-line:variable-name

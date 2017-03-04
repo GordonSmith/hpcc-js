@@ -1,6 +1,6 @@
 import { SVGWidget } from "./SVGWidget";
 import { TextBox } from "./TextBox";
-import "css!./List";
+import "css!./List.css";
 
 export class List extends SVGWidget {
     static _class = "common_List";
@@ -52,7 +52,7 @@ export class List extends SVGWidget {
             ++listCount;
         }
 
-    var yPos = -listHeight / 2; // + lineHeight / 2;
+        var yPos = -listHeight / 2; // + lineHeight / 2;
         line.each(function (d) {
             var widget = context._listWidgets[d];
             var bbox = widget.getBBox();

@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { HTMLWidget } from "../common/HTMLWidget";
+import "css!font-awesome.css";
 import "css!./Surface";
-import "css!font-awesome";
 
 export function Surface() {
     HTMLWidget.call(this);

@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import { SVGWidget } from "./SVGWidget";
-import "css!./Shape";
+import "css!./Shape.css";
+//import "./Shape.css";
 
 export class Shape extends SVGWidget {
     static _class = "common_Shape";

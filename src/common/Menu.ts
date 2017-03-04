@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { SVGWidget } from "./SVGWidget";
 import { List } from "./List";
 import { Icon } from "./Icon";
-import "css!./Menu";
+import "css!./Menu.css";
 
 export class Menu extends SVGWidget {
     static _class = "common_Menu";

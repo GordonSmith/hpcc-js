@@ -1,7 +1,7 @@
 ﻿import * as d3 from "d3";
 import { SVGWidget } from "./SVGWidget";
 import { Icon } from "./Icon";
-import "css!./SVGZoomWidget";
+import "css!./SVGZoomWidget.css";
 
 export class SVGZoomWidget extends SVGWidget {
     static _class = "common_SVGZoomWidget";

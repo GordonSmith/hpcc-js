@@ -1,7 +1,7 @@
 import { SVGWidget } from "./SVGWidget";
 import { Shape } from "./Shape";
 import { FAChar } from "./FAChar";
-import "css!./Icon";
+import "css!./Icon.css";
 
 export class Icon extends SVGWidget {
     static _class = "common_Icon";

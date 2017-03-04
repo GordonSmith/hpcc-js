@@ -1,8 +1,8 @@
 import * as d3 from "d3";
 import { HTMLWidget } from "../common/HTMLWidget";
 import { I2DChart } from "../api/I2DChart";
-import "css!font-awesome";
-import "css!./Summary";
+import "css!font-awesome.css";
+import "css!./Summary.css";
 
 var TEXT = "text";
 var HTML = "html";

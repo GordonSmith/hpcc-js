@@ -4,7 +4,7 @@ import { Icon } from "./Icon";
 import { Shape } from "./Shape";
 import { Text } from "./Text";
 import { Menu } from "./Menu";
-import "css!./Surface";
+import "css!./Surface.css";
 
 export class Surface extends SVGWidget {
     static _class = "common_Surface";

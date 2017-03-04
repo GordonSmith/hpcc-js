@@ -55,7 +55,6 @@ gulp.task('watch', ['dev-css', 'dev-tsc'], function () {
 
 gulp.task("build-tsc", ['dev-css', 'dev-json', 'dev-tsc']);
 
-const gulp_tslint = require('gulp-tslint');
 gulp.task('tslint', () => {
     return gulp.src(['src/**/*.ts', '! **/*.d.ts', '!node_modules/**'])
         .pipe(gulp_tslint())

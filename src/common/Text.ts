@@ -1,5 +1,5 @@
 import { SVGWidget } from "./SVGWidget";
-import "css!./Text";
+import "css!./Text.css";
 
 export class Text extends SVGWidget {
     static _class = "common_Text";

@@ -2,7 +2,7 @@ import { ISize } from "./Widget";
 import { SVGWidget } from "./SVGWidget";
 import { Shape } from "./Shape";
 import { Text } from "./Text";
-import "css!./TextBox";
+import "css!./TextBox.css";
 
 export class TextBox extends SVGWidget {
     static _class = "common_TextBox";

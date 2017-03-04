@@ -5,7 +5,7 @@
     "scripts": {
         "compile": "tsc -p ./",
         "watch": "tsc -w -p ./",
-        "webpack": "webpack --display-error-details",
+        "webpack": "webpack --display-reasons --display-error-details",
         "test": "gulp tslint && gulp build-tsc && gulp unitTest && gulp build-all && gulp unitTestBuild && gulp unitTestBuildNonAMD",
         "schema": "typescript-json-schema --noExtraProps --required ./src/marshaller/DDLApi.ts DDLSchema > ./src/marshaller/DDLSchema.json"
     },
@@ -20,9 +20,14 @@
     "devDependencies": {
         "ajv": "^4.11.3",
         "async": "^2.1.5",
+        "awesome-typescript-loader": "^3.0.8",
         "chai": "^3.5.0",
+        "css-loader": "^0.26.2",
         "csso": "^2.3.1",
         "del": "^2.2.2",
+        "exports-loader": "^0.6.4",
+        "extract-text-webpack-plugin": "^2.0.0",
+        "file-loader": "^0.10.1",
         "fs": "^0.0.1-security",
         "gulp": "^3.9.1",
         "gulp-bump": "^2.7.0",
@@ -53,8 +58,12 @@
         "requirejs": "^2.3.3",
         "requirejs-plugins": "https://github.com/GordonSmith/requirejs-plugins.git#v1.0.3",
         "requirejs-text": "^2.0.15",
+        "style-loader": "^0.13.2",
         "tslint": "^4.5.1",
         "typescript": "^2.2.1",
+        "url-loader": "^0.5.8",
+        "webpack": "^2.2.1",
+        "webpack-node-externals": "^1.5.4",
         "yargs": "^6.6.0"
     },
     "devDependenciesXXX": {

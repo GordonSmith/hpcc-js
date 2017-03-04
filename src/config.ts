@@ -17,7 +17,7 @@ require.config({
         "colorbrewer": "../bower_components/colorbrewer/colorbrewer",
         "d3-cloud": "../bower_components/d3-cloud/build/d3.layout.cloud",
         "d3-sankey": "../bower_components/d3-plugins/sankey/sankey",
-        "font-awesome": "../bower_components/font-awesome/css/font-awesome",
+        "font-awesome": "../bower_components/font-awesome",
         "es6-promise": "../bower_components/es6-promise/promise",
         "d3-bullet": "../bower_components/d3-plugins/bullet/bullet",
 
@@ -115,7 +115,7 @@ switch (window.location.hostname) {
                 "colorbrewer": "//" + window.location.hostname + "/jeanlauliac/colorbrewer/v1.0.0/colorbrewer",
                 "d3-cloud": "//" + window.location.hostname + "/jasondavies/d3-cloud/v1.2.0/build/d3.layout.cloud",
                 "d3-sankey": "//" + window.location.hostname + "/d3/d3-plugins/master/sankey/sankey",
-                "font-awesome": "//" + window.location.hostname + "/FortAwesome/Font-Awesome/v4.3.0/css/font-awesome.min",
+                "font-awesome": "//" + window.location.hostname + "/FortAwesome/Font-Awesome/v4.3.0",
                 "es6-promise": "//" + window.location.hostname + "/jakearchibald/es6-promise/v3.0.2/dist/es6-promise.min",
                 "d3-bullet": "//" + window.location.hostname + "/d3/d3-plugins/master/bullet/bullet",
 

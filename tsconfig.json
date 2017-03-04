@@ -3,7 +3,7 @@
         "rootDir": "./src",
         "outDir": "out",
         "target": "es5",
-        "module": "amd",
+        "module": "es6",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": false,
         "sourceMap": true,
