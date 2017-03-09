@@ -1,6 +1,6 @@
 import { Scatter } from "./Scatter";
 
-export function Step(target) {
+export function Step() {
     Scatter.call(this);
 
     this

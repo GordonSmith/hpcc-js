@@ -1,7 +1,7 @@
 import { Scatter } from "./Scatter";
-import "css!./Line";
+import "css!./Line.css";
 
-export function Line(target) {
+export function Line() {
     Scatter.call(this);
 
     this

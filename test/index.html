@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello World</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="../lib-browser/index.css">
+    <script src="../lib-browser/index.js"></script>
+</head>
+
+<body>
+    <div id="placeholder">
+    </div>
+    <script>
+        var widget = new HPCCViz.HexBin()  //  Create new instance of TextBox
+            .target("placeholder")  //  Nominate target on web page 
+            .columns(["Subject", "Year 1", "Year 2", "Year 3", "Year 4"])
+            .data([
+                ["English", 5, 43, 41, 92],
+                ["English II", 17, 43, 83, 93],
+                ["English III", 6, 43, 64, 93],
+                ["Geography", 7, 45, 52, 83],
+                ["Geography II", 16, 73, 52, 83],
+                ["Geography III", 26, 83, 11, 72],
+                ["Science", 66, 60, 85, 6],
+                ["Science II", 46, 20, 53, 7],
+                ["Science III", 46, 20, 38, 7],
+                ["Math", 98, 30, 23, 13],
+                ["Math II", 76, 30, 34, 6],
+                ["Math III", 80, 30, 27, 8]
+            ])
+            //.text("Hello\nWorld!")  //  Set a "published property"
+            .render()               //  Render
+            ;
+    </script>
+</body>
+
+</html>

@@ -1,6 +1,7 @@
-import * as d3 from "d3";
+import { dispatch as d3Dispatch, event as d3Event, select as d3Select } from "d3-selection";
+import { drag as d3Drag } from "d3-drag";
 import { Surface } from "./Surface";
-import "css!./ResizeSurface";
+import "css!./ResizeSurface.css";
 
 export function ResizeSurface() {
     Surface.call(this);
@@ -9,13 +10,13 @@ export function ResizeSurface() {
     this.handles = [{ loc: "NW" }, { loc: "N" }, { loc: "NE" }, { loc: "E" }, { loc: "SE" }, { loc: "S" }, { loc: "SW" }, { loc: "W" }];
 
     var context = this;
-    this.dispatch = d3.dispatch("sizestart", "size", "sizeend");
-    this.drag = d3.behavior.drag()
+    this.dispatch = d3Dispatch("sizestart", "size", "sizeend");
+    this.drag = d3Drag()
         .origin(function (d) { return d; })
         .on("dragstart", function (d) {
             context.dispatch.sizestart(context, d.loc);
             if (context.allowResize()) {
-                d3.event.sourceEvent.stopPropagation();
+                d3Event.sourceEvent.stopPropagation();
                 context._dragHandlePos = { x: d.x, y: d.y };
                 context._dragStartPos = context.pos();
                 context._dragStartSize = context.size();
@@ -32,9 +33,9 @@ export function ResizeSurface() {
         })
         .on("drag", function (d) {
             if (context.allowResize()) {
-                d3.event.sourceEvent.stopPropagation();
-                var _dx = d3.event.x - context._dragHandlePos.x;
-                var _dy = d3.event.y - context._dragHandlePos.y;
+                d3Event.sourceEvent.stopPropagation();
+                var _dx = d3Event.x - context._dragHandlePos.x;
+                var _dy = d3Event.y - context._dragHandlePos.y;
                 var delta = { x: 0, y: 0, w: 0, h: 0 };
                 switch (d.loc) {
                     case "NW":
@@ -96,7 +97,7 @@ export function ResizeSurface() {
         })
         .on("dragend", function (d) {
             if (context.allowResize()) {
-                d3.event.sourceEvent.stopPropagation();
+                d3Event.sourceEvent.stopPropagation();
                 context
                     .showContent(true)
                     .render()
@@ -127,7 +128,7 @@ ResizeSurface.prototype.update = function (domNode, element) {
 
 ResizeSurface.prototype.updateHandles = function (domNode, element) {
     var sizeHandles = this._parentElement.selectAll("rect").data(this.handles, function (d) { return d.loc; });
-    sizeHandles.enter().append("rect")
+    var sizeHandlesEnter = sizeHandles.enter().append("rect")
         .attr("class", function (d) { return "resize" + d.loc; })
         .call(this.drag)
         ;
@@ -139,7 +140,7 @@ ResizeSurface.prototype.updateHandles = function (domNode, element) {
     var w = r - l;
     var h = b - t;
     var context = this;
-    sizeHandles
+    sizeHandlesEnter.merge(sizeHandles)
         .each(function (d) {
             switch (d.loc) {
                 case "NW":
@@ -191,7 +192,7 @@ ResizeSurface.prototype.updateHandles = function (domNode, element) {
                     d.height = h - context.handleWidth;
                     break;
             }
-            d3.select(this)
+            d3Select(this)
                 .attr("x", d.x)
                 .attr("y", d.y)
                 .attr("width", d.width)

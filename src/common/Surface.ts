@@ -1,10 +1,10 @@
-import * as d3 from "d3";
+import { select as d3Select } from "d3-selection";
 import { SVGWidget } from "./SVGWidget";
 import { Icon } from "./Icon";
 import { Shape } from "./Shape";
 import { Text } from "./Text";
 import { Menu } from "./Menu";
-import "css!./Surface";
+import "css!./Surface.css";
 
 export function Surface() {
     SVGWidget.call(this);
@@ -112,7 +112,7 @@ Surface.prototype.enter = function (_domNode, _element) {
     this._container
         .target(domNode)
         ;
-    this.buttonContainer = d3.select(this._target).append("div").attr("class", "svg-button-container");
+    this.buttonContainer = d3Select(this._target).append("div").attr("class", "svg-button-container");
 };
 
 Surface.prototype.update = function (domNode, element) {
@@ -139,7 +139,7 @@ Surface.prototype.update = function (domNode, element) {
     var surfaceButtons = this.buttonContainer.selectAll(".surface-button").data(this.buttonAnnotations());
     surfaceButtons.enter().append("button").attr("class", "surface-button")
         .each(function (button, idx) {
-            var el = context._surfaceButtons[idx] = d3.select(this)
+            var el = context._surfaceButtons[idx] = d3Select(this)
                 .attr("class", "surface-button " + (button.class ? button.class : ""))
                 .attr("id", button.id)
                 .style("padding", button.padding)
@@ -160,7 +160,7 @@ Surface.prototype.update = function (domNode, element) {
         ;
     surfaceButtons.exit()
         .each(function (d, idx) {
-            var element = d3.select(this);
+            var element = d3Select(this);
             delete context._surfaceButtons[idx];
             element.remove();
         })
@@ -232,8 +232,7 @@ Surface.prototype.update = function (domNode, element) {
             .each(function (d) {
                 d.target(this);
             })
-            ;
-        content
+            .merge(content)
             .attr("transform", "translate(" + (leftMargin / 2) + ", " + (titleRegionHeight / 2 - topMargin / 2) + ")")
             .each(function (d) {
                 var padding = {

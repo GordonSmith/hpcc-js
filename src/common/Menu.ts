@@ -1,9 +1,9 @@
-import * as d3 from "d3";
+import { event as d3Event, select as d3Select } from "d3-selection";
 import { SVGWidget } from "./SVGWidget";
 import { IMenu } from "./IMenu";
 import { List } from "./List";
 import { Icon } from "./Icon";
-import "css!./Menu";
+import "css!./Menu.css";
 
 export function Menu() {
     SVGWidget.call(this);
@@ -17,7 +17,7 @@ export function Menu() {
 
     var context = this;
     this._list.click = function (d) {
-        d3.event.stopPropagation();
+        d3Event.stopPropagation();
         context.hideMenu();
         context.click(d);
     };
@@ -57,7 +57,7 @@ Menu.prototype.showMenu = function () {
         .move(pos)
         ;
     var context = this;
-    d3.select("body")
+    d3Select("body")
         .on("click." + this._id, function () {
             console.log("click:  body - " + context._id);
             if (context._open) {
@@ -68,7 +68,7 @@ Menu.prototype.showMenu = function () {
 };
 
 Menu.prototype.hideMenu = function () {
-    d3.select("body")
+    d3Select("body")
         .on("click." + this._id, null)
         ;
     this._open = false;
@@ -95,7 +95,7 @@ Menu.prototype.enter = function (domNode, element) {
     var context = this;
     this._icon.element()
         .on("click", function (d) {
-            d3.event.stopPropagation();
+            d3Event.stopPropagation();
             context.toggleMenu();
         })
         ;

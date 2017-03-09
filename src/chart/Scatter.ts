@@ -1,11 +1,13 @@
-import * as d3 from "d3";
+import { select as d3Select } from "d3-selection";
+import { area as d3Area, line as d3Line, curveLinear as d3CurveLinear, curveStep as d3CurveStep, curveStepBefore as d3CurveStepBefore, curveStepAfter as d3CurveStepAfter, curveBasis as d3CurveBasis, curveBundle as d3CurveBundle, curveCardinal as d3CurveCardinal, curveMonotoneX as d3CurveMonotoneX } from "d3-shape";
+import { hsl as d3Hsl } from "d3-color";
 import { SVGWidget } from "../common/SVGWidget";
 import { INDChart } from "../api/INDChart";
 import { ITooltip } from "../api/ITooltip";
 import { XYAxis } from "./XYAxis";
-import "css!./Scatter";
+import "css!./Scatter.css";
 
-export function Scatter(target) {
+export function Scatter() {
     XYAxis.call(this);
     INDChart.call(this);
     ITooltip.call(this);
@@ -37,7 +39,29 @@ Scatter.prototype.yPos = function (d) {
     return this.orientation() === "horizontal" ? this.valuePos(d.value) : this.dataPos(d.label);
 };
 
-Scatter.prototype.enter = function (domNode, element) {
+Scatter.prototype.curve = function () {
+    switch (this.interpolate()) {
+        case "linear":
+            return d3CurveLinear;
+        case "step":
+            return d3CurveStep;
+        case "step-before":
+            return d3CurveStepBefore;
+        case "step-after":
+            return d3CurveStepAfter;
+        case "basis":
+            return d3CurveBasis;
+        case "bundle":
+            return d3CurveBundle;
+        case "cardinal":
+            return d3CurveCardinal;
+        case "monotone":
+        default:
+            return d3CurveMonotoneX;
+    }
+};
+
+Scatter.prototype.enter = function (_domNode, _element) {
     XYAxis.prototype.enter.apply(this, arguments);
     var context = this;
     this
@@ -47,7 +71,7 @@ Scatter.prototype.enter = function (domNode, element) {
         ;
 };
 
-Scatter.prototype.updateChart = function (domNode, element, margin, width, height, isHorizontal) {
+Scatter.prototype.updateChart = function (_domNode, _element, _margin, _width, height, isHorizontal) {
     var context = this;
 
     this._palette = this._palette.switch(this.paletteID());
@@ -80,17 +104,17 @@ Scatter.prototype.updateChart = function (domNode, element, margin, width, heigh
     points.enter().append("g")
         .attr("class", "point")
         .each(function (d) {
-            var element = d3.select(this);
+            var element = d3Select(this);
             element
                 .append("circle")
                 .attr("class", "pointSelection")
                 .on("mouseout.tooltip", context.tooltip.hide)
                 .on("mousemove.tooltip", context.tooltip.show)
                 .call(context._selection.enter.bind(context._selection))
-                .on("click", function (d, idx) {
+                .on("click", function (d, _idx) {
                     context.click(context.rowToObj(context.data()[d.rowIdx]), context.columns()[d.colIdx], context._selection.selected(this));
                 })
-                .on("dblclick", function (d, idx) {
+                .on("dblclick", function (d, _idx) {
                     context.dblclick(context.rowToObj(context.data()[d.rowIdx]), context.columns()[d.colIdx], context._selection.selected(this));
                 })
                 ;
@@ -99,17 +123,16 @@ Scatter.prototype.updateChart = function (domNode, element, margin, width, heigh
                 .attr("class", "pointShape")
                 ;
         })
-        ;
-    points
+        .merge(points)
         .each(function (d) {
-            var elementSelection = d3.select(this).select(".pointSelection");
+            var elementSelection = d3Select(this).select(".pointSelection");
             elementSelection
                 .attr("cx", function (d) { return context.xPos(d); })
                 .attr("cy", function (d) { return context.yPos(d); })
                 .attr("r", context.pointSize())
                 ;
 
-            var element = d3.select(this).select(".pointShape");
+            var element = d3Select(this).select(".pointShape");
             switch (d.shape) {
                 case "rect":
                     element
@@ -117,7 +140,7 @@ Scatter.prototype.updateChart = function (domNode, element, margin, width, heigh
                         .attr("y", function (d) { return context.yPos(d) - context.pointSize() / 2; })
                         .attr("width", context.pointSize())
                         .attr("height", context.pointSize())
-                        .style("fill", function (d, idx) { return context._palette(context.columns()[d.colIdx]); })
+                        .style("fill", function (d, _idx) { return context._palette(context.columns()[d.colIdx]); })
                         ;
                     break;
                 case "circle":
@@ -125,7 +148,7 @@ Scatter.prototype.updateChart = function (domNode, element, margin, width, heigh
                         .attr("cx", function (d) { return context.xPos(d); })
                         .attr("cy", function (d) { return context.yPos(d); })
                         .attr("r", context.pointSize() / 2)
-                        .style("fill", function (d, idx) { return context._palette(context.columns()[d.colIdx]); })
+                        .style("fill", function (d, _idx) { return context._palette(context.columns()[d.colIdx]); })
                         ;
                     break;
                 case "path":
@@ -136,7 +159,7 @@ Scatter.prototype.updateChart = function (domNode, element, margin, width, heigh
                                 "M" + (context.xPos(d) - context.pointSize() / 2) + " " + (context.yPos(d) + context.pointSize() / 2) + " " +
                                 "L" + (context.xPos(d) + context.pointSize() / 2) + " " + (context.yPos(d) - context.pointSize() / 2);
                         })
-                        .style("stroke", function (d, idx) { return context._palette(context.columns()[d.colIdx]); })
+                        .style("stroke", function (d) { return context._palette(context.columns()[d.colIdx]); })
                         ;
                     break;
             }
@@ -146,58 +169,60 @@ Scatter.prototype.updateChart = function (domNode, element, margin, width, heigh
         .remove()
         ;
 
-    var areas = this.svgData.selectAll(".area").data(this.columns().filter(function (d, idx) { return context.interpolate() && context.interpolateFill() && idx > 0; }));
-    areas.enter().append("path")
+    var areas = this.svgData.selectAll(".area").data(this.columns().filter(function (_d, idx) { return context.interpolate() && context.interpolateFill() && idx > 0; }));
+    var areasEnter = areas.enter().append("path")
         .attr("class", "area")
         ;
-    var area = d3.svg.area()
-        .interpolate(this.interpolate())
+    var area = d3Area()
+        .curve(this.curve())
         ;
     if (isHorizontal) {
         area
             .x(function (d) { return context.xPos(d); })
-            .y0(function (d) { return height; })
+            .y0(function () { return height; })
             .y1(function (d) { return context.yPos(d); })
             ;
     } else {
         area
             .y(function (d) { return context.yPos(d); })
-            .x0(function (d) { return 0; })
+            .x0(function () { return 0; })
             .x1(function (d) { return context.xPos(d); })
             ;
     }
-    areas.each(function (d, idx) {
-        var element = d3.select(this);
-        element
-            .attr("d", area(data.filter(function (d2) { return d2.colIdx === idx + 1; })))
-            .style("opacity", context.interpolateFillOpacity())
-            .style("stroke", "none")
-            .style("fill", function (d, i) { return d3.hsl(context._palette(context.columns()[idx + 1])).brighter(); })
-            ;
-    });
+    areasEnter.merge(areas)
+        .each(function (_d, idx) {
+            var element = d3Select(this);
+            element
+                .attr("d", area(data.filter(function (d2) { return d2.colIdx === idx + 1; })))
+                .style("opacity", context.interpolateFillOpacity())
+                .style("stroke", "none")
+                .style("fill", function () { return d3Hsl(context._palette(context.columns()[idx + 1])).brighter(); })
+                ;
+        });
     areas.exit().remove();
 
-    var lines = this.svgData.selectAll(".line").data(this.columns().filter(function (d, idx) { return context.interpolate() && idx > 0; }));
-    lines.enter().append("path")
+    var lines = this.svgData.selectAll(".line").data(this.columns().filter(function (_d, idx) { return context.interpolate() && idx > 0; }));
+    var linesEnter = lines.enter().append("path")
         .attr("class", "line")
         ;
-    var line = d3.svg.line()
+    var line = d3Line()
         .x(function (d) { return context.xPos(d); })
         .y(function (d) { return context.yPos(d); })
-        .interpolate(this.interpolate())
+        .curve(this.curve())
         ;
-    lines.each(function (d, idx) {
-        var element = d3.select(this);
-        var data2 = data.filter(function (d2) { return d2.colIdx === idx + 1; });
-        element
-            .attr("d", line(data2))
-            .style("stroke", function (d, i) { return context._palette(context.columns()[idx + 1]); })
-            .style("fill", "none")
-            ;
-    });
+    linesEnter.merge(lines)
+        .each(function (_d, idx) {
+            var element = d3Select(this);
+            var data2 = data.filter(function (d2) { return d2.colIdx === idx + 1; });
+            element
+                .attr("d", line(data2))
+                .style("stroke", function () { return context._palette(context.columns()[idx + 1]); })
+                .style("fill", "none")
+                ;
+        });
     lines.exit().remove();
 };
 
-Scatter.prototype.exit = function (domNode, element) {
+Scatter.prototype.exit = function (_domNode, _element) {
     SVGWidget.prototype.exit.apply(this, arguments);
 };

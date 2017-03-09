@@ -1,6 +1,6 @@
 import { Column } from "./Column";
 
-export function Bar(target) {
+export function Bar() {
     Column.call(this);
     this
         .orientation_default("vertical")

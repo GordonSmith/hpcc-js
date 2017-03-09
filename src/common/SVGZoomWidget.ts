@@ -1,7 +1,8 @@
-﻿import * as d3 from "d3";
+﻿import { event as d3Event, select as d3Select } from "d3-selection";
+import { zoom as d3Zoom } from "d3-zoom";
 import { SVGWidget } from "./SVGWidget";
 import { Icon } from "./Icon";
-import "css!./SVGZoomWidget";
+import "css!./SVGZoomWidget.css";
 
 export function SVGZoomWidget(target) {
     SVGWidget.call(this);
@@ -50,10 +51,10 @@ SVGZoomWidget.prototype.enter = function (domNode, element) {
     this._renderElement = this._zoomG.append("g");
 
     var context = this;
-    this._zoom = d3.behavior.zoom()
+    this._zoom = d3Zoom()
         .scaleExtent([0.05, 20])
         .on("zoom", function () {
-            context._zoomG.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            context._zoomG.attr("transform", "translate(" + d3Event.translate + ")scale(" + d3Event.scale + ")");
         })
         ;
     this._zoomElement.call(this._zoom);

@@ -1,9 +1,12 @@
+.vscode
+.nyc_output
+coverage
 node_modules
 bower_components
-dist*
+lib*/
 Web.config
 nbproject
-out
+docx
 .project
 lib-es6/
 lib-test/

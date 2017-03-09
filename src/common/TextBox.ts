@@ -1,7 +1,7 @@
 import { SVGWidget } from "./SVGWidget";
 import { Shape } from "./Shape";
 import { Text } from "./Text";
-import "css!./TextBox";
+import "css!./TextBox.css";
 
 export function TextBox() {
     SVGWidget.call(this);

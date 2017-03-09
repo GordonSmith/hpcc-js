@@ -1,6 +1,6 @@
 import { Bar } from "./Bar";
 
-export function Gantt(target) {
+export function Gantt() {
     Bar.call(this);
 
     this

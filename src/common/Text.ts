@@ -1,5 +1,5 @@
 import { SVGWidget } from "./SVGWidget";
-import "css!./Text";
+import "css!./Text.css";
 
 export function Text() {
     SVGWidget.call(this);
@@ -34,8 +34,7 @@ Text.prototype.update = function (domNode, element) {
         .attr("class", function (d, i) { return "tspan_" + i; })
         .attr("dy", "1em")
         .attr("x", "0")
-        ;
-    textLine
+        .merge(textLine)
         .style("fill", this.colorFill())
         .text(function (d) { return d; })
         ;

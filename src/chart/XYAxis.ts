@@ -1,8 +1,10 @@
-import * as d3 from "d3";
+import "css!./XYAxis.css";
+import { max as d3Max, min as d3Min } from "d3-array";
+import { brushX as d3BrushX, brushY as d3BrushY } from "d3-brush";
+import { hsl as d3Hsl } from "d3-color";
 import { SVGWidget } from "../common/SVGWidget";
 import * as Utility from "../common/Utility";
 import { Axis } from "./Axis";
-import "css!./XYAxis";
 
 export function XYAxis() {
     SVGWidget.call(this);
@@ -11,7 +13,7 @@ export function XYAxis() {
     this._drawStartPos = "origin";
 
     this.domainAxis = new Axis()
-            .classed({"domain": true})
+        .classed({ "domain": true })
         .orientation_default("bottom")
         .type_default("ordinal")
         .overlapMode_default("stagger")
@@ -19,18 +21,18 @@ export function XYAxis() {
         .extend_default(0)
         ;
     this.valueAxis = new Axis()
-            .classed({ "value": true })
+        .classed({ "value": true })
         .orientation_default("left")
         .type_default("linear")
         .shrinkToFit_default("high")
         ;
     var context = this;
-    this.xBrush = d3.svg.brush()
+    this.xBrush = d3BrushX()
         .on("brush", function () {
             return context.brushMoved();
         })
         ;
-    this.yBrush = d3.svg.brush()
+    this.yBrush = d3BrushY()
         .on("brush", function () {
             return context.brushMoved();
         })
@@ -116,7 +118,7 @@ XYAxis.prototype.parsedData = function () {
     return retVal;
 };
 
-XYAxis.prototype.enter = function (domNode, element) {
+XYAxis.prototype.enter = function (_domNode, element) {
     SVGWidget.prototype.enter.apply(this, arguments);
     this.svg = element.append("g");
     this.svgRegions = element.append("g");
@@ -187,7 +189,7 @@ XYAxis.prototype.brushMoved = SVGWidget.prototype.debounce(function brushed() {
         var selected = this.parsedData().filter(function (d) {
         var pos = d[0];
         if (this.xAxisType() === "ordinal") {
-            pos = this.domainAxis.d3Scale(pos) + (this.domainAxis.d3Scale.rangeBand ? this.domainAxis.d3Scale.rangeBand() / 2 : 0);
+            pos = this.domainAxis.d3Scale(pos) + (this.domainAxis.d3Scale.bandwidth ? this.domainAxis.d3Scale.bandwidth() / 2 : 0);
         }
         if (this.orientation() === "horizontal") {
             return (pos >= this.xBrush.extent()[0] && pos <= this.xBrush.extent()[1]);
@@ -210,7 +212,7 @@ XYAxis.prototype.setScaleRange = function (width, height) {
     this.yAxis.height(height);
 };
 
-XYAxis.prototype.calcMargin = function (domNode, element, isHorizontal) {
+XYAxis.prototype.calcMargin = function (_domNode, element, isHorizontal) {
     var margin = {
         top: !isHorizontal && this.selectionMode() ? 10 : 2,
         right: isHorizontal && (this.selectionMode() || this.xAxisFocus()) ? 10 : 2,
@@ -255,7 +257,7 @@ XYAxis.prototype.calcMargin = function (domNode, element, isHorizontal) {
     return margin;
 };
 
-XYAxis.prototype.updateRegions = function (domNode, element, isHorizontal) {
+XYAxis.prototype.updateRegions = function (_domNode, _element, isHorizontal) {
     var context = this;
 
     var regions = this.svgRegions.selectAll(".region").data(this.regions());
@@ -269,7 +271,7 @@ XYAxis.prototype.updateRegions = function (domNode, element, isHorizontal) {
             .attr("width", function (d) { return context.dataPos(d.x1) - context.dataPos(d.x0); })
             .attr("height", this.height())
             .style("stroke", function (d) { return context._palette(d.colorID); })
-            .style("fill", function (d) { return d3.hsl(context._palette(d.colorID)).brighter(); })
+            .style("fill", function (d) { return d3Hsl(context._palette(d.colorID)).brighter(); })
             ;
     } else {
         regions
@@ -278,7 +280,7 @@ XYAxis.prototype.updateRegions = function (domNode, element, isHorizontal) {
             .attr("width", this.width())
             .attr("height", function (d) { return context.dataPos(d.x0) - context.dataPos(d.x1); })
             .style("stroke", function (d) { return context._palette(d.colorID); })
-            .style("fill", function (d) { return d3.hsl(context._palette(d.colorID)).brighter(); })
+            .style("fill", function (d) { return d3Hsl(context._palette(d.colorID)).brighter(); })
             ;
     }
     regions.exit().remove();
@@ -301,7 +303,7 @@ XYAxis.prototype.update = function (domNode, element) {
     this.yAxis = isHorizontal ? this.valueAxis : this.domainAxis;
     var xBrush = isHorizontal ? this.xBrush : this.yBrush;
     var yBrush = isHorizontal ? this.yBrush : this.xBrush;
-        var xBrushExtent = xBrush.extent();
+    var xBrushExtent = xBrush.extent();
     var yBrushExtent = yBrush.extent();
 
     //  Update Domain  ---
@@ -310,10 +312,10 @@ XYAxis.prototype.update = function (domNode, element) {
             this.domainAxis.ordinals(this.data().map(function (d) { return d[0]; }));
             break;
         default:
-            var domainMin = this.xAxisDomainLow() ? this.xAxisDomainLow() : this.domainAxis.parseInvert(d3.min(this.parsedData(), function (data) {
+            var domainMin = this.xAxisDomainLow() ? this.xAxisDomainLow() : this.domainAxis.parseInvert(d3Min(this.parsedData(), function (data) {
                 return data[0];
             }));
-            var domainMax = this.xAxisDomainHigh() ? this.xAxisDomainHigh() : this.domainAxis.parseInvert(d3.max(this.parsedData(), function (data) {
+            var domainMax = this.xAxisDomainHigh() ? this.xAxisDomainHigh() : this.domainAxis.parseInvert(d3Max(this.parsedData(), function (data) {
                 return data[0];
             }));
             if (domainMin !== undefined && domainMax !== undefined) {
@@ -325,11 +327,11 @@ XYAxis.prototype.update = function (domNode, element) {
             break;
     }
 
-    var min = this.yAxisDomainLow() ? this.yAxisDomainLow() : this.valueAxis.parseInvert(d3.min(this.parsedData(), function (data) {
-        return d3.min(data.filter(function (cell, i) { return i > 0 && context.columns()[i] && context.columns()[i].indexOf("__") !== 0 && cell !== null; }), function (d) { return d instanceof Array ? d[0] : d; });
+    var min = this.yAxisDomainLow() ? this.yAxisDomainLow() : this.valueAxis.parseInvert(d3Min(this.parsedData(), function (data: any[]) {
+        return d3Min(data.filter(function (cell, i) { return i > 0 && context.columns()[i] && context.columns()[i].indexOf("__") !== 0 && cell !== null; }), function (d) { return d instanceof Array ? d[0] : d; });
     }));
-    var max = this.yAxisDomainHigh() ? this.yAxisDomainHigh() : this.valueAxis.parseInvert(d3.max(this.parsedData(), function (data) {
-        return d3.max(data.filter(function (cell, i) { return i > 0 && context.columns()[i] && context.columns()[i].indexOf("__") !== 0 && cell !== null; }), function (d) { return d instanceof Array ? d[1] : d; });
+    var max = this.yAxisDomainHigh() ? this.yAxisDomainHigh() : this.valueAxis.parseInvert(d3Max(this.parsedData(), function (data: any[]) {
+        return d3Max(data.filter(function (cell, i) { return i > 0 && context.columns()[i] && context.columns()[i].indexOf("__") !== 0 && cell !== null; }), function (d) { return d instanceof Array ? d[1] : d; });
     }));
     this.valueAxis
         .low(min)
@@ -366,10 +368,10 @@ XYAxis.prototype.update = function (domNode, element) {
         ;
 
     this.xBrush
-        .x(this.domainAxis.d3Scale)
+        //.x(this.domainAxis.d3Scale)
         ;
     this.yBrush
-        .y(this.domainAxis.d3Scale)
+        //.y(this.domainAxis.d3Scale)
         ;
     if (this.selectionMode()) {
         if (this._prevXAxisType !== this.xAxisType()) {
@@ -394,26 +396,26 @@ XYAxis.prototype.update = function (domNode, element) {
                     xBrush.extent(yBrushExtent);
                     break;
             }
-            } else {
-                switch (this.xAxisType()) {
-                    case "ordinal":
-                        if (this._prevBrush) {
-                            var ratio = maxCurrExtent / this._prevBrush.maxCurrExtent;
-                            xBrush.extent([xBrushExtent[0] * ratio, xBrushExtent[1] * ratio]);
-                        }
-                        break;
-                    default:
-                        var domain = this.domainAxis.d3Scale.domain();
-                        if (xBrushExtent[0] < domain[0] || xBrushExtent[0] > domain[1]) {
-                            xBrushExtent[0] = domain[0];
-                        }
-                        if (xBrushExtent[1] < domain[0] || xBrushExtent[1] > domain[1]) {
-                            xBrushExtent[1] = domain[1];
-                        }
-                        xBrush.extent(xBrushExtent);
-                        break;
-                }
+        } else {
+            switch (this.xAxisType()) {
+                case "ordinal":
+                    if (this._prevBrush) {
+                        var ratio = maxCurrExtent / this._prevBrush.maxCurrExtent;
+                        xBrush.extent([xBrushExtent[0] * ratio, xBrushExtent[1] * ratio]);
+                    }
+                    break;
+                default:
+                    var domain = this.domainAxis.d3Scale.domain();
+                    if (xBrushExtent[0] < domain[0] || xBrushExtent[0] > domain[1]) {
+                        xBrushExtent[0] = domain[0];
+                    }
+                    if (xBrushExtent[1] < domain[0] || xBrushExtent[1] > domain[1]) {
+                        xBrushExtent[1] = domain[1];
+                    }
+                    xBrush.extent(xBrushExtent);
+                    break;
             }
+        }
         this._prevBrush = {
             orientation: this.orientation(),
             maxCurrExtent: maxCurrExtent
@@ -449,8 +451,8 @@ XYAxis.prototype.updateFocusChart = function (domNode, element, margin, width, h
     var focusChart = this.svgFocus.selectAll("#" + this.id() + "_focusChart").data(this.xAxisFocus() ? [true] : []);
     focusChart.enter().append("g")
         .attr("id", this.id() + "_focusChart")
-            .attr("class", "focus")
-        .each(function (d) {
+        .attr("class", "focus")
+        .each(function () {
             context.focusChart = new context.constructor()
                 .target(this)
                 ;
@@ -463,7 +465,7 @@ XYAxis.prototype.updateFocusChart = function (domNode, element, margin, width, h
         })
         ;
     focusChart
-        .each(function (d) {
+        .each(function () {
             context.copyPropsTo(context.focusChart);
             context.focusChart
                 .xAxisFocus(false)
@@ -486,7 +488,7 @@ XYAxis.prototype.updateFocusChart = function (domNode, element, margin, width, h
         })
         ;
     focusChart.exit()
-        .each(function (d) {
+        .each(function () {
             if (context.focusChart) {
                 context.focusChart
                     .target(null)
@@ -511,12 +513,12 @@ XYAxis.prototype.updateFocusChart = function (domNode, element, margin, width, h
     }
 };
 
-XYAxis.prototype.updateChart = function (domNode, element, margin, width, height, isHorizontal, duration) {
+XYAxis.prototype.updateChart = function (_domNode, _element, _margin, _width, _height, _isHorizontal, _duration) {
 };
 
-XYAxis.prototype.exit = function (domNode, element) {
+XYAxis.prototype.exit = function (_domNode, _element) {
     SVGWidget.prototype.exit.apply(this, arguments);
 };
 
-XYAxis.prototype.selection = function (selected) {
+XYAxis.prototype.selection = function (_selected) {
 };

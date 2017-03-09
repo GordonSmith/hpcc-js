@@ -1,10 +1,11 @@
-import * as d3 from "d3";
+import { select as d3Select } from "d3-selection";
+import { scaleBand as d3ScaleBand } from "d3-scale";
 import { XYAxis } from "./XYAxis";
 import { INDChart } from "../api/INDChart";
 import { ITooltip } from "../api/ITooltip";
-import "css!./Column";
+import "css!./Column.css";
 
-export function Column(target) {
+export function Column(_target) {
     XYAxis.call(this);
     INDChart.call(this);
     ITooltip.call(this);
@@ -20,7 +21,7 @@ Column.prototype.implements(ITooltip.prototype);
 Column.prototype.publish("paletteID", "default", "set", "Palette ID", Column.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
 Column.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
 
-Column.prototype.enter = function (domNode, element) {
+Column.prototype.enter = function (_domNode, _element) {
     XYAxis.prototype.enter.apply(this, arguments);
     var context = this;
     this
@@ -51,7 +52,7 @@ XYAxis.prototype.adjustedData = function () {
     return retVal;
 };
 
-Column.prototype.updateChart = function (domNode, element, margin, width, height, isHorizontal, duration) {
+Column.prototype.updateChart = function (_domNode, _element, _margin, _width, height, isHorizontal, duration) {
     var context = this;
 
     this._palette = this._palette.switch(this.paletteID());
@@ -63,7 +64,7 @@ Column.prototype.updateChart = function (domNode, element, margin, width, height
     var offset = 0;
     switch (this.xAxisType()) {
         case "ordinal":
-            dataLen = this.domainAxis.d3Scale.rangeBand();
+            dataLen = this.domainAxis.d3Scale.bandwidth();
             offset = -dataLen / 2;
             break;
         case "linear":
@@ -73,9 +74,11 @@ Column.prototype.updateChart = function (domNode, element, margin, width, height
             break;
     }
 
-    var columnScale = d3.scale.ordinal()
-        .domain(context.columns().filter(function (d, idx) { return idx > 0; }))
-        .rangeRoundBands(isHorizontal ? [0, dataLen] : [dataLen, 0])
+    this.tooltip.direction(isHorizontal ? "n" : "e");
+
+    var columnScale = d3ScaleBand()
+        .domain(context.columns().filter(function (_d, idx) { return idx > 0; }))
+        .rangeRound(isHorizontal ? [0, dataLen] : [dataLen, 0])
         ;
 
     var column = this.svgData.selectAll(".dataRow")
@@ -84,51 +87,48 @@ Column.prototype.updateChart = function (domNode, element, margin, width, height
 
     column.enter().append("g")
         .attr("class", "dataRow")
-        ;
+        .merge(column)
+        .each(function (dataRow) {
+            var element = d3Select(this);
 
-    this.tooltip.direction(isHorizontal ? "n" : "e");
-    column
-        .each(function (dataRow, i) {
-            var element = d3.select(this);
-
-            var columnRect = element.selectAll("rect").data(dataRow.filter(function (d, i) { return i < context.columns().length; }).map(function (d, i) {
+            let columnRect = element.selectAll("rect").data(dataRow.filter(function (_d, i) { return i < context.columns().length; }).map(function (d, i) {
                 return {
                     column: context.columns()[i],
                     row: dataRow,
                     value: d,
                     idx: i
                 };
-            }).filter(function (d, i) { return d.value !== null && d.idx > 0; }));
+            }).filter(function (d) { return d.value !== null && d.idx > 0; }));
 
-            columnRect
+            var columnRectEnter = columnRect
                 .enter().append("rect")
                 .attr("class", "columnRect")
                 .call(context._selection.enter.bind(context._selection))
                 .on("mouseout.tooltip", context.tooltip.hide)
                 .on("mousemove.tooltip", context.tooltip.show)
-                .on("click", function (d, idx) {
+                .on("click", function (d: any) {
                     context.click(context.rowToObj(d.row), d.column, context._selection.selected(this));
                 })
-                .on("dblclick", function (d, idx) {
+                .on("dblclick", function (d: any) {
                     context.dblclick(context.rowToObj(d.row), d.column, context._selection.selected(this));
                 })
                 ;
 
             if (isHorizontal) {
-                columnRect.transition().duration(duration)
-                    .attr("x", function (d) { return context.dataPos(dataRow[0]) + (context.yAxisStacked() ? 0 : columnScale(d.column)) + offset; })
-                    .attr("width", context.yAxisStacked() ? dataLen : columnScale.rangeBand())
-                    .attr("y", function (d) { return d.value instanceof Array ? context.valuePos(d.value[1]) : context.valuePos(d.value); })
-                    .attr("height", function (d) { return d.value instanceof Array ? context.valuePos(d.value[0]) - context.valuePos(d.value[1]) : height - context.valuePos(d.value); })
-                    .style("fill", function (d) { return context._palette(d.column); })
+                columnRectEnter.merge(columnRect).transition().duration(duration)
+                    .attr("x", function (d: any) { return context.dataPos(dataRow[0]) + (context.yAxisStacked() ? 0 : columnScale(d.column)) + offset; })
+                    .attr("width", context.yAxisStacked() ? dataLen : columnScale.bandwidth())
+                    .attr("y", function (d: any) { return d.value instanceof Array ? context.valuePos(d.value[1]) : context.valuePos(d.value); })
+                    .attr("height", function (d: any) { return d.value instanceof Array ? context.valuePos(d.value[0]) - context.valuePos(d.value[1]) : height - context.valuePos(d.value); })
+                    .style("fill", function (d: any) { return context._palette(d.column); })
                     ;
             } else {
-                columnRect.transition().duration(duration)
-                    .attr("y", function (d) { return context.dataPos(dataRow[0]) + (context.yAxisStacked() ? 0 : columnScale(d.column)) + offset; })
-                    .attr("height", context.yAxisStacked() ? dataLen : columnScale.rangeBand())
-                    .attr("x", function (d) { return d.value instanceof Array ? context.valuePos(d.value[0]) : 0; })
-                    .attr("width", function (d) { return d.value instanceof Array ? context.valuePos(d.value[1]) - context.valuePos(d.value[0]) : context.valuePos(d.value); })
-                    .style("fill", function (d) { return context._palette(d.column); })
+                columnRectEnter.merge(columnRect).transition().duration(duration)
+                    .attr("y", function (d: any) { return context.dataPos(dataRow[0]) + (context.yAxisStacked() ? 0 : columnScale(d.column)) + offset; })
+                    .attr("height", context.yAxisStacked() ? dataLen : columnScale.bandwidth())
+                    .attr("x", function (d: any) { return d.value instanceof Array ? context.valuePos(d.value[0]) : 0; })
+                    .attr("width", function (d: any) { return d.value instanceof Array ? context.valuePos(d.value[1]) - context.valuePos(d.value[0]) : context.valuePos(d.value); })
+                    .style("fill", function (d: any) { return context._palette(d.column); })
                     ;
             }
 

@@ -1,6 +1,6 @@
 import { Scatter } from "./Scatter";
 
-export function Area(target) {
+export function Area() {
     Scatter.call(this);
     this
         .interpolate_default("linear")

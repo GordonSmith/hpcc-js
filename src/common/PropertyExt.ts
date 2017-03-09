@@ -183,7 +183,7 @@ PropertyExt.prototype.publishedProperty = function (id) {
     return this[__meta_ + id];
 };
 
-PropertyExt.prototype.publishedModified = function (id) {
+PropertyExt.prototype.publishedModified = function () {
     return this.publishedProperties().some(function (prop) {
         return this[prop.id + "_modified"]();
     }, this);
@@ -340,7 +340,7 @@ PropertyExt.prototype.monitorProperty = function (propID, func) {
     switch (meta.type) {
         case "proxy":
             if (this[meta.proxy]) {
-                return this[meta.proxy].monitorProperty(meta.method, function (key, newVal, oldVal) {
+                return this[meta.proxy].monitorProperty(meta.method, function (_key, newVal, oldVal) {
                     func(meta.id, newVal, oldVal);
                 });
             } else {

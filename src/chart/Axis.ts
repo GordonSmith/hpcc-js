@@ -1,13 +1,14 @@
-import * as d3 from "d3";
+import { select as d3Select } from "d3-selection";
+import { scaleTime as d3ScaleTime, scaleLog as d3ScaleLog, scalePow as d3ScalePow, scaleBand as d3ScaleBand, scaleLinear as d3ScaleLinear } from "d3-scale";
+import { format as d3Format } from "d3-format";
+import { timeFormat as d3TimeFormat } from "d3-time-format";
+import { axisBottom as d3AxisBottom, axisTop as d3AxisTop, axisLeft as d3AxisLeft, axisRight as d3AxisRight } from "d3-axis";
 import { SVGWidget } from "../common/SVGWidget";
-import "css!./Axis";
+import "css!./Axis.css";
 
 export function Axis() {
     SVGWidget.call(this);
     this._drawStartPos = "origin";
-
-    this.d3Axis = d3.svg.axis();
-    this.d3Guides = d3.svg.axis();
 
     this.updateScale();
 }
@@ -102,7 +103,7 @@ Axis.prototype.format = function (d) {
 Axis.prototype.scalePos = function (d) {
     var retVal = this.d3Scale(this.parse(d));
     if (this.type() === "ordinal") {
-        retVal += this.d3Scale.rangeBand() / 2;
+        retVal += this.d3Scale.bandwidth() / 2;
     }
     return retVal;
 };
@@ -143,12 +144,12 @@ Axis.prototype.invert = function (pos) {
 };
 
 Axis.prototype.guideTarget = function (_) {
-    this._guideElement = d3.select(_)
+    this._guideElement = d3Select(_)
         .attr("class", this._class)
         ;
 };
 
-Axis.prototype.enter = function (domNode, element) {
+Axis.prototype.enter = function (_domNode, element) {
     SVGWidget.prototype.enter.apply(this, arguments);
     this.svg = element.append("g");
     this.svgAxis = this.svg.append("g")
@@ -165,7 +166,7 @@ Axis.prototype.enter = function (domNode, element) {
 Axis.prototype.updateScale = function () {
     switch (this.type()) {
         case "ordinal":
-            this.d3Scale = d3.scale.ordinal();
+            this.d3Scale = d3ScaleBand().padding(0.1);
             if (this.ordinals_exists()) {
                 this.d3Scale.domain(this.ordinals());
             }
@@ -173,41 +174,63 @@ Axis.prototype.updateScale = function () {
             this.formatter = null;
             break;
         case "linear":
-            this.d3Scale = d3.scale.linear();
+            this.d3Scale = d3ScaleLinear();
             if (this.low_exists() && this.high_exists()) {
                 this.d3Scale.domain([this.lowValue(), this.highValue()]);
             }
             this.parser = null;
-            this.formatter = this.tickFormat_exists() ? d3.format(this.tickFormat()) : null;
+            this.formatter = this.tickFormat_exists() ? d3Format(this.tickFormat()) : null;
             break;
         case "pow":
-            this.d3Scale = d3.scale.pow()
+            this.d3Scale = d3ScalePow()
                 .exponent(this.powExponent())
                 ;
             if (this.low_exists() && this.high_exists()) {
                 this.d3Scale.domain([this.lowValue(), this.highValue()]);
             }
             this.parser = null;
-            this.formatter = this.tickFormat_exists() ? d3.format(this.tickFormat()) : null;
+            this.formatter = this.tickFormat_exists() ? d3Format(this.tickFormat()) : null;
             break;
         case "log":
-            this.d3Scale = d3.scale.log()
+            this.d3Scale = d3ScaleLog()
                 .base(this.logBase())
                 ;
             if (this.low_exists() && this.high_exists()) {
                 this.d3Scale.domain([this.lowValue(), this.highValue()]);
             }
             this.parser = null;
-            this.formatter = this.tickFormat_exists() ? d3.format(this.tickFormat()) : null;
+            this.formatter = this.tickFormat_exists() ? d3Format(this.tickFormat()) : null;
             break;
         case "time":
-            this.d3Scale = d3.time.scale();
+            this.d3Scale = d3ScaleTime();
             if (this.low_exists() && this.high_exists()) {
                 this.d3Scale.domain([this.lowValue(), this.highValue()]);
             }
-            this.parser = this.timePattern_exists() ? d3.time.format(this.timePattern()) : null;
-            this.formatter = this.tickFormat_exists() ? d3.time.format(this.tickFormat()) : null;
+            this.parser = this.timePattern_exists() ? d3TimeFormat(this.timePattern()) : null;
+            this.formatter = this.tickFormat_exists() ? d3TimeFormat(this.tickFormat()) : null;
             break;
+    }
+    if (this._prevOrientation !== this.orientation()) {
+        switch (this.orientation()) {
+            case "left":
+                this.d3Axis = d3AxisLeft(this.d3Scale);
+                this.d3Guides = d3AxisLeft(this.d3Scale);
+                break;
+            case "top":
+                this.d3Axis = d3AxisTop(this.d3Scale);
+                this.d3Guides = d3AxisTop(this.d3Scale);
+                break;
+            case "right":
+                this.d3Axis = d3AxisRight(this.d3Scale);
+                this.d3Guides = d3AxisRight(this.d3Scale);
+                break;
+            case "bottom":
+            default:
+                this.d3Axis = d3AxisBottom(this.d3Scale);
+                this.d3Guides = d3AxisBottom(this.d3Scale);
+                break;
+        }
+        this._prevOrientation = this.orientation();
     }
 
     if (this.extend()) {
@@ -244,13 +267,11 @@ Axis.prototype.updateScale = function () {
         }
     }
     this.d3Axis
-        .orient(this.orientation())
         .scale(this.d3Scale)
         .tickFormat(this.formatter)
         .ticks(this.tickCount())
         ;
     this.d3Guides
-        .orient(this.orientation())
         .scale(this.d3Scale)
         .tickSize(-this.tickLength())
         .tickFormat("")
@@ -268,7 +289,7 @@ Axis.prototype.adjustText = function (svg, tickOverlapModulus) {
             svg.selectAll(".tick > text")
                 .call(function () {
                     return context.linebreak.apply(context, arguments);
-                }, this.d3Scale.rangeBand())
+                }, this.d3Scale.bandwidth())
                 ;
         }
     } else if (this.overlapMode() === "wrap") {
@@ -276,7 +297,7 @@ Axis.prototype.adjustText = function (svg, tickOverlapModulus) {
             svg.selectAll(".tick > text")
                 .call(function () {
                     return context.wrap.apply(context, arguments);
-                }, this.d3Scale.rangeBand())
+                }, this.d3Scale.bandwidth())
                 ;
         }
     } else {
@@ -284,7 +305,7 @@ Axis.prototype.adjustText = function (svg, tickOverlapModulus) {
             case "stagger":
                 svg.selectAll(".tick > text")
                     .style("text-anchor", "middle")
-                    .attr("dy", function (d, i) { return (isBottom ? 1 : -1) * ((isBottom ? 0.71 : 0) + i % tickOverlapModulus) + "em"; })
+                    .attr("dy", function (_d, i) { return (isBottom ? 1 : -1) * ((isBottom ? 0.71 : 0) + i % tickOverlapModulus) + "em"; })
                     .attr("dx", 0)
                     .attr("visibility", null)
                     .attr("transform", "rotate(0)")
@@ -295,7 +316,7 @@ Axis.prototype.adjustText = function (svg, tickOverlapModulus) {
                     .style("text-anchor", "middle")
                     .attr("dy", (isBottom ? 0.71 : 0) + "em")
                     .attr("dx", 0)
-                    .attr("visibility", function (d, i) { return i % tickOverlapModulus ? "hidden" : null; })
+                    .attr("visibility", function (_d, i) { return i % tickOverlapModulus ? "hidden" : null; })
                     .attr("transform", "rotate(0)")
                     ;
                 break;
@@ -304,7 +325,7 @@ Axis.prototype.adjustText = function (svg, tickOverlapModulus) {
                 if (deg !== 0 && tickOverlapModulus > 1) {
                     svg.selectAll(".tick > text")
                         .each(function () {
-                            var elm = d3.select(this);
+                            var elm = d3Select(this);
                             var bbox = elm.node().getBBox();
                             var dyOff = (isBottom ? 1 : -1) * Math.sin(Math.PI * (-Math.abs(deg) / 180));
                             elm
@@ -338,7 +359,7 @@ Axis.prototype.calcTickOverlapModulus = function (element) {
         case "stagger":
         case "hide":
             var bboxArr = [];
-            element.selectAll(".tick > text").each(function (d) {
+            element.selectAll(".tick > text").each(function () {
                 var bbox = this.getBoundingClientRect();
                 for (var i = bboxArr.length - 1; i >= 0; --i) {
                     if (bboxArr[i].right < bbox.left) {
@@ -402,7 +423,7 @@ Axis.prototype.wrap = function (text, bandSize, re) {
     re = re || /\s+/;
     var context = this;
     text.each(function () {
-        var text = d3.select(this),
+        var text = d3Select(this),
             words = text.text().split(re).reverse(),
             word,
             line = [],
@@ -425,7 +446,7 @@ Axis.prototype.wrap = function (text, bandSize, re) {
             line.push(word);
             tspan.text(line.join(" "));
             wordsOnLine++;
-            if (tspan.node().getComputedTextLength() > bandSize && wordsOnLine >= minWordsPerLine) {
+            if ((<any>tspan.node()).getComputedTextLength() > bandSize && wordsOnLine >= minWordsPerLine) {
                 line.pop();
                 tspan.text(line.join(" "));
                 line = [word];
@@ -445,7 +466,7 @@ Axis.prototype.linebreak = function (text, bandSize) {
     this.wrap(text, bandSize, "\n");
 };
 
-Axis.prototype.update = function (domNode, element) {
+Axis.prototype.update = function (_domNode, element) {
     SVGWidget.prototype.update.apply(this, arguments);
 
     var overlap = this.calcOverflow(element);
@@ -454,7 +475,7 @@ Axis.prototype.update = function (domNode, element) {
 
     var context = this;
     function doPosition(element) {
-        element.attr("transform", function (d) {
+        element.attr("transform", function () {
             switch (context.orientation()) {
                 case "left":
                     return "translate(" + overlap.depth + ", " + overlap.top + ")";
@@ -538,7 +559,7 @@ Axis.prototype.update = function (domNode, element) {
         ;
 };
 
-Axis.prototype.postUpdate = function (domNode, element) {
+Axis.prototype.postUpdate = function (_domNode, _element) {
     SVGWidget.prototype.postUpdate.apply(this, arguments);
     if (this._guideElement) {
         this._guideElement

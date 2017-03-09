@@ -1,19 +1,17 @@
-import * as d3 from "d3";
-import * as _D3HexBin from "d3-hexbin";
+import { max as d3Max } from "d3-array";
+import { hexbin as d3HexBin } from "d3-hexbin";
 import { SVGWidget } from "../common/SVGWidget";
 import { INDChart } from "../api/INDChart";
 import { ITooltip } from "../api/ITooltip";
 import * as Palette from "../common/Palette";
 import { XYAxis } from "./XYAxis";
-import "css!./HexBin";
-
-const D3HexBin = _D3HexBin || d3.hexbin || (window as any).d3.hexbin;
+import "css!./HexBin.css";
 
 export function HexBin() {
     XYAxis.call(this);
     INDChart.call(this);
     ITooltip.call(this);
-    this._hexbin = new D3HexBin();
+    this._hexbin = d3HexBin();
 
     this
         .xAxisGuideLines_default(false)
@@ -40,7 +38,7 @@ HexBin.prototype.yPos = function (d) {
     return this.orientation() === "horizontal" ? this.valuePos(d.value) : this.dataPos(d.label);
 };
 
-HexBin.prototype.updateChart = function (domNode, element, margin, width, height, isHorizontal, duration) {
+HexBin.prototype.updateChart = function (_domNode, _element, _margin, width, height, _isHorizontal, duration) {
     var context = this;
 
     this._palette = this._palette.switch(this.paletteID());
@@ -49,21 +47,20 @@ HexBin.prototype.updateChart = function (domNode, element, margin, width, height
     }
 
     this._hexbin
-        .size([width, height])
+        .extent([0, 0], [width, height])
         .radius(this.binSize())
         ;
 
     var data = this.flattenData();
-    var dataPoints = data.map(function (d, idx) { return [context.xPos(d), context.yPos(d)]; });
+    var dataPoints = data.map(function (d) { return [context.xPos(d), context.yPos(d)]; });
     var hexBinPoints = this._hexbin(dataPoints);
-    var maxBinPoints = d3.max(hexBinPoints, function (d) { return d.length; });
+    var maxBinPoints = d3Max(hexBinPoints, function (d) { return d.length; });
 
-    var points = this.svgData.selectAll(".hexagon").data(hexBinPoints, function (d, idx) { return d.i + "_" + d.j; });
+    var points = this.svgData.selectAll(".hexagon").data(hexBinPoints, function (d) { return d.i + "_" + d.j; });
     points.enter().append("path")
         .attr("class", "hexagon")
         .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")scale(0)"; })
-        ;
-    points.transition().duration(duration)
+        .merge(points).transition().duration(duration)
         .attr("d", this._hexbin.hexagon())
         .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")scale(1)"; })
         .style("fill", function (d) { return context._palette(d.length, 0, maxBinPoints); })
@@ -74,6 +71,6 @@ HexBin.prototype.updateChart = function (domNode, element, margin, width, height
         ;
 };
 
-HexBin.prototype.exit = function (domNode, element) {
+HexBin.prototype.exit = function (_domNode, _element) {
     SVGWidget.prototype.exit.apply(this, arguments);
 };
