@@ -1,12 +1,4 @@
-"use strict";
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        define([], factory);
-    } else {
-        root.test_DataFactory = factory();
-    }
-}(this, function () {
-    var DataFactory = {
+export const DataFactory = {
         OneD: {
             subjects: {
                 columns: ["Result"],
@@ -7968,6 +7960,4 @@
                         ["1990-01-02", "2753.20", "2811.65", "2732.51", "2810.15", "162070000", "2810.15"]]
             }
         }
-    };
-    return DataFactory;
-}));
+};

@@ -1,6 +1,6 @@
 ﻿import { Layer } from './Layer';
 import * as Utility from './Utility';
-import "css!./OpenStreet";
+import "./OpenStreet";
 
 export function OpenStreet() {
     Layer.call(this);
