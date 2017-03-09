@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { Pins } from './Pins';
-import "css!./Graph";
+import "./Graph";
 
 function Graph() {
     Pins.call(this);

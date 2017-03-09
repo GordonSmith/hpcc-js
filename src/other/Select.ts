@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { HTMLWidget } from "../common/HTMLWidget";
-import "css!./Select";
+import "./Select";
 
 export function Select(target) {
     HTMLWidget.call(this);

@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { HTMLWidget } from "../common/HTMLWidget";
 import { Surface } from "../layout/Surface";
 import { Text } from "../common/Text";
-import "css!./Tabbed";
+import "./Tabbed";
 
 export function Tabbed() {
     HTMLWidget.call(this);
