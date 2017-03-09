@@ -1,12 +1,16 @@
-﻿import * as d3 from 'd3';
-import { SVGWidget } from "../common/SVGWidget";
+﻿import { brush as d3Brush } from "d3-brush";
+import { drag as d3Drag } from "d3-drag";
+import { event as d3Event, select as d3Select } from "d3-selection";
+import { zoom as d3Zoom } from "d3-zoom";
 import { IGraph } from "../api/IGraph";
-import { Vertex } from "./Vertex";
+import { SVGWidget } from "../common/SVGWidget";
+import * as Utility from "../common/Utility";
 import { Edge } from "./Edge";
 import { GraphData } from "./GraphData";
 import * as GraphLayouts from "./GraphLayouts";
-import * as Utility from "../common/Utility";
-import "css!./Graph";
+import { Vertex } from "./Vertex";
+
+import "./Graph.css";
 
 export function Graph() {
     SVGWidget.call(this);
@@ -57,7 +61,7 @@ Graph.prototype.getOffsetPos = function () {
 };
 
 Graph.prototype.size = function (_) {
-    var retVal = SVGWidget.prototype.size.apply(this, arguments);
+    const retVal = SVGWidget.prototype.size.apply(this, arguments);
     if (arguments.length && this._svgZoom) {
         this._svgZoom
             .attr("x", -this._size.width / 2)
@@ -74,15 +78,15 @@ Graph.prototype.clear = function () {
 };
 
 Graph.prototype.data = function (_) {
-    var retVal = SVGWidget.prototype.data.apply(this, arguments);
+    const retVal = SVGWidget.prototype.data.apply(this, arguments);
     if (arguments.length) {
         if (!this.data().merge) {
             this.graphData = new GraphData();
             this._renderCount = 0;
         }
-        var data = this.graphData.setData(this.data().vertices || [], this.data().edges || [], this.data().hierarchy || [], this.data().merge || false);
+        const data = this.graphData.setData(this.data().vertices || [], this.data().edges || [], this.data().hierarchy || [], this.data().merge || false);
 
-        var context = this;
+        const context = this;
         data.addedVertices.forEach(function (item) {
             item.pos({
                 x: +Math.random() * 10 / 2 - 5,
@@ -94,7 +98,7 @@ Graph.prototype.data = function (_) {
         });
 
         //  Recalculate edge arcs  ---
-        var dupMap = {};
+        const dupMap = {};
         this.graphData.edgeValues().forEach(function (item) {
             if (!dupMap[item._sourceVertex._id]) {
                 dupMap[item._sourceVertex._id] = {};
@@ -102,7 +106,7 @@ Graph.prototype.data = function (_) {
             if (!dupMap[item._sourceVertex._id][item._targetVertex._id]) {
                 dupMap[item._sourceVertex._id][item._targetVertex._id] = 0;
             }
-            var dupEdgeCount = ++dupMap[item._sourceVertex._id][item._targetVertex._id];
+            const dupEdgeCount = ++dupMap[item._sourceVertex._id][item._targetVertex._id];
             item.arcDepth(16 * dupEdgeCount);
         });
     }
@@ -117,16 +121,16 @@ Graph.prototype.selection = function (_) {
 
 Graph.prototype.setZoom = function (translation, scale, transitionDuration) {
     if (this.zoom) {
-        this.zoom.translate(translation);
-        this.zoom.scale(scale);
-        this.applyZoom(transitionDuration);
+        // this.zoom.translate(translation);
+        // this.zoom.scale(scale);
+        // this.applyZoom(transitionDuration);
     }
 };
 
 Graph.prototype.applyZoom = function (transitionDuration) {
-    if (d3.event && d3.event.sourceEvent && d3.event.sourceEvent.ctrlKey && (d3.event.sourceEvent.type === "wheel" || d3.event.sourceEvent.type === "mousewheel" || d3.event.sourceEvent.type === "DOMMouseScroll")) {
-        if (d3.event.sourceEvent.wheelDelta) {
-            this.zoom.translate([this.prevTranslate[0], this.prevTranslate[1] + d3.event.sourceEvent.wheelDelta]);
+    if (d3Event && d3Event.sourceEvent && d3Event.sourceEvent.ctrlKey && (d3Event.sourceEvent.type === "wheel" || d3Event.sourceEvent.type === "mousewheel" || d3Event.sourceEvent.type === "DOMMouseScroll")) {
+        if (d3Event.sourceEvent.wheelDelta) {
+            this.zoom.translate([this.prevTranslate[0], this.prevTranslate[1] + d3Event.sourceEvent.wheelDelta]);
             this.zoom.scale(this.prevScale);
         }
     }
@@ -138,25 +142,25 @@ Graph.prototype.applyZoom = function (transitionDuration) {
         this._fixIEMarkers();
         this.prevScale = this.zoom.scale();
     }
-    this.brush.x(d3.scale.identity().domain([(-this.prevTranslate[0] - this._size.width / 2) * 1 / this.zoom.scale(), (-this.prevTranslate[0] + this._size.width / 2) * 1 / this.zoom.scale()]));
-    this.brush.y(d3.scale.identity().domain([(-this.prevTranslate[1] - this._size.height / 2) * 1 / this.zoom.scale(), (-this.prevTranslate[1] + this._size.height / 2) * 1 / this.zoom.scale()]));
+    // this.brush.x(d3.scale.identity().domain([(-this.prevTranslate[0] - this._size.width / 2) * 1 / this.zoom.scale(), (-this.prevTranslate[0] + this._size.width / 2) * 1 / this.zoom.scale()]));
+    // this.brush.y(d3.scale.identity().domain([(-this.prevTranslate[1] - this._size.height / 2) * 1 / this.zoom.scale(), (-this.prevTranslate[1] + this._size.height / 2) * 1 / this.zoom.scale()]));
 };
 
-Graph.prototype.enter = function (domNode, element) {
+Graph.prototype.enter = function (_domNode, element) {
     SVGWidget.prototype.enter.apply(this, arguments);
-    var context = this;
+    const context = this;
 
     //  Zoom  ---
     this.prevTranslate = [0, 0];
     this.prevScale = 1;
-    this.zoom = d3.behavior.zoom()
+    this.zoom = d3Zoom()
         .scaleExtent([0.01, 4])
-        .on("zoomstart", function (args) {
+        .on("start", function () {
             context.prevTranslate = context.zoom.translate();
             context.prevScale = context.zoom.scale();
-            if (d3.event.sourceEvent && d3.event.sourceEvent.shiftKey && d3.event.sourceEvent.ctrlKey) {
+            if (d3Event.sourceEvent && d3Event.sourceEvent.shiftKey && d3Event.sourceEvent.ctrlKey) {
                 context._zoomMode = "selection";
-            } else if (d3.event.sourceEvent && d3.event.sourceEvent.shiftKey) {
+            } else if (d3Event.sourceEvent && d3Event.sourceEvent.shiftKey) {
                 context._zoomMode = "selection";
                 context._selection.clear();
             } else {
@@ -175,7 +179,7 @@ Graph.prototype.enter = function (domNode, element) {
                     break;
             }
         })
-        .on("zoomend", function (args) {
+        .on("end", function () {
             switch (context._zoomMode) {
                 case "selection":
                     context.zoom.translate(context.prevTranslate);
@@ -186,7 +190,7 @@ Graph.prototype.enter = function (domNode, element) {
             }
             context._svgBrush.call(context.brush.clear());
         })
-        .on("zoom", function (d) {
+        .on("zoom", function () {
             switch (context._zoomMode) {
                 case "selection":
                     break;
@@ -196,65 +200,67 @@ Graph.prototype.enter = function (domNode, element) {
             }
         })
         ;
-    this.brush = d3.svg.brush()
-        .x(d3.scale.identity().domain([-context._size.width / 2, context._size.width / 2]))
-        .y(d3.scale.identity().domain([-context._size.height / 2, context._size.height / 2]))
-        .on("brushstart", function (args) {
-            switch (context._zoomMode) {
-                case "selection":
-                    break;
-                default:
-                    break;
-            }
-        })
-        .on("brushend", function (args) {
-            switch (context._zoomMode) {
-                case "selection":
-                    var extent = d3.event.target.extent();
-                    context.svgV.selectAll(".graphVertex").select("*")
-                        .each(function (d) {
-                            if (extent[0][0] <= d.x() && d.x() < extent[1][0] && extent[0][1] <= d.y() && d.y() < extent[1][1]) {
-                                context._selection.append(d);
-                            }
-                        })
-                        ;
-                    context.graph_selection(context.selection());
-                    break;
-                default:
-                    break;
-            }
-        })
-        .on("brush", function () {
-            switch (context._zoomMode) {
-                case "selection":
-                    var zt = context.zoom.translate();
-                    console.log(zt[0]);
-                    var extent = d3.event.target.extent();
-                    context.svgV.selectAll(".graphVertex").select("*")
-                        .classed("selected", function (d) {
-                            return context._selection.isSelected(d) ||
-                                (extent[0][0] <= d.x() && d.x() < extent[1][0] && extent[0][1] <= d.y() && d.y() < extent[1][1]);
-                        })
-                        ;
-                    break;
-                default:
-                    break;
-            }
-        })
+    this.brush = d3Brush()
+        /*
+            .x(d3.scale.identity().domain([-context._size.width / 2, context._size.width / 2]))
+            .y(d3.scale.identity().domain([-context._size.height / 2, context._size.height / 2]))
+            .on("brushstart", function (args) {
+                switch (context._zoomMode) {
+                    case "selection":
+                        break;
+                    default:
+                        break;
+                }
+            })
+            .on("brushend", function (args) {
+                switch (context._zoomMode) {
+                    case "selection":
+                        var extent = d3Event.target.extent();
+                        context.svgV.selectAll(".graphVertex").select("*")
+                            .each(function (d) {
+                                if (extent[0][0] <= d.x() && d.x() < extent[1][0] && extent[0][1] <= d.y() && d.y() < extent[1][1]) {
+                                    context._selection.append(d);
+                                }
+                            })
+                            ;
+                        context.graph_selection(context.selection());
+                        break;
+                    default:
+                        break;
+                }
+            })
+            .on("brush", function () {
+                switch (context._zoomMode) {
+                    case "selection":
+                        var zt = context.zoom.translate();
+                        console.log(zt[0]);
+                        var extent = d3Event.target.extent();
+                        context.svgV.selectAll(".graphVertex").select("*")
+                            .classed("selected", function (d) {
+                                return context._selection.isSelected(d) ||
+                                    (extent[0][0] <= d.x() && d.x() < extent[1][0] && extent[0][1] <= d.y() && d.y() < extent[1][1]);
+                            })
+                            ;
+                        break;
+                    default:
+                        break;
+                }
+            })
+            */
         ;
 
     //  Drag  ---
     function dragstart(d) {
         if (context.allowDragging()) {
-            d3.event.sourceEvent.stopPropagation();
+            d3Event.sourceEvent.stopPropagation();
             context._dragging = true;
             if (context.forceLayout) {
-                var forceNode = context.forceLayout.vertexMap[d.id()];
+                const forceNode = context.forceLayout.vertexMap[d.id()];
                 forceNode.fixed = true;
             }
             if (context.svgMarkerGlitch) {
                 context.graphData.nodeEdges(d.id()).forEach(function (id) {
-                    var edge = context.graphData.edge(id);
+                    const edge = context.graphData.edge(id);
                     context._pushMarkers(edge.element(), edge);
                 });
             }
@@ -262,44 +268,44 @@ Graph.prototype.enter = function (domNode, element) {
     }
     function drag(d) {
         if (context.allowDragging()) {
-            d3.event.sourceEvent.stopPropagation();
-            d.move({ x: d3.event.x, y: d3.event.y });
+            d3Event.sourceEvent.stopPropagation();
+            d.move({ x: d3Event.x, y: d3Event.y });
             if (context.forceLayout) {
-                var forceNode = context.forceLayout.vertexMap[d.id()];
+                const forceNode = context.forceLayout.vertexMap[d.id()];
                 forceNode.fixed = true;
-                forceNode.x = forceNode.px = d3.event.x;
-                forceNode.y = forceNode.py = d3.event.y;
+                forceNode.x = forceNode.px = d3Event.x;
+                forceNode.y = forceNode.py = d3Event.y;
             }
             context.refreshIncidentEdges(d, true);
         }
     }
     function dragend(d) {
         if (context.allowDragging()) {
-            d3.event.sourceEvent.stopPropagation();
+            d3Event.sourceEvent.stopPropagation();
             context._dragging = false;
             if (context.snapToGrid()) {
-                var snapLoc = d.calcSnap(context.snapToGrid());
+                const snapLoc = d.calcSnap(context.snapToGrid());
                 d.move(snapLoc[0]);
                 context.refreshIncidentEdges(d, true);
             }
             if (context.forceLayout) {
-                var forceNode = context.forceLayout.vertexMap[d.id()];
+                const forceNode = context.forceLayout.vertexMap[d.id()];
                 forceNode.fixed = false;
             }
             if (context.svgMarkerGlitch) {
                 context.graphData.nodeEdges(d.id()).forEach(function (id) {
-                    var edge = context.graphData.edge(id);
+                    const edge = context.graphData.edge(id);
                     context._popMarkers(edge.element(), edge);
                 });
             }
         }
     }
-    this.drag = d3.behavior.drag()
-        .origin(function (d) {
-            return d.pos();
-        })
-        .on("dragstart", dragstart)
-        .on("dragend", dragend)
+    this.drag = d3Drag()
+        //.origin(function (d) {
+        //    return d.pos();
+        //})
+        .on("start", dragstart)
+        .on("end", dragend)
         .on("drag", drag)
         ;
     //  SVG  ---
@@ -319,20 +325,20 @@ Graph.prototype.enter = function (domNode, element) {
     this.svg = element.append("g");
     this._svgBrush = this.svg.append("g").attr("class", "selectionBrush").call(this.brush);
     this._svgBrush.select(".background").style("cursor", null);
-    context._svgBrush.call(context.brush.clear());
+    // context._svgBrush.call(context.brush.clear());
     this.svgC = this.svg.append("g").attr("id", this._id + "C");
     this.svgE = this.svg.append("g").attr("id", this._id + "E");
     this.svgV = this.svg.append("g").attr("id", this._id + "V");
 };
 
 Graph.prototype.getBounds = function (items, layoutEngine) {
-    var vBounds = [[null, null], [null, null]];
+    const vBounds = [[null, null], [null, null]];
     items.forEach(function (item) {
-        var pos = layoutEngine ? layoutEngine.nodePos(item._id) : { x: item.x(), y: item.y(), width: item.width(), height: item.height() };
-        var leftX = pos.x - pos.width / 2;
-        var rightX = pos.x + pos.width / 2;
-        var topY = pos.y - pos.height / 2;
-        var bottomY = pos.y + pos.height / 2;
+        const pos = layoutEngine ? layoutEngine.nodePos(item._id) : { x: item.x(), y: item.y(), width: item.width(), height: item.height() };
+        const leftX = pos.x - pos.width / 2;
+        const rightX = pos.x + pos.width / 2;
+        const topY = pos.y - pos.height / 2;
+        const bottomY = pos.y + pos.height / 2;
         if (vBounds[0][0] === null || vBounds[0][0] > leftX) {
             vBounds[0][0] = leftX;
         }
@@ -359,24 +365,24 @@ Graph.prototype.getSelectionBounds = function (layoutEngine) {
 };
 
 Graph.prototype.shrinkToFit = function (bounds, transitionDuration) {
-    var width = this.width();
-    var height = this.height();
+    const width = this.width();
+    const height = this.height();
 
-    var dx = bounds[1][0] - bounds[0][0],
-        dy = bounds[1][1] - bounds[0][1],
-        x = (bounds[0][0] + bounds[1][0]) / 2,
-        y = (bounds[0][1] + bounds[1][1]) / 2,
-        scale = 1.0 / Math.max(dx / width, dy / height);
+    const dx = bounds[1][0] - bounds[0][0];
+    const dy = bounds[1][1] - bounds[0][1];
+    const x = (bounds[0][0] + bounds[1][0]) / 2;
+    const y = (bounds[0][1] + bounds[1][1]) / 2;
+    let scale = 1.0 / Math.max(dx / width, dy / height);
     if (scale > 1) {
         scale = 1;
     }
-    var translate = [-scale * x, -scale * y];
+    const translate = [-scale * x, -scale * y];
     this.setZoom(translate, scale, transitionDuration);
 };
 
 Graph.prototype._origScale = Graph.prototype.scale;
 Graph.prototype.scale = function (_, transitionDuration) {
-    var retVal = Graph.prototype._origScale.apply(this, arguments);
+    const retVal = Graph.prototype._origScale.apply(this, arguments);
     if (arguments.length) {
         this.zoomTo(_, transitionDuration);
     }
@@ -389,7 +395,7 @@ Graph.prototype.zoomTo = function (level, transitionDuration) {
             this.shrinkToFit(this.getVertexBounds(), transitionDuration);
             break;
         case "width":
-            var bounds = this.getVertexBounds();
+            const bounds = this.getVertexBounds();
             bounds[0][1] = 0;
             bounds[1][1] = 0;
             this.shrinkToFit(bounds, transitionDuration);
@@ -398,7 +404,7 @@ Graph.prototype.zoomTo = function (level, transitionDuration) {
             this.shrinkToFit(this._selection.isEmpty() ? this.getVertexBounds() : this.getSelectionBounds(), transitionDuration);
             break;
         default:
-            var scale = parseInt(level);
+            let scale = parseInt(level);
             if (isNaN(scale) || scale <= 0 || scale > 200) {
                 scale = 100;
             }
@@ -409,15 +415,15 @@ Graph.prototype.zoomTo = function (level, transitionDuration) {
 };
 
 Graph.prototype.centerOn = function (bounds, transitionDuration) {
-    var x = (bounds[0][0] + bounds[1][0]) / 2,
-        y = (bounds[0][1] + bounds[1][1]) / 2;
-    var translate = [x, y];
+    const x = (bounds[0][0] + bounds[1][0]) / 2;
+    const y = (bounds[0][1] + bounds[1][1]) / 2;
+    const translate = [x, y];
     this.setZoom(translate, 1, transitionDuration);
 };
 
 Graph.prototype._origLayout = Graph.prototype.layout;
 Graph.prototype.layout = function (_, transitionDuration) {
-    var retVal = Graph.prototype._origLayout.apply(this, arguments);
+    const retVal = Graph.prototype._origLayout.apply(this, arguments);
     if (arguments.length) {
         if (this._renderCount) {
             if (this.forceLayout) {
@@ -425,13 +431,13 @@ Graph.prototype.layout = function (_, transitionDuration) {
                 this.forceLayout = null;
             }
 
-            var context = this;
-            var layoutEngine = this.getLayoutEngine();
+            const context = this;
+            const layoutEngine = this.getLayoutEngine();
             if (this.layout() === "ForceDirected2") {
                 this.forceLayout = layoutEngine;
-                this.forceLayout.force.on("tick", function (d) {
+                this.forceLayout.force.on("tick", function () {
                     layoutEngine.vertices.forEach(function (item) {
-                        var vertex = context.graphData.node(item.id);
+                        const vertex = context.graphData.node(item.id);
                         if (item.fixed) {
                             item.x = item.px;
                             item.y = item.py;
@@ -449,7 +455,7 @@ Graph.prototype.layout = function (_, transitionDuration) {
                             ;
                     });
                     if (context.applyScaleOnLayout()) {
-                        var vBounds = context.getVertexBounds(layoutEngine);
+                        const vBounds = context.getVertexBounds(layoutEngine);
                         context.shrinkToFit(vBounds);
                     }
                 });
@@ -458,7 +464,7 @@ Graph.prototype.layout = function (_, transitionDuration) {
                 this.forceLayout = null;
                 context._dragging = true;
                 context.graphData.nodeValues().forEach(function (item) {
-                    var pos = layoutEngine.nodePos(item._id);
+                    const pos = layoutEngine.nodePos(item._id);
                     item.move({ x: pos.x, y: pos.y }, transitionDuration);
                     if (pos.width && pos.height && !item.width() && !item.height()) {
                         item
@@ -469,14 +475,14 @@ Graph.prototype.layout = function (_, transitionDuration) {
                     }
                 });
                 context.graphData.edgeValues().forEach(function (item) {
-                    var points = layoutEngine.edgePoints(item);
+                    const points = layoutEngine.edgePoints(item);
                     item
                         .points(points, transitionDuration)
                         ;
                 });
 
                 if (context.applyScaleOnLayout()) {
-                    var vBounds = context.getVertexBounds(layoutEngine);
+                    const vBounds = context.getVertexBounds(layoutEngine);
                     context.shrinkToFit(vBounds, transitionDuration);
                 }
                 this._fixIEMarkers();
@@ -490,22 +496,22 @@ Graph.prototype.layout = function (_, transitionDuration) {
 };
 
 //  Render  ---
-Graph.prototype.update = function (domNode, element) {
+Graph.prototype.update = function (_domNode, _element) {
     SVGWidget.prototype.update.apply(this, arguments);
-    var context = this;
+    const context = this;
 
     //  Create  ---
-    var vertexElements = this.svgV.selectAll("#" + this._id + "V > .graphVertex").data(this.graphData.nodeValues(), function (d) { return d.id(); });
+    const vertexElements = this.svgV.selectAll("#" + this._id + "V > .graphVertex").data(this.graphData.nodeValues(), function (d) { return d.id(); });
     vertexElements.enter().append("g")
         .attr("class", "graphVertex")
         .style("opacity", 1e-6)
         //  TODO:  Events need to be optional  ---
         .on("click.selectionBag", function (d) {
-            context._selection.click(d, d3.event);
+            context._selection.click(d, d3Event);
         })
         .on("click", function (d) {
-            var vertexElement = d3.select(this).select(".graph_Vertex");
-            var selected = false;
+            const vertexElement = d3Select(this).select(".graph_Vertex");
+            let selected = false;
             if (!vertexElement.empty()) {
                 selected = vertexElement.classed("selected");
             }
@@ -514,8 +520,8 @@ Graph.prototype.update = function (domNode, element) {
             });
         })
         .on("dblclick", function (d) {
-            var vertexElement = d3.select(this).select(".graph_Vertex");
-            var selected = false;
+            const vertexElement = d3Select(this).select(".graph_Vertex");
+            let selected = false;
             if (!vertexElement.empty()) {
                 selected = vertexElement.classed("selected");
             }
@@ -526,12 +532,12 @@ Graph.prototype.update = function (domNode, element) {
         .on("mouseover", function (d) {
             if (context._dragging)
                 return;
-            context.vertex_mouseover(d3.select(this), d);
+            context.vertex_mouseover(d3Select(this), d);
         })
         .on("mouseout", function (d) {
             if (context._dragging)
                 return;
-            context.vertex_mouseout(d3.select(this), d);
+            context.vertex_mouseout(d3Select(this), d);
         })
         .each(createV)
         .transition()
@@ -547,40 +553,40 @@ Graph.prototype.update = function (domNode, element) {
             .call(context.drag)
             ;
         if (d.dispatch) {
-            d.dispatch.on("sizestart", function (d, loc) {
-                d.allowResize(context.allowDragging());
+            d.dispatch.on("sizestart", function (d2) {
+                d2.allowResize(context.allowDragging());
                 if (context.allowDragging()) {
                     context._dragging = true;
                 }
             });
-            d.dispatch.on("size", function (d, loc) {
-                context.refreshIncidentEdges(d, false);
+            d.dispatch.on("size", function (d2) {
+                context.refreshIncidentEdges(d2, false);
             });
-            d.dispatch.on("sizeend", function (d, loc) {
+            d.dispatch.on("sizeend", function (d2) {
                 context._dragging = false;
                 if (context.snapToGrid()) {
-                    var snapLoc = d.calcSnap(context.snapToGrid());
-                    d
+                    const snapLoc = d2.calcSnap(context.snapToGrid());
+                    d2
                         .pos(snapLoc[0])
                         .size(snapLoc[1])
                         .render()
                         ;
-                    context.refreshIncidentEdges(d, false);
+                    context.refreshIncidentEdges(d2, false);
                 }
             });
         }
     }
 
-    var edgeElements = this.svgE.selectAll("#" + this._id + "E > .graphEdge").data(this.showEdges() ? this.graphData.edgeValues() : [], function (d) { return d.id(); });
+    const edgeElements = this.svgE.selectAll("#" + this._id + "E > .graphEdge").data(this.showEdges() ? this.graphData.edgeValues() : [], function (d) { return d.id(); });
     edgeElements.enter().append("g")
         .attr("class", "graphEdge")
         .style("opacity", 1e-6)
         .on("click.selectionBag", function (d) {
-            context._selection.click(d, d3.event);
+            context._selection.click(d, d3Event);
         })
         .on("click", function (d) {
-            var edgeElement = d3.select(this).select(".graph_Edge");
-            var selected = false;
+            const edgeElement = d3Select(this).select(".graph_Edge");
+            let selected = false;
             if (!edgeElement.empty()) {
                 selected = edgeElement.classed("selected");
             }
@@ -589,8 +595,8 @@ Graph.prototype.update = function (domNode, element) {
             });
         })
         .on("dblclick", function (d) {
-            var edgeElement = d3.select(this).select(".graph_Edge");
-            var selected = false;
+            const edgeElement = d3Select(this).select(".graph_Edge");
+            let selected = false;
             if (!edgeElement.empty()) {
                 selected = edgeElement.classed("selected");
             }
@@ -601,12 +607,12 @@ Graph.prototype.update = function (domNode, element) {
         .on("mouseover", function (d) {
             if (context._dragging)
                 return;
-            context.edge_mouseover(d3.select(this), d);
+            context.edge_mouseover(d3Select(this), d);
         })
         .on("mouseout", function (d) {
             if (context._dragging)
                 return;
-            context.edge_mouseout(d3.select(this), d);
+            context.edge_mouseout(d3Select(this), d);
         })
         .each(createE)
         .transition()
@@ -689,18 +695,19 @@ Graph.prototype.getLayoutEngine = function () {
                 edgesep: this.hierarchyEdgeSeparation(),
                 ranksep: this.hierarchyRankSeparation()
             });
+        default:
     }
-    return null;//new GraphLayouts.None(this.graphData, this._size.width, this._size.height);
+    return null; // new GraphLayouts.None(this.graphData, this._size.width, this._size.height);
 };
 
 Graph.prototype.getNeighborMap = function (vertex) {
-    var vertices = {};
-    var edges = {};
+    const vertices = {};
+    const edges = {};
 
     if (vertex) {
-        var nedges = this.graphData.nodeEdges(vertex.id());
-        for (var i = 0; i < nedges.length; ++i) {
-            var edge = this.graphData.edge(nedges[i]);
+        const nedges = this.graphData.nodeEdges(vertex.id());
+        for (let i = 0; i < nedges.length; ++i) {
+            const edge = this.graphData.edge(nedges[i]);
             edges[edge.id()] = edge;
             if (edge._sourceVertex.id() !== vertex.id()) {
                 vertices[edge._sourceVertex.id()] = edge._sourceVertex;
@@ -712,14 +719,14 @@ Graph.prototype.getNeighborMap = function (vertex) {
     }
 
     return {
-        vertices: vertices,
-        edges: edges
+        vertices,
+        edges
     };
 };
 
 Graph.prototype.highlightVerticies = function (vertexMap) {
-    var context = this;
-    var vertexElements = this.svgV.selectAll(".graphVertex");
+    const context = this;
+    const vertexElements = this.svgV.selectAll(".graphVertex");
     vertexElements
         .classed("graphVertex-highlighted", function (d) { return !vertexMap || vertexMap[d.id()]; })
         .transition().duration(this.transitionDuration())
@@ -741,8 +748,8 @@ Graph.prototype.highlightVerticies = function (vertexMap) {
 };
 
 Graph.prototype.highlightEdges = function (edgeMap) {
-    var context = this;
-    var edgeElements = this.svgE.selectAll(".graphEdge");
+    const context = this;
+    const edgeElements = this.svgE.selectAll(".graphEdge");
     edgeElements
         .classed("graphEdge-highlighted", function (d) { return !edgeMap || edgeMap[d.id()]; })
         .style("stroke-width", function (o) {
@@ -761,10 +768,10 @@ Graph.prototype.highlightEdges = function (edgeMap) {
     return this;
 };
 
-Graph.prototype.highlightVertex = function (element, d) {
+Graph.prototype.highlightVertex = function (_element, d) {
     if (this.highlightOnMouseOverVertex()) {
         if (d) {
-            var highlight = this.getNeighborMap(d);
+            const highlight = this.getNeighborMap(d);
             highlight.vertices[d.id()] = d;
             this.highlightVerticies(highlight.vertices);
             this.highlightEdges(highlight.edges);
@@ -775,13 +782,13 @@ Graph.prototype.highlightVertex = function (element, d) {
     }
 };
 
-Graph.prototype.highlightEdge = function (element, d) {
+Graph.prototype.highlightEdge = function (_element, d) {
     if (this.highlightOnMouseOverEdge()) {
         if (d) {
-            var vertices = {};
+            const vertices = {};
             vertices[d._sourceVertex.id()] = d._sourceVertex;
             vertices[d._targetVertex.id()] = d._targetVertex;
-            var edges = {};
+            const edges = {};
             edges[d.id()] = d;
             this.highlightVerticies(vertices);
             this.highlightEdges(edges);
@@ -793,9 +800,9 @@ Graph.prototype.highlightEdge = function (element, d) {
 };
 
 Graph.prototype.refreshIncidentEdges = function (d, skipPushMarkers) {
-    var context = this;
+    const context = this;
     this.graphData.nodeEdges(d.id()).forEach(function (id) {
-        var edge = context.graphData.edge(id);
+        const edge = context.graphData.edge(id);
         edge
             .points([], false, skipPushMarkers)
             ;
@@ -803,24 +810,24 @@ Graph.prototype.refreshIncidentEdges = function (d, skipPushMarkers) {
 };
 
 //  Events  ---
-Graph.prototype.graph_selection = function (selection) {
+Graph.prototype.graph_selection = function (_selection) {
 };
 
-Graph.prototype.vertex_click = function (row, col, sel, more) {
+Graph.prototype.vertex_click = function (_row, _col, _sel, more) {
     if (more && more.vertex) {
         more.vertex._parentElement.node().parentNode.appendChild(more.vertex._parentElement.node());
     }
     IGraph.prototype.vertex_click.apply(this, arguments);
 };
 
-Graph.prototype.vertex_dblclick = function (d) {
+Graph.prototype.vertex_dblclick = function () {
 };
 
 Graph.prototype.vertex_mouseover = function (element, d) {
     this.highlightVertex(element, d);
 };
 
-Graph.prototype.vertex_mouseout = function (d, self) {
+Graph.prototype.vertex_mouseout = function () {
     this.highlightVertex(null, null);
 };
 
@@ -828,7 +835,7 @@ Graph.prototype.edge_mouseover = function (element, d) {
     this.highlightEdge(element, d);
 };
 
-Graph.prototype.edge_mouseout = function (d, self) {
+Graph.prototype.edge_mouseout = function () {
     this.highlightEdge(null, null);
 };
 

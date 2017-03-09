@@ -1,6 +1,6 @@
 import { HTMLWidget } from "../common/HTMLWidget";
 import { IInput } from "../api/IInput";
-import "css!./Input";
+import "./Input";
 
 export function Input() {
     HTMLWidget.call(this);

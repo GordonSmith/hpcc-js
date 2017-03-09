@@ -5,28 +5,12 @@
             "name": "Debug Chrome",
             "type": "chrome",
             "request": "launch",
-            "url": "http://localhost:8000/demos/dermatology.html?src/chart/Column",
+            "url": "file:///C:/Users/gordon/git/hpcc-js-viz/test/index.html",
             "sourceMaps": true,
             "webRoot": "${workspaceRoot}/demos",
             "pathMapping": {
-                "/": "${workspaceRoot}"
+                "/": "${workspaceRoot}/"
             }
-        },
-        {
-            "name": "Launch Chrome against localhost, with sourcemaps",
-            "type": "chrome",
-            "request": "launch",
-            "url": "http://localhost:8080",
-            "sourceMaps": true,
-            "webRoot": "${workspaceRoot}"
-        },
-        {
-            "name": "Attach to Chrome, with sourcemaps",
-            "type": "chrome",
-            "request": "attach",
-            "port": 9222,
-            "sourceMaps": true,
-            "webRoot": "${workspaceRoot}"
         }
     ]
 }
