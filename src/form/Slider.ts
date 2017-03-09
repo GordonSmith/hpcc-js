@@ -3,7 +3,7 @@ import { SVGWidget } from "../common/SVGWidget";
 import { IInput } from "../api/IInput";
 import { Axis } from "../chart/Axis";
 import { Icon } from "../common/Icon";
-import "css!./Slider";
+import "./Slider";
 
 export function Slider() {
     SVGWidget.call(this);

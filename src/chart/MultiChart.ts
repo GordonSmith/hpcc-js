@@ -1,4 +1,5 @@
-import * as d3 from "d3";
+import { map as d3Map } from "d3-collection";
+import { INDChart } from "../api/INDChart";
 import { HTMLWidget } from "../common/HTMLWidget";
 import { IGraph } from "../api/IGraph";
 import { INDChart } from "../api/INDChart";
@@ -13,7 +14,7 @@ export function MultiChart() {
 
     this._allCharts = {};
     this._allChartTypes.forEach(function (item) {
-        var newItem = JSON.parse(JSON.stringify(item));
+        const newItem = JSON.parse(JSON.stringify(item));
         newItem.widget = null;
         this._allCharts[item.id] = newItem;
         this._allCharts[item.display] = newItem;
@@ -105,7 +106,7 @@ MultiChart.prototype._allChartTypes =
                 MultiChart.prototype._mapChartTypes.concat(
                     MultiChart.prototype._anyChartTypes
     )))));
-MultiChart.prototype._allMap = d3.map(MultiChart.prototype._allChartTypes, function (item) { return item.family; });
+MultiChart.prototype._allMap = d3Map(MultiChart.prototype._allChartTypes, function (item) { return item.family; });
 MultiChart.prototype._allFamilies = MultiChart.prototype._allMap.keys();
 MultiChart.prototype._allChartTypesMap = {};
 MultiChart.prototype._allChartTypesByClass = {};
@@ -120,7 +121,7 @@ MultiChart.prototype.publish("chartType", "BUBBLE", "set", "Chart Type", MultiCh
 MultiChart.prototype.publish("chart", null, "widget", "Chart", null, { tags: ["Basic"] });
 
 MultiChart.prototype.fields = function (_) {
-    var retVal = HTMLWidget.prototype.fields.apply(this, arguments);
+    const retVal = HTMLWidget.prototype.fields.apply(this, arguments);
     if (this.chart()) {
         if (!arguments.length) return this.chart().fields();
         this.chart().fields(_);
@@ -128,17 +129,17 @@ MultiChart.prototype.fields = function (_) {
     return retVal;
 };
 
-    MultiChart.prototype.columns = function (_, asDefault) {
-    var retVal = HTMLWidget.prototype.columns.apply(this, arguments);
+MultiChart.prototype.columns = function (_, asDefault) {
+    const retVal = HTMLWidget.prototype.columns.apply(this, arguments);
     if (this.chart()) {
         if (!arguments.length) return this.chart().columns();
-            this.chart().columns(_, asDefault);
+        this.chart().columns(_, asDefault);
     }
     return retVal;
 };
 
 MultiChart.prototype.data = function (_) {
-    var retVal = HTMLWidget.prototype.data.apply(this, arguments);
+    const retVal = HTMLWidget.prototype.data.apply(this, arguments);
     if (this.chart()) {
         if (!arguments.length) return this.chart().data();
         this.chart().data(_);
@@ -148,18 +149,18 @@ MultiChart.prototype.data = function (_) {
 
 MultiChart.prototype._origChart = MultiChart.prototype.chart;
 MultiChart.prototype.chart = function (_) {
-    var retVal = MultiChart.prototype._origChart.apply(this, arguments);
+    const retVal = MultiChart.prototype._origChart.apply(this, arguments);
     if (arguments.length) {
-        var context = this;
+        const context = this;
         if (this._allChartTypesByClass[_.classID()]) {
             this.chartType(this._allChartTypesByClass[_.classID()].id);
         } else {
             console.log("Unknown Class ID:  " + _.classID());
         }
-        _.click = function (row, column, selected) {
+        _.click = function (_row, _column, _selected) {
             context.click.apply(context, arguments);
         };
-        _.dblclick = function (row, column, selected) {
+        _.dblclick = function (_row, _column, _selected) {
             context.dblclick.apply(context, arguments);
         };
             _.vertex_click = function (row, column, selected, more) {
@@ -229,11 +230,11 @@ MultiChart.prototype.switchChart = function (callback) {
         console.log("Attempting switch to:  " + this.chartType() + ", before previous switch is complete (" + this._switchingTo + ")");
     }
     this._switchingTo = this.chartType();
-    var oldContent = this.chart();
-    var context = this;
+    const oldContent = this.chart();
+    const context = this;
     this.requireContent(this.chartType(), function (newContent) {
         if (newContent !== oldContent) {
-            var size = context.size();
+            const size = context.size();
             newContent
                 .fields(context.fields())
                 .data(context.data())
@@ -256,9 +257,9 @@ MultiChart.prototype.switchChart = function (callback) {
     });
 };
 
-MultiChart.prototype.update = function (domNode, element) {
+MultiChart.prototype.update = function (_domNode, element) {
     HTMLWidget.prototype.update.apply(this, arguments);
-    var content = element.selectAll(".multiChart").data(this.chart() ? [this.chart()] : [], function (d) { return d._id; });
+    const content = element.selectAll(".multiChart").data(this.chart() ? [this.chart()] : [], function (d) { return d._id; });
     content.enter().append("div")
         .attr("class", "multiChart")
         .each(function (d) {
@@ -266,9 +267,9 @@ MultiChart.prototype.update = function (domNode, element) {
         })
         ;
 
-    var currChart = this.chart();
+    const currChart = this.chart();
     if (currChart) {
-        for (var key in this._chartTypeDefaults) {
+        for (const key in this._chartTypeDefaults) {
             if (currChart[key + "_default"]) {
                 try {
                     currChart[key + "_default"](this._chartTypeDefaults[key]);
@@ -280,7 +281,7 @@ MultiChart.prototype.update = function (domNode, element) {
             }
         }
         this._chartTypeDefaults = {};
-        for (var propKey in this._chartTypeProperties) {
+        for (const propKey in this._chartTypeProperties) {
             if (currChart[propKey]) {
                 try {
                     currChart[propKey](this._chartTypeProperties[propKey]);
@@ -294,7 +295,7 @@ MultiChart.prototype.update = function (domNode, element) {
         this._chartTypeProperties = {};
     }
 
-    var context = this;
+    const context = this;
     content
         .each(function (d) { d.resize(context.size()); })
         ;
@@ -305,7 +306,7 @@ MultiChart.prototype.update = function (domNode, element) {
         ;
 };
 
-MultiChart.prototype.exit = function (domNode, element) {
+MultiChart.prototype.exit = function (_domNode, _element) {
     if (this._chartMonitor) {
         this._chartMonitor.remove();
         delete this._chartMonitor;
@@ -318,8 +319,8 @@ MultiChart.prototype.exit = function (domNode, element) {
 
 MultiChart.prototype.render = function (callback) {
     if (this.chartType() && (!this.chart() || (this.chart().classID() !== this._allCharts[this.chartType()].widgetClass))) {
-        var context = this;
-        var args = arguments;
+        const context = this;
+        const args = arguments;
         this.switchChart(function () {
             HTMLWidget.prototype.render.apply(context, args);
         });

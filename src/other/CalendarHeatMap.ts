@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { HTMLWidget } from "../common/HTMLWidget";
 import * as Palette from "../common/Palette";
 import * as Utility from "../common/Utility";
-import "css!./CalendarHeatMap";
+import "./CalendarHeatMap";
 
 export function CalendarHeatMap(target) {
     HTMLWidget.call(this);

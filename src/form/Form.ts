@@ -3,7 +3,7 @@ import { HTMLWidget } from "../common/HTMLWidget";
 import { SVGWidget } from "../common/SVGWidget";
 import { WidgetArray } from "../common/WidgetArray";
 import { Button } from "./Button";
-import "css!./Form";
+import "./Form";
 
 export function Form() {
     HTMLWidget.call(this);

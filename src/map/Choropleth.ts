@@ -3,7 +3,7 @@ import * as topojson from "topojson";
 import { Layer } from './Layer';
 import * as Palette from '../common/Palette';
 import * as Utility from '../common/Utility';
-import "css!./Choropleth";
+import "./Choropleth";
 
 export function Choropleth() {
     Layer.call(this);

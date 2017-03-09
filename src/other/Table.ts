@@ -3,7 +3,7 @@ import { HTMLWidget } from "../common/HTMLWidget";
 import { Widget } from "../common//Widget";
 import { Paginator } from "./Paginator";
 import * as Utility from "../common/Utility";
-import "css!./Table";
+import "./Table";
 
 export function Table() {
     HTMLWidget.call(this);
@@ -364,7 +364,7 @@ Table.prototype.update = function (domNode, element) {
             return idx < columns.length && !context.isHidden(idx);
         }).map(function (cell, idx) {
             return {
-                    rowInfo: _d,
+                rowInfo: _d,
                 colIdx: idx,
                 cell: cell
             };
@@ -373,18 +373,18 @@ Table.prototype.update = function (domNode, element) {
     cells.enter()
         .append("td")
         .attr("class", "td_" + this.id())
-            .on("click", function (tdContents) {
-                if (tdContents.rowInfo) {
-                    context.click(context.rowToObj(tdContents.rowInfo.row), context.columns()[tdContents.colIdx], context._selectionBag.isSelected(context._createSelectionObject(tdContents.rowInfo.row)));
-                }
-            })
-            .on("dblclick", function (tdContents, idx) {
-                if (tdContents.rowInfo) {
-                    context.dblclick(context.rowToObj(tdContents.rowInfo.row), context.columns()[tdContents.colIdx], context._selectionBag.isSelected(context._createSelectionObject(tdContents.rowInfo.row)));
-                }
-            })
+        .on("click", function (tdContents) {
+            if (tdContents.rowInfo) {
+                context.click(context.rowToObj(tdContents.rowInfo.row), context.columns()[tdContents.colIdx], context._selectionBag.isSelected(context._createSelectionObject(tdContents.rowInfo.row)));
+            }
+        })
+        .on("dblclick", function (tdContents, idx) {
+            if (tdContents.rowInfo) {
+                context.dblclick(context.rowToObj(tdContents.rowInfo.row), context.columns()[tdContents.colIdx], context._selectionBag.isSelected(context._createSelectionObject(tdContents.rowInfo.row)));
+            }
+        })
         .each(function (tdContents, tdIdx) {
-                var alignment = context.getColumnAlignment(tdContents.rowInfo.rowIdx, tdContents.colIdx, tdContents.cell);
+            var alignment = context.getColumnAlignment(tdContents.rowInfo.rowIdx, tdContents.colIdx, tdContents.cell);
             var el = d3.select(this);
             el
                 .style({
@@ -392,7 +392,7 @@ Table.prototype.update = function (domNode, element) {
                     "text-align": alignment,
                     "vertical-align": context.verticalAlign()
                 })
-                    .classed("tr-" + tdContents.rowInfo.rowIdx + "-td-" + tdIdx, true)
+                .classed("tr-" + tdContents.rowInfo.rowIdx + "-td-" + tdIdx, true)
                 ;
         })
         ;
@@ -438,7 +438,7 @@ Table.prototype.update = function (domNode, element) {
             } else {
                 el.selectAll(".div_" + context.id()).remove();
                 el[context.renderHtmlDataCells() ? "html" : "text"](
-                        context.field(tdContents.rowInfo.rowIdx, tdContents.colIdx).transform(tdContents.cell)
+                    context.field(tdContents.rowInfo.rowIdx, tdContents.colIdx).transform(tdContents.cell)
                 );
             }
         })
