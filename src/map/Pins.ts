@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { Layer } from './Layer';
 import * as MapUtility from './Utility';
 import * as Utility from '../common/Utility';
-import "css!./Pins";
+import "./Pins";
 
 export function Pins() {
     Layer.call(this);

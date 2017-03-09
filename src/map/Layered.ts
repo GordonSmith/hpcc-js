@@ -1,7 +1,7 @@
 ﻿import * as d3 from "d3";
 import { SVGWidget } from '../common/SVGWidget';
 import "./Utility"; // For albersUsaPr
-import "css!./Layered";
+import "./Layered";
 
 var zoomFactor = 1 / 4;
 var projectionFactor = (1 << 12) / 2 / Math.PI;

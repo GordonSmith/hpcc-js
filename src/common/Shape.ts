@@ -1,6 +1,7 @@
-import * as d3 from "d3";
+import "./Shape.css";
+import { select as d3Select } from "d3-selection";
 import { SVGWidget } from "./SVGWidget";
-import "css!./Shape";
+import "css!./Shape.css";
 
 export function Shape() {
     SVGWidget.call(this);
@@ -31,27 +32,26 @@ Shape.prototype.radius = function (_) {
 Shape.prototype.intersection = function (pointA, pointB) {
     switch (this.shape()) {
         case "circle":
-            return this.intersectCircle(pointA, pointB);
+            return this.intersectCircle(this.radius(), pointA, pointB);
     }
     return SVGWidget.prototype.intersection.apply(this, arguments);
 };
 
-Shape.prototype.update = function (domNode, element) {
+Shape.prototype.update = function (_domNode, element) {
     var shape = element.selectAll("rect,circle,ellipse").data([this.shape()], function (d) { return d; });
 
     var context = this;
     shape.enter().append(this.shape() === "square" ? "rect" : this.shape())
         .attr("class", "common_Shape")
-        .each(function (d) {
-            var element = d3.select(this);
+        .each(function () {
+            var element = d3Select(this);
             context._tooltipElement = element.append("title");
         })
-        ;
-    shape
+        .merge(shape)
         .style("fill", this.colorFill())
         .style("stroke", this.colorStroke())
-        .each(function (d) {
-            var element = d3.select(this);
+        .each(function () {
+            var element = d3Select(this);
             context._tooltipElement.text(context.tooltip());
             switch (context.shape()) {
                 case "circle":

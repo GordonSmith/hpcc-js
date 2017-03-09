@@ -1,3 +1,6 @@
+declare const AmCharts: any;
+declare const simpleheat: any;
+declare const require: any;
 (function (root) {
     root.hpccsystems = root.hpccsystems || {};
     root.hpccsystems.cache = root.hpccsystems.cache || {};
@@ -18,7 +21,7 @@
                 "text": "../node_modules/requirejs-text/text",
                 "json": "../node_modules/requirejs-plugins/src/json",
 
-                "d3": "../bower_components/d3/d3",
+                "d3": "../node_modules/d3/d3",
                 "c3": "../bower_components/c3/c3",
                 "dagre": "../bower_components/dagre/index",
                 "topojson": "../bower_components/topojson/topojson",
@@ -201,7 +204,7 @@
                 context: context,
                 paths: root.hpccsystems.cache[srcUrl].rawgitPaths
             }));
-        }, function (err) {
+        }, function (_err) {
             callback(root.hpccsystems.require.config({
                 waitSeconds: 30,
                 baseUrl: srcUrl,
@@ -277,7 +280,7 @@
                 }
             }
         }
-    } ());
+    }());
 
     if (!root.hpccsystems.redirect) {
         root.hpccsystems.redirect = (function () {
@@ -362,6 +365,6 @@
                     }
                 }
             };
-        } ());
+        }());
     }
-} (this));
+}(this));

@@ -1,6 +1,6 @@
 import { HTMLWidget } from "../common/HTMLWidget";
 import { Text } from "../common/Text";
-import "css!./Layered";
+import "./Layered";
 
 export function Layered() {
     HTMLWidget.call(this);
