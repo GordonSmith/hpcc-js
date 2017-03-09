@@ -30,8 +30,8 @@ Image.prototype.update = function (domNode, element) {
         .on("load", function (d) {
             img.style(context.calcSize());
         })
-        ;
-    img.style(this.calcSize());
+        .merge(img)
+        .style(this.calcSize());
     img.exit()
         .remove()
         ;

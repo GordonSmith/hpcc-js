@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import { event as d3Event, select as d3Select } from "d3-selection";
 import { Class } from "./Class";
 import { Platform } from "./Platform";
 import { PropertyExt } from "./PropertyExt";
@@ -22,7 +22,7 @@ export function Widget() {
     this._parentElement = null;
     this._parentWidget = null;
 
-    this._element = d3.select();
+    this._element = d3Select(null);
 
     this._renderCount = 0;
 
@@ -89,8 +89,8 @@ Widget.prototype.on = function (eventID, func, stopPropagation) {
     this.overrideMethod(eventID, function (origFunc, args) {
         var retVal;
         if (stopPropagation) {
-            if (d3.event) {
-                d3.event.stopPropagation();
+            if (d3Event) {
+                d3Event.stopPropagation();
             }
         } else {
             retVal = origFunc.apply(context, args);
@@ -107,9 +107,9 @@ Widget.prototype.id = function (_) {
     return this;
 };
 
-    Widget.prototype.columns = function (_, asDefault) {
+Widget.prototype.columns = function (_, asDefault) {
     if (!arguments.length) return this._db.legacyColumns();
-        this._db.legacyColumns(_, asDefault);
+    this._db.legacyColumns(_, asDefault);
     return this;
 };
 
@@ -134,7 +134,7 @@ Widget.prototype.cloneData = function () {
 Widget.prototype.flattenData = function () {
     var retVal = [];
     this.data().forEach(function (row, rowIdx) {
-        this.columns().filter(function (col, idx) { return idx > 0; }).forEach(function (col, idx) {
+        this.columns().filter(function (_col, idx) { return idx > 0; }).forEach(function (_col, idx) {
             var val = row[idx + 1];
             if (val) {
                 var newItem = {
@@ -241,10 +241,9 @@ Widget.prototype.visible = function (_) {
     if (!arguments.length) return this._visible;
     this._visible = _;
     if (this._parentElement) {
-        this._parentElement.style({
-            visibility: this._visible ? null : "hidden",
-            opacity: this._visible ? null : 0
-        });
+        this._parentElement
+            .style("visibility", this._visible ? null : "hidden")
+            .style("opacity", this._visible ? null : 0)
     }
     return this;
 };
@@ -283,7 +282,7 @@ Widget.prototype.toWidget = function (domNode) {
     if (!domNode) {
         return null;
     }
-    var element = d3.select(domNode);
+    var element = d3Select(domNode);
     if (element) {
         var widget = element.datum();
         if (widget && widget instanceof Widget) {
@@ -361,12 +360,10 @@ Widget.prototype.syncOverlay = function () {
             var xScale = newPos.width / this._size.width;
             var yScale = newPos.height / this._size.height;
             this._parentElement
-                .style({
-                    left: newPos.x - (newPos.width / xScale) / 2 + "px",
-                    top: newPos.y - (newPos.height / yScale) / 2 + "px",
-                    width: newPos.width / xScale + "px",
-                    height: newPos.height / yScale + "px"
-                })
+                .style("left", newPos.x - (newPos.width / xScale) / 2 + "px")
+                .style("top", newPos.y - (newPos.height / yScale) / 2 + "px")
+                .style("width", newPos.width / xScale + "px")
+                .style("height", newPos.height / yScale + "px")
                 ;
             var transform = "scale(" + xScale + "," + yScale + ")";
             this._parentElement
@@ -414,16 +411,19 @@ Widget.prototype.render = function (callback) {
             .attr("id", this._id)
             //.attr("opacity", 0.50)  //  Uncomment to debug position offsets  ---
             .each(function (context) {
-                context._element = d3.select(this);
+                context._element = d3Select(this);
                 context.enter(this, context._element);
                 if ((window as any).__hpcc_debug) {
                     context.leakCheck(this);
                 }
             })
-            ;
-        elements
-            .classed(this.classed())
+            .merge(elements)
             .each(function (context) {
+                var element = d3Select(this);
+                var classed = context.classed();
+                for (var key in classed) {
+                    element.classed(key, classed[key]);
+                }
                 context.preUpdate(this, context._element);
                 context.update(this, context._element);
                 context.postUpdate(this, context._element);
@@ -431,7 +431,7 @@ Widget.prototype.render = function (callback) {
             ;
         elements.exit()
             .each(function (context) {
-                d3.select(this).datum(null);
+                d3Select(this).datum(null);
                 context.exit(this, context._element);
             })
             .remove()
@@ -469,7 +469,7 @@ Widget.prototype.render = function (callback) {
             break;
         default:
             var renderCount = widgets.length;
-            widgets.forEach(function (widget, idx) {
+            widgets.forEach(function (widget, _idx) {
                 setTimeout(function () {
                     widget.render(function () {
                         if (--renderCount === 0) {
@@ -487,8 +487,8 @@ Widget.prototype.lazyRender = Widget.prototype.debounce(function () {
     this.render();
 }, 100);
 
-Widget.prototype.enter = function (domNode, element) { };
-Widget.prototype.preUpdate = function (domNode, element) { };
-Widget.prototype.update = function (domNode, element) { };
-Widget.prototype.postUpdate = function (domNode, element) { };
-Widget.prototype.exit = function (domNode, element) { };
+Widget.prototype.enter = function (_domNode, _element) { };
+Widget.prototype.preUpdate = function (_domNode, _element) { };
+Widget.prototype.update = function (_domNode, _element) { };
+Widget.prototype.postUpdate = function (_domNode, _element) { };
+Widget.prototype.exit = function (_domNode, _element) { };

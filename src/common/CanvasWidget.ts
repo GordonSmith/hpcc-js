@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import { select as d3Select } from "d3-selection";
 import { Widget } from "./Widget";
 
 export function CanvasWidget() {
@@ -34,7 +34,7 @@ CanvasWidget.prototype.target = function (_) {
     }
 
     if (this._target) {
-        this._parentElement = d3.select(this._target);
+        this._parentElement = d3Select(this._target);
         if (!this._size.width && !this._size.height) {
             var width = parseFloat(this._parentElement.style("width"));
             var height = parseFloat(this._parentElement.style("height"));

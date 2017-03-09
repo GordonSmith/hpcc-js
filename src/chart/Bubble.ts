@@ -98,10 +98,7 @@ Bubble.prototype.update = function (domNode, element) {
                     ;
             }
         })
-        ;
-
-    //  Update  ---
-    node.transition()
+        .merge(node).transition()
         .attr("opacity", 1)
         .each(function (d) {
             var element = d3.select(this);

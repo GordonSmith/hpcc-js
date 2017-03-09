@@ -1,7 +1,7 @@
 import { SVGWidget } from "./SVGWidget";
 import { Shape } from "./Shape";
 import { FAChar } from "./FAChar";
-import "css!./Icon";
+import "css!./Icon.css";
 
 export function Icon() {
     SVGWidget.call(this);
@@ -97,8 +97,7 @@ Icon.prototype.update = function (domNode, element) {
     image.enter()
         .append("image")
         .attr("xlink:href", this.imageUrl())
-        ;
-    image
+        .merge(image)
         .attr("clip-path", "url(#clip_" + this.id() + "_" + this.shape() + ")")
         .attr("x", -radius)
         .attr("y", -radius)

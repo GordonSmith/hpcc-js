@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import { select as d3Select } from "d3-selection";
 import * as _D3Bullet from "d3-bullet";
 import { HTMLWidget } from "../common/HTMLWidget";
 import * as Utility from "../common/Utility";

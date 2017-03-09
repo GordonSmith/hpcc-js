@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import { select as d3Select } from "d3-selection";
 import { Widget } from "./Widget";
 
 export function HTMLWidget() {
@@ -115,14 +115,12 @@ HTMLWidget.prototype.target = function (_) {
         //  Target is a SVG Node, so create an item in the Overlay and force it "over" the overlay element (cough)  ---
         var overlay = this.locateOverlayNode();
         this._parentElement = overlay.append("div")
-            .style({
-                position: "absolute",
-                top: 0,
-                left: 0,
-                overflow: "hidden"
-            })
+            .style("position", "absolute")
+            .style("top", 0)
+            .style("left", 0)
+            .style("overflow", "hidden")
             ;
-        this._overlayElement = d3.select(this._target);
+        this._overlayElement = d3Select(this._target);
 
         var context = this;
         this.oldPos = null;
@@ -136,7 +134,7 @@ HTMLWidget.prototype.target = function (_) {
             domNode = domNode.parentNode;
         }
     } else if (this._target) {
-        this._parentElement = d3.select(this._target);
+        this._parentElement = d3Select(this._target);
         if (!this._size.width && !this._size.height) {
             var width = parseFloat(this._parentElement.style("width"));
             var height = parseFloat(this._parentElement.style("height"));
@@ -145,7 +143,7 @@ HTMLWidget.prototype.target = function (_) {
                 height: height
             });
         }
-        this._parentElement = d3.select(this._target).append("div");
+        this._parentElement = d3Select(this._target).append("div");
     } else {
         this.exit();
     }
@@ -155,19 +153,19 @@ HTMLWidget.prototype.target = function (_) {
 HTMLWidget.prototype.postUpdate = function (domNode, element) {
     Widget.prototype.postUpdate.apply(this, arguments);
     if (this._drawStartPos === "origin") {
-        this._element.style({
-            position: "relative",
-            left: this._pos.x + "px",
-            top: this._pos.y + "px"
-        });
+        this._element
+            .style("position", "relative")
+            .style("left", this._pos.x + "px")
+            .style("top", this._pos.y + "px")
+            ;
     } else {
         var bbox = this.getBBox(true);
-        this._element.style({
-            position: "relative",
-            float: "left",
-            left: this._pos.x + (this._size.width - bbox.width) / 2 + "px",
-            top: this._pos.y + (this._size.height - bbox.height) / 2 + "px"
-        });
+        this._element
+            .style("position", "relative")
+            .style("float", "left")
+            .style("left", this._pos.x + (this._size.width - bbox.width) / 2 + "px")
+            .style("top", this._pos.y + (this._size.height - bbox.height) / 2 + "px")
+            ;
     }
 };
 

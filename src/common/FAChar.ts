@@ -1,7 +1,7 @@
 import { SVGWidget } from "./SVGWidget";
 import { Text } from "./Text";
-import "css!font-awesome";
-import "css!./FAChar";
+import "css!font-awesome/css/font-awesome.css";
+import "css!./FAChar.css";
 
 export function FAChar() {
     SVGWidget.call(this);

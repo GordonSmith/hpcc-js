@@ -1,7 +1,7 @@
 import { SVGWidget } from "./SVGWidget";
 import { IList } from "./IList";
 import { TextBox } from "./TextBox";
-import "css!./List";
+import "css!./List.css";
 
 export function List() {
     SVGWidget.call(this);
@@ -21,7 +21,7 @@ List.prototype.update = function (domNode, element) {
     var context = this;
 
     var line = element.selectAll(".line").data(this.data(), function (d) { return d; });
-    line.enter().append("g")
+    var lineEnter = line.enter().append("g")
         .attr("class", "line")
         .each(function (d) {
             var newTextBox = new TextBox()
@@ -58,7 +58,7 @@ List.prototype.update = function (domNode, element) {
     }
 
     var yPos = -listHeight / 2;// + lineHeight / 2;
-    line.each(function (d) {
+    lineEnter.merge(line).each(function (d) {
         var widget = context._listWidgets[d];
         var bbox = widget.getBBox();
         widget

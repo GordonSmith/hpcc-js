@@ -1,7 +1,18 @@
-import * as d3 from 'd3';
-import { Class } from './Class';
-import { PropertyExt } from './PropertyExt';
-import * as Utility from './Utility';
+import { max as d3Max, mean as d3Mean, min as d3Min, sum as d3Sum } from "d3-array";
+import { map as d3Map, nest as d3Nest } from "d3-collection";
+import { csvFormatRows as d3CsvFormatRows, csvParse as d3CsvParse, tsvParse as d3TsvParse, tsvFormatRows as d3TsvFormatRows } from "d3-dsv";
+import { format as d3Format } from "d3-format";
+import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";
+import { Class } from "./Class";
+import { PropertyExt } from "./PropertyExt";
+import * as Utility from "./Utility";
+
+const d3Aggr = {
+    min: d3Min,
+    max: d3Max,
+    mean: d3Mean,
+    sum: d3Sum
+};
 
 //  Field  ---
 export function Field(id?) {
@@ -106,9 +117,9 @@ Field.prototype.formatter = function (format) {
     switch (this.type()) {
         case "time":
         case "date":
-            return d3.time.format(format);
+            return d3TimeFormat(format);
     }
-    retVal = d3.format(format);
+    retVal = d3Format(format);
     retVal.parse = function (_) {
         return _;
     };
@@ -148,13 +159,13 @@ Grid.prototype.resetColumns = function (_) {
     }));
 };
 
-    Grid.prototype.legacyColumns = function (_, asDefault) {
+Grid.prototype.legacyColumns = function (_, asDefault) {
     if (!arguments.length) return this.row(0);
-        this.row(0, _, asDefault);
+    this.row(0, _, asDefault);
     return this;
 };
 
-Grid.prototype.legacyData = function (_, clone) {
+Grid.prototype.legacyData = function (_, _clone) {
     return Grid.prototype.data.apply(this, arguments);
 };
 
@@ -223,16 +234,16 @@ Grid.prototype._dataCalcChecksum = function (idx) {
     return this;
 };
 
-    Grid.prototype.row = function (row, _, asDefault) {
+Grid.prototype.row = function (row, _, asDefault) {
     if (arguments.length < 2) return row === 0 ? this.fields().map(function (d) { return d.label(); }) : this._data[row - 1];
     if (row === 0) {
         var fieldsArr = this.fields();
         this.fields(_.map(function (label, idx) {
-                if (asDefault) {
-                    return (fieldsArr[idx] || new Field()).label_default(label);
-                } else {
-                    return (fieldsArr[idx] || new Field()).label(label);
-                }
+            if (asDefault) {
+                return (fieldsArr[idx] || new Field()).label_default(label);
+            } else {
+                return (fieldsArr[idx] || new Field()).label(label);
+            }
         }, this));
     } else {
         this._data[row - 1] = _;
@@ -244,14 +255,14 @@ Grid.prototype._dataCalcChecksum = function (idx) {
 Grid.prototype.rows = function (_) {
     if (!arguments.length) return [this.row(0)].concat(this._data);
     this.row(0, _[0]);
-    this._data = _.filter(function (row, idx) { return idx > 0; });
+    this._data = _.filter(function (_row, idx) { return idx > 0; });
     this._dataCalcChecksum();
     return this;
 };
 
 //  Column Access  ---
 Grid.prototype.column = function (col, _) {
-    if (arguments.length < 2) return [this.fields()[col].label()].concat(this._data.map(function (row, idx) { return row[col]; }));
+    if (arguments.length < 2) return [this.fields()[col].label()].concat(this._data.map(function (row, _idx) { return row[col]; }));
     _.forEach(function (d, idx) {
         if (idx === 0) {
             this.fields()[col] = new Field().label(_[0]);
@@ -264,7 +275,7 @@ Grid.prototype.column = function (col, _) {
 };
 
 Grid.prototype.columnData = function (col, _) {
-    if (arguments.length < 2) return this._data.map(function (row, idx) { return row[col]; });
+    if (arguments.length < 2) return this._data.map(function (row, _idx) { return row[col]; });
     _.forEach(function (d, idx) {
         this._data[idx][col] = d;
         this._dataCalcChecksum(idx);
@@ -273,10 +284,10 @@ Grid.prototype.columnData = function (col, _) {
 };
 
 Grid.prototype.columns = function (_) {
-    if (!arguments.length) return this.fields().map(function (col, idx) {
+    if (!arguments.length) return this.fields().map(function (_col, idx) {
         return this.column(idx);
     }, this);
-    _.forEach(function (col, idx) {
+    _.forEach(function (_col, idx) {
         this.column(idx, _[idx]);
     }, this);
     return this;
@@ -387,7 +398,7 @@ Grid.prototype.hipieMappings = function (columns, missingDataString) {
                 });
             } else {
                 console.log("Unable to locate '" + mapping + "' in server response.");
-                fieldIndicies.push(function (row) {
+                fieldIndicies.push(function (_row) {
                     return missingDataString;
                 });
             }
@@ -415,13 +426,13 @@ Grid.prototype.hipieMappings = function (columns, missingDataString) {
         var nested = this.rollup(rollupBy, function (leaves) {
             switch (mapping.function) {
                 case "SUM":
-                    return d3.sum(leaves, function (d) { return d[rollupValueIdx[0]]; });
+                    return d3Sum(leaves, function (d) { return d[rollupValueIdx[0]]; });
                 case "AVE":
-                    return d3.mean(leaves, function (d) { return d[rollupValueIdx[0]]; });
+                    return d3Mean(leaves, function (d) { return d[rollupValueIdx[0]]; });
                 case "MIN":
-                    return d3.min(leaves, function (d) { return d[rollupValueIdx[0]]; });
+                    return d3Min(leaves, function (d) { return d[rollupValueIdx[0]]; });
                 case "MAX":
-                    return d3.max(leaves, function (d) { return d[rollupValueIdx[0]]; });
+                    return d3Max(leaves, function (d) { return d[rollupValueIdx[0]]; });
             }
             console.log("Unsupported Mapping Function:  " + mapping.function);
             return 0;
@@ -449,9 +460,18 @@ Grid.prototype.hipieMappings = function (columns, missingDataString) {
 //  Views  ---
 function LegacyView(grid) {
     this._grid = grid;
-    d3.rebind(this, this._grid, "checksum", "fields");
 }
 LegacyView.prototype.constructor = LegacyView;
+
+LegacyView.prototype.checksum = function () {
+    const value = this._grid.on.apply(this._grid, arguments);
+    return value === this._grid ? this : value;
+};
+
+LegacyView.prototype.fields = function () {
+    const value = this._grid.on.apply(this._grid, arguments);
+    return value === this._grid ? this : value;
+};
 
 LegacyView.prototype.grid = function () {
     return this._grid;
@@ -517,7 +537,7 @@ RollupView.prototype.nest = function () {
     if (this._nestChecksum !== this._grid.checksum()) {
         this._nestChecksum = this._grid.checksum();
 
-        var nest = d3.nest();
+        var nest = d3Nest();
         this._columnIndicies.forEach(function (idx) {
             nest.key(function (d) {
                 return d[idx];
@@ -536,7 +556,7 @@ RollupView.prototype.map = function (opts) {
     return this.nest().map(this._whichData(opts));
 };
 RollupView.prototype.d3Map = function (opts) {
-    return this.nest().map(this._whichData(opts), d3.map);
+    return this.nest().map(this._whichData(opts), d3Map);
 };
 RollupView.prototype._walkData = function (entries, prevRow) {
     prevRow = prevRow || [];
@@ -579,7 +599,7 @@ Grid.prototype.aggregateView = function (columnIndicies, aggrType, aggrColumn, a
                 var columns = context.legacyColumns();
                 var colIdx = columns.indexOf(aggrColumn);
                 var deltaIdx = columns.indexOf(aggrDeltaColumn);
-                values.aggregate = d3[aggrType](values, function (value) {
+                values.aggregate = d3Aggr[aggrType](values, function (value) {
                     return (+value[colIdx] - (deltaIdx >= 0 ? +value[deltaIdx] : 0)) / (deltaIdx >= 0 ? +value[deltaIdx] : 1);
                 });
                 return values;
@@ -588,11 +608,11 @@ Grid.prototype.aggregateView = function (columnIndicies, aggrType, aggrColumn, a
 };
 
 //  Nesting  ---
-Grid.prototype._nest = function (columnIndicies, rollup) {
+Grid.prototype._nest = function (columnIndicies) {
     if (!(columnIndicies instanceof Array)) {
         columnIndicies = [columnIndicies];
     }
-    var nest = d3.nest();
+    var nest = d3Nest();
     columnIndicies.forEach(function (idx) {
         nest.key(function (d) {
             return d[idx];
@@ -690,7 +710,7 @@ Grid.prototype.jsonObj = function (_) {
         return retVal;
     }, this);
     this.clear();
-    this.data(_.map(function (row, idx) {
+    this.data(_.map(function (row) {
         var retVal = [];
         for (var key in row) {
             var colIdx = this.row(0).indexOf(key);
@@ -712,14 +732,14 @@ Grid.prototype.json = function (_) {
 };
 
 Grid.prototype.csv = function (_) {
-    if (!arguments.length) return d3.csv.formatRows(this.grid());
-    this.jsonObj(d3.csv.parse(_));
+    if (!arguments.length) return d3CsvFormatRows(this.grid());
+    this.jsonObj(d3CsvParse(_));
     return this;
 };
 
 Grid.prototype.tsv = function (_) {
-    if (!arguments.length) return d3.tsv.formatRows(this.grid());
-    this.jsonObj(d3.tsv.parse(_));
+    if (!arguments.length) return d3TsvFormatRows(this.grid());
+    this.jsonObj(d3TsvParse(_));
     return this;
 };
 
@@ -757,7 +777,7 @@ dateFormats.forEach(function (d) {
 });
 function formatPicker(formats, cell) {
     for (var i = 0; i < formats.length; ++i) {
-        var date = d3.time.format(formats[i]).parse(cell);
+        var date = d3TimeParse(formats[i])(cell);
         if (date) {
             lastFoundFormat = formats[i];
             return formats[i];

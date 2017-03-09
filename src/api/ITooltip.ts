@@ -1,43 +1,43 @@
-import * as d3 from "d3";
-import * as d3Tip from "d3-tip";
+import { format as d3Format } from "d3-format";
+import { tip } from "d3-tip";
 
 import { Widget } from "../common/Widget";
-import "css!./ITooltip";
+import "css!./ITooltip.css";
 
 export function ITooltip() {
     Widget.call(this);
 
-    this._valueFormatter = d3.format(this.tooltipValueFormat());
+    this._valueFormatter = d3Format(this.tooltipValueFormat());
 
     if (this.layerEnter) {
         var layerEnter = this.layerEnter;
-        this.layerEnter = function (base, svgElement, domElement) {
+        this.layerEnter = function (_base, svgElement, _domElement) {
             this.tooltipEnter(svgElement);
             layerEnter.apply(this, arguments);
         };
         var layerUpdate = this.layerUpdate;
-        this.layerUpdate = function (base) {
+        this.layerUpdate = function (_base) {
             layerUpdate.apply(this, arguments);
             this.tooltipUpdate();
         };
         var layerExit = this.layerExit;
-        this.layerExit = function (base) {
+        this.layerExit = function (_base) {
             layerExit.apply(this, arguments);
             this.tooltipExit();
         };
     } else {
         var enter = this.enter;
-        this.enter = function (domNode, element) {
+        this.enter = function (_domNode, element) {
             this.tooltipEnter(element);
             enter.apply(this, arguments);
         };
         var update = this.update;
-        this.update = function (domNode, element) {
+        this.update = function (_domNode, _element) {
             update.apply(this, arguments);
             this.tooltipUpdate();
         };
         var exit = this.exit;
-        this.exit = function (domNode, element) {
+        this.exit = function (_domNode, _element) {
             exit.apply(this, arguments);
             this.tooltipExit();
         };
@@ -55,9 +55,9 @@ ITooltip.prototype.publish("tooltipOffset", 8, "number", "Offset from the cursor
 
 ITooltip.prototype.tooltipEnter = function (element) {
     var context = this;
-    this.tooltip = d3Tip()
+    this.tooltip = tip()
         .attr("class", "d3-tip")
-        .offset(function (d) {
+        .offset(function () {
             switch (context.tooltip.direction()()) {
                 case "e":
                     return [0, context.tooltipOffset()];
@@ -87,7 +87,7 @@ var tooltipValueFormat = ITooltip.prototype.tooltipValueFormat;
 ITooltip.prototype.tooltipValueFormat = function (_) {
     var retVal = tooltipValueFormat.apply(this, arguments);
     if (arguments.length) {
-        this._valueFormatter = d3.format(_);
+        this._valueFormatter = d3Format(_);
     }
     return retVal;
 };

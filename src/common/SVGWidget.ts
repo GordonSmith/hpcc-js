@@ -1,4 +1,5 @@
-import * as d3 from "d3";
+import { select as d3Select } from "d3-selection";
+
 import { Widget } from "./Widget";
 import { Transition } from "./Transition";
 
@@ -36,14 +37,12 @@ SVGWidget.prototype.size = function (_) {
     return retVal;
 };
 
-SVGWidget.prototype.resize = function (size) {
+SVGWidget.prototype.resize = function () {
     var retVal = Widget.prototype.resize.apply(this, arguments);
     if (this._parentRelativeDiv) {
         this._parentRelativeDiv
-            .style({
-                width: this._size.width + "px",
-                height: this._size.height + "px"
-            })
+            .style("width", this._size.width + "px")
+            .style("height", this._size.height + "px")
             ;
         switch (this._drawStartPos) {
             case "origin":
@@ -82,7 +81,7 @@ SVGWidget.prototype.target = function (_) {
     }
 
     if (this._target instanceof SVGElement) {
-        this._parentElement = d3.select(this._target);
+        this._parentElement = d3Select(this._target);
         this._parentWidget = this._parentElement.datum();
         if (!this._parentWidget || this._parentWidget._id === this._id) {
             this._parentWidget = this.locateParentWidget(this._target.parentNode);
@@ -90,24 +89,18 @@ SVGWidget.prototype.target = function (_) {
         this._parentOverlay = this.locateOverlayNode();
     } else if (this._target) {
         //  Target is a DOM Node, so create a SVG Element  ---
-        this._parentRelativeDiv = d3.select(this._target).append("div")
-            .style({
-                position: "relative"
-            })
+        this._parentRelativeDiv = d3Select(this._target).append("div")
+            .style("position", "relative")
             ;
         this._parentElement = this._parentRelativeDiv.append("svg")
-            .style({
-                position: "absolute",
-                top: 0,
-                left: 0
-            })
+            .style("position", "absolute")
+            .style("top", 0)
+            .style("left", 0)
             ;
         this._parentOverlay = this._parentRelativeDiv.append("div")
-            .style({
-                position: "absolute",
-                top: 0,
-                left: 0
-            })
+            .style("position", "absolute")
+            .style("top", 0)
+            .style("left", 0)
             ;
         this.resize(this._size);
     } else {
@@ -116,15 +109,15 @@ SVGWidget.prototype.target = function (_) {
     return this;
 };
 
-SVGWidget.prototype.enter = function (domNode, element) {
+SVGWidget.prototype.enter = function (_domNode, _element) {
     Widget.prototype.enter.apply(this, arguments);
 };
 
-SVGWidget.prototype.update = function (domNode, element) {
+SVGWidget.prototype.update = function (_domNode, _element) {
     Widget.prototype.update.apply(this, arguments);
 };
 
-SVGWidget.prototype.postUpdate = function (domNode, element) {
+SVGWidget.prototype.postUpdate = function (_domNode, _element) {
     Widget.prototype.postUpdate.apply(this, arguments);
     if (this._drawStartPos === "origin" && this._target instanceof SVGElement) {
         this._element.attr("transform", "translate(" + (this._pos.x - this._size.width / 2) + "," + (this._pos.y - this._size.height / 2) + ")scale(" + this._scale + ")");
@@ -133,7 +126,7 @@ SVGWidget.prototype.postUpdate = function (domNode, element) {
     }
 };
 
-SVGWidget.prototype.exit = function (domNode, element) {
+SVGWidget.prototype.exit = function (_domNode, _element) {
     if (this._parentRelativeDiv) {
         this._parentOverlay.remove();
         this._parentElement.remove();
@@ -305,26 +298,26 @@ SVGWidget.prototype.distance = function (pointA, pointB) {
 };
 
 //  IE Fixers  ---
-SVGWidget.prototype._pushMarkers = function (element, d) {
+SVGWidget.prototype._pushMarkers = function (element) {
     if (this.svgMarkerGlitch) {
         element = element || this._element;
         element.selectAll("path[marker-start],path[marker-end]")
-            .attr("fixme-start", function (d) { return this.getAttribute("marker-start"); })
-            .attr("fixme-end", function (d) { return this.getAttribute("marker-end"); })
+            .attr("fixme-start", function () { return this.getAttribute("marker-start"); })
+            .attr("fixme-end", function () { return this.getAttribute("marker-end"); })
             .attr("marker-start", null)
             .attr("marker-end", null)
             ;
     }
 };
 
-SVGWidget.prototype._popMarkers = function (element, d) {
+SVGWidget.prototype._popMarkers = function (element) {
     if (this.svgMarkerGlitch) {
         element = element || this._element;
         element.selectAll("path[fixme-start],path[fixme-end]")
-            .attr("marker-start", function (d) {
+            .attr("marker-start", function () {
                 return this.getAttribute("fixme-start");
             })
-            .attr("marker-end", function (d) { return this.getAttribute("fixme-end"); })
+            .attr("marker-end", function () { return this.getAttribute("fixme-end"); })
             .attr("fixme-start", null)
             .attr("fixme-end", null)
             ;
