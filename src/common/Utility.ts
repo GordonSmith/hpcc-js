@@ -1,37 +1,41 @@
-import { select as d3Select } from "d3-selection";
 import { ascending as d3Ascending, descending as d3Descending } from "d3-array";
+import { select as d3Select } from "d3-selection";
 import { timeFormat as d3TimeFormat } from "d3-time-format";
 
 function _naturalSort(a, b, order, idx, sortCaseSensitive) {
-    var re = /(^([+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)?$|^0x[0-9a-f]+$|\d+)/gi,
-        sre = /(^[ ]*|[ ]*$)/g,
-        dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/,
-        ore = /^0/,
-        i = function (s) { return !sortCaseSensitive && ("" + s).toLowerCase() || "" + s; },
-        // convert all to strings strip whitespace
-        x = i(idx ? a[idx] : a).replace(sre, "") || "",
-        y = i(idx ? b[idx] : b).replace(sre, "") || "",
-        // chunk/tokenize
-        xN = x.replace(re, "\0$1\0").replace(/\0$/, "").replace(/^\0/, "").split("\0"),
-        yN = y.replace(re, "\0$1\0").replace(/\0$/, "").replace(/^\0/, "").split("\0"),
-        // numeric or date detection
-        xD = (xN.length !== 1 && x.match(dre) && Date.parse(x)),
-        yD = xD && y.match(dre) && Date.parse(y) || null,
-        oFxNcL, oFyNcL;
+    const re = /(^([+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)?$|^0x[0-9a-f]+$|\d+)/gi;
+    const sre = /(^[ ]*|[ ]*$)/g;
+    const dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/;
+    const ore = /^0/;
+    const i = function (s) { return !sortCaseSensitive && ("" + s).toLowerCase() || "" + s; };
+    // convert all to strings strip whitespace
+    const x = i(idx ? a[idx] : a).replace(sre, "") || "";
+    const y = i(idx ? b[idx] : b).replace(sre, "") || "";
+    // chunk/tokenize
+    const xN = x.replace(re, "\0$1\0").replace(/\0$/, "").replace(/^\0/, "").split("\0");
+    const yN = y.replace(re, "\0$1\0").replace(/\0$/, "").replace(/^\0/, "").split("\0");
+    // numeric or date detection
+    const xD = (xN.length !== 1 && x.match(dre) && Date.parse(x));
+    const yD = xD && y.match(dre) && Date.parse(y) || null;
+    let oFxNcL;
+    let oFyNcL;
     // first try and sort Hex codes or Dates
     if (yD) {
-        if (xD < yD) { return order === "ascending" ? -1 : 1; }
-        else if (xD > yD) { return order === "ascending" ? 1 : -1; }
+        if (xD < yD) {
+            return order === "ascending" ? -1 : 1;
+        } else if (xD > yD) {
+            return order === "ascending" ? 1 : -1;
+        }
     }
     // natural sorting through split numeric strings and default strings
-    for (var cLoc = 0, numS = Math.max(xN.length, yN.length); cLoc < numS; cLoc++) {
+    for (let cLoc = 0, numS = Math.max(xN.length, yN.length); cLoc < numS; cLoc++) {
         // find floats not starting with "0", string or 0 if not defined (Clint Priest)
         oFxNcL = !(xN[cLoc] || "").match(ore) && parseFloat(xN[cLoc]) || xN[cLoc] || 0;
         oFyNcL = !(yN[cLoc] || "").match(ore) && parseFloat(yN[cLoc]) || yN[cLoc] || 0;
         // handle numeric vs string comparison - number < string - (Kyle Adams)
-        if (isNaN(oFxNcL) !== isNaN(oFyNcL)) { return (isNaN(oFxNcL)) ? 1 : -1; }
-        // rely on string comparison if different types - i.e. "02" < 2 != "02" < "2"
-        else if (typeof oFxNcL !== typeof oFyNcL) {
+        if (isNaN(oFxNcL) !== isNaN(oFyNcL)) {
+            return (isNaN(oFxNcL)) ? 1 : -1;
+        } else if (typeof oFxNcL !== typeof oFyNcL) { // rely on string comparison if different types - i.e. "02" < 2 != "02" < "2"
             oFxNcL += "";
             oFyNcL += "";
         }
@@ -47,14 +51,14 @@ export function SelectionBag() {
 }
 
 SelectionBag.prototype.clear = function () {
-    for (var key in this.items) {
+    for (const key in this.items) {
         this.items[key].element().classed("selected", false);
     }
     this.items = {};
 };
 
 SelectionBag.prototype.isEmpty = function () {
-    for (var _key in this.items) { // jshint ignore:line
+    for (const _key in this.items) { // jshint ignore:line
         return false;
     }
     return true;
@@ -75,8 +79,8 @@ SelectionBag.prototype.isSelected = function (item) {
 };
 
 SelectionBag.prototype.get = function () {
-    var retVal = [];
-    for (var key in this.items) {
+    const retVal = [];
+    for (const key in this.items) {
         retVal.push(this.items[key]);
     }
     return retVal;
@@ -117,10 +121,10 @@ SimpleSelection.prototype.skipBringToTop = function (_) {
     return this;
 };
 SimpleSelection.prototype.enter = function (elements) {
-    var context = this;
+    const context = this;
     elements
         .each(function (d) {
-            var selected = context._initialSelection ? context._initialSelection.indexOf(JSON.stringify(d)) >= 0 : false;
+            const selected = context._initialSelection ? context._initialSelection.indexOf(JSON.stringify(d)) >= 0 : false;
             d3Select(this)
                 .classed("selected", selected)
                 .classed("deselected", !selected)
@@ -130,8 +134,8 @@ SimpleSelection.prototype.enter = function (elements) {
             if (!context._skipBringToTop) {
                 this.parentNode.appendChild(this);
             }
-            var element = d3Select(this);
-            var wasSelected = element.classed("selected");
+            const element = d3Select(this);
+            const wasSelected = element.classed("selected");
             context._widgetElement.selectAll(".selected")
                 .classed("selected", false)
                 .classed("deselected", true)
@@ -160,7 +164,7 @@ SimpleSelection.prototype.selected = function (domNode) {
 };
 SimpleSelection.prototype.selection = function (_) {
     if (!arguments.length) {
-        var retVal = [];
+        const retVal = [];
         if (this._widgetElement) {
             this._widgetElement.selectAll(".selected")
                 .each(function (d) { retVal.push(JSON.stringify(d)); })
@@ -171,7 +175,7 @@ SimpleSelection.prototype.selection = function (_) {
     if (this._widgetElement) {
         this._widgetElement.selectAll(".selected,.deselected")
             .each(function (d) {
-                var selected = _.indexOf(JSON.stringify(d)) >= 0;
+                const selected = _.indexOf(JSON.stringify(d)) >= 0;
                 d3Select(this)
                     .classed("selected", selected)
                     .classed("deselected", !selected)
@@ -205,8 +209,8 @@ SimpleSelectionMixin.prototype.deserializeState = function (state) {
     return this;
 };
 
-var perf: any = window.performance;
-var now = perf && (perf.now || perf.mozNow || perf.msNow || perf.oNow || perf.webkitNow);
+const perf: any = window.performance;
+const now = perf && (perf.now || perf.mozNow || perf.msNow || perf.oNow || perf.webkitNow);
 
 export function naturalSort(data, order, idx, sortCaseSensitive) {
     return data.slice(0).sort(function (a, b) {
@@ -217,9 +221,9 @@ export function naturalSort(data, order, idx, sortCaseSensitive) {
 export function multiSort(data, sortBy) {
     if (sortBy && sortBy.length) {
         data.sort(function (l, r) {
-            for (var i = 0; i < sortBy.length; ++i) {
-                var lVal = l[sortBy[i].idx];
-                var rVal = r[sortBy[i].idx];
+            for (let i = 0; i < sortBy.length; ++i) {
+                const lVal = l[sortBy[i].idx];
+                const rVal = r[sortBy[i].idx];
                 if (lVal !== rVal) {
                     return sortBy[i].reverse ? d3Descending(lVal, rVal) : d3Ascending(lVal, rVal);
                 }
@@ -233,11 +237,11 @@ export function multiSort(data, sortBy) {
 export const Selection = SelectionBag;
 
 export function urlParams() {
-    var def = window.location.search.split("?")[1];
-    var retVal = {};
+    const def = window.location.search.split("?")[1];
+    const retVal = {};
     if (def) {
         def.split("&").forEach(function (param) {
-            var paramParts = param.split("=");
+            const paramParts = param.split("=");
             switch (paramParts.length) {
                 case 1:
                     retVal[decodeURIComponent(paramParts[0])] = undefined;
@@ -254,12 +258,12 @@ export function urlParams() {
 }
 
 export function endsWith(str, searchStr, pos) {
-    var subjectString = str.toString();
+    const subjectString = str.toString();
     if (typeof pos !== "number" || !isFinite(pos) || Math.floor(pos) !== pos || pos > subjectString.length) {
         pos = subjectString.length;
     }
     pos -= searchStr.length;
-    var lastIndex = subjectString.indexOf(searchStr, pos);
+    const lastIndex = subjectString.indexOf(searchStr, pos);
     return lastIndex !== -1 && lastIndex === pos;
 }
 
@@ -278,7 +282,7 @@ export function d3ArrayAdapter(array) {
         },
         querySelectorAll: function (selectors) {
             if (selectors) throw "unsupported";
-            var context = this;
+            const context = this;
             return array.map(function (row, idx) {
                 return {
                     ownerDocument: context.ownerDocument,
@@ -295,8 +299,8 @@ export function d3ArrayAdapter(array) {
             return node;
         },
         insertBefore: function (node, referenceNode) {
-            var idx = array.indexOf(node.__data__);
-            var refIdx = array.indexOf(referenceNode.__data__);
+            const idx = array.indexOf(node.__data__);
+            const refIdx = array.indexOf(referenceNode.__data__);
             if (idx > refIdx) {
                 array.splice(refIdx, 0, array.splice(idx, 1)[0]);
             } else if (idx < refIdx - 1) {
@@ -312,14 +316,14 @@ export function d3ArrayAdapter(array) {
 }
 
 export function downloadBlob(format, blob, id?, ext?) {
-    var currentdate = new Date();
-    var timeFormat = d3TimeFormat("%Y-%m-%dT%H_%M_%S");
-    var now = timeFormat(currentdate);
-    id = id || "data" + "_" + now + "." + format.toLowerCase();
+    const currentdate = new Date();
+    const timeFormat = d3TimeFormat("%Y-%m-%dT%H_%M_%S");
+    const now2 = timeFormat(currentdate);
+    id = id || "data" + "_" + now2 + "." + format.toLowerCase();
 
-    var filename = id + (ext ? "." + ext : "");
+    const filename = id + (ext ? "." + ext : "");
 
-    var mimeType = "";
+    let mimeType = "";
     switch (format) {
         case "TSV":
             mimeType = "text/tab-seperated-values";
@@ -331,7 +335,7 @@ export function downloadBlob(format, blob, id?, ext?) {
             mimeType = "text/csv";
     }
 
-    var a = document.createElement("a");
+    let a = document.createElement("a");
     if (navigator.msSaveBlob) { // IE10+
         a = null;
         return navigator.msSaveBlob(new Blob([blob], { type: mimeType }), filename);
@@ -346,7 +350,7 @@ export function downloadBlob(format, blob, id?, ext?) {
         return true;
     } else { // old chrome and FF:
         a = null;
-        var frame = document.createElement("iframe");
+        const frame = document.createElement("iframe");
         document.body.appendChild(frame);
         frame.src = "data:" + mimeType + "," + encodeURIComponent(blob);
 
@@ -361,8 +365,8 @@ export function widgetPath(classID) {
 }
 export function parseClassID(classID, prefix) {
     prefix = prefix || "..";
-    var parts = classID.split(".");
-    var classParts = parts[0].split("_");
+    const parts = classID.split(".");
+    const classParts = parts[0].split("_");
     return {
         path: prefix + "/" + parts[0].split("_").join("/"),
         widgetID: classParts.length > 1 ? classParts[1] : null,
@@ -379,8 +383,8 @@ export function checksum(s) {
         default:
             s = "" + s;
     }
-    var chk = 0x12345678;
-    for (var i = 0, l = s.length; i < l; ++i) {
+    let chk = 0x12345678;
+    for (let i = 0, l = s.length; i < l; ++i) {
         chk += (s.charCodeAt(i) * (i + 1));
     }
     return (chk & 0xffffffff).toString(16);
@@ -390,15 +394,16 @@ export function getTime() {
 }
 export function mixin(dest, _sources) {
     dest = dest || {};
-    for (var i = 1, l = arguments.length; i < l; i++) {
+    for (let i = 1, l = arguments.length; i < l; i++) {
         _mixin(dest, arguments[i]);
     }
     return dest;
 }
 
 function _mixin(dest, source) {
-    var s, empty = {};
-    for (var key in source) {
+    let s;
+    const empty = {};
+    for (const key in source) {
         s = source[key];
         if (!(key in dest) || (dest[key] !== s && (!(key in empty) || empty[key] !== s))) {
             dest[key] = s;
@@ -411,10 +416,10 @@ export function exists(prop, scope) {
     if (!prop || !scope) {
         return false;
     }
-    var propParts = prop.split(".");
-    var testScope = scope;
-    for (var i = 0; i < propParts.length; ++i) {
-        var item = propParts[i];
+    const propParts = prop.split(".");
+    let testScope = scope;
+    for (let i = 0; i < propParts.length; ++i) {
+        const item = propParts[i];
         if (testScope[item] === undefined) {
             return false;
         }
@@ -424,7 +429,7 @@ export function exists(prop, scope) {
 }
 
 export function logStringify(obj) {
-    var cache = [];
+    const cache = [];
     return JSON.stringify(obj, function (_key, value) {
         if (typeof value === "object" && value !== null) {
             if (cache.indexOf(value) !== -1) {
@@ -439,7 +444,8 @@ export function logStringify(obj) {
 
 export function debounce(func, threshold = 100, execAsap = false) {
     return function debounced(..._dummyArgs) {
-        var obj = this || {}, args = arguments;
+        const obj = this || {};
+        const args = arguments;
         function delayed() {
             if (!execAsap)
                 func.apply(obj, args);

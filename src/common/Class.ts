@@ -12,7 +12,7 @@ export class Class {
     };
 
     implements(source) {
-        for (var prop in source) {
+        for (const prop in source) {
             if (source.hasOwnProperty(prop)) {
                 if (this[prop] === undefined) {
                     this[prop] = source[prop];
@@ -35,7 +35,7 @@ export class Class {
         if (this[methodID] === undefined) {
             throw "Method:  " + methodID + " does not exist.";
         }
-        var origMethod = this[methodID];
+        const origMethod = this[methodID];
         this[methodID] = function () {
             return newMethod(origMethod, arguments);
         };

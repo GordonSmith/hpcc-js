@@ -1,11 +1,11 @@
 import { select as d3Select } from "d3-selection";
 
-import { Widget } from "./Widget";
 import { svgMarkerGlitch } from "./Platform";
 import { Transition } from "./Transition";
 import { debounce } from "./Utility";
+import { Widget } from "./Widget";
 
-var lerp = function (point, that, t) {
+function lerp(point, that, t) {
     //  From https://github.com/thelonious/js-intersections
     return {
         x: point.x + (that.x - point.x) * t,
@@ -13,16 +13,16 @@ var lerp = function (point, that, t) {
     };
 };
 
-var intersectLineLine = function (a1, a2, b1, b2) {
+function intersectLineLine(a1, a2, b1, b2) {
     //  From https://github.com/thelonious/js-intersections
-    var result = { type: "", points: [] };
-    var ua_t = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x);
-    var ub_t = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x);
-    var u_b = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
+    const result = { type: "", points: [] };
+    const ua_t = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x);
+    const ub_t = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x);
+    const u_b = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
 
     if (u_b !== 0) {
-        var ua = ua_t / u_b;
-        var ub = ub_t / u_b;
+        const ua = ua_t / u_b;
+        const ub = ub_t / u_b;
 
         if (0 <= ua && ua <= 1 && 0 <= ub && ub <= 1) {
             result.type = "Intersection";
@@ -44,16 +44,16 @@ var intersectLineLine = function (a1, a2, b1, b2) {
     return result;
 };
 
-var intersectCircleLine = function (c, r, a1, a2) {
+function intersectCircleLine(c, r, a1, a2) {
     //  From https://github.com/thelonious/js-intersections
-    var result = { type: "", points: [] };
-    var a = (a2.x - a1.x) * (a2.x - a1.x) +
+    const result = { type: "", points: [] };
+    const a = (a2.x - a1.x) * (a2.x - a1.x) +
         (a2.y - a1.y) * (a2.y - a1.y);
-    var b = 2 * ((a2.x - a1.x) * (a1.x - c.x) +
+    const b = 2 * ((a2.x - a1.x) * (a1.x - c.x) +
         (a2.y - a1.y) * (a1.y - c.y));
-    var cc = c.x * c.x + c.y * c.y + a1.x * a1.x + a1.y * a1.y -
+    const cc = c.x * c.x + c.y * c.y + a1.x * a1.x + a1.y * a1.y -
         2 * (c.x * a1.x + c.y * a1.y) - r * r;
-    var deter = b * b - 4 * a * cc;
+    const deter = b * b - 4 * a * cc;
 
     if (deter < 0) {
         result.type = "Outside";
@@ -61,9 +61,9 @@ var intersectCircleLine = function (c, r, a1, a2) {
         result.type = "Tangent";
         // NOTE: should calculate this point
     } else {
-        var e = Math.sqrt(deter);
-        var u1 = (-b + e) / (2 * a);
-        var u2 = (-b - e) / (2 * a);
+        const e = Math.sqrt(deter);
+        const u1 = (-b + e) / (2 * a);
+        const u2 = (-b - e) / (2 * a);
 
         if ((u1 < 0 || u1 > 1) && (u2 < 0 || u2 > 1)) {
             if ((u1 < 0 && u2 < 0) || (u1 > 1 && u2 > 1)) {
@@ -110,7 +110,7 @@ export class SVGWidget extends Widget {
 
     //  Properties  ---
     move(_, transitionDuration?) {
-        var retVal = this.pos(_);
+        const retVal = this.pos(_);
         if (arguments.length) {
             (transitionDuration ? this._element.transition().duration(transitionDuration) : this._element)
                 .attr("transform", "translate(" + _.x + " " + _.y + ")")
@@ -120,7 +120,7 @@ export class SVGWidget extends Widget {
     };
 
     size(_?) {
-        var retVal = super.size.apply(this, arguments);
+        const retVal = super.size.apply(this, arguments);
         if (arguments.length) {
             this._boundingBox = null;
         }
@@ -128,7 +128,7 @@ export class SVGWidget extends Widget {
     };
 
     resize(_size) {
-        var retVal = super.resize.apply(this, arguments);
+        const retVal = super.resize.apply(this, arguments);
         if (this._parentRelativeDiv) {
             this._parentRelativeDiv
                 .style("width", this._size.width + "px")
@@ -226,7 +226,7 @@ export class SVGWidget extends Widget {
     };
 
     getOffsetPos() {
-        var retVal = { x: 0, y: 0 };
+        let retVal = { x: 0, y: 0 };
         if (this._parentWidget) {
             retVal = this._parentWidget.getOffsetPos();
             retVal.x += this._pos.x;
@@ -238,7 +238,7 @@ export class SVGWidget extends Widget {
 
     getBBox(refresh = false, round = false) {
         if (refresh || this._boundingBox === null) {
-            var svgNode: SVGElement = this._element.node();
+            const svgNode: SVGElement = this._element.node();
             if (svgNode instanceof SVGElement) {
                 this._boundingBox = (svgNode as any).getBBox();
             }
@@ -265,16 +265,16 @@ export class SVGWidget extends Widget {
     };
 
     intersectRect(pointA, pointB) {
-        var center = this.getOffsetPos();
-        var size = this.getBBox();
+        const center = this.getOffsetPos();
+        const size = this.getBBox();
         if (pointA.x === pointB.x && pointA.y === pointB.y) {
             return pointA;
         }
-        var TL = { x: center.x - size.width / 2, y: center.y - size.height / 2 };
-        var TR = { x: center.x + size.width / 2, y: center.y - size.height / 2 };
-        var BR = { x: center.x + size.width / 2, y: center.y + size.height / 2 };
-        var BL = { x: center.x - size.width / 2, y: center.y + size.height / 2 };
-        var intersection = intersectLineLine(TL, TR, pointA, pointB);
+        const TL = { x: center.x - size.width / 2, y: center.y - size.height / 2 };
+        const TR = { x: center.x + size.width / 2, y: center.y - size.height / 2 };
+        const BR = { x: center.x + size.width / 2, y: center.y + size.height / 2 };
+        const BL = { x: center.x - size.width / 2, y: center.y + size.height / 2 };
+        let intersection = intersectLineLine(TL, TR, pointA, pointB);
         if (intersection.points.length) {
             return { x: intersection.points[0].x, y: intersection.points[0].y };
         }
@@ -294,8 +294,8 @@ export class SVGWidget extends Widget {
     };
 
     intersectCircle(radius, pointA, pointB) {
-        var center = this.getOffsetPos();
-        var intersection = intersectCircleLine(center, radius, pointA, pointB);
+        const center = this.getOffsetPos();
+        const intersection = intersectCircleLine(center, radius, pointA, pointB);
         if (intersection.points.length) {
             return { x: intersection.points[0].x, y: intersection.points[0].y };
         }

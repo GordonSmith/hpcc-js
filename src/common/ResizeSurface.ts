@@ -1,8 +1,8 @@
-import { event as d3Event, select as d3Select } from "d3-selection";
+import "css!./ResizeSurface.css";
 import { dispatch as d3Dispatch } from "d3-dispatch";
 import { drag as d3Drag } from "d3-drag";
+import { event as d3Event, select as d3Select } from "d3-selection";
 import { Surface } from "./Surface";
-import "css!./ResizeSurface.css";
 
 export class ResizeSurface extends Surface {
 
@@ -24,7 +24,7 @@ export class ResizeSurface extends Surface {
         this.handleWidth = 8;
         this.handles = [{ loc: "NW" }, { loc: "N" }, { loc: "NE" }, { loc: "E" }, { loc: "SE" }, { loc: "S" }, { loc: "SW" }, { loc: "W" }];
 
-        var context = this;
+        const context = this;
         this.dispatch = d3Dispatch("sizestart", "size", "sizeend");
         this.drag = d3Drag()
             .origin(function (d) { return d; })
@@ -49,9 +49,9 @@ export class ResizeSurface extends Surface {
             .on("drag", function (d) {
                 if (context.allowResize()) {
                     d3Event.sourceEvent.stopPropagation();
-                    var _dx = d3Event.x - context._dragHandlePos.x;
-                    var _dy = d3Event.y - context._dragHandlePos.y;
-                    var delta = { x: 0, y: 0, w: 0, h: 0 };
+                    const _dx = d3Event.x - context._dragHandlePos.x;
+                    const _dy = d3Event.y - context._dragHandlePos.y;
+                    const delta = { x: 0, y: 0, w: 0, h: 0 };
                     switch (d.loc) {
                         case "NW":
                             delta.x = _dx / 2;
@@ -85,8 +85,9 @@ export class ResizeSurface extends Surface {
                             delta.x = _dx / 2;
                             delta.w = -_dx;
                             break;
+                        default:
                     }
-                    var posSize = {
+                    const posSize = {
                         x: context._dragStartPos.x + delta.x,
                         y: context._dragStartPos.y + delta.y,
                         width: context._dragStartSize.width + delta.w,
@@ -126,7 +127,7 @@ export class ResizeSurface extends Surface {
     }
 
     move(_) {
-        var retVal = super.move.apply(this, arguments);
+        const retVal = super.move.apply(this, arguments);
         this.updateHandles(this._domNode, this._element);
         return retVal;
     };
@@ -137,19 +138,19 @@ export class ResizeSurface extends Surface {
     };
 
     updateHandles(_domNode, _element) {
-        var sizeHandles = this._parentElement.selectAll("rect").data(this.handles, function (d) { return d.loc; });
-        var sizeHandlesEnter = sizeHandles.enter().append("rect")
+        const sizeHandles = this._parentElement.selectAll("rect").data(this.handles, function (d) { return d.loc; });
+        const sizeHandlesEnter = sizeHandles.enter().append("rect")
             .attr("class", function (d) { return "resize" + d.loc; })
             .call(this.drag)
             ;
 
-        var l = this._pos.x + this._container._pos.x - this._container.width() / 2;
-        var t = this._pos.y + this._titleRect._pos.y - this._titleRect.height() / 2;
-        var r = this._pos.x + this._container._pos.x + this._container.width() / 2;
-        var b = this._pos.y + this._container._pos.y + this._container.height() / 2;
-        var w = r - l;
-        var h = b - t;
-        var context = this;
+        const l = this._pos.x + this._container._pos.x - this._container.width() / 2;
+        const t = this._pos.y + this._titleRect._pos.y - this._titleRect.height() / 2;
+        const r = this._pos.x + this._container._pos.x + this._container.width() / 2;
+        const b = this._pos.y + this._container._pos.y + this._container.height() / 2;
+        const w = r - l;
+        const h = b - t;
+        const context = this;
         sizeHandlesEnter.merge(sizeHandles)
             .each(function (d) {
                 switch (d.loc) {
@@ -201,6 +202,7 @@ export class ResizeSurface extends Surface {
                         d.width = context.handleWidth;
                         d.height = h - context.handleWidth;
                         break;
+                    default:
                 }
                 d3Select(this)
                     .attr("x", d.x)
@@ -216,4 +218,3 @@ export class ResizeSurface extends Surface {
 ResizeSurface.prototype._class += " common_ResizeSurface";
 
 ResizeSurface.prototype.publish("allowResize", true, "boolean", "Sets if surface can be resized", null, { tags: ["Private", "Shared"] });
-

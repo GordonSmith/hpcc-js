@@ -1,9 +1,9 @@
 import { Class } from "./Class";
 
-var __meta_ = "__meta_";
-var __private_ = "__private_";
-var __prop_ = "__prop_";
-var __default_ = "__default_";
+const __meta_ = "__meta_";
+const __private_ = "__private_";
+const __prop_ = "__prop_";
+const __default_ = "__default_";
 
 function isMeta(key) {
     return key.indexOf(__meta_) === 0;
@@ -26,7 +26,7 @@ function Meta(id, defaultValue, type, description, set, ext) {
     switch (type) {
         case "set":
             this.checkedAssign = function (_) {
-                var options = typeof set === "function" ? set.call(this) : set;
+                const options = typeof set === "function" ? set.call(this) : set;
                 if (!options || options.indexOf(_) < 0) {
                     console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
                 }
@@ -36,11 +36,11 @@ function Meta(id, defaultValue, type, description, set, ext) {
         case "html-color":
             this.checkedAssign = function (_) {
                 if ((window as any).__hpcc_debug && _ && _ !== "red") {
-                    var litmus = "red";
-                    var d = document.createElement("div");
+                    const litmus = "red";
+                    const d = document.createElement("div");
                     d.style.color = litmus;
                     d.style.color = _;
-                    //Element's style.color will be reverted to litmus or set to "" if an invalid color is given
+                    // Element's style.color will be reverted to litmus or set to "" if an invalid color is given
                     if (d.style.color === litmus || d.style.color === "") {
                         console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
                     }
@@ -123,7 +123,7 @@ function MetaProxy(id, proxy, method, defaultValue, ext?) {
     this.ext = ext || {};
 }
 
-var propExtID = 0;
+let propExtID = 0;
 export class PropertyExt extends Class {
     protected _id: string;
     private _watchArrIdx: number;
@@ -143,6 +143,7 @@ export class PropertyExt extends Class {
                 case "propertyArray":
                     this[meta.id + "_reset"]();
                     break;
+                default:
             }
         }, this);
     }
@@ -155,17 +156,17 @@ export class PropertyExt extends Class {
 
     // Publish Properties  ---
     publishedProperties(includePrivate = false, expandProxies = false) {
-        var retVal = [];
-        for (var key in this) {
+        const retVal = [];
+        for (const key in this) {
             if (isMeta(key) && (includePrivate || !isPrivate(this, key))) {
-                var meta: any = this[key];
+                let meta: any = this[key];
                 if (expandProxies && meta.type) {
-                    var item = this;
+                    let item = this;
                     while (meta.type === "proxy") {
                         item = item[meta.proxy];
                         meta = item.publishedProperty(meta.method);
                     }
-                    var selfProp: any = this[key];
+                    const selfProp: any = this[key];
                     if (meta.id !== selfProp.id) {
                         meta = JSON.parse(JSON.stringify(meta));  //  Clone meta so we can safely replace the id.
                         meta.id = selfProp.id;
@@ -198,10 +199,10 @@ export class PropertyExt extends Class {
     publishReset(privateArr, exceptionsArr) {
         privateArr = (privateArr || []).map(function (id) { return __meta_ + id; });
         exceptionsArr = (exceptionsArr || []).map(function (id) { return __meta_ + id; });
-        for (var key in this) {
+        for (const key in this) {
             if (isMeta(key)) {
-                var isPrivate = !privateArr.length || (privateArr.length && privateArr.indexOf(key) >= 0);
-                var isException = exceptionsArr.indexOf(key) >= 0;
+                const isPrivate = !privateArr.length || (privateArr.length && privateArr.indexOf(key) >= 0);
+                const isException = exceptionsArr.indexOf(key) >= 0;
                 if (isPrivate && !isException) {
                     this[__private_ + key] = true;
                 }
@@ -213,7 +214,7 @@ export class PropertyExt extends Class {
         if (this[__meta_ + id] !== undefined && !ext.override) {
             throw id + " is already published.";
         }
-        var meta = this[__meta_ + id] = new Meta(id, defaultValue, type, description, set, ext);
+        const meta = this[__meta_ + id] = new Meta(id, defaultValue, type, description, set, ext);
         if (meta.ext.internal) {
             this[__private_ + id] = true;
         }
@@ -272,6 +273,7 @@ export class PropertyExt extends Class {
                         });
                     }
                     break;
+                default:
             }
 
             switch (type) {
@@ -280,13 +282,14 @@ export class PropertyExt extends Class {
                 case "propertyArray":
                     this[__default_ + id] = this[id + "_default"]().map(function (row) { return row; });
                     break;
+                default:
             }
             delete this[__prop_ + id];
             return this;
         };
         this[id + "_options"] = function () {
             if (typeof set === "function") {
-                var retVal = meta.ext.optional ? [null] : [];
+                const retVal = meta.ext.optional ? [null] : [];
                 return retVal.concat(set.apply(this, arguments));
             }
             return set;
@@ -294,9 +297,9 @@ export class PropertyExt extends Class {
     };
 
     publishWidget(prefix, WidgetType, id) {
-        for (var key in WidgetType.prototype) {
+        for (const key in WidgetType.prototype) {
             if (key.indexOf("__meta") === 0) {
-                var publishItem = WidgetType.prototype[key];
+                const publishItem = WidgetType.prototype[key];
                 this.publishProxy(prefix + __prop_ + publishItem.id, id, publishItem.method || publishItem.id);
             }
         }
@@ -341,7 +344,7 @@ export class PropertyExt extends Class {
     };
 
     monitorProperty(propID, func) {
-        var meta = this.publishedProperty(propID);
+        const meta = this.publishedProperty(propID);
         switch (meta.type) {
             case "proxy":
                 if (this[meta.proxy]) {
@@ -355,9 +358,9 @@ export class PropertyExt extends Class {
                     };
                 }
             default:
-                var idx = this._watchArrIdx++;
+                const idx = this._watchArrIdx++;
                 this._watchArr[idx] = { propertyID: propID, callback: func };
-                var context = this;
+                const context = this;
                 return {
                     remove: function () {
                         delete context._watchArr[idx];
@@ -382,11 +385,11 @@ export class PropertyExt extends Class {
     broadcast(key, newVal, oldVal, source) {
         source = source || this;
         if (newVal !== oldVal) {
-            for (var idx in this._watchArr) {
-                var monitor = this._watchArr[idx];
+            for (const idx in this._watchArr) {
+                const monitor = this._watchArr[idx];
                 if ((monitor.propertyID === undefined || monitor.propertyID === key) && monitor.callback) {
-                    setTimeout(function (monitor) {
-                        monitor.callback(key, newVal, oldVal, source);
+                    setTimeout((monitor2) => {
+                        monitor2.callback(key, newVal, oldVal, source);
                     }, 0, monitor);
                 }
             }
@@ -397,12 +400,12 @@ export class PropertyExt extends Class {
         if (!theme) {
             return;
         }
-        var clsArr = this._class.split(" ");
-        for (var i in clsArr) {
+        const clsArr = this._class.split(" ");
+        for (const i in clsArr) {
             if (theme[clsArr[i]]) {
-                for (var paramName in theme[clsArr[i]]) {
+                for (const paramName in theme[clsArr[i]]) {
                     if (paramName === "overrideTags" && theme[clsArr[i]][paramName] instanceof Object) {
-                        for (var param in theme[clsArr[i]][paramName]) {
+                        for (const param in theme[clsArr[i]][paramName]) {
                             if (this.publishedProperty(paramName).ext) {
                                 this.publishedProperty(paramName).ext.tags = theme[clsArr[i]][paramName][param];
                             }

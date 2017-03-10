@@ -1,8 +1,8 @@
-import { ISize } from "./Widget";
-import { SVGWidget } from "./SVGWidget";
-import { Shape } from "./Shape";
-import { Text } from "./Text";
 import "css!./TextBox.css";
+import { Shape } from "./Shape";
+import { SVGWidget } from "./SVGWidget";
+import { Text } from "./Text";
+import { ISize } from "./Widget";
 
 export class TextBox extends SVGWidget {
 
@@ -46,8 +46,8 @@ export class TextBox extends SVGWidget {
         this._text
             .render()
             ;
-        var textBBox = this._text.getBBox(true);
-        var size = {
+        const textBBox = this._text.getBBox(true);
+        const size = {
             width: this.fixedSize() ? this.fixedSize().width : textBBox.width + this.paddingLeft() + this.paddingRight(),
             height: this.fixedSize() ? this.fixedSize().height : textBBox.height + this.paddingTop() + this.paddingBottom()
         };
@@ -70,6 +70,7 @@ export class TextBox extends SVGWidget {
                         .render()
                         ;
                     break;
+                default:
             }
         }
     };
@@ -84,17 +85,17 @@ export class TextBox extends SVGWidget {
         super.exit(domNode, element);
     };
 
-    text: { (): string; (_: string): TextBox; }
-    shape_colorFill: { (): string; (_: string): TextBox; }
-    shape_colorStroke: { (): string; (_: string): TextBox; }
-    text_colorFill: { (): string; (_: string): TextBox; }
-    paddingLeft: { (): number; (_: number): TextBox; }
-    paddingRight: { (): number; (_: number): TextBox; }
-    paddingTop: { (): number; (_: number): TextBox; }
-    paddingBottom: { (): number; (_: number): TextBox; }
-    anchor: { (): string; (_: string): TextBox; }
-    fixedSize: { (): ISize; (_: ISize): TextBox; }
-    tooltip: { (): string; (_: string): TextBox; }
+    text: { (): string; (_: string): TextBox; };
+    shape_colorFill: { (): string; (_: string): TextBox; };
+    shape_colorStroke: { (): string; (_: string): TextBox; };
+    text_colorFill: { (): string; (_: string): TextBox; };
+    paddingLeft: { (): number; (_: number): TextBox; };
+    paddingRight: { (): number; (_: number): TextBox; };
+    paddingTop: { (): number; (_: number): TextBox; };
+    paddingBottom: { (): number; (_: number): TextBox; };
+    anchor: { (): string; (_: string): TextBox; };
+    fixedSize: { (): ISize; (_: ISize): TextBox; };
+    tooltip: { (): string; (_: string): TextBox; };
 }
 TextBox.prototype._class += " common_TextBox";
 
@@ -110,4 +111,3 @@ TextBox.prototype.publishProxy("anchor", "_text");
 TextBox.prototype.publish("fixedSize", null);
 
 TextBox.prototype.publish("tooltip", "", "string", "Tooltip", null, { tags: ["Private"] });
-

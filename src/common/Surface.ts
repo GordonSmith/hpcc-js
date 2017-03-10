@@ -1,10 +1,10 @@
-import { select as d3Select } from "d3-selection";
-import { SVGWidget } from "./SVGWidget";
-import { Icon } from "./Icon";
-import { Shape } from "./Shape";
-import { Text } from "./Text";
-import { Menu } from "./Menu";
 import "css!./Surface.css";
+import { select as d3Select } from "d3-selection";
+import { Icon } from "./Icon";
+import { Menu } from "./Menu";
+import { Shape } from "./Shape";
+import { SVGWidget } from "./SVGWidget";
+import { Text } from "./Text";
 
 export class Surface extends SVGWidget {
 
@@ -42,7 +42,7 @@ export class Surface extends SVGWidget {
         this._menu = new Menu()
             .paddingPercent(0)
             ;
-        var context = this;
+        const context = this;
         this._menu.preShowMenu = function () {
             if (context.content() && context.content().hasOverlay()) {
                 context.content().visible(false);
@@ -59,8 +59,8 @@ export class Surface extends SVGWidget {
 
     enter(_domNode, _element) {
         SVGWidget.prototype.enter.apply(this, arguments);
-        var element = _element.append("g").attr("class", "frame");
-        var domNode = element.node();
+        const element = _element.append("g").attr("class", "frame");
+        const domNode = element.node();
         this._clipRect = element.append("defs").append("clipPath")
             .attr("id", this.id() + "_clip")
             .append("rect")
@@ -92,10 +92,10 @@ export class Surface extends SVGWidget {
 
     update(domNode, element) {
         super.update(domNode, element);
-        var context = this;
+        const context = this;
 
-        var width = this.width() - 1;
-        var height = this.height() - 1;
+        const width = this.width() - 1;
+        const height = this.height() - 1;
 
         this._icon
             .display(this.showTitle() && this.showIcon())
@@ -111,10 +111,10 @@ export class Surface extends SVGWidget {
             .render()
             ;
 
-        var surfaceButtons = this.buttonContainer.selectAll(".surface-button").data(this.buttonAnnotations());
+        const surfaceButtons = this.buttonContainer.selectAll(".surface-button").data(this.buttonAnnotations());
         surfaceButtons.enter().append("button").attr("class", "surface-button")
             .each(function (button, idx) {
-                var el = context._surfaceButtons[idx] = d3Select(this)
+                const el = context._surfaceButtons[idx] = d3Select(this)
                     .attr("class", "surface-button " + (button.class ? button.class : ""))
                     .attr("id", button.id)
                     .style("padding", button.padding)
@@ -135,24 +135,24 @@ export class Surface extends SVGWidget {
             ;
         surfaceButtons.exit()
             .each(function (_d, idx) {
-                var element = d3Select(this);
+                const element2 = d3Select(this);
                 delete context._surfaceButtons[idx];
-                element.remove();
+                element2.remove();
             })
             ;
 
-        var buttonClientHeight = this.showTitle() ? Math.max.apply(null, this._surfaceButtons.map(function (d) { return d.node().offsetHeight; })) : 0;
-        var iconClientSize = this.showTitle() && this.showIcon() ? this._icon.getBBox(true) : { width: 0, height: 0 };
-        var textClientSize = this._text.getBBox(true);
-        var menuClientSize = this._menu.getBBox(true);
-        var _titleRegionHeight = Math.max(iconClientSize.height, textClientSize.height, menuClientSize.height, buttonClientHeight);
-        var titleRegionHeight = this.showTitle() ? _titleRegionHeight : 0;
-        var yTitle = (-height + _titleRegionHeight) / 2;
+        const buttonClientHeight = this.showTitle() ? Math.max.apply(null, this._surfaceButtons.map(function (d) { return d.node().offsetHeight; })) : 0;
+        const iconClientSize = this.showTitle() && this.showIcon() ? this._icon.getBBox(true) : { width: 0, height: 0 };
+        const textClientSize = this._text.getBBox(true);
+        const menuClientSize = this._menu.getBBox(true);
+        const _titleRegionHeight = Math.max(iconClientSize.height, textClientSize.height, menuClientSize.height, buttonClientHeight);
+        const titleRegionHeight = this.showTitle() ? _titleRegionHeight : 0;
+        const yTitle = (-height + _titleRegionHeight) / 2;
 
-        var titleTextHeight = this.showTitle() ? Math.max(textClientSize.height, menuClientSize.height, buttonClientHeight) : 0;
+        const titleTextHeight = this.showTitle() ? Math.max(textClientSize.height, menuClientSize.height, buttonClientHeight) : 0;
 
-        var topMargin = titleRegionHeight <= titleTextHeight ? 0 : (titleRegionHeight - titleTextHeight) / 2;
-        var leftMargin = topMargin;
+        const topMargin = titleRegionHeight <= titleTextHeight ? 0 : (titleRegionHeight - titleTextHeight) / 2;
+        const leftMargin = topMargin;
 
         this._titleRect
             .pos({ x: leftMargin, y: yTitle })
@@ -171,8 +171,8 @@ export class Surface extends SVGWidget {
             .move({ x: (iconClientSize.width / 2 - menuClientSize.width / 2) / 2, y: yTitle })
             ;
 
-        var xPos = context._titleRect.node().getBoundingClientRect().left + (context._size.width - leftMargin * 2) - context.buttonGutter() - this.buttonContainer.node().offsetWidth;
-        var yPos = context._titleRect.node().getBoundingClientRect().top + ((titleTextHeight - this.buttonContainer.node().offsetHeight) / 2);
+        const xPos = context._titleRect.node().getBoundingClientRect().left + (context._size.width - leftMargin * 2) - context.buttonGutter() - this.buttonContainer.node().offsetWidth;
+        const yPos = context._titleRect.node().getBoundingClientRect().top + ((titleTextHeight - this.buttonContainer.node().offsetHeight) / 2);
         if (!isNaN(xPos)) {
             this.buttonContainer.style("left", xPos + "px");
         }
@@ -197,10 +197,10 @@ export class Surface extends SVGWidget {
         }
 
         if (this.showContent()) {
-            var xOffset = leftMargin;
-            var yOffset = titleRegionHeight - topMargin;
+            const xOffset = leftMargin;
+            const yOffset = titleRegionHeight - topMargin;
 
-            var content = element.selectAll(".content").data(this.content() ? [this.content()] : [], function (d) { return d._id; });
+            const content = element.selectAll(".content").data(this.content() ? [this.content()] : [], function (d) { return d._id; });
             content.enter().append("g")
                 .attr("class", "content")
                 .attr("clip-path", "url(#" + this.id() + "_clip)")
@@ -210,7 +210,7 @@ export class Surface extends SVGWidget {
                 .merge(content)
                 .attr("transform", "translate(" + (leftMargin / 2) + ", " + (titleRegionHeight / 2 - topMargin / 2) + ")")
                 .each(function (d) {
-                    var padding = {
+                    const padding = {
                         left: 0,
                         top: 0,
                         right: 1,
@@ -266,20 +266,20 @@ export class Surface extends SVGWidget {
     };
 
     intersection(pointA, pointB) {
-        var hits = [];
-        var i1 = this._icon.intersection(pointA, pointB, this._pos);
+        const hits = [];
+        const i1 = this._icon.intersection(pointA, pointB, this._pos);
         if (i1) {
             hits.push({ i: i1, d: this.distance(i1, pointB) });
         }
-        var i2 = this._titleRect.intersection(pointA, pointB);
+        const i2 = this._titleRect.intersection(pointA, pointB);
         if (i2) {
             hits.push({ i: i2, d: this.distance(i2, pointB) });
         }
-        var i3 = this._container.intersection(pointA, pointB);
+        const i3 = this._container.intersection(pointA, pointB);
         if (i3) {
             hits.push({ i: i3, d: this.distance(i3, pointB) });
         }
-        var nearest = null;
+        let nearest = null;
         hits.forEach(function (item) {
             if (nearest === null || nearest.d > item.d) {
                 nearest = item;
@@ -335,7 +335,7 @@ Surface.prototype.menu = function (_?) {
 
 Surface.prototype._origShowContent = Surface.prototype.showContent;
 Surface.prototype.showContent = function (_?) {
-    var retVal = Surface.prototype._origShowContent.apply(this, arguments);
+    const retVal = Surface.prototype._origShowContent.apply(this, arguments);
     if (arguments.length) {
         if (this.content()) {
             this.content().visible(this.showContent());
@@ -343,4 +343,3 @@ Surface.prototype.showContent = function (_?) {
     }
     return retVal;
 };
-

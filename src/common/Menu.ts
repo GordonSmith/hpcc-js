@@ -1,7 +1,7 @@
-import { event as d3Event, select as d3Select } from "d3-selection";
-import { SVGWidget } from "./SVGWidget";
-import { IMenu } from "./IMenu";
 import "css!./Menu.css";
+import { event as d3Event, select as d3Select } from "d3-selection";
+import { IMenu } from "./IMenu";
+import { SVGWidget } from "./SVGWidget";
 
 export class Menu extends SVGWidget implements IMenu {
     protected _icon;
@@ -11,7 +11,7 @@ export class Menu extends SVGWidget implements IMenu {
     constructor() {
         super();
 
-        var context = this;
+        const context = this;
         this._list.click = function (d) {
             d3Event.stopPropagation();
             context.hideMenu();
@@ -36,16 +36,16 @@ export class Menu extends SVGWidget implements IMenu {
             .render()
             ;
 
-        var bbox = this._icon.getBBox(true);
-        var menuBBox = this._list.getBBox(true);
-        var pos = {
+        const bbox = this._icon.getBBox(true);
+        const menuBBox = this._list.getBBox(true);
+        const pos = {
             x: bbox.width / 2 - menuBBox.width / 2,
             y: bbox.height / 2 + menuBBox.height / 2
         };
         this._list
             .move(pos)
             ;
-        var context = this;
+        const context = this;
         d3Select("body")
             .on("click." + this._id, function () {
                 console.log("click:  body - " + context._id);
@@ -81,7 +81,7 @@ export class Menu extends SVGWidget implements IMenu {
             .render()
             ;
 
-        var context = this;
+        const context = this;
         this._icon.element()
             .on("click", function () {
                 d3Event.stopPropagation();
@@ -126,8 +126,8 @@ export class Menu extends SVGWidget implements IMenu {
         console.log("postHideMenu");
     };
 
-    faChar: { (): string; (_: string): Menu; }
-    paddingPercent: { (): number; (_: number): Menu; }
+    faChar: { (): string; (_: string): Menu; };
+    paddingPercent: { (): number; (_: number): Menu; };
 }
 Menu.prototype._class += " common_Menu";
 

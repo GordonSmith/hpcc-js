@@ -1,7 +1,7 @@
-import { SVGWidget } from "./SVGWidget";
-import { IList } from "./IList";
-import { TextBox } from "./TextBox";
 import "css!./List.css";
+import { IList } from "./IList";
+import { SVGWidget } from "./SVGWidget";
+import { TextBox } from "./TextBox";
 
 export class List extends SVGWidget implements IList {
 
@@ -15,13 +15,13 @@ export class List extends SVGWidget implements IList {
 
     update(domNode, element) {
         super.update(domNode, element);
-        var context = this;
+        const context = this;
 
-        var line = element.selectAll(".line").data(this.data(), function (d) { return d; });
-        var lineEnter = line.enter().append("g")
+        const line = element.selectAll(".line").data(this.data(), function (d) { return d; });
+        const lineEnter = line.enter().append("g")
             .attr("class", "line")
             .each(function (d) {
-                var newTextBox = new TextBox()
+                const newTextBox = new TextBox()
                     .target(this)
                     .paddingTop(0)
                     .paddingBottom(0)
@@ -31,33 +31,33 @@ export class List extends SVGWidget implements IList {
                     .render()
                     ;
                 newTextBox.element()
-                    .on("click", function (d) {
-                        context.click(d.text());
+                    .on("click", function (d2) {
+                        context.click(d2.text());
                     })
-                    .on("dblclick", function (d) {
-                        context.dblclick(d.text());
+                    .on("dblclick", function (d2) {
+                        context.dblclick(d2.text());
                     })
                     ;
                 context._listWidgets[d] = newTextBox;
             })
             ;
 
-        var listHeight = 0;
-        var listWidth = 0;
-        var listCount = 0;
-        for (var key in this._listWidgets) {
+        let listHeight = 0;
+        let listWidth = 0;
+        let listCount = 0;
+        for (const key in this._listWidgets) {
             if (!this._listWidgets.hasOwnProperty(key)) continue;
-            var bbox = this._listWidgets[key].getBBox();
+            const bbox = this._listWidgets[key].getBBox();
             listHeight += bbox.height;
             if (listWidth < bbox.width)
                 listWidth = bbox.width;
             ++listCount;
         }
 
-        var yPos = -listHeight / 2;// + lineHeight / 2;
+        let yPos = -listHeight / 2;// + lineHeight / 2;
         lineEnter.merge(line).each(function (d) {
-            var widget = context._listWidgets[d];
-            var bbox = widget.getBBox();
+            const widget = context._listWidgets[d];
+            const bbox = widget.getBBox();
             widget
                 .pos({ x: 0, y: yPos + bbox.height / 2 })
                 .anchor(context.anchor())
@@ -76,7 +76,7 @@ export class List extends SVGWidget implements IList {
     };
 
     exit(domNode, element) {
-        for (var key in this._listWidgets) {
+        for (const key in this._listWidgets) {
             this._listWidgets[key].target(null);
         }
         super.exit(domNode, element);
@@ -91,9 +91,8 @@ export class List extends SVGWidget implements IList {
         console.log("Double click:  " + d);
     };
 
-    anchor: { (): string; (_: string): List; }
+    anchor: { (): string; (_: string): List; };
 }
 List.prototype._class += " common_List";
 
 List.prototype.publish("anchor", "start", "set", "Anchor Position", ["", "start", "middle", "end"], { tags: ["Private"] });
-

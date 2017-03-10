@@ -1,8 +1,8 @@
-﻿import { event as d3Event } from "d3-selection";
+﻿import "css!./SVGZoomWidget.css";
+import { event as d3Event } from "d3-selection";
 import { zoom as d3Zoom } from "d3-zoom";
-import { SVGWidget } from "./SVGWidget";
 import { Icon } from "./Icon";
-import "css!./SVGZoomWidget.css";
+import { SVGWidget } from "./SVGWidget";
 
 export class SVGZoomWidget extends SVGWidget {
 
@@ -33,17 +33,17 @@ export class SVGZoomWidget extends SVGWidget {
     };
 
     zoomToFit(transitionDuration?) {
-        var bbox = this._renderElement.node().getBBox();
+        const bbox = this._renderElement.node().getBBox();
         if (bbox.width && bbox.height) {
-            var x = bbox.x + bbox.width / 2;
-            var y = bbox.y + bbox.height / 2;
-            var dx = bbox.width;
-            var dy = bbox.height;
-            var width = this.width();
-            var height = this.height();
+            const x = bbox.x + bbox.width / 2;
+            const y = bbox.y + bbox.height / 2;
+            const dx = bbox.width;
+            const dy = bbox.height;
+            const width = this.width();
+            const height = this.height();
 
-            var scale = 1 / Math.max(dx / width, dy / height);
-            var translate = [width / 2 - scale * x, height / 2 - scale * y];
+            const scale = 1 / Math.max(dx / width, dy / height);
+            const translate = [width / 2 - scale * x, height / 2 - scale * y];
             this.zoomTo(translate, scale, transitionDuration);
         }
     };
@@ -58,7 +58,7 @@ export class SVGZoomWidget extends SVGWidget {
         this._zoomG = this._zoomElement.append("g");
         this._renderElement = this._zoomG.append("g");
 
-        var context = this;
+        const context = this;
         this._zoom = d3Zoom()
             .scaleExtent([0.05, 20])
             .on("zoom", function () {
@@ -76,10 +76,10 @@ export class SVGZoomWidget extends SVGWidget {
             .attr("height", this.height())
             ;
 
-        var context = this;
-        var toolbar = element.selectAll(".toolbar").data(this.zoomToolbar() ? ["dummy"] : []);
-        var iconDiameter = 24;
-        var faCharHeight = 14;
+        const context = this;
+        const toolbar = element.selectAll(".toolbar").data(this.zoomToolbar() ? ["dummy"] : []);
+        const iconDiameter = 24;
+        const faCharHeight = 14;
         toolbar.enter().append("g")
             .attr("class", "toolbar")
             .each(function () {
@@ -149,11 +149,10 @@ export class SVGZoomWidget extends SVGWidget {
         super.exit(domNode, element);
     };
 
-    zoomToolbar: { (): boolean; (_: boolean): SVGZoomWidget; }
-    zoomDuration: { (): number; (_: number): SVGZoomWidget; }
+    zoomToolbar: { (): boolean; (_: boolean): SVGZoomWidget; };
+    zoomDuration: { (): number; (_: number): SVGZoomWidget; };
 }
 SVGZoomWidget.prototype._class += " common_SVGZoomWidget";
 
 SVGZoomWidget.prototype.publish("zoomToolbar", true, "boolean", "Show Zoom Toolbar");
 SVGZoomWidget.prototype.publish("zoomDuration", 250, "number", "Transition Duration");
-

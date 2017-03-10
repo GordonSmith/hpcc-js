@@ -11,7 +11,7 @@ export class CanvasWidget extends Widget {
     }
 
     resize(size) {
-        var retVal = super.resize(size);
+        const retVal = super.resize(size);
         this._parentElement
             .style("width", this._size.width + "px")
             .style("height", this._size.height + "px")
@@ -37,11 +37,11 @@ export class CanvasWidget extends Widget {
         if (this._target) {
             this._parentElement = d3Select(this._target);
             if (!this._size.width && !this._size.height) {
-                var width = parseFloat(this._parentElement.style("width"));
-                var height = parseFloat(this._parentElement.style("height"));
+                const width = parseFloat(this._parentElement.style("width"));
+                const height = parseFloat(this._parentElement.style("height"));
                 this.size({
-                    width: width,
-                    height: height
+                    width,
+                    height
                 });
                 this.resize(this._size);
             }
@@ -60,4 +60,3 @@ export class CanvasWidget extends Widget {
     };
 }
 CanvasWidget.prototype._class += " common_CanvasWidget";
-

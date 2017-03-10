@@ -1,7 +1,7 @@
+import "css!./FAChar.css";
+import "css!font-awesome/css/font-awesome.css";
 import { SVGWidget } from "./SVGWidget";
 import { Text } from "./Text";
-import "css!font-awesome/css/font-awesome.css";
-import "css!./FAChar.css";
 
 export class FAChar extends SVGWidget {
 
@@ -39,13 +39,12 @@ export class FAChar extends SVGWidget {
         super.exit(domNode, element);
     };
 
-    char: { (): string; (_: string): FAChar; }
-    fontSize: { (): number; (_: number): FAChar; }
-    text_colorFill: { (): string; (_: string): FAChar; }
+    char: { (): string; (_: string): FAChar; };
+    fontSize: { (): number; (_: number): FAChar; };
+    text_colorFill: { (): string; (_: string): FAChar; };
 }
 FAChar.prototype._class += " common_FAChar";
 
 FAChar.prototype.publish("char", "", "string", "Font Awesome Item", null, { tags: ["Private"] });
 FAChar.prototype.publish("fontSize", null, "number", "Font Size", null, { tags: ["Private"] });
 FAChar.prototype.publishProxy("text_colorFill", "_text", "colorFill");
-

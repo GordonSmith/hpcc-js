@@ -1,6 +1,6 @@
+import "css!./Shape.css";
 import { select as d3Select } from "d3-selection";
 import { SVGWidget } from "./SVGWidget";
-import "css!./Shape.css";
 
 export function Shape() {
     SVGWidget.call(this);
@@ -19,7 +19,7 @@ Shape.prototype.publish("tooltip", "", "string", "Tooltip", null, { tags: ["Priv
 
 Shape.prototype._origRadius = Shape.prototype.radius;
 Shape.prototype.radius = function (_) {
-    var retVal = Shape.prototype._origRadius.apply(this, arguments);
+    const retVal = Shape.prototype._origRadius.apply(this, arguments);
     if (arguments.length) {
         this.width(_);
         this.height(_);
@@ -32,36 +32,37 @@ Shape.prototype.intersection = function (pointA, pointB) {
     switch (this.shape()) {
         case "circle":
             return this.intersectCircle(pointA, pointB);
+        default:
     }
     return SVGWidget.prototype.intersection.apply(this, arguments);
 };
 
 Shape.prototype.update = function (_domNode, element) {
-    var shape = element.selectAll("rect,circle,ellipse").data([this.shape()], function (d) { return d; });
+    const shape = element.selectAll("rect,circle,ellipse").data([this.shape()], function (d) { return d; });
 
-    var context = this;
+    const context = this;
     shape.enter().append(this.shape() === "square" ? "rect" : this.shape())
         .attr("class", "common_Shape")
         .each(function () {
-            var element = d3Select(this);
-            context._tooltipElement = element.append("title");
+            const element2 = d3Select(this);
+            context._tooltipElement = element2.append("title");
         })
         .merge(shape)
         .style("fill", this.colorFill())
         .style("stroke", this.colorStroke())
         .each(function () {
-            var element = d3Select(this);
+            const element2 = d3Select(this);
             context._tooltipElement.text(context.tooltip());
             switch (context.shape()) {
                 case "circle":
-                    var radius = context.radius();
-                    element
+                    const radius = context.radius();
+                    element2
                         .attr("r", radius)
                         ;
                     break;
                 case "square":
-                    var width = Math.max(context.width(), context.height());
-                    element
+                    const width = Math.max(context.width(), context.height());
+                    element2
                         .attr("x", -width / 2)
                         .attr("y", -width / 2)
                         .attr("width", width)
@@ -69,7 +70,7 @@ Shape.prototype.update = function (_domNode, element) {
                         ;
                     break;
                 case "rect":
-                    element
+                    element2
                         .attr("x", -context.width() / 2)
                         .attr("y", -context.height() / 2)
                         .attr("width", context.width())
@@ -77,11 +78,12 @@ Shape.prototype.update = function (_domNode, element) {
                         ;
                     break;
                 case "ellipse":
-                    element
+                    element2
                         .attr("rx", context.width() / 2)
                         .attr("ry", context.height() / 2)
                         ;
                     break;
+                default:
             }
         })
         ;

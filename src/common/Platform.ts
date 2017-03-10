@@ -6,8 +6,9 @@ export function version() {
 };
 
 export const ieVersion = (function () {
-    var ua = navigator.userAgent, tem,
-        M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+    const ua = navigator.userAgent;
+    let tem;
+    const M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
     if (/trident/i.test(M[1])) {
         tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
         return parseFloat(tem[1]);
@@ -24,21 +25,21 @@ export const svgMarkerGlitch = isIE && ieVersion <= 12;
 let _scrollBarWidth = null;
 export function getScrollbarWidth() {
     if (_scrollBarWidth === null) {
-        var outer = document.createElement("div");
+        const outer = document.createElement("div");
         outer.style.visibility = "hidden";
         outer.style.width = "100px";
         outer.style.msOverflowStyle = "scrollbar";
 
         document.body.appendChild(outer);
 
-        var widthNoScroll = outer.offsetWidth;
+        const widthNoScroll = outer.offsetWidth;
         outer.style.overflow = "scroll";
 
-        var inner = document.createElement("div");
+        const inner = document.createElement("div");
         inner.style.width = "100%";
         outer.appendChild(inner);
 
-        var widthWithScroll = inner.offsetWidth;
+        const widthWithScroll = inner.offsetWidth;
 
         outer.parentNode.removeChild(outer);
 
@@ -53,14 +54,14 @@ export function getScrollbarWidth() {
     this.callback = callback;
     this.listeners = [];
 
-    var MutationListener = function (callback, domNode, type) {
-        this.callback = callback;
+    const MutationListener = function (callback2, domNode, type) {
+        this.callback = callback2;
         this.domNode = domNode;
         this.type = type;
     };
     MutationListener.prototype = {
         handleEvent: function (evt) {
-            var mutation = {
+            const mutation = {
                 type: this.type,
                 target: this.domNode,
                 addedNodes: [],
@@ -76,7 +77,7 @@ export function getScrollbarWidth() {
     };
 
     this.observe = function (domNode, config) {
-        var listener = null;
+        let listener = null;
         if (config.attributes) {
             listener = new MutationListener(this.callback, domNode, "attributes");
             this.listeners.push(listener);
@@ -110,6 +111,7 @@ export function getScrollbarWidth() {
                     item.domNode.removeEventListener("DOMNodeRemoved", item, true);
                     item.domNode.removeEventListener("DOMNodeInserted", item, true);
                     break;
+                default:
             }
         });
         this.listeners = [];
