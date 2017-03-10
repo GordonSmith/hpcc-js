@@ -27,7 +27,7 @@ Icon.prototype.intersection = function (pointA, pointB) {
     return this._shapeWidget.intersection(pointA, pointB);
 };
 
-Icon.prototype.enter = function (domNode, element) {
+Icon.prototype.enter = function (_domNode, element) {
     SVGWidget.prototype.enter.apply(this, arguments);
     this._defs = element.append("defs");
     this._defs.append("clipPath")
@@ -61,15 +61,15 @@ Icon.prototype.enter = function (domNode, element) {
         ;
 };
 
-Icon.prototype.click = function (domNode) {
+Icon.prototype.click = function (_domNode) {
     console.log("Clicked the icon");
 };
 
-Icon.prototype.dblclick = function (domNode) {
+Icon.prototype.dblclick = function (_domNode) {
     console.log("Double clicked the icon");
 };
 
-Icon.prototype.update = function (domNode, element) {
+Icon.prototype.update = function (_domNode, _element) {
     SVGWidget.prototype.update.apply(this, arguments);
 
     var diameter = this.diameter();
@@ -110,7 +110,7 @@ Icon.prototype.update = function (domNode, element) {
     this._tooltipElement.text(this.tooltip());
 };
 
-Icon.prototype.exit = function (domNode, element) {
+Icon.prototype.exit = function (_domNode, _element) {
     SVGWidget.prototype.exit.apply(this, arguments);
     this._shapeWidget
         .target(null)

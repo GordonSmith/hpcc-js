@@ -185,7 +185,7 @@ XYAxis.prototype.resizeBrushHandle = function (d, width, height) {
     }
 };
 
-XYAxis.prototype.brushMoved = SVGWidget.prototype.debounce(function brushed() {
+XYAxis.prototype.brushMoved = Utility.debounce(function brushed() {
     var selected = this.data().filter(function (d) {
         var pos = d[0];
         if (this.xAxisType() === "ordinal") {

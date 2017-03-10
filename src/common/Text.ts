@@ -16,12 +16,12 @@ Text.prototype.publish("colorFill", null, "html-color", "Fill Color", null, { ta
 
 Text.prototype.publish("rotation", 0, "number", "Degrees of rotation", null, { tags: ["Basic"] });
 
-Text.prototype.enter = function (domNode, element) {
+Text.prototype.enter = function (_domNode, element) {
     SVGWidget.prototype.enter.apply(this, arguments);
     this._textElement = element.append("text");
 };
 
-Text.prototype.update = function (domNode, element) {
+Text.prototype.update = function (_domNode, _element) {
     SVGWidget.prototype.update.apply(this, arguments);
     var context = this;
     this._textElement
@@ -31,7 +31,7 @@ Text.prototype.update = function (domNode, element) {
     var textParts = this.text().split("\n");
     var textLine = this._textElement.selectAll("tspan").data(textParts);
     textLine.enter().append("tspan")
-        .attr("class", function (d, i) { return "tspan_" + i; })
+        .attr("class", function (_d, i) { return "tspan_" + i; })
         .attr("dy", "1em")
         .attr("x", "0")
         .merge(textLine)
@@ -64,6 +64,6 @@ Text.prototype.update = function (domNode, element) {
 
     this._textElement
         .style("text-anchor", this.anchor())
-        .attr("transform", function (d) { return "translate(" + xOffset + "," + yOffset + ")rotate(" + context.rotation() + ")"; })
+        .attr("transform", function (_d) { return "translate(" + xOffset + "," + yOffset + ")rotate(" + context.rotation() + ")"; })
         ;
 };
