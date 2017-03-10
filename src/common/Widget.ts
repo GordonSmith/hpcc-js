@@ -177,8 +177,8 @@ export class Widget extends PropertyExt {
     };
 
     pos(): IPos;
-    pos(_): this;
-    pos(_?): IPos | this {
+    pos(_: IPos): this;
+    pos(_?: IPos): IPos | this {
         if (!arguments.length) return this._pos;
         this._pos = _;
         if (this._overlayElement) {
@@ -425,7 +425,7 @@ export class Widget extends PropertyExt {
 
     //  Render  ---
     private _prevNow = 0;
-    render(callback) {
+    render(callback?) {
         if ((window as any).__hpcc_debug) {
             var now = Date.now();
             if (now - this._prevNow < 500) {

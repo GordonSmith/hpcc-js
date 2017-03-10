@@ -20,6 +20,7 @@
         "types": []
     },
     "include": [
+        "./src/common",
         "./src/index.ts"
     ],
     "compileOnSave": true
