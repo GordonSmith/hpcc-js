@@ -1,7 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
+//var SplitByPathPlugin = require('webpack-split-by-path');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
+/*
 const fs = require('fs');
 function gatherFiles(folder) {
     /*
@@ -13,20 +15,20 @@ function gatherFiles(folder) {
         exportFileContents += `export * from "./${folder}/${filename}";\n`
     });
     fs.writeFileSync(`./src/${folder}.ts`, exportFileContents);
-    */
     return `./src/${folder}.ts`;
 }
+*/
 
 const config = {
     entry: {
-        //common: path.resolve(__dirname, 'src/common.ts'),
-        //chart: path.resolve(__dirname, 'src/chart.ts'),
         index: path.resolve(__dirname, 'src/index.ts')
     },
     devtool: "source-map",
     output: {
         path: path.resolve(__dirname, 'lib-browser'),
-        filename: '[name].js',
+        publicPath: '../lib-browser/',
+        filename: "[name].js",
+        chunkFilename: "[name].js",
         library: "HPCCViz",
         libraryTarget: "umd"
     },
@@ -64,7 +66,24 @@ const config = {
     externals: {
     },
     plugins: [
-        new ExtractTextPlugin('index.css')
+        new ExtractTextPlugin('index.css')/*,
+        new SplitByPathPlugin([
+            {
+                name: 'vendor',
+                path: path.resolve(__dirname, '../../node_modules')
+            }, {
+                name: 'comms',
+                path: path.resolve(__dirname, '../../node_modules/@schmoo/comms')
+            }, {
+                name: 'common',
+                path: path.resolve(__dirname, 'src/common')
+            }, {
+                name: 'chart',
+                path: path.resolve(__dirname, 'src/chart')
+            }], {
+                manifest: 'app-entry'
+            })
+        */
     ]
 };
 
@@ -77,7 +96,8 @@ switch (process.env.NODE_ENV) {
         };
         break;
     case "min":
-        config.output.filename = 'index.min.js';
+        config.output.filename = "[name].min.js";
+        config.output.chunkFilename = "[name].min.js";
         config.plugins.push(new webpack.optimize.OccurrenceOrderPlugin());
         config.plugins.push(new webpack.optimize.UglifyJsPlugin());
         break;

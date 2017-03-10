@@ -1,6 +1,6 @@
 {
-    "name": "@hpcc-js/viz",
-    "version": "2.0.0",
+    "name": "@schmoo/viz",
+    "version": "2.0.1",
     "description": "hpcc-js-viz - HPCC Systems Visualization Framework",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -26,7 +26,7 @@
         "build-browser": "npm run build-browser-src && npm run build-browser-min",
         "build": "npm run build-commonjs && npm run build-es6 && npm run build-browser",
         "watch": "cross-env NODE_ENV=watch webpack",
-        "clean": "rimraf lib && rimraf lib-es6",
+        "clean": "rimraf lib && rimraf lib-es6 && rimraf lib-browser",
         "lint": "tslint ./src/**/*",
         "test": "mocha ./lib-test/test/index.js",
         "coverage": "nyc --reporter=html npm test",
@@ -34,6 +34,7 @@
         "doc": "typedoc --out ./docx/ --tsconfig ./tsconfig.json --exclude node_modules --excludeNotExported --ignoreCompilerErrors src"
     },
     "dependencies": {
+        "@schmoo/comms": "^0.0.18",
         "d3-selection": "^1.0.4",
         "d3-collection": "^1.0.2",
         "d3-scale": "^1.0.4",
@@ -52,10 +53,11 @@
     },
     "devDependencies": {
         "awesome-typescript-loader": "^3.0.8",
-        "css-loader": "^0.26.2",
+        "css-loader": "^0.27.1",
         "file-loader": "^0.10.1",
         "url-loader": "^0.5.8",
         "extract-text-webpack-plugin": "^2.0.0",
+        "webpack-split-by-path": "^2.0.0",
         "chai": "^3.5.0",
         "cross-env": "^3.1.4",
         "mocha": "^3.2.0",

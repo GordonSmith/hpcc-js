@@ -36,20 +36,20 @@ Shape.prototype.intersection = function (pointA, pointB) {
     return SVGWidget.prototype.intersection.apply(this, arguments);
 };
 
-Shape.prototype.update = function (domNode, element) {
+Shape.prototype.update = function (_domNode, element) {
     var shape = element.selectAll("rect,circle,ellipse").data([this.shape()], function (d) { return d; });
 
     var context = this;
     shape.enter().append(this.shape() === "square" ? "rect" : this.shape())
         .attr("class", "common_Shape")
-        .each(function (d) {
+        .each(function () {
             var element = d3Select(this);
             context._tooltipElement = element.append("title");
         })
         .merge(shape)
         .style("fill", this.colorFill())
         .style("stroke", this.colorStroke())
-        .each(function (d) {
+        .each(function () {
             var element = d3Select(this);
             context._tooltipElement.text(context.tooltip());
             switch (context.shape()) {

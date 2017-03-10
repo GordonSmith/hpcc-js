@@ -89,7 +89,7 @@ HTMLWidget.prototype.getBBox = function (refresh, round) {
     };
 };
 
-HTMLWidget.prototype.resize = function (size) {
+HTMLWidget.prototype.resize = function (_size) {
     var retVal = Widget.prototype.resize.apply(this, arguments);
     this._parentElement
         .style("width", this._size.width + "px")
@@ -124,7 +124,7 @@ HTMLWidget.prototype.target = function (_) {
 
         var context = this;
         this.oldPos = null;
-        this.observer = new this.MutationObserver(function (mutation) {
+        this.observer = new this.MutationObserver(function (_mutation) {
             context.syncOverlay();
         });
 
@@ -150,7 +150,7 @@ HTMLWidget.prototype.target = function (_) {
     return this;
 };
 
-HTMLWidget.prototype.postUpdate = function (domNode, element) {
+HTMLWidget.prototype.postUpdate = function (_domNode, _element) {
     Widget.prototype.postUpdate.apply(this, arguments);
     if (this._drawStartPos === "origin") {
         this._element
@@ -169,7 +169,7 @@ HTMLWidget.prototype.postUpdate = function (domNode, element) {
     }
 };
 
-HTMLWidget.prototype.exit = function (domNode, element) {
+HTMLWidget.prototype.exit = function (_domNode, _element) {
     if (this.observer) {
         this.observer.disconnect();
     }

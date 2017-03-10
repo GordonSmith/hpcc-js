@@ -18,14 +18,14 @@ FAChar.prototype.publish("char", "", "string", "Font Awesome Item", null, { tags
 FAChar.prototype.publish("fontSize", null, "number", "Font Size", null, { tags: ["Private"] });
 FAChar.prototype.publishProxy("text_colorFill", "_text", "colorFill");
 
-FAChar.prototype.enter = function (domNode, element) {
+FAChar.prototype.enter = function (domNode, _element) {
     SVGWidget.prototype.enter.apply(this, arguments);
     this._text
         .target(domNode)
         ;
 };
 
-FAChar.prototype.update = function (domNode, element) {
+FAChar.prototype.update = function (_domNode, _element) {
     SVGWidget.prototype.update.apply(this, arguments);
     this._text
         .text(this.char())
@@ -34,7 +34,7 @@ FAChar.prototype.update = function (domNode, element) {
         ;
 };
 
-FAChar.prototype.exit = function (domNode, element) {
+FAChar.prototype.exit = function (_domNode, _element) {
     this._text
         .target(null)
         ;

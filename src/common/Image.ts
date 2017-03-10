@@ -15,11 +15,11 @@ Image.prototype.publish("customHeight", "20%", "string", "Applies this height to
 Image.prototype.publish("lockAspectRatio", true, "boolean", "Locks the aspect ratio when scaling/stretching", null, { tags: ["Basic"], disable: function (w) { return w.sizing() !== "fit"; } });
 Image.prototype.publish("alignment", "center", "set", "Image Alignment", ["center", "origin"], { tags: ["Basic"] });
 
-Image.prototype.enter = function (domNode, element) {
+Image.prototype.enter = function (_domNode, _element) {
     HTMLWidget.prototype.enter.apply(this, arguments);
 };
 
-Image.prototype.update = function (domNode, element) {
+Image.prototype.update = function (_domNode, element) {
     this._drawStartPos = this.alignment();
     HTMLWidget.prototype.update.apply(this, arguments);
     var context = this;
@@ -27,7 +27,7 @@ Image.prototype.update = function (domNode, element) {
     img.enter()
         .append("img")
         .attr("src", this.source())
-        .on("load", function (d) {
+        .on("load", function () {
             img.style(context.calcSize());
         })
         .merge(img)
@@ -70,6 +70,6 @@ Image.prototype.calcSize = function () {
     return retVal;
 };
 
-Image.prototype.exit = function (domNode, element) {
+Image.prototype.exit = function (_domNode, _element) {
     HTMLWidget.prototype.exit.apply(this, arguments);
 };

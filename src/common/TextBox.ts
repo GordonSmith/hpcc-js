@@ -49,7 +49,7 @@ TextBox.prototype.enter = function (domNode, element) {
         ;
 };
 
-TextBox.prototype.update = function (domNode, element) {
+TextBox.prototype.update = function (_domNode, _element) {
     SVGWidget.prototype.update.apply(this, arguments);
     this._tooltipElement.text(this.tooltip());
     this._text
@@ -83,7 +83,7 @@ TextBox.prototype.update = function (domNode, element) {
     }
 };
 
-TextBox.prototype.exit = function (domNode, element) {
+TextBox.prototype.exit = function (_domNode, _element) {
     this._shape
         .target(null)
         ;
