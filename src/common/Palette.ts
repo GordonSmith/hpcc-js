@@ -199,7 +199,7 @@ function palette_rainbow(id?, _colors?, _steps?) {
         return rainbow;
     };
     rainbow.clone = function (newID) {
-        rainbowCache[newID] = palette_rainbow(newID, this.color());
+        rainbowCache[newID] = palette_rainbow(newID, this.colors());
         return rainbowCache[newID];
     };
     rainbow.cloneNotExists = function (newID) {

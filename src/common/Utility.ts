@@ -394,18 +394,19 @@ export function mixin(dest, _sources) {
         _mixin(dest, arguments[i]);
     }
     return dest;
-
-    function _mixin(dest, source) {
-        var s, empty = {};
-        for (var key in source) {
-            s = source[key];
-            if (!(key in dest) || (dest[key] !== s && (!(key in empty) || empty[key] !== s))) {
-                dest[key] = s;
-            }
-        }
-        return dest;
-    }
 }
+
+function _mixin(dest, source) {
+    var s, empty = {};
+    for (var key in source) {
+        s = source[key];
+        if (!(key in dest) || (dest[key] !== s && (!(key in empty) || empty[key] !== s))) {
+            dest[key] = s;
+        }
+    }
+    return dest;
+}
+
 export function exists(prop, scope) {
     if (!prop || !scope) {
         return false;
@@ -421,6 +422,7 @@ export function exists(prop, scope) {
     }
     return true;
 }
+
 export function logStringify(obj) {
     var cache = [];
     return JSON.stringify(obj, function (_key, value) {
