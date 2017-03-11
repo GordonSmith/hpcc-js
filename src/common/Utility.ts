@@ -369,6 +369,22 @@ export function parseClassID(classID, prefix) {
         memberWidgetID: parts.length > 1 ? parts[1] : null
     };
 }
+declare var require: any;
+export function requireWidget(classID) {
+    const context = this;
+    return new Promise(function (resolve, _reject) {
+        const parsedClassID = context.parseClassID(classID);
+        require([parsedClassID.path], function (Widget) {
+            if (Widget && Widget[parsedClassID.widgetID]) {
+                Widget = Widget[parsedClassID.widgetID];
+            }
+            resolve(parsedClassID.memberWidgetID ? (Widget.prototype ? Widget.prototype[parsedClassID.memberWidgetID] : Widget[parsedClassID.memberWidgetID]) : Widget);
+        });
+    });
+}
+export function requireWidgets(classIDs) {
+    return Promise.all(classIDs.map(requireWidget));
+}
 export function checksum(s) {
     if (s instanceof Array) {
         s = s.join("") + s.length;

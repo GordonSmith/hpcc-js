@@ -21,6 +21,7 @@
     },
     "include": [
         "./src/common",
+        "./src/chart",
         "./src/index.ts"
     ],
     "compileOnSave": true

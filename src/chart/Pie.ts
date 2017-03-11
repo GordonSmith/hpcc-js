@@ -1,13 +1,15 @@
-import * as d3 from "d3";
-import { SVGWidget } from "../common/SVGWidget";
-import { Text } from "../common/Text";
-import { FAChar } from "../common/FAChar";
+import "css!./Pie";
+import { interpolate as d3Interpolate } from "d3-interpolate";
+import { select as d3Select } from "d3-selection";
+import { arc as d3Arc, pie as d3Pie } from "d3-shape";
 import { I2DChart } from "../api/I2DChart";
 import { ITooltip } from "../api/ITooltip";
+import { FAChar } from "../common/FAChar";
+import { SVGWidget } from "../common/SVGWidget";
+import { Text } from "../common/Text";
 import * as Utility from "../common/Utility";
-import "css!./Pie";
 
-export function Pie(target) {
+export function Pie() {
     SVGWidget.call(this);
     I2DChart.call(this);
     ITooltip.call(this);
@@ -15,14 +17,14 @@ export function Pie(target) {
 
     this.labelWidgets = {};
 
-    this.d3Pie = d3.layout.pie()
+    this.d3Pie = d3Pie()
         .padAngle(0.0025)
         .sort(function (a, b) {
             return a < b ? -1 : a > b ? 1 : 0;
         })
         .value(function (d) { return d[1]; })
         ;
-    this.d3Arc = d3.svg.arc()
+    this.d3Arc = d3Arc()
         .padRadius(this.calcRadius())
         .innerRadius(this.innerRadius())
         ;
@@ -44,13 +46,13 @@ Pie.prototype.publish("outerText", false, "boolean", "Sets label position inside
 Pie.prototype.publish("innerRadius", 0, "number", "Sets inner pie hole radius as a percentage of the radius of the pie chart", null, { tags: ["Basic"] });
 
 Pie.prototype.pointInArc = function (pt, ptData) {
-    var r1 = this.d3Arc.innerRadius()(ptData),
-        r2 = this.d3Arc.outerRadius()(ptData),
-        theta1 = this.d3Arc.startAngle()(ptData),
-        theta2 = this.d3Arc.endAngle()(ptData);
+    const r1 = this.d3Arc.innerRadius()(ptData);
+    const r2 = this.d3Arc.outerRadius()(ptData);
+    const theta1 = this.d3Arc.startAngle()(ptData);
+    const theta2 = this.d3Arc.endAngle()(ptData);
 
-    var dist = pt.x * pt.x + pt.y * pt.y,
-        angle = Math.atan2(pt.x, -pt.y);
+    const dist = pt.x * pt.x + pt.y * pt.y;
+    let angle = Math.atan2(pt.x, -pt.y);
 
     angle = (angle < 0) ? (angle + Math.PI * 2) : angle;
 
@@ -58,10 +60,10 @@ Pie.prototype.pointInArc = function (pt, ptData) {
 };
 
 Pie.prototype.boxInArc = function (pos, bb, ptData) {
-    var topLeft = { x: pos.x + bb.x, y: pos.y + bb.y };
-    var topRight = { x: topLeft.x + bb.width, y: topLeft.y };
-    var bottomLeft = { x: topLeft.x, y: topLeft.y + bb.height };
-    var bottomRight = { x: topLeft.x + bb.width, y: topLeft.y + bb.height };
+    const topLeft = { x: pos.x + bb.x, y: pos.y + bb.y };
+    const topRight = { x: topLeft.x + bb.width, y: topLeft.y };
+    const bottomLeft = { x: topLeft.x, y: topLeft.y + bb.height };
+    const bottomRight = { x: topLeft.x + bb.width, y: topLeft.y + bb.height };
     return this.pointInArc(topLeft, ptData) && this.pointInArc(topRight, ptData) && this.pointInArc(bottomLeft, ptData) && this.pointInArc(bottomRight, ptData);
 };
 
@@ -73,10 +75,10 @@ Pie.prototype.intersection = function (pointA, pointB) {
     return this.intersectCircle(pointA, pointB);
 };
 
-Pie.prototype.enter = function (domNode, element) {
+Pie.prototype.enter = function (_domNode, element) {
     SVGWidget.prototype.enter.apply(this, arguments);
     this._selection.widgetElement(element);
-    var context = this;
+    const context = this;
     this
         .tooltipHTML(function (d) {
             return context.tooltipFormat({ label: d.data[0], value: d.data[1] });
@@ -84,16 +86,16 @@ Pie.prototype.enter = function (domNode, element) {
         ;
 };
 
-Pie.prototype.update = function (domNode, element) {
+Pie.prototype.update = function (_domNode, element) {
     SVGWidget.prototype.update.apply(this, arguments);
-    var context = this;
+    const context = this;
 
     this._palette = this._palette.switch(this.paletteID());
     if (this.useClonedPalette()) {
         this._palette = this._palette.cloneNotExists(this.paletteID() + "_" + this.id());
     }
     this.d3Arc.innerRadius(this.innerRadius_exists() ? this.calcRadius() * this.innerRadius() / 100 : 0);
-    var arc = element.selectAll(".arc").data(this.d3Pie(this.data()), function (d) { return d.data[0]; });
+    const arc = element.selectAll(".arc").data(this.d3Pie(this.data()), function (d) { return d.data[0]; });
 
     //  Enter  ---
     arc.enter().append("g")
@@ -107,8 +109,8 @@ Pie.prototype.update = function (domNode, element) {
             context.dblclick(context.rowToObj(d.data), context.columns()[1], context._selection.selected(this));
         })
         .each(function (d) {
-            var element = d3.select(this);
-            element.append("path")
+            const element2 = d3Select(this);
+            element2.append("path")
                 .on("mouseout.tooltip", context.tooltip.hide)
                 .on("mousemove.tooltip", context.tooltip.show)
                 .on("mouseover", arcTween(0, 0))
@@ -135,24 +137,24 @@ Pie.prototype.update = function (domNode, element) {
         .attr("opacity", 1)
         .each(function (d) {
             d.outerRadius = context.calcRadius() - 5;
-            var pos = { x: 0, y: 1 };
+            let pos = { x: 0, y: 1 };
             if (context.outerText()) {
-                var xFactor = Math.cos((d.startAngle + d.endAngle - Math.PI) / 2);
-                var yFactor = Math.sin((d.startAngle + d.endAngle - Math.PI) / 2);
+                const xFactor = Math.cos((d.startAngle + d.endAngle - Math.PI) / 2);
+                const yFactor = Math.sin((d.startAngle + d.endAngle - Math.PI) / 2);
 
-                var textBBox = context.labelWidgets[d.data[0]].getBBox();
-                var textOffset = Math.abs(xFactor) > Math.abs(yFactor) ? textBBox.width : textBBox.height;
+                const textBBox = context.labelWidgets[d.data[0]].getBBox();
+                const textOffset = Math.abs(xFactor) > Math.abs(yFactor) ? textBBox.width : textBBox.height;
                 pos.x = xFactor * (context.calcRadius() + textOffset);
                 pos.y = yFactor * (context.calcRadius() + textOffset);
             } else {
-                var centroid = context.d3Arc.centroid(d);
+                const centroid = context.d3Arc.centroid(d);
                 pos = { x: centroid[0], y: centroid[1] };
             }
 
-            var element = d3.select(this);
-            element.select("path").transition()
+            const element2 = d3Select(this);
+            element2.select("path").transition()
                 .attr("d", context.d3Arc)
-                .style("fill", function (d) { return context._palette(d.data[0]); })
+                .style("fill", function (d2) { return context._palette(d2.data[0]); })
                 ;
             context.labelWidgets[d.data[0]]
                 .pos(pos)
@@ -173,7 +175,7 @@ Pie.prototype.update = function (domNode, element) {
 
     //  Label Lines  ---
     if (context.outerText()) {
-        var lines = element.selectAll("line").data(this.d3Pie(this.data()), function (d) { return d.data[0]; });
+        const lines = element.selectAll("line").data(this.d3Pie(this.data()), function (d) { return d.data[0]; });
         lines.enter().append("line")
             .attr("x1", 0)
             .attr("x2", 0)
@@ -192,14 +194,14 @@ Pie.prototype.update = function (domNode, element) {
 
     function arcTween(outerRadiusDelta, delay) {
         return function () {
-            d3.select(this).transition().delay(delay).attrTween("d", function (d) {
-                var i = d3.interpolate(d.outerRadius, context.calcRadius() + outerRadiusDelta);
+            d3Select(this).transition().delay(delay).attrTween("d", function (d) {
+                const i = d3Interpolate(d.outerRadius, context.calcRadius() + outerRadiusDelta);
                 return function (t) { d.outerRadius = i(t); return context.d3Arc(d); };
             });
         };
     }
 };
 
-Pie.prototype.exit = function (domNode, element) {
+Pie.prototype.exit = function (_domNode, _element) {
     SVGWidget.prototype.exit.apply(this, arguments);
 };

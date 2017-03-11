@@ -1,13 +1,14 @@
-import * as d3 from "d3";
-import { SVGWidget } from "../common/SVGWidget";
+import "css!./Bubble";
+import { pack as d3Pack } from "d3-hierarchy";
+import { select as d3Select } from "d3-selection";
 import { I2DChart } from "../api/I2DChart";
 import { ITooltip } from "../api/ITooltip";
-import { Text } from "../common/Text";
 import { FAChar } from "../common/FAChar";
+import { SVGWidget } from "../common/SVGWidget";
+import { Text } from "../common/Text";
 import * as Utility from "../common/Utility";
-import "css!./Bubble";
 
-export function Bubble(target) {
+export function Bubble() {
     SVGWidget.call(this);
     I2DChart.call(this);
     ITooltip.call(this);
@@ -17,7 +18,7 @@ export function Bubble(target) {
 
     this.labelWidgets = {};
 
-    this.d3Pack = d3.layout.pack()
+    this.d3Pack = d3Pack()
         .sort(function (a, b) { return a < b ? -1 : a > b ? 1 : 0; })
         .size([this.width(), this.height()])
         .value(function (d) { return d[1]; })
@@ -34,7 +35,7 @@ Bubble.prototype.publish("paletteID", "default", "set", "Palette ID", Bubble.pro
 Bubble.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
 
 Bubble.prototype.size = function (_) {
-    var retVal = SVGWidget.prototype.size.apply(this, arguments);
+    const retVal = SVGWidget.prototype.size.apply(this, arguments);
     if (arguments.length) {
         this.d3Pack
             .size([this.width(), this.height()])
@@ -43,10 +44,10 @@ Bubble.prototype.size = function (_) {
     return retVal;
 };
 
-Bubble.prototype.enter = function (domNode, element) {
+Bubble.prototype.enter = function (_domNode, element) {
     SVGWidget.prototype.enter.apply(this, arguments);
     this._selection.widgetElement(element);
-    var context = this;
+    const context = this;
     this
         .tooltipHTML(function (d) {
             return context.tooltipFormat({ label: d[0], value: d[1] });
@@ -54,15 +55,15 @@ Bubble.prototype.enter = function (domNode, element) {
         ;
 };
 
-Bubble.prototype.update = function (domNode, element) {
-    var context = this;
+Bubble.prototype.update = function (_domNode, element) {
+    const context = this;
 
     this._palette = this._palette.switch(this.paletteID());
     if (this.useClonedPalette()) {
         this._palette = this._palette.cloneNotExists(this.paletteID() + "_" + this.id());
     }
 
-    var node = element.selectAll(".node")
+    const node = element.selectAll(".node")
         .data(this.data().length ? this.d3Pack.nodes({ children: this.cloneData() }).filter(function (d) { return !d.children; }) : [], function (d) { return d[0]; })
         ;
 
@@ -78,9 +79,9 @@ Bubble.prototype.update = function (domNode, element) {
             context.dblclick(context.rowToObj(d), context.columns()[1], context._selection.selected(this));
         })
         .each(function (d) {
-            var element = d3.select(this);
-            element.append("circle")
-                .attr("r", function (d) { return d.r; })
+            const element2 = d3Select(this);
+            element2.append("circle")
+                .attr("r", function (d2) { return d2.r; })
                 .on("mouseout.tooltip", context.tooltip.hide)
                 .on("mousemove.tooltip", context.tooltip.show)
                 ;
@@ -101,14 +102,14 @@ Bubble.prototype.update = function (domNode, element) {
         .merge(node).transition()
         .attr("opacity", 1)
         .each(function (d) {
-            var element = d3.select(this);
-            var pos = { x: d.x, y: d.y };
-            element.select("circle").transition()
-                .attr("transform", function (d) { return "translate(" + pos.x + "," + pos.y + ")"; })
-                .style("fill", function (d) { return context._palette(d[0]); })
-                .attr("r", function (d) { return d.r; })
+            const element2 = d3Select(this);
+            const pos = { x: d.x, y: d.y };
+            element2.select("circle").transition()
+                .attr("transform", function () { return "translate(" + pos.x + "," + pos.y + ")"; })
+                .style("fill", function (d2) { return context._palette(d2[0]); })
+                .attr("r", function (d2) { return d2.r; })
                 .select("title")
-                .text(function (d) { return d[0] + " (" + d[1] + ")"; })
+                .text(function (d2) { return d2[0] + " (" + d2[1] + ")"; })
                 ;
             if (d.__viz_faChar) {
                 context.labelWidgets[d[0]]
@@ -116,8 +117,8 @@ Bubble.prototype.update = function (domNode, element) {
                     .render()
                     ;
             } else {
-                var label = d[0];
-                var labelWidth = context.labelWidgets[d[0]].getBBox().width;
+                let label = d[0];
+                const labelWidth = context.labelWidgets[d[0]].getBBox().width;
                 if (d.r * 2 < 16) {
                     label = "";
                 } else if (d.r * 2 < labelWidth) {
@@ -139,6 +140,6 @@ Bubble.prototype.update = function (domNode, element) {
         ;
 };
 
-Bubble.prototype.exit = function (domNode, element) {
+Bubble.prototype.exit = function (_domNode, _element) {
     SVGWidget.prototype.exit.apply(this, arguments);
 };
