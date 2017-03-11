@@ -1,12 +1,10 @@
+import "css!./Bullet";
+import { bullet as d3Bullet } from "d3-bullet";
 import { select as d3Select } from "d3-selection";
-import * as _D3Bullet from "d3-bullet";
 import { HTMLWidget } from "../common/HTMLWidget";
 import * as Utility from "../common/Utility";
-import "css!./Bullet";
 
-const D3Bullet = _D3Bullet || d3.bullet || (window as any).d3.bullet;
-
-export function Bullet(target) {
+export function Bullet() {
     HTMLWidget.call(this);
     Utility.SimpleSelectionMixin.call(this, true);
 }
@@ -21,7 +19,7 @@ Bullet.prototype.publish("measuresColumn", null, "set", "Measures Column", funct
 Bullet.prototype.publish("markersColumn", null, "set", "Markers Column", function () { return this.columns(); }, { optional: true });
 
 Bullet.prototype.bulletData = function () {
-    var columns = this.columns();
+    const columns = this.columns();
     return this.data().map(function (row) {
         return {
             title: valueOf(row, this.titleColumn()),
@@ -34,7 +32,7 @@ Bullet.prototype.bulletData = function () {
     }, this);
 
     function valueOf(row, column) {
-        var colIdx = columns.indexOf(column);
+        const colIdx = columns.indexOf(column);
         if (colIdx >= 0) {
             if (row[colIdx] instanceof Array) {
                 return row[colIdx];
@@ -47,19 +45,19 @@ Bullet.prototype.bulletData = function () {
 
 Bullet.prototype.enter = function (domNode, element) {
     HTMLWidget.prototype.enter.apply(this, arguments);
-    d3.select(domNode.parentNode).style("overflow", "auto");
+    d3Select(domNode.parentNode).style("overflow", "auto");
     this._selection.widgetElement(element);
 };
 
-Bullet.prototype.update = function (domNode, element) {
+Bullet.prototype.update = function (_domNode, element) {
     HTMLWidget.prototype.update.apply(this, arguments);
-    var context = this;
+    const context = this;
 
-    var margin = { top: 8, right: 16, bottom: 20, left: 16 },
-        width = this.width() - margin.left - margin.right,
-        height = 50 - margin.top - margin.bottom;
+    const margin = { top: 8, right: 16, bottom: 20, left: 16 };
+    const width = this.width() - margin.left - margin.right;
+    const height = 50 - margin.top - margin.bottom;
 
-    var svg = element.selectAll("svg").data(this.bulletData());
+    const svg = element.selectAll("svg").data(this.bulletData());
     svg.enter().append("svg")
         .attr("class", "bullet")
         .call(this._selection.enter.bind(this._selection))
@@ -69,12 +67,12 @@ Bullet.prototype.update = function (domNode, element) {
         .on("dblclick", function (d) {
             context.dblclick(context.rowToObj(d.origRow), context.titleColumn(), context._selection.selected(this));
         })
-        .each(function (d) {
-            var element = d3.select(this);
-            var bulletBar = element.append("g")
+        .each(function () {
+            const element2 = d3Select(this);
+            const bulletBar = element2.append("g")
                 .attr("class", "bulletBar")
                 ;
-            var bulletTitle = bulletBar.append("g")
+            const bulletTitle = bulletBar.append("g")
                 .attr("class", "bulletTitle")
                 ;
             bulletTitle.append("text")
@@ -88,7 +86,7 @@ Bullet.prototype.update = function (domNode, element) {
         ;
 
     //  Title ---
-    var title = svg.select(".bulletTitle")
+    const title = svg.select(".bulletTitle")
         .style("text-anchor", "end")
         .attr("transform", "translate(-6," + height / 2 + ")")
         ;
@@ -98,16 +96,16 @@ Bullet.prototype.update = function (domNode, element) {
     title.select(".subtitle")
         .text(function (d) { return d.subtitle; })
         ;
-    var titleWidth = 0;
+    let titleWidth = 0;
     title.each(function () {
-        var bbox = this.getBBox();
+        const bbox = this.getBBox();
         if (bbox.width > titleWidth) {
             titleWidth = bbox.width;
         }
     });
 
     //  Bullet Chart ---
-    var chart = new D3Bullet()
+    const chart = new d3Bullet()
         .width(width - titleWidth)
         .height(height)
         ;
@@ -122,7 +120,7 @@ Bullet.prototype.update = function (domNode, element) {
     svg.exit().remove();
 };
 
-Bullet.prototype.exit = function (domNode, element) {
+Bullet.prototype.exit = function (_domNode, _element) {
     HTMLWidget.prototype.exit.apply(this, arguments);
 };
 
