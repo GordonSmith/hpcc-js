@@ -197,12 +197,16 @@ export class Widget extends PropertyExt {
         return this;
     };
 
+    y(): number;
+    y(_): Widget;
     y(_?): number | Widget {
         if (!arguments.length) return this._pos.y;
         this.pos({ x: this._pos.x, y: _ });
         return this;
     };
 
+    size(): ISize;
+    size(_): Widget;
     size(_?): ISize | Widget {
         if (!arguments.length) return this._size;
         this._size = _;

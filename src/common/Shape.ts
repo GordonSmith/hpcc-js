@@ -1,3 +1,4 @@
+import "./Shape.css";
 import { select as d3Select } from "d3-selection";
 import { SVGWidget } from "./SVGWidget";
 import "css!./Shape.css";

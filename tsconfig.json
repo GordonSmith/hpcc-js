@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "outDir": "./lib-es6",
+        "outDir": "./tmp/src",
         "module": "es6",
         "moduleResolution": "node",
         "importHelpers": true,
@@ -17,12 +17,14 @@
             "es2015.promise",
             "dom"
         ],
-        "types": []
+        "types": [
+            "mocha",
+            "chai"
+        ]
     },
     "include": [
-        "./src/common",
-        "./src/chart",
-        "./src/index.ts"
+        "./src/index-node.ts",
+        "./src/index-browser.ts"
     ],
     "compileOnSave": true
 }

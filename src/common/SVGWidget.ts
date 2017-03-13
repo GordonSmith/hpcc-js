@@ -90,11 +90,11 @@ export class SVGWidget extends Widget {
 
     _tag;
 
-    private _boundingBox;
-    private transition;
-    private _drawStartPos;
-    private _parentRelativeDiv;
-    private _parentOverlay;
+    protected _boundingBox;
+    protected transition;
+    protected _drawStartPos;
+    protected _parentRelativeDiv;
+    protected _parentOverlay;
 
     constructor() {
         super();

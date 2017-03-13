@@ -10,7 +10,7 @@ const d3Schemes = {
     category20c: d3SchemeCategory20c
 };
 
-const m_colorbrewer = _colorbrewer || (window as any).colorbrewer;
+const m_colorbrewer = _colorbrewer.default;
 
 var d3Ordinal = [
     "category10", "category20", "category20b", "category20c"

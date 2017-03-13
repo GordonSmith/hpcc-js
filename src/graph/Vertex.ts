@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { SVGWidget } from "../common/SVGWidget";
 import { TextBox } from "../common/TextBox";
 import { Icon } from "../common/Icon";
-import "css!./Vertex";
+import "./Vertex";
 
 export function Vertex() {
     SVGWidget.call(this);

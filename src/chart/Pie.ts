@@ -1,4 +1,4 @@
-import "css!./Pie";
+import "./Pie.css";
 import { interpolate as d3Interpolate } from "d3-interpolate";
 import { select as d3Select } from "d3-selection";
 import { arc as d3Arc, pie as d3Pie } from "d3-shape";

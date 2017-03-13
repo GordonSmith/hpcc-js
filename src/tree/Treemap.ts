@@ -3,7 +3,7 @@ import { HTMLWidget } from "../common/HTMLWidget";
 import { PropertyExt } from "../common/PropertyExt";
 import { ITree } from "../api/ITree";
 import * as Utility from "../common/Utility";
-import "css!./Treemap";
+import "./Treemap";
 
 function Column(owner) {
     PropertyExt.call(this);

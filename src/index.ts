@@ -5,6 +5,8 @@ export * from "./common/TextBox";
 
 export * from "./chart/Column";
 export * from "./chart/Bar";
+export * from "./chart/Pie";
+export * from "./chart/Bubble";
 export * from "./chart/Scatter";
 export * from "./chart/Line";
 export * from "./chart/Area";

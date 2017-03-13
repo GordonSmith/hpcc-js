@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { SVGWidget } from "../common/SVGWidget";
 import { ITree } from "../api/ITree";
-import "css!./SunburstPartition";
+import "./SunburstPartition";
 
 export function SunburstPartition(target) {
     SVGWidget.call(this);

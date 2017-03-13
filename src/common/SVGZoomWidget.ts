@@ -1,4 +1,5 @@
-﻿import { event as d3Event } from "d3-selection";
+﻿import "./SVGZoomWidget.css";
+import { event as d3Event } from "d3-selection";
 import { zoom as d3Zoom } from "d3-zoom";
 import { SVGWidget } from "./SVGWidget";
 import { Icon } from "./Icon";

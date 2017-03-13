@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { SVGWidget } from "../common/SVGWidget";
 import { ITree } from "../api/ITree";
-import "css!./CirclePacking";
+import "./CirclePacking";
 
 export function CirclePacking(target) {
     SVGWidget.call(this);

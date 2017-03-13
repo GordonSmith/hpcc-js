@@ -6,7 +6,7 @@ import { Edge } from "./Edge";
 import { GraphData } from "./GraphData";
 import * as GraphLayouts from "./GraphLayouts";
 import * as Utility from "../common/Utility";
-import "css!./Graph";
+import "./Graph";
 
 export function Graph() {
     SVGWidget.call(this);

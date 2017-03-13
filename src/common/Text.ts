@@ -1,5 +1,4 @@
-import { SVGWidget } from "./SVGWidget";
-import "css!./Text.css";
+import "./Text.css";
 
 export class Text extends SVGWidget {
 

@@ -3,7 +3,8 @@
 coverage
 node_modules
 bower_components
-lib*/
+tmp/
+lib/
 Web.config
 nbproject
 docx

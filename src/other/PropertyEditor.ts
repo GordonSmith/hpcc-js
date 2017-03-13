@@ -3,7 +3,7 @@ import { HTMLWidget } from "../common/HTMLWidget";
 import { Widget } from "../common/Widget";
 import * as Persist from "../other/Persist";
 import { Grid } from "../layout/Grid";
-import "css!./PropertyEditor";
+import "./PropertyEditor";
 
 function hasProperties(type) {
     switch (type) {

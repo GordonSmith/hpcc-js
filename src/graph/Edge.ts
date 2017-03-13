@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { SVGWidget } from "../common/SVGWidget";
 import { TextBox } from "../common/TextBox";
-import "css!./Edge";
+import "./Edge";
 
 export function Edge() {
     SVGWidget.call(this);

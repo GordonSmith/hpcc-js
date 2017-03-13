@@ -3,7 +3,7 @@ import { SVGZoomWidget } from "../common/SVGZoomWidget";
 import { PropertyExt } from "../common/PropertyExt";
 import { ITree } from "../api/ITree";
 import * as Utility from "../common/Utility";
-import "css!./Indented";
+import "./Indented";
 
 function Column(owner) {
     PropertyExt.call(this);

@@ -1,7 +1,4 @@
-import { SVGWidget } from "./SVGWidget";
-import { Shape } from "./Shape";
-import { FAChar } from "./FAChar";
-import "css!./Icon.css";
+import "./Icon.css";
 
 export class Icon extends SVGWidget {
 

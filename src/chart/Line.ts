@@ -1,5 +1,5 @@
 import { Scatter } from "./Scatter";
-import "css!./Line.css";
+import "./Line.css";
 
 export function Line() {
     Scatter.call(this);

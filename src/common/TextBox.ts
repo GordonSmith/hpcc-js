@@ -1,5 +1,4 @@
-import { ISize } from "./Widget";
-import { SVGWidget } from "./SVGWidget";
+import "./TextBox.css";
 import { Shape } from "./Shape";
 import { Text } from "./Text";
 import "css!./TextBox.css";
