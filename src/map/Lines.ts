@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { Layer } from './Layer';
-import "css!./Lines";
+import "./Lines";
 
 export function Lines() {
     Layer.call(this);

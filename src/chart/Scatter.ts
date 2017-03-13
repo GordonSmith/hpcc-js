@@ -5,7 +5,7 @@ import { SVGWidget } from "../common/SVGWidget";
 import { INDChart } from "../api/INDChart";
 import { ITooltip } from "../api/ITooltip";
 import { XYAxis } from "./XYAxis";
-import "css!./Scatter.css";
+import "./Scatter.css";
 
 export function Scatter() {
     XYAxis.call(this);

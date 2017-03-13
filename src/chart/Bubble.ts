@@ -1,4 +1,4 @@
-import "css!./Bubble";
+import "./Bubble.css";
 import { pack as d3Pack } from "d3-hierarchy";
 import { select as d3Select } from "d3-selection";
 import { I2DChart } from "../api/I2DChart";

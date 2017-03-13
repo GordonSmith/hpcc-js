@@ -3,7 +3,7 @@ import * as GridList from "grid-list";
 import { HTMLWidget } from "../common/HTMLWidget";
 import * as Utility from "../common/Utility";
 import { Cell } from "./Cell";
-import "css!./Grid";
+import "./Grid";
 
 export function Grid() {
     HTMLWidget.call(this);

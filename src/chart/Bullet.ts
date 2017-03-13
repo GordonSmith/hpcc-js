@@ -1,4 +1,4 @@
-import "css!./Bullet";
+import "./Bullet";
 import { bullet as d3Bullet } from "d3-bullet";
 import { select as d3Select } from "d3-selection";
 import { HTMLWidget } from "../common/HTMLWidget";

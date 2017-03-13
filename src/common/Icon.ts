@@ -1,4 +1,4 @@
-import "css!./Icon.css";
+import "./Icon.css";
 import { FAChar } from "./FAChar";
 import { Shape } from "./Shape";
 import { SVGWidget } from "./SVGWidget";

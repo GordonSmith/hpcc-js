@@ -4,7 +4,7 @@ import { SVGWidget } from "../common/SVGWidget";
 import * as Palette from "../common/Palette";
 import { PropertyExt } from "../common/PropertyExt";
 import * as Utility from "../common/Utility";
-import "css!./Sankey";
+import "./Sankey";
 
 const D3Sankey = _D3Sankey || d3.sankey || (window as any).d3.sankey;
 

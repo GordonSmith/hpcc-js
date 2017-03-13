@@ -1,4 +1,4 @@
-import "css!./Surface.css";
+import "./Surface.css";
 import { select as d3Select } from "d3-selection";
 import { Icon } from "./Icon";
 import { Menu } from "./Menu";

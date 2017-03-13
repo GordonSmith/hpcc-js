@@ -1,4 +1,4 @@
-import "css!./HexBin.css";
+import "./HexBin.css";
 import { max as d3Max } from "d3-array";
 import { hexbin as d3HexBin } from "d3-hexbin";
 import { INDChart } from "../api/INDChart";

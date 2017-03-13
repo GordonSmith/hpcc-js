@@ -1,4 +1,4 @@
-import "css!./TextBox.css";
+import "./TextBox.css";
 import { Shape } from "./Shape";
 import { SVGWidget } from "./SVGWidget";
 import { Text } from "./Text";

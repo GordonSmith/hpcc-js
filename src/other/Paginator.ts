@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { HTMLWidget } from "../common/HTMLWidget";
-import "css!./Paginator";
+import "./Paginator";
 
 export function Paginator() {
     HTMLWidget.call(this);

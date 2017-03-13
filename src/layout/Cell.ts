@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { Surface } from "./Surface";
-import "css!./Cell";
+import "./Cell";
 
 export function Cell() {
     Surface.call(this);

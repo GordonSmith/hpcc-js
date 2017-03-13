@@ -1,4 +1,4 @@
-import "css!./ResizeSurface.css";
+import "./ResizeSurface.css";
 import { dispatch as d3Dispatch } from "d3-dispatch";
 import { drag as d3Drag } from "d3-drag";
 import { event as d3Event, select as d3Select } from "d3-selection";

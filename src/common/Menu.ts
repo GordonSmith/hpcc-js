@@ -1,4 +1,4 @@
-import "css!./Menu.css";
+import "./Menu.css";
 import { event as d3Event, select as d3Select } from "d3-selection";
 import { IMenu } from "./IMenu";
 import { SVGWidget } from "./SVGWidget";

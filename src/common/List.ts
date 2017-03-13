@@ -1,4 +1,4 @@
-import "css!./List.css";
+import "./List.css";
 import { IList } from "./IList";
 import { SVGWidget } from "./SVGWidget";
 import { TextBox } from "./TextBox";

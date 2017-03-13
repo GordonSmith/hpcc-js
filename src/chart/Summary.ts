@@ -1,5 +1,5 @@
-import "css!./Summary";
-import "css!font-awesome";
+import "./Summary";
+import "font-awesome";
 import { rgb as d3Rgb } from "d3-color";
 import { select as d3Select } from "d3-selection";
 import { I2DChart } from "../api/I2DChart";

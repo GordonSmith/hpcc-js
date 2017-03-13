@@ -1,5 +1,5 @@
-import "css!./FAChar.css";
-import "css!font-awesome/css/font-awesome.css";
+import "./FAChar.css";
+import "font-awesome/css/font-awesome.css";
 import { SVGWidget } from "./SVGWidget";
 import { Text } from "./Text";
 
