@@ -54,7 +54,7 @@ HexBin.prototype.updateChart = function (_domNode, _element, _margin, width, hei
     const data = this.flattenData();
     const dataPoints = data.map(function (d) { return [context.xPos(d), context.yPos(d)]; });
     const hexBinPoints = this._hexbin(dataPoints);
-    const maxBinPoints = d3Max(hexBinPoints, function (d) { return d.length; });
+    const maxBinPoints = d3Max(hexBinPoints, function (d: any) { return d.length; });
 
     const points = this.svgData.selectAll(".hexagon").data(hexBinPoints, function (d) { return d.i + "_" + d.j; });
     points.enter().append("path")

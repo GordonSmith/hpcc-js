@@ -13,9 +13,7 @@
         "prefer-for-of": true,
         "member-access": false,
         "variable-name": [
-            true,
-            "allow-leading-underscore",
-            "allow-pascal-case"
+            false
         ],
         "object-literal-sort-keys": false,
         "trailing-comma": [
@@ -24,6 +22,9 @@
                 "multiline": "always",
                 "singleline": "never"
             }
+        ],
+        "no-console": [
+            false
         ],
         "curly": false,
         "member-ordering": [

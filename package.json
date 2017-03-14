@@ -43,6 +43,7 @@
         "d3-axis": "^1.0.5",
         "d3-shape": "^1.0.5",
         "d3-hierarchy": "^1.1.4",
+        "d3-treemap": "^",
         "d3-hexbin": "^0.2.1",
         "d3-bullet": "^1.0.0",
         "d3-tip": "GordonSmith/d3-tip#vJSNEXT",
@@ -52,6 +53,7 @@
         "tslib": "^1.6.0"
     },
     "devDependencies": {
+        "@types/d3": "^4.7.0",
         "@types/chai": "^3.4.35",
         "@types/mocha": "^2.2.40",
         "cpx": "^1.5.0",

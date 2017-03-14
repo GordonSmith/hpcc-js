@@ -11,8 +11,8 @@ export class XYAxis extends SVGWidget {
     protected valueAxis: Axis;
     protected xAxis: Axis;
     protected yAxis: Axis;
-    protected xBrush: d3BrushX;
-    protected yBrush: d3BrushY;
+    protected xBrush;
+    protected yBrush;
     protected margin;
     protected focusChart;
     _palette;

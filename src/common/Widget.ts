@@ -3,6 +3,7 @@ import { } from "./Platform";
 import { debounce } from "./Utility";
 import { PropertyExt } from "./PropertyExt";
 import { Field, Grid } from "./Database";
+import "./Widget.css";
 
 export interface IPos {
     x: number;
