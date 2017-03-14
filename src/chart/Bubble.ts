@@ -57,9 +57,11 @@ export class Bubble extends SVGWidget {
             this._palette = this._palette.cloneNotExists(this.paletteID() + "_" + this.id());
         }
 
-        var root = d3Hierarchy({ children: this.cloneData() })
+        const root = d3Hierarchy({ children: this.cloneData() })
             .sum(function (d) { return d[1]; })
-            .sort(function (a, b) { return a < b ? -1 : a > b ? 1 : 0; })
+            .sort(function (b, a) {
+                return a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0;
+            })
             ;
         this.d3Pack(root);
 
@@ -168,4 +170,3 @@ Bubble.prototype.mixin(Utility.SimpleSelectionMixin);
 
 Bubble.prototype.publish("paletteID", "default", "set", "Palette ID", Bubble.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
 Bubble.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
-

@@ -15,3 +15,4 @@ export * from "./chart/Gantt";
 export * from "./chart/HexBin";
 
 export { Column as TreemapColumn, Treemap } from "./tree/Treemap";
+export * from "./tree/CirclePacking";

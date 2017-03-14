@@ -93,7 +93,6 @@ export class Treemap extends HTMLWidget {
             ;
         this._d3Treemap(root);
 
-
         this._elementDIV
             .style("font-size", this.fontSize_exists() ? this.fontSize() + "px" : null)
             .style("line-height", this.fontSize_exists() ? (this.fontSize() + 2) + "px" : null)
