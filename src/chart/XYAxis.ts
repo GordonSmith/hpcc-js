@@ -24,7 +24,7 @@ export class XYAxis extends SVGWidget {
         this._drawStartPos = "origin";
 
         this.domainAxis = new Axis()
-            .classed({ "domain": true })
+            .classed({ domain: true })
             .orientation_default("bottom")
             .type_default("ordinal")
             .overlapMode_default("stagger")
@@ -32,7 +32,7 @@ export class XYAxis extends SVGWidget {
             .extend_default(0)
             ;
         this.valueAxis = new Axis()
-            .classed({ "value": true })
+            .classed({ value: true })
             .orientation_default("left")
             .type_default("linear")
             .shrinkToFit_default("high")
@@ -140,7 +140,9 @@ export class XYAxis extends SVGWidget {
     };
 
     resizeBrushHandle(d, width, height) {
-        let e, x, y;
+        let e;
+        let x;
+        let y;
         if (d === "e" || d === "w") {
             e = +(d === "e");
             x = e ? 1 : -1;
@@ -354,10 +356,10 @@ export class XYAxis extends SVGWidget {
             ;
 
         this.xBrush
-            //.x(this.domainAxis.d3Scale)
+            .x(this.domainAxis.d3Scale)
             ;
         this.yBrush
-            //.y(this.domainAxis.d3Scale)
+            .y(this.domainAxis.d3Scale)
             ;
         if (this.selectionMode()) {
             if (this._prevXAxisType !== this.xAxisType()) {
@@ -404,7 +406,7 @@ export class XYAxis extends SVGWidget {
             }
             this._prevBrush = {
                 orientation: this.orientation(),
-                maxCurrExtent: maxCurrExtent
+                maxCurrExtent
             };
         }
 
@@ -516,6 +518,7 @@ export class XYAxis extends SVGWidget {
     xAxisTickCount: { (): number; (_: number): XYAxis; };
     xAxisTickFormat: { (): string; (_: string): XYAxis; };
     xAxisType: { (): string; (_: string): XYAxis; };
+    xAxisType_default: { (): string; (_: string): XYAxis; };
     xAxisTypeTimePattern: { (): string; (_: string): XYAxis; };
     xAxisDomainLow: { (): string; (_: string): XYAxis; };
     xAxisDomainHigh: { (): string; (_: string): XYAxis; };
@@ -524,6 +527,7 @@ export class XYAxis extends SVGWidget {
     xAxisLabelRotation: { (): number; (_: number): XYAxis; };
     xAxisDomainPadding: { (): number; (_: number): XYAxis; };
     xAxisGuideLines: { (): boolean; (_: boolean): XYAxis; };
+    xAxisGuideLines_default: { (): boolean; (_: boolean): XYAxis; };
     xAxisFocus: { (): boolean; (_: boolean): XYAxis; };
     xAxisFocusHeight: { (): number; (_: number): XYAxis; };
 
@@ -531,6 +535,7 @@ export class XYAxis extends SVGWidget {
     yAxisTickCount: { (): number; (_: number): XYAxis; };
     yAxisTickFormat: { (): string; (_: string): XYAxis; };
     yAxisType: { (): string; (_: string): XYAxis; };
+    yAxisType_default: { (): string; (_: string): XYAxis; };
     yAxisTypeTimePattern: { (): string; (_: string): XYAxis; };
     yAxisTypePowExponent: { (): number; (_: number): XYAxis; };
     yAxisTypeLogBase: { (): number; (_: number): XYAxis; };
@@ -539,6 +544,7 @@ export class XYAxis extends SVGWidget {
     yAxisDomainHigh: { (): string; (_: string): XYAxis; };
     yAxisDomainPadding: { (): number; (_: number): XYAxis; };
     yAxisGuideLines: { (): boolean; (_: boolean): XYAxis; };
+    yAxisGuideLines_default: { (): boolean; (_: boolean): XYAxis; };
 
     regions: { (): any[]; (_: string): XYAxis; };
     sampleData: { (): string; (_: string): XYAxis; };
@@ -554,14 +560,14 @@ XYAxis.prototype.publishProxy("xAxisTickCount", "domainAxis", "tickCount");
 XYAxis.prototype.publishProxy("xAxisTickFormat", "domainAxis", "tickFormat");
 XYAxis.prototype.publishProxy("xAxisType", "domainAxis", "type");
 XYAxis.prototype.publishProxy("xAxisTypeTimePattern", "domainAxis", "timePattern");
-XYAxis.prototype.publish("xAxisDomainLow", null, "string", "X-Axis Low", null, { optional: true, disable: function (w) { return w.xAxisType() === "ordinal"; } });
-XYAxis.prototype.publish("xAxisDomainHigh", null, "string", "X-Axis High", null, { optional: true, disable: function (w) { return w.xAxisType() === "ordinal"; } });
+XYAxis.prototype.publish("xAxisDomainLow", null, "string", "X-Axis Low", null, { optional: true, disable: (w) => { return w.xAxisType() === "ordinal"; } });
+XYAxis.prototype.publish("xAxisDomainHigh", null, "string", "X-Axis High", null, { optional: true, disable: (w) => { return w.xAxisType() === "ordinal"; } });
 XYAxis.prototype.publishProxy("xAxisOverlapMode", "domainAxis", "overlapMode");
 XYAxis.prototype.publishProxy("xAxisLabelRotation", "domainAxis", "labelRotation");
 XYAxis.prototype.publishProxy("xAxisDomainPadding", "domainAxis", "extend");
 XYAxis.prototype.publish("xAxisGuideLines", false, "boolean", "Y-Axis Guide Lines");
-XYAxis.prototype.publish("xAxisFocus", false, "boolean", "X-Axis Focus", null, { disable: function (w) { return w.orientation() !== "horizontal"; } });
-XYAxis.prototype.publish("xAxisFocusHeight", 80, "number", "X-Axis Focus Height", null, { disable: function (w) { return !w.xAxisFocus(); } });
+XYAxis.prototype.publish("xAxisFocus", false, "boolean", "X-Axis Focus", null, { disable: (w) => { return w.orientation() !== "horizontal"; } });
+XYAxis.prototype.publish("xAxisFocusHeight", 80, "number", "X-Axis Focus Height", null, { disable: (w) => { return !w.xAxisFocus(); } });
 
 XYAxis.prototype.publishProxy("yAxisTitle", "valueAxis", "title");
 XYAxis.prototype.publishProxy("yAxisTickCount", "valueAxis", "tickCount");
@@ -570,13 +576,12 @@ XYAxis.prototype.publishProxy("yAxisType", "valueAxis", "type");
 XYAxis.prototype.publishProxy("yAxisTypeTimePattern", "valueAxis", "timePattern");
 XYAxis.prototype.publishProxy("yAxisTypePowExponent", "valueAxis", "powExponent");
 XYAxis.prototype.publishProxy("yAxisTypeLogBase", "valueAxis", "logBase");
-XYAxis.prototype.publish("yAxisStacked", false, "boolean", "Stacked Chart", null, { tags: ["Basic"], disable: function (w) { return w.xAxisType() !== "ordinal" || w._class.indexOf("chart_Column") < 0; } });
-XYAxis.prototype.publish("yAxisDomainLow", null, "string", "Y-Axis Low", null, { optional: true, disable: function (w) { return w.yAxisType() === "ordinal"; } });
-XYAxis.prototype.publish("yAxisDomainHigh", null, "string", "Y-Axis High", null, { optional: true, disable: function (w) { return w.yAxisType() === "ordinal"; } });
+XYAxis.prototype.publish("yAxisStacked", false, "boolean", "Stacked Chart", null, { tags: ["Basic"], disable: (w) => { return w.xAxisType() !== "ordinal" || w._class.indexOf("chart_Column") < 0; } });
+XYAxis.prototype.publish("yAxisDomainLow", null, "string", "Y-Axis Low", null, { optional: true, disable: (w) => { return w.yAxisType() === "ordinal"; } });
+XYAxis.prototype.publish("yAxisDomainHigh", null, "string", "Y-Axis High", null, { optional: true, disable: (w) => { return w.yAxisType() === "ordinal"; } });
 XYAxis.prototype.publishProxy("yAxisDomainPadding", "valueAxis", "extend");
 XYAxis.prototype.publish("yAxisGuideLines", true, "boolean", "Y-Axis Guide Lines");
 
 XYAxis.prototype.publish("regions", [], "array", "Regions");
 
 XYAxis.prototype.publish("sampleData", "", "set", "Display Sample Data", ["", "ordinal", "ordinalRange", "linear", "time-x", "time-y"]);
-
