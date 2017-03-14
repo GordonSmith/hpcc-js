@@ -14,7 +14,7 @@ export class ITooltip extends Widget {
     constructor() {
         super();
 
-        this._valueFormatter = d3Format(this.tooltipValueFormat());
+        this._valueFormatter = d3Format(this.tooltipValueFormat() as string);
 
         if (this.layerEnter) {
             const layerEnter = this.layerEnter;
@@ -114,8 +114,9 @@ export class ITooltip extends Widget {
     tooltipSeriesColor: { (): string; (_: string): ITooltip; };
     tooltipLabelColor: { (): string; (_: string): ITooltip; };
     tooltipValueColor: { (): string; (_: string): ITooltip; };
-    tooltipTick: { (): string; (_: string): ITooltip; };
+    tooltipTick: { (): boolean; (_: boolean): ITooltip; };
     tooltipOffset: { (): number; (_: number): ITooltip; };
+    tooltipOffset_default: { (): number; (_: number): ITooltip; };
 }
 ITooltip.prototype.publish("tooltipStyle", "default", "set", "Style", ["default", "none"], {});
 ITooltip.prototype.publish("tooltipValueFormat", ",.2f", "string", "Value Format", null, {});

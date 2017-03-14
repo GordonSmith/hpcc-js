@@ -111,10 +111,10 @@ Scatter.prototype.updateChart = function (_domNode, _element, _margin, _width, h
                 .on("mouseout.tooltip", context.tooltip.hide)
                 .on("mousemove.tooltip", context.tooltip.show)
                 .call(context._selection.enter.bind(context._selection))
-                .on("click", function (d, _idx) {
+                .on("click", function (d: any, _idx) {
                     context.click(context.rowToObj(context.data()[d.rowIdx]), context.columns()[d.colIdx], context._selection.selected(this));
                 })
-                .on("dblclick", function (d, _idx) {
+                .on("dblclick", function (d: any, _idx) {
                     context.dblclick(context.rowToObj(context.data()[d.rowIdx]), context.columns()[d.colIdx], context._selection.selected(this));
                 })
                 ;
@@ -140,7 +140,7 @@ Scatter.prototype.updateChart = function (_domNode, _element, _margin, _width, h
                         .attr("y", function (d) { return context.yPos(d) - context.pointSize() / 2; })
                         .attr("width", context.pointSize())
                         .attr("height", context.pointSize())
-                        .style("fill", function (d, _idx) { return context._palette(context.columns()[d.colIdx]); })
+                        .style("fill", function (d: any, _idx) { return context._palette(context.columns()[d.colIdx]); })
                         ;
                     break;
                 case "circle":
@@ -148,20 +148,21 @@ Scatter.prototype.updateChart = function (_domNode, _element, _margin, _width, h
                         .attr("cx", function (d) { return context.xPos(d); })
                         .attr("cy", function (d) { return context.yPos(d); })
                         .attr("r", context.pointSize() / 2)
-                        .style("fill", function (d, _idx) { return context._palette(context.columns()[d.colIdx]); })
+                        .style("fill", function (d: any, _idx) { return context._palette(context.columns()[d.colIdx]); })
                         ;
                     break;
                 case "path":
                     element
-                        .attr("d", function (d) {
+                        .attr("d", function (d: any) {
                             return "M" + (context.xPos(d) - context.pointSize() / 2) + " " + (context.yPos(d) - context.pointSize() / 2) + " " +
                                 "L" + (context.xPos(d) + context.pointSize() / 2) + " " + (context.yPos(d) + context.pointSize() / 2) + " " +
                                 "M" + (context.xPos(d) - context.pointSize() / 2) + " " + (context.yPos(d) + context.pointSize() / 2) + " " +
                                 "L" + (context.xPos(d) + context.pointSize() / 2) + " " + (context.yPos(d) - context.pointSize() / 2);
                         })
-                        .style("stroke", function (d) { return context._palette(context.columns()[d.colIdx]); })
+                        .style("stroke", function (d: any) { return context._palette(context.columns()[d.colIdx]); })
                         ;
                     break;
+                default:
             }
         })
         ;
@@ -196,7 +197,7 @@ Scatter.prototype.updateChart = function (_domNode, _element, _margin, _width, h
                 .attr("d", area(data.filter(function (d2) { return d2.colIdx === idx + 1; })))
                 .style("opacity", context.interpolateFillOpacity())
                 .style("stroke", "none")
-                .style("fill", function () { return d3Hsl(context._palette(context.columns()[idx + 1])).brighter(); })
+                .style("fill", function () { return d3Hsl(context._palette(context.columns()[idx + 1])).brighter().toString(); })
                 ;
         });
     areas.exit().remove();

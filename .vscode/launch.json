@@ -5,11 +5,11 @@
             "name": "Debug Chrome",
             "type": "chrome",
             "request": "launch",
-            "url": "http://localhost:8000/demos/dermatology.html?src/chart/Column",
+            "url": "file:///C:/Users/gordon/git/hpcc-js/packages/viz/test/index.html",
             "sourceMaps": true,
-            "webRoot": "${workspaceRoot}/demos",
+            "webRoot": "${workspaceRoot}/test",
             "pathMapping": {
-                "/": "${workspaceRoot}"
+                "/": "${workspaceRoot}/"
             }
         },
         {

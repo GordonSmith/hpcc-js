@@ -468,7 +468,7 @@ export class Grid extends PropertyExt {
         return new RollupView(this, columnIndicies, rollupFunc);
     };
 
-    aggregateView(columnIndicies, aggrType, aggrColumn, aggrDeltaColumn) {
+    aggregateView(columnIndicies, aggrType, aggrColumn, aggrDeltaColumn = "") {
         const context = this;
         return new RollupView(this, columnIndicies, function (values) {
             switch (aggrType) {
@@ -684,7 +684,7 @@ export class LegacyView {
         }
         return this._parsedData;
     };
-    protected _whichData(opts) {
+    protected _whichData(opts?) {
         if (opts) {
             if (opts.parsed) {
                 return this.formattedData();
@@ -739,7 +739,7 @@ export class RollupView extends LegacyView {
         }
         return this._nest;
     };
-    entries(opts) {
+    entries(opts?) {
         return this.nest().entries(this._whichData(opts));
     };
     map(opts) {

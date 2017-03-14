@@ -13,3 +13,5 @@ export * from "./chart/Area";
 export * from "./chart/Step";
 export * from "./chart/Gantt";
 export * from "./chart/HexBin";
+
+export { Column as TreemapColumn, Treemap } from "./tree/Treemap";

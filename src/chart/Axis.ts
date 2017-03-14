@@ -183,7 +183,7 @@ export class Axis extends SVGWidget {
                 if (this.low_exists() && this.high_exists()) {
                     this.d3Scale.domain([this.lowValue(), this.highValue()]);
                 }
-                this.parser = this.timePattern_exists() ? d3TimeFormat(this.timePattern()) : null;
+                this.parser = this.timePattern_exists() ? d3TimeFormat(this.timePattern() as string) : null;
                 this.formatter = this.tickFormat_exists() ? d3TimeFormat(this.tickFormat()) : null;
                 break;
             default:

@@ -1,5 +1,6 @@
 import { scaleBand as d3ScaleBand } from "d3-scale";
 import { select as d3Select } from "d3-selection";
+import "d3-transition";
 import { INDChart } from "../api/INDChart";
 import { ITooltip } from "../api/ITooltip";
 import "./Column.css";
@@ -143,13 +144,14 @@ export class Column extends XYAxis {
     useClonedPalette: { (): boolean; (_: boolean): Column; };
 
     //  INDChart  ---
+    _palette;
     click: (row, column, selected) => void;
     dblclick: (row, column, selected) => void;
 
     //  ITooltip  ---
+    tooltip;
     tooltipHTML: (_) => string;
     tooltipFormat: (_) => string;
-    tooltip;
 }
 Column.prototype._class += " chart_Column";
 Column.prototype.implements(INDChart.prototype);
