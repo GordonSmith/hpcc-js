@@ -1,6 +1,6 @@
 import { hierarchy as d3Hierarchy, pack as d3Pack } from "d3-hierarchy";
 import { interpolateZoom as d3InterpolateZoom } from "d3-interpolate";
-import { event as d3Event, select as d3Select } from "d3-selection";
+import { event as d3Event } from "d3-selection";
 import { ITree } from "../api/ITree";
 import { SVGWidget } from "../common/SVGWidget";
 import "./CirclePacking.css";
@@ -9,6 +9,7 @@ export class CirclePacking extends SVGWidget {
     diameter;
     pack;
     svg;
+    _focus;
     circle;
     view;
     protected _node;
@@ -49,7 +50,7 @@ export class CirclePacking extends SVGWidget {
                 return a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0;
             })
             ;
-        const focus = root;
+        this._focus = root;
         this.pack(root);
 
         this.circle = this.svg.selectAll("circle").data(root.descendants())
@@ -58,7 +59,7 @@ export class CirclePacking extends SVGWidget {
             .style("fill", function (d) { return context._palette(d.data.label); })
             .on("click", function (d) { context.click(d.data, null, null); })
             .on("dblclick", function (d) {
-                if (focus !== d) {
+                if (this._focus !== d) {
                     context.zoom(d);
                 }
                 d3Event.stopPropagation();
@@ -79,53 +80,33 @@ export class CirclePacking extends SVGWidget {
         this.zoomTo([root.x, root.y, root.r * 2]);
     };
 
-    zoom(d2) {
+    zoom(newFocus) {
+        this._focus = newFocus;
         const context = this;
-        const focus = d2;
-
-        this.svg.selectAll("circle")
-            .filter(function (d) { return d === focus; })
-            ;
-        const zoomTextSel = this.svg.selectAll("text")
-            .filter(function (d) { return d !== focus && this.style.display === "inline"; })
-            ;
-        zoomTextSel.transition().duration(500)
-            .style("opacity", 0)
-            .each("end", function (d) {
-                if (d !== focus) {
-                    d3Select(this)
-                        .style("display", "none")
-                        .style("opacity", 1)
-                        ;
-                }
-            })
-            ;
-
         const transition = this.svg.transition()
-            .duration(1000)
+            .duration(d3Event.altKey ? 7500 : 750)
             .tween("zoom", function () {
-                const i = d3InterpolateZoom(context.view, [focus.x, focus.y, focus.r * 2]);
+                const i = d3InterpolateZoom(context.view, [context._focus.x, context._focus.y, context._focus.r * 2]);
                 return function (t) { context.zoomTo(i(t)); };
             });
 
+        function showText(d) {
+            return (d === context._focus && !d.children) || d.parent === context._focus;
+        }
+
         transition.selectAll("text")
-            .filter(function (d) { return d.parent === focus || this.style.display === "inline"; })
-            .style("fill-opacity", function (d) { return d.parent === focus ? 1 : 0; })
-            .each("start", function (d) { if (d.parent === focus) this.style.display = "inline"; })
-            .each("end", function (d) {
-                if (d.parent !== focus) {
-                    this.style.display = "none";
-                }
-            })
-            ;
-    };
+            .filter(function (d) { return showText(d) || this.style.display === "inline"; })
+            .style("fill-opacity", function (d) { return showText(d) ? 1 : 0; })
+            .on("start", function (d) { if (showText(d)) this.style.display = "inline"; })
+            .on("end", function (d) { if (!showText(d)) this.style.display = "none"; });
+    }
 
     zoomTo(v) {
         const k = this.diameter / v[2];
         this.view = v;
-        this._node.attr("transform", function (d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")rotate(-30)"; });
+        this._node.attr("transform", function (d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
         this.circle.attr("r", function (d) { return d.r * k; });
-    };
+    }
 
     paletteID: (_?: string) => string | CirclePacking;
     useClonedPalette: (_?: boolean) => boolean | CirclePacking;

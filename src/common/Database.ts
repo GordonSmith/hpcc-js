@@ -464,7 +464,7 @@ export class Grid extends PropertyExt {
         return new RollupView(this, columnIndicies);
     };
 
-    rollupView(columnIndicies, rollupFunc) {
+    rollupView(columnIndicies, rollupFunc?) {
         return new RollupView(this, columnIndicies, rollupFunc);
     };
 
