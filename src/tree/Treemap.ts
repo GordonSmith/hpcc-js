@@ -184,6 +184,6 @@ Treemap.prototype.publish("paletteID", "default", "set", "Palette ID", Treemap.p
 Treemap.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
 Treemap.prototype.publish("mappings", [], "propertyArray", "Source Columns", null, { autoExpand: Column });
 Treemap.prototype.publish("aggrType", null, "set", "Aggregation Type", [null, "mean", "median", "sum", "min", "max"], { optional: true });
-Treemap.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function () { return this.columns(); }, { optional: true, disable: function (w) { return !w.aggrType(); } });
+Treemap.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function () { return this.columns(); }, { optional: true, disable: (w) => { return !w.aggrType(); } });
 Treemap.prototype.publish("fontSize", null, "number", "Font Size", null, { optional: true });
 Treemap.prototype.publish("transitionDuration", 250, "number", "Transition Duration");

@@ -16,3 +16,6 @@ export * from "./chart/HexBin";
 
 export { Column as TreemapColumn, Treemap } from "./tree/Treemap";
 export * from "./tree/CirclePacking";
+export * from "./tree/SunburstPartition";
+export { Column as IndentedColumn, Indented } from "./tree/Indented";
+export { Column as DendrogramColumn, Dendrogram } from "./tree/Dendrogram";

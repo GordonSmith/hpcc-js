@@ -1,9 +1,9 @@
-﻿import "./SVGZoomWidget.css";
-import { event as d3Event } from "d3-selection";
-import { zoom as d3Zoom } from "d3-zoom";
+﻿import { event as d3Event } from "d3-selection";
+import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from "d3-zoom";
 import { SVGWidget } from "./SVGWidget";
 import { Icon } from "./Icon";
 import "css!./SVGZoomWidget.css";
+import "./SVGZoomWidget.css";
 
 export class SVGZoomWidget extends SVGWidget {
 
@@ -26,10 +26,10 @@ export class SVGZoomWidget extends SVGWidget {
     zoomTo(translate, scale, transitionDuration?) {
         translate = translate || this._zoom.translate();
         scale = scale || this._zoom.scale();
-        transitionDuration = transitionDuration === undefined ? this.zoomDuration() : 0;
+        transitionDuration = transitionDuration === undefined ? this.zoomDuration() : transitionDuration;
 
         this._zoomElement.transition().duration(transitionDuration)
-            .call(this._zoom.translate(translate).scale(scale).event)
+            .call(this._zoom.transform, d3ZoomIdentity.translate(translate[0], translate[1]).scale(scale))
             ;
     };
 
@@ -51,7 +51,6 @@ export class SVGZoomWidget extends SVGWidget {
 
     enter(domNode, element) {
         super.enter(domNode, element);
-
         this._zoomElement = element.append("g");
         this._zoomGrab = this._zoomElement.append("rect")
             .attr("class", "background")
@@ -63,15 +62,15 @@ export class SVGZoomWidget extends SVGWidget {
         this._zoom = d3Zoom()
             .scaleExtent([0.05, 20])
             .on("zoom", function () {
-                context._zoomG.attr("transform", "translate(" + d3Event.translate + ")scale(" + d3Event.scale + ")");
+                context._zoomG.attr("transform", d3Event.transform);
             })
             ;
+
         this._zoomElement.call(this._zoom);
     };
 
     update(domNode, element) {
         super.update(domNode, element);
-
         this._zoomGrab
             .attr("width", this.width())
             .attr("height", this.height())
@@ -101,7 +100,9 @@ export class SVGZoomWidget extends SVGWidget {
                     .diameter(iconDiameter)
                     .paddingPercent((1 - faCharHeight / iconDiameter) * 100)
                     .on("click", function () {
-                        context.zoomTo(null, context._zoom.scale() * 1.20);
+                        context._zoomElement.transition()
+                            .call(context._zoom.scaleBy, 1.33)
+                            ;
                     })
                     ;
                 context._buttonMinus = new Icon()
@@ -111,7 +112,9 @@ export class SVGZoomWidget extends SVGWidget {
                     .diameter(iconDiameter)
                     .paddingPercent((1 - faCharHeight / iconDiameter) * 100)
                     .on("click", function () {
-                        context.zoomTo(null, context._zoom.scale() / 1.20);
+                        context._zoomElement.transition()
+                            .call(context._zoom.scaleBy, 1 / 1.33)
+                            ;
                     })
                     ;
                 context._buttonLast = context._buttonMinus;
