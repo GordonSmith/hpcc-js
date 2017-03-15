@@ -147,8 +147,8 @@ export class Bubble extends SVGWidget {
         SVGWidget.prototype.exit.apply(this, arguments);
     };
 
-    paletteID: (_?: string) => string | Bubble;
-    useClonedPalette: (_?: boolean) => boolean | Bubble;
+    paletteID: { (): string; (_: string): Bubble; };
+    useClonedPalette: { (): boolean; (_: boolean): Bubble; };
 
     //  I2DChart
     _palette;

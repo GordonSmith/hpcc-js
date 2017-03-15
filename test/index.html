@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="./style/index.css">
     <link rel="stylesheet" href="../lib/viz-browser.css">
     <script type="text/javascript" src="../lib/viz-browser.js"></script>
+    <script type="text/javascript" src="./DataFactory.js"></script>
 </head>
 
 <body>
@@ -409,10 +410,11 @@
             ]
         };
 
-        var widget = new HPCCViz.Indented()
+        var widget = new HPCCViz.Sankey()
             .target("placeholder")
-            .columns(["label", "size"])
-            .data(treeData)
+            .columns(test_DataFactory.Sample.DataBreach.columns)
+            .data(test_DataFactory.Sample.DataBreach.data)
+            .mappings([new HPCCViz.SankeyColumn().column("Covered Entity Type"), new HPCCViz.SankeyColumn().column("Type of Breach")])
             .render()
             ;
     </script>
