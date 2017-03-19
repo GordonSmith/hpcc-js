@@ -7,7 +7,7 @@ import * as Utility from "../common/Utility";
 import { Axis } from "./Axis";
 import "./XYAxis.css";
 
-export class XYAxis extends SVGWidget {
+export abstract class XYAxis extends SVGWidget {
     protected domainAxis: Axis;
     protected valueAxis: Axis;
     protected xAxis: Axis;
@@ -303,7 +303,6 @@ export class XYAxis extends SVGWidget {
             ;
         this.xAxis = isHorizontal ? this.domainAxis : this.valueAxis;
         this.yAxis = isHorizontal ? this.valueAxis : this.domainAxis;
-        const currBrush = isHorizontal ? this.xBrush : this.yBrush;
 
         //  Update Domain  ---
         switch (this.xAxisType()) {
@@ -366,6 +365,14 @@ export class XYAxis extends SVGWidget {
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
             ;
 
+        this.updateBrush(width, height, maxCurrExtent, isHorizontal);
+        this.updateFocusChart(domNode, element, this.margin, width, height, isHorizontal);
+        this.updateChart(domNode, element, this.margin, width, height, isHorizontal, 250);
+    };
+
+    updateBrush(width, height, maxCurrExtent, isHorizontal) {
+        const currBrush = isHorizontal ? this.xBrush : this.yBrush;
+        const prevBrushSel: any = d3BrushSelection(this.svgBrush.node());
         currBrush.extent([[0, 0], [width, height]]);
         this.svgBrush
             .attr("transform", "translate(" + this.margin.left + ", " + this.margin.top + ")")
@@ -376,9 +383,9 @@ export class XYAxis extends SVGWidget {
         const handlePath = this.svgBrush.selectAll(".handle--custom").data(isHorizontal ? [{ type: "w" }, { type: "e" }] : [{ type: "n" }, { type: "s" }]);
         handlePath.enter().append("path")
             .attr("class", "handle--custom")
-            .merge(handlePath).transition()
+            .merge(handlePath)
             .attr("cursor", isHorizontal ? "ew-resize" : "ns-resize")
-            .attr("d", function (d) { return context.resizeBrushHandle(d, width, height); })
+            .attr("d", (d) => { return this.resizeBrushHandle(d, width, height); })
             ;
 
         if (this.selectionMode()) {
@@ -387,20 +394,26 @@ export class XYAxis extends SVGWidget {
                 this._prevBrush = null;
             }
             if (this._prevBrush) {
-                const currSel: any = d3BrushSelection(this.svgBrush.node());
-                if (currSel) {
+                if (prevBrushSel) {
+                    if (this._prevBrush.orientation !== this.orientation()) {
+                        const tmp = prevBrushSel[0];
+                        prevBrushSel[0] = this._prevBrush.maxCurrExtent - prevBrushSel[1];
+                        prevBrushSel[1] = this._prevBrush.maxCurrExtent - tmp;
+                    }
                     const ratio = maxCurrExtent / this._prevBrush.maxCurrExtent;
-                    this.svgBrush.transition()
-                        .on("start", function () {
-                            currBrush.on("end", null);
-                        })
-                        .call(currBrush.move, [currSel[0] * ratio, currSel[1] * ratio])
-                        .on("end", function () {
-                            currBrush.on("end", function () {
-                                return context.brushMoved();
-                            });
-                        })
-                        ;
+                    if (ratio !== 1) {
+                        this.svgBrush.transition()
+                            .on("start", function () {
+                                currBrush.on("end", null);
+                            })
+                            .call(currBrush.move, [prevBrushSel[0] * ratio, prevBrushSel[1] * ratio])
+                            .on("end", function () {
+                                currBrush.on("end", () => {
+                                    return this.brushMoved();
+                                });
+                            })
+                            ;
+                    }
                 }
             } else {
                 this.svgBrush
@@ -412,10 +425,7 @@ export class XYAxis extends SVGWidget {
                 maxCurrExtent
             };
         }
-
-        this.updateFocusChart(domNode, element, this.margin, width, height, isHorizontal);
-        this.updateChart(domNode, element, this.margin, width, height, isHorizontal, 250);
-    };
+    }
 
     updateFocusChart(domNode, element, margin, width, height, isHorizontal) {
         const context: any = this;
@@ -486,8 +496,7 @@ export class XYAxis extends SVGWidget {
         }
     };
 
-    updateChart(_domNode, _element, _margin, _width, _height, _isHorizontal, _duration) {
-    };
+    abstract updateChart(_domNode, _element, _margin, _width, _height, _isHorizontal, _duration): void;
 
     exit(_domNode, _element) {
         SVGWidget.prototype.exit.apply(this, arguments);
