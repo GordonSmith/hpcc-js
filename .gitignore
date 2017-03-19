@@ -13,3 +13,5 @@ lib-es6/
 lib-test/
 lib-umd/
 tmp/.vs*
+.vs*
+*.log
