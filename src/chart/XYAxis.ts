@@ -1,6 +1,7 @@
 import { max as d3Max, min as d3Min } from "d3-array";
-import { brushX as d3BrushX, brushY as d3BrushY } from "d3-brush";
+import { brushSelection as d3BrushSelection, brushX as d3BrushX, brushY as d3BrushY } from "d3-brush";
 import { hsl as d3Hsl } from "d3-color";
+import { event as d3Event } from "d3-selection";
 import { SVGWidget } from "../common/SVGWidget";
 import * as Utility from "../common/Utility";
 import { Axis } from "./Axis";
@@ -39,13 +40,19 @@ export class XYAxis extends SVGWidget {
             ;
         const context = this;
         this.xBrush = d3BrushX()
-            .on("brush", function () {
+            .on("end", function () {
                 return context.brushMoved();
+            })
+            .on("start.handle brush.handle end.handle", function () {
+                return context.brushMoved2();
             })
             ;
         this.yBrush = d3BrushY()
-            .on("brush", function () {
+            .on("end", function () {
                 return context.brushMoved();
+            })
+            .on("start.handle brush.handle end.handle", function () {
+                return context.brushMoved2();
             })
             ;
     }
@@ -128,12 +135,12 @@ export class XYAxis extends SVGWidget {
             .target(this.svg.node())
             .guideTarget(this.svgDomainGuide.node())
             ;
+
         this.valueAxis
             .target(this.svg.node())
             .guideTarget(this.svgValueGuide.node())
             ;
 
-        //  Brush  ---
         this.svgBrush = element.append("g")
             .attr("class", "brush")
             ;
@@ -143,8 +150,8 @@ export class XYAxis extends SVGWidget {
         let e;
         let x;
         let y;
-        if (d === "e" || d === "w") {
-            e = +(d === "e");
+        if (d.type === "e" || d.type === "w") {
+            e = +(d.type === "e");
             x = e ? 1 : -1;
             y = height / 3;
             return "M" + (0.5 * x) + "," + y +
@@ -157,7 +164,7 @@ export class XYAxis extends SVGWidget {
                 "M" + (4.5 * x) + "," + (y + 8) +
                 "V" + (2 * y - 8);
         } else {
-            e = +(d === "s");
+            e = +(d.type === "s");
             y = e ? 1 : -1;
             x = width / 3;
             return "M" + x + ", " + (0.5 * y) +
@@ -172,19 +179,31 @@ export class XYAxis extends SVGWidget {
         }
     };
 
-    brushMoved = Utility.debounce(function brushed() {
-        const selected = this.data().filter(function (d) {
-            let pos = d[0];
-            if (this.xAxisType() === "ordinal") {
+    brushMoved() {
+        let selected = [];
+        const currSel: any = d3BrushSelection(this.svgBrush.node());
+        if (currSel) {
+            selected = this.data().filter(function (d) {
+                let pos = d[0];
                 pos = this.domainAxis.d3Scale(pos) + (this.domainAxis.d3Scale.bandwidth ? this.domainAxis.d3Scale.bandwidth() / 2 : 0);
-            }
-            if (this.orientation() === "horizontal") {
-                return (pos >= this.xBrush.extent()[0] && pos <= this.xBrush.extent()[1]);
-            }
-            return (pos >= this.yBrush.extent()[0] && pos <= this.yBrush.extent()[1]);
-        }, this);
+                return pos >= currSel[0] && pos <= currSel[1];
+            }, this);
+        }
         this.selection(selected);
-    }, 250);
+    }
+
+    brushMoved2() {
+        const isHorizontal = this.orientation() === "horizontal";
+        const handlePath = this.svgBrush.selectAll(".handle--custom").data(isHorizontal ? [{ type: "w" }, { type: "e" }] : [{ type: "n" }, { type: "s" }]);
+        const s = d3Event.selection;
+        if (s == null) {
+            handlePath.attr("display", "none");
+        } else if (isHorizontal) {
+            handlePath.attr("display", null).attr("transform", (_d, i) => { return "translate(" + s[i] + "," + 0 + ")"; });
+        } else {
+            handlePath.attr("display", null).attr("transform", (_d, i) => { return "translate(" + 0 + ", " + s[i] + ")"; });
+        }
+    }
 
     dataPos(d) {
         return this.domainAxis.scalePos(d);
@@ -289,10 +308,7 @@ export class XYAxis extends SVGWidget {
             ;
         this.xAxis = isHorizontal ? this.domainAxis : this.valueAxis;
         this.yAxis = isHorizontal ? this.valueAxis : this.domainAxis;
-        const xBrush = isHorizontal ? this.xBrush : this.yBrush;
-        const yBrush = isHorizontal ? this.yBrush : this.xBrush;
-        const xBrushExtent = xBrush.extent();
-        const yBrushExtent = yBrush.extent();
+        const currBrush = isHorizontal ? this.xBrush : this.yBrush;
 
         //  Update Domain  ---
         switch (this.xAxisType()) {
@@ -355,53 +371,28 @@ export class XYAxis extends SVGWidget {
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
             ;
 
-        this.xBrush
-            .x(this.domainAxis.d3Scale)
-            ;
-        this.yBrush
-            .y(this.domainAxis.d3Scale)
-            ;
         if (this.selectionMode()) {
             if (this._prevXAxisType !== this.xAxisType()) {
                 this._prevXAxisType = this.xAxisType();
                 this._prevBrush = null;
             }
-            if (!this._prevBrush) {
-                switch (this.xAxisType()) {
-                    case "ordinal":
-                        xBrush.extent([0, maxCurrExtent]);
-                        break;
-                    default:
-                        xBrush.extent(this.domainAxis.d3Scale.domain());
-                        break;
-                }
-            } else if (this._prevBrush && this._prevBrush.orientation !== this.orientation()) {
-                switch (this.xAxisType()) {
-                    case "ordinal":
-                        xBrush.extent([maxCurrExtent - yBrushExtent[0] * maxCurrExtent / this._prevBrush.maxCurrExtent, maxCurrExtent - yBrushExtent[1] * maxCurrExtent / this._prevBrush.maxCurrExtent]);
-                        break;
-                    default:
-                        xBrush.extent(yBrushExtent);
-                        break;
-                }
-            } else {
-                switch (this.xAxisType()) {
-                    case "ordinal":
-                        if (this._prevBrush) {
-                            const ratio = maxCurrExtent / this._prevBrush.maxCurrExtent;
-                            xBrush.extent([xBrushExtent[0] * ratio, xBrushExtent[1] * ratio]);
-                        }
-                        break;
-                    default:
-                        const domain = this.domainAxis.d3Scale.domain();
-                        if (xBrushExtent[0] < domain[0] || xBrushExtent[0] > domain[1]) {
-                            xBrushExtent[0] = domain[0];
-                        }
-                        if (xBrushExtent[1] < domain[0] || xBrushExtent[1] > domain[1]) {
-                            xBrushExtent[1] = domain[1];
-                        }
-                        xBrush.extent(xBrushExtent);
-                        break;
+            currBrush.extent([[0, 0], [width, height]]);
+            let ratio = 1;
+            if (this._prevBrush) {
+                let currSel: any = d3BrushSelection(this.svgBrush.node());
+                if (currSel) {
+                    ratio = maxCurrExtent / this._prevBrush.maxCurrExtent;
+                    this.svgBrush.transition()
+                        .on("start", function () {
+                            currBrush.on("end", null);
+                        })
+                        .call(currBrush.move, [currSel[0] * ratio, currSel[1] * ratio])
+                        .on("end", function () {
+                            currBrush.on("end", function () {
+                                return context.brushMoved();
+                            });
+                        })
+                        ;
                 }
             }
             this._prevBrush = {
@@ -413,23 +404,67 @@ export class XYAxis extends SVGWidget {
         this.svgBrush
             .attr("transform", "translate(" + this.margin.left + ", " + this.margin.top + ")")
             .style("display", this.selectionMode() ? null : "none")
-            .call(xBrush)
-            .selectAll(".background").transition()
-            .attr("width", width)
-            .attr("height", height)
+            .call(currBrush)
             ;
 
-        this.svgBrush.selectAll(".extent, .resize rect").transition()
-            .attr(isHorizontal ? "y" : "x", 0)
-            .attr(isHorizontal ? "height" : "width", maxOtherExtent)
-            ;
-
-        const handlePath = this.svgBrush.selectAll(".resize").selectAll("path").data(function (d) { return d; });
-        handlePath.enter().append("path");
-        handlePath.transition()
+        const handlePath = this.svgBrush.selectAll(".handle--custom").data(isHorizontal ? [{ type: "w" }, { type: "e" }] : [{ type: "n" }, { type: "s" }]);
+        handlePath.enter().append("path")
+            .attr("class", "handle--custom")
+            .merge(handlePath).transition()
+            .attr("cursor", isHorizontal ? "ew-resize" : "ns-resize")
             .attr("d", function (d) { return context.resizeBrushHandle(d, width, height); })
             ;
+        //this.svgBrush.selectAll(".extent, .resize rect").transition()
+        //    .attr(isHorizontal ? "y" : "x", 0)
+        //    .attr(isHorizontal ? "height" : "width", maxOtherExtent)
+        //    ;
 
+        //const handlePath = this.svgBrush.selectAll(".resize").selectAll("path").data(function (d) { return d; });
+        //handlePath.enter().append("path");
+        //handlePath.transition()
+        //    .attr("d", function (d) { return context.resizeBrushHandle(d, width, height); })
+        //    ;
+
+
+
+        /*
+        const tmpBrush = d3BrushX()
+            .extent([[0, 0], [maxCurrExtent, maxOtherExtent]])
+            .on("start brush end", brushmoved)
+            ;
+        this.svgBrush
+            .attr("transform", "translate(" + this.margin.left + ", " + this.margin.top + ")")
+            .style("display", this.selectionMode() ? null : "none")
+            .call(tmpBrush)
+            //.selectAll(".background").transition()
+            //.attr("width", width)
+            //.attr("height", height)
+            ;
+        
+        //        this.svgBrush.selectAll(".extent, .resize rect").transition()
+        //            .attr(isHorizontal ? "y" : "x", 0)
+        //            .attr(isHorizontal ? "height" : "width", maxOtherExtent)
+        //            ;
+        
+        const handlePath = this.svgBrush.selectAll(".handle--custom").data(["w", "e"]);
+        handlePath.enter().append("path")
+            .attr("class", "handle--custom")
+            //.attr("cursor", "ew-resize")
+            .merge(handlePath).transition()
+            .attr("d", function (d) { return context.resizeBrushHandle(d, width, height); })
+            ;
+        function brushmoved() {
+            var s = d3Event.selection;
+            if (s == null) {
+                handlePath.attr("display", "none");
+                //circle.classed("active", false);
+            } else {
+                //circle.classed("active", function (d) { return sx[0] <= d && d <= sx[1]; });
+                handlePath.attr("display", null).attr("transform", function (_d, i) { return "translate(" + s[i] + "," + height / 2 + ")"; });
+            }
+        }
+        this.svgBrush.call(tmpBrush.move, [0.3, 0.5].map(this.domainAxis.d3Scale));
+        */
         this.updateFocusChart(domNode, element, this.margin, width, height, isHorizontal);
         this.updateChart(domNode, element, this.margin, width, height, isHorizontal, 250);
     };
@@ -451,8 +486,7 @@ export class XYAxis extends SVGWidget {
                     })
                     ;
             })
-            ;
-        focusChart
+            .merge(focusChart)
             .each(function () {
                 context.copyPropsTo(context.focusChart);
                 context.focusChart
@@ -488,16 +522,19 @@ export class XYAxis extends SVGWidget {
             ;
 
         function syncAxis() {
-            if (context.focusChart.xAxisType() !== "ordinal") {
-                context.xAxis.domain(context.focusChart.xBrush.extent());
-            } else {
-                const brushExtent = context.focusChart.xBrush.extent();
-                const brushWidth = brushExtent[1] - brushExtent[0];
-                const scale = brushWidth / width;
-                context.xAxis.range([-brushExtent[0] / scale, (width - brushExtent[0]) / scale]);
+            const currSel = d3BrushSelection(context.focusChart.svgBrush.node()) as [number, number];
+            if (currSel) {
+                if (context.focusChart.xAxisType() !== "ordinal") {
+                    console.log(JSON.stringify([context.focusChart.xAxis.invert(currSel[0]), context.focusChart.xAxis.invert(currSel[1])]));
+                    context.xAxis.domain([context.focusChart.xAxis.invert(currSel[0]), context.focusChart.xAxis.invert(currSel[1])]);
+                } else {
+                    const brushWidth = currSel[1] - currSel[0];
+                    const scale = brushWidth / width;
+                    context.xAxis.range([-currSel[0] / scale, (width - currSel[0]) / scale]);
+                }
+                context.xAxis.svgAxis.call(context.xAxis.d3Axis);
+                context.xAxis.svgGuides.call(context.xAxis.d3Guides);
             }
-            context.xAxis.svgAxis.call(context.xAxis.d3Axis);
-            context.xAxis.svgGuides.call(context.xAxis.d3Guides);
         }
     };
 
@@ -509,6 +546,7 @@ export class XYAxis extends SVGWidget {
     };
 
     selection(_selected) {
+        console.log(_selected);
     };
 
     orientation: { (): string; (_: string): XYAxis; };

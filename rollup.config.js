@@ -1,23 +1,24 @@
 var rollup = require('rollup');
+//var alias = require('rollup-plugin-alias');
 var nodeResolve = require('rollup-plugin-node-resolve');
 var commonjs = require("rollup-plugin-commonjs");
 var css = require('rollup-plugin-css-only');
-var alias = require('rollup-plugin-alias');
 var uglify = require('rollup-plugin-uglify');
 var sourcemaps = require('rollup-plugin-sourcemaps');
+var Visualizer = require('rollup-plugin-visualizer');
 
 var dependencies = require("./package.json").dependencies;
 
 var config = {
     entry: './lib-es6/index-browser.js',
-    format: "iife",
+    format: "umd",
     moduleName: "HPCCViz",
     dest: "./lib-browser/index.js",
     sourceMap: true,
     external: [],
     globals: {},
     plugins: [
-        alias({}),
+        //alias({}),
         nodeResolve({
             jsnext: true,
             main: true
@@ -40,6 +41,8 @@ switch (process.env.RUNTIME) {
         config.external = Object.keys(dependencies);
         break;
     case "browser":
+        //console.log("Externals:  " + Object.keys(dependencies));
+        //config.external = Object.keys(dependencies);
         entry += "-browser";
         dest += '-browser';
         break;
@@ -50,36 +53,21 @@ switch (process.env.BUILD) {
         entry = "src/" + entry;
         break;
     case "test":
-        entry = "test/" + entry;
+        entry = "test-es6/demos/dermatology";
         dest += "-test";
-        config.external.push("chai");
-        config.globals.chai = "chai";
+        //config.format = "umd";
+        //config.external.push("chai");
+        //config.globals.chai = "chai";
         break;
 }
-
-
-
-/*
-switch (process.env.NODE_ENV) {
-    case "min":
-        config.dest = "./lib-browser/index.min.js";
-        config.plugins.push(uglify({}));
-        break;
-    case "watch":
-    case "testXXX":
-        config.entry = "./tmp-test-es6/test/index.js";
-        config.dest = "./lib-browser/index.test.js";
-        config.external.push("chai");
-        config.globals.chai = "chai";
-        break;
-    default:
-}
-*/
-
 
 if (process.env.PACKAGE === "min") {
     dest += ".min";
     config.plugins.push(uglify({}));
+}
+
+if (process.env.VIZ) {
+    config.plugins.push(Visualizer({ sourcemap: true }));
 }
 
 config.entry = "./tmp/" + entry + ".js";

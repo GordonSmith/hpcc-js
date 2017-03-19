@@ -363,8 +363,7 @@ export function downloadBlob(format, blob, id?, ext?) {
 export function widgetPath(classID) {
     return "../" + classID.split("_").join("/");
 }
-export function parseClassID(classID, prefix) {
-    prefix = prefix || "..";
+export function parseClassID(classID, prefix = "..") {
     const parts = classID.split(".");
     const classParts = parts[0].split("_");
     return {
@@ -375,9 +374,8 @@ export function parseClassID(classID, prefix) {
 }
 declare var require: any;
 export function requireWidget(classID) {
-    const context = this;
     return new Promise(function (resolve, _reject) {
-        const parsedClassID = context.parseClassID(classID);
+        const parsedClassID = parseClassID(classID);
         require([parsedClassID.path], function (Widget) {
             if (Widget && Widget[parsedClassID.widgetID]) {
                 Widget = Widget[parsedClassID.widgetID];
