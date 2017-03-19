@@ -10,7 +10,7 @@
             "args": [
                 "-w",
                 "-p",
-                "./tsconfig.json"
+                "./tsconfig-test.json"
             ],
             "showOutput": "silent",
             "isBuildCommand": true,

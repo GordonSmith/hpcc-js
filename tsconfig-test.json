@@ -1,10 +1,10 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "outDir": "./tmp/test-commonjs",
-        "module": "commonjs"
+        "outDir": "./tmp/test-es6",
+        "module": "es6"
     },
     "include": [
-        "./test/index-node.ts"
+        "./demos/dermatology.ts"
     ]
 }

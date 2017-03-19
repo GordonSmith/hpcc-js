@@ -178,11 +178,12 @@ export class PropertyExt extends Class {
     }
 
     propertyWalker(filter, visitor) {
+        const context = this;
         this.publishedProperties(false, true).forEach(function (publishItem) {
-            if (typeof (filter) !== "function" || !filter(this, publishItem)) {
-                visitor(this, publishItem);
+            if (typeof (filter) !== "function" || !filter(context, publishItem)) {
+                visitor(context, publishItem);
             }
-        }, this);
+        });
     };
 
     publishedProperty(id) {

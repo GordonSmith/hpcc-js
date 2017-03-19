@@ -2,19 +2,19 @@ import { axisBottom as d3AxisBottom, axisLeft as d3AxisLeft, axisRight as d3Axis
 import { format as d3Format } from "d3-format";
 import { scaleBand as d3ScaleBand, scaleLinear as d3ScaleLinear, scaleLog as d3ScaleLog, scalePow as d3ScalePow, scaleTime as d3ScaleTime } from "d3-scale";
 import { select as d3Select } from "d3-selection";
-import { timeFormat as d3TimeFormat } from "d3-time-format";
+import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";
 import { SVGWidget } from "../common/SVGWidget";
 import "./Axis.css";
 
 export class Axis extends SVGWidget {
     protected parser;
+    protected parserInvert;
     protected formatter;
     d3Scale;
     protected d3Axis;
     protected d3Guides;
     protected _guideElement;
     protected svg;
-    protected svg2;
     protected svgAxis;
     protected svgText;
     protected svgGuides;
@@ -42,7 +42,7 @@ export class Axis extends SVGWidget {
         }
         if (d !== undefined && d !== null) {
             if (this.parser) {
-                return this.parser.parse(typeof d === "number" ? d.toString() : d);
+                return this.parser(typeof d === "number" ? d.toString() : d);
             }
             if (forceNumeric && typeof d === "string") {
                 return +d;
@@ -57,8 +57,8 @@ export class Axis extends SVGWidget {
                 return this.parseInvert(d2);
             }, this);
         }
-        if (this.parser && d) {
-            return this.parser(d);
+        if (this.parserInvert && d) {
+            return this.parserInvert(d);
         }
         return d;
     };
@@ -133,8 +133,7 @@ export class Axis extends SVGWidget {
             ;
         this.svgText = this.svgAxis.append("text");
 
-        this.svg2 = (this._guideElement || element).append("g");
-        this.svgGuides = this.svg2
+        this.svgGuides = (this._guideElement || element).append("g")
             .attr("class", "guide")
             ;
     };
@@ -183,7 +182,8 @@ export class Axis extends SVGWidget {
                 if (this.low_exists() && this.high_exists()) {
                     this.d3Scale.domain([this.lowValue(), this.highValue()]);
                 }
-                this.parser = this.timePattern_exists() ? d3TimeFormat(this.timePattern() as string) : null;
+                this.parser = this.timePattern_exists() ? d3TimeParse(this.timePattern() as string) : null;
+                this.parserInvert = this.timePattern_exists() ? d3TimeFormat(this.timePattern() as string) : null;
                 this.formatter = this.tickFormat_exists() ? d3TimeFormat(this.tickFormat()) : null;
                 break;
             default:
@@ -209,6 +209,12 @@ export class Axis extends SVGWidget {
                     break;
             }
             this._prevOrientation = this.orientation();
+            if (this.svgAxis) {
+                this.svgAxis.html("");
+            }
+            if (this.svgGuides) {
+                this.svgGuides.html("");
+            }
         }
 
         if (this.extend()) {
@@ -364,8 +370,9 @@ export class Axis extends SVGWidget {
         this.updateScale();
         const isHorizontal = this.isHorizontal();
         this.range(isHorizontal ? [0, this.width()] : [this.height(), 0]);
-        const tmpSvg = element.append("g").attr("class", this.classID()).append("g");
-        tmpSvg
+        const tmpSvg = element.append("g").attr("class", this.classID());
+        const tmpSvgG = tmpSvg.append("g");
+        tmpSvgG
             .attr("class", isHorizontal ? "x" : "y")
             .call(this.d3Axis)
             ;
@@ -378,11 +385,11 @@ export class Axis extends SVGWidget {
             top: 0,
             right: 0,
             bottom: 0,
-            tickOverlapModulus: this.calcTickOverlapModulus(tmpSvg)
+            tickOverlapModulus: this.calcTickOverlapModulus(tmpSvgG)
         };
-        this.adjustText(tmpSvg, retVal.tickOverlapModulus);
+        this.adjustText(tmpSvgG, retVal.tickOverlapModulus);
 
-        const bbox = tmpSvg.node().getBBox();
+        const bbox = tmpSvgG.node().getBBox();
         retVal.depth = isHorizontal ? bbox.height : bbox.width;
         switch (this.shrinkToFit()) {
             case "low":
@@ -484,7 +491,7 @@ export class Axis extends SVGWidget {
             .call(doPosition)
             ;
         if (this._guideElement) {
-            this.svg2
+            this.svgGuides
                 .transition()
                 .call(doPosition)
                 ;
@@ -586,19 +593,19 @@ Axis.prototype._class += " chart_Axis";
 Axis.prototype.publish("title", "", "string", "Title");
 Axis.prototype.publish("orientation", "bottom", "set", "Orientation", ["left", "top", "right", "bottom"]);
 Axis.prototype.publish("type", "linear", "set", "Type", ["none", "ordinal", "linear", "pow", "log", "time"]);
-Axis.prototype.publish("timePattern", "%Y-%m-%d", "string", "Time Series Pattern", null, { disable: function (w) { return w.type() !== "time"; } });
-Axis.prototype.publish("powExponent", 2, "number", "Exponent for Pow on Value Axis", null, { disable: function (w) { return w.type() !== "pow"; } });
-Axis.prototype.publish("logBase", 10, "number", "Base for log on Value Axis", null, { disable: function (w) { return w.type() !== "log"; } });
-Axis.prototype.publish("ordinals", [], "array", "Ordinal Values", null, { disable: function (w) { return w.type() !== "ordinal"; } });
-Axis.prototype.publish("tickCount", null, "number", "Tick Count", null, { optional: true, disable: function (w) { return w.type() === "ordinal"; } });
-Axis.prototype.publish("tickFormat", null, "string", "Tick Format", null, { optional: true, disable: function (w) { return w.type() === "ordinal"; } });
+Axis.prototype.publish("timePattern", "%Y-%m-%d", "string", "Time Series Pattern", null, { disable: (w) => { return w.type() !== "time"; } });
+Axis.prototype.publish("powExponent", 2, "number", "Exponent for Pow on Value Axis", null, { disable: (w) => { return w.type() !== "pow"; } });
+Axis.prototype.publish("logBase", 10, "number", "Base for log on Value Axis", null, { disable: (w) => { return w.type() !== "log"; } });
+Axis.prototype.publish("ordinals", [], "array", "Ordinal Values", null, { disable: (w) => { return w.type() !== "ordinal"; } });
+Axis.prototype.publish("tickCount", null, "number", "Tick Count", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
+Axis.prototype.publish("tickFormat", null, "string", "Tick Format", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 Axis.prototype.publish("tickLength", null, "number", "Tick Length", { optional: true });
-Axis.prototype.publish("low", null, "any", "Low", null, { optional: true, disable: function (w) { return w.type() === "ordinal"; } });
-Axis.prototype.publish("high", null, "any", "High", null, { optional: true, disable: function (w) { return w.type() === "ordinal"; } });
+Axis.prototype.publish("low", null, "any", "Low", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
+Axis.prototype.publish("high", null, "any", "High", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 Axis.prototype.publish("overlapMode", "none", "set", "Label Overlap Mode", ["none", "stagger", "hide", "rotate", "linebreak", "wrap"]);
-Axis.prototype.publish("labelRotation", 33, "number", "Label Rotation", null, { optional: true, disable: function (w) { return w.overlapMode() !== "rotate"; } });
+Axis.prototype.publish("labelRotation", 33, "number", "Label Rotation", null, { optional: true, disable: (w) => { return w.overlapMode() !== "rotate"; } });
 Axis.prototype.publish("shrinkToFit", "both", "set", "Size to fit", ["none", "low", "high", "both"]);
-Axis.prototype.publish("extend", 5, "number", "Extend axis %", { optional: true, disable: function (w) { return w.type() === "ordinal"; } });
+Axis.prototype.publish("extend", 5, "number", "Extend axis %", { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 
 const type = Axis.prototype.type;
 Axis.prototype.type = function (_) {

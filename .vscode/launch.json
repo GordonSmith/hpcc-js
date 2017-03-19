@@ -5,9 +5,9 @@
             "name": "Debug Chrome",
             "type": "chrome",
             "request": "launch",
-            "url": "file:///C:/Users/gordon/git/hpcc-js/packages/viz/test/index.html",
+            "url": "file:///C:/Users/gordon/git/hpcc-js/packages/viz/demos/dermatology.html",
             "sourceMaps": true,
-            "webRoot": "${workspaceRoot}/test",
+            "webRoot": "${workspaceRoot}/demos",
             "pathMapping": {
                 "/": "${workspaceRoot}/"
             }

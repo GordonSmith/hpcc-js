@@ -8,13 +8,13 @@ function _naturalSort(a, b, order, idx, sortCaseSensitive) {
         dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/,
         ore = /^0/,
         i = function (s) { return !sortCaseSensitive && ("" + s).toLowerCase() || "" + s; },
-        // convert all to strings strip whitespace
+    // convert all to strings strip whitespace
         x = i(idx ? a[idx] : a).replace(sre, "") || "",
         y = i(idx ? b[idx] : b).replace(sre, "") || "",
-        // chunk/tokenize
+    // chunk/tokenize
         xN = x.replace(re, "\0$1\0").replace(/\0$/, "").replace(/^\0/, "").split("\0"),
         yN = y.replace(re, "\0$1\0").replace(/\0$/, "").replace(/^\0/, "").split("\0"),
-        // numeric or date detection
+    // numeric or date detection
         xD = (xN.length !== 1 && x.match(dre) && Date.parse(x)),
         yD = xD && y.match(dre) && Date.parse(y) || null,
         oFxNcL, oFyNcL;
@@ -22,7 +22,7 @@ function _naturalSort(a, b, order, idx, sortCaseSensitive) {
     if (yD) {
         if (xD < yD) { return order === "ascending" ? -1 : 1; }
         else if (xD > yD) { return order === "ascending" ? 1 : -1; }
-    }
+        }
     // natural sorting through split numeric strings and default strings
     for (var cLoc = 0, numS = Math.max(xN.length, yN.length); cLoc < numS; cLoc++) {
         // find floats not starting with "0", string or 0 if not defined (Clint Priest)
@@ -359,8 +359,7 @@ export function downloadBlob(format, blob, id?, ext?) {
 export function widgetPath(classID) {
     return "../" + classID.split("_").join("/");
 }
-export function parseClassID(classID, prefix) {
-    prefix = prefix || "..";
+export function parseClassID(classID, prefix = "..") {
     var parts = classID.split(".");
     var classParts = parts[0].split("_");
     return {
@@ -371,9 +370,8 @@ export function parseClassID(classID, prefix) {
 }
 declare var require: any;
 export function requireWidget(classID) {
-    const context = this;
     return new Promise(function (resolve, _reject) {
-        const parsedClassID = context.parseClassID(classID);
+        const parsedClassID = parseClassID(classID);
         require([parsedClassID.path], function (Widget) {
             if (Widget && Widget[parsedClassID.widgetID]) {
                 Widget = Widget[parsedClassID.widgetID];
