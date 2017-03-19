@@ -38,21 +38,21 @@ export class XYAxis extends SVGWidget {
             .type_default("linear")
             .shrinkToFit_default("high")
             ;
-        const context = this;
+
         this.xBrush = d3BrushX()
-            .on("end", function () {
-                return context.brushMoved();
+            .on("end", () => {
+                return this.brushMoved();
             })
-            .on("start.handle brush.handle end.handle", function () {
-                return context.brushMoved2();
+            .on("start.handle brush.handle end.handle", () => {
+                return this.brushMoved2();
             })
             ;
         this.yBrush = d3BrushY()
-            .on("end", function () {
-                return context.brushMoved();
+            .on("end", () => {
+                return this.brushMoved();
             })
-            .on("start.handle brush.handle end.handle", function () {
-                return context.brushMoved2();
+            .on("start.handle brush.handle end.handle", () => {
+                return this.brushMoved2();
             })
             ;
     }
@@ -61,10 +61,6 @@ export class XYAxis extends SVGWidget {
     resetSelection() {
         this._prevBrush = null;
         return this;
-    };
-
-    columns(_?) {
-        return super.columns.apply(this, arguments);
     };
 
     parseData(d) {
@@ -107,7 +103,6 @@ export class XYAxis extends SVGWidget {
     protected svgValueGuide;
     protected svgData;
     protected svgDataClipRect;
-    protected _selection;
     protected svgFocus;
     protected svgBrush;
     enter(_domNode, element) {
@@ -587,6 +582,8 @@ export class XYAxis extends SVGWidget {
     regions: { (): any[]; (_: string): XYAxis; };
     sampleData: { (): string; (_: string): XYAxis; };
 
+    //  Selection  ---
+    protected _selection;
 }
 XYAxis.prototype._class += " chart_XYAxis";
 XYAxis.prototype.mixin(Utility.SimpleSelectionMixin);
