@@ -366,36 +366,7 @@ export class XYAxis extends SVGWidget {
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
             ;
 
-        if (this.selectionMode()) {
-            if (this._prevXAxisType !== this.xAxisType()) {
-                this._prevXAxisType = this.xAxisType();
-                this._prevBrush = null;
-            }
-            currBrush.extent([[0, 0], [width, height]]);
-            let ratio = 1;
-            if (this._prevBrush) {
-                let currSel: any = d3BrushSelection(this.svgBrush.node());
-                if (currSel) {
-                    ratio = maxCurrExtent / this._prevBrush.maxCurrExtent;
-                    this.svgBrush.transition()
-                        .on("start", function () {
-                            currBrush.on("end", null);
-                        })
-                        .call(currBrush.move, [currSel[0] * ratio, currSel[1] * ratio])
-                        .on("end", function () {
-                            currBrush.on("end", function () {
-                                return context.brushMoved();
-                            });
-                        })
-                        ;
-                }
-            }
-            this._prevBrush = {
-                orientation: this.orientation(),
-                maxCurrExtent
-            };
-        }
-
+        currBrush.extent([[0, 0], [width, height]]);
         this.svgBrush
             .attr("transform", "translate(" + this.margin.left + ", " + this.margin.top + ")")
             .style("display", this.selectionMode() ? null : "none")
@@ -409,57 +380,39 @@ export class XYAxis extends SVGWidget {
             .attr("cursor", isHorizontal ? "ew-resize" : "ns-resize")
             .attr("d", function (d) { return context.resizeBrushHandle(d, width, height); })
             ;
-        //this.svgBrush.selectAll(".extent, .resize rect").transition()
-        //    .attr(isHorizontal ? "y" : "x", 0)
-        //    .attr(isHorizontal ? "height" : "width", maxOtherExtent)
-        //    ;
 
-        //const handlePath = this.svgBrush.selectAll(".resize").selectAll("path").data(function (d) { return d; });
-        //handlePath.enter().append("path");
-        //handlePath.transition()
-        //    .attr("d", function (d) { return context.resizeBrushHandle(d, width, height); })
-        //    ;
-
-
-
-        /*
-        const tmpBrush = d3BrushX()
-            .extent([[0, 0], [maxCurrExtent, maxOtherExtent]])
-            .on("start brush end", brushmoved)
-            ;
-        this.svgBrush
-            .attr("transform", "translate(" + this.margin.left + ", " + this.margin.top + ")")
-            .style("display", this.selectionMode() ? null : "none")
-            .call(tmpBrush)
-            //.selectAll(".background").transition()
-            //.attr("width", width)
-            //.attr("height", height)
-            ;
-        
-        //        this.svgBrush.selectAll(".extent, .resize rect").transition()
-        //            .attr(isHorizontal ? "y" : "x", 0)
-        //            .attr(isHorizontal ? "height" : "width", maxOtherExtent)
-        //            ;
-        
-        const handlePath = this.svgBrush.selectAll(".handle--custom").data(["w", "e"]);
-        handlePath.enter().append("path")
-            .attr("class", "handle--custom")
-            //.attr("cursor", "ew-resize")
-            .merge(handlePath).transition()
-            .attr("d", function (d) { return context.resizeBrushHandle(d, width, height); })
-            ;
-        function brushmoved() {
-            var s = d3Event.selection;
-            if (s == null) {
-                handlePath.attr("display", "none");
-                //circle.classed("active", false);
-            } else {
-                //circle.classed("active", function (d) { return sx[0] <= d && d <= sx[1]; });
-                handlePath.attr("display", null).attr("transform", function (_d, i) { return "translate(" + s[i] + "," + height / 2 + ")"; });
+        if (this.selectionMode()) {
+            if (this._prevXAxisType !== this.xAxisType()) {
+                this._prevXAxisType = this.xAxisType();
+                this._prevBrush = null;
             }
+            if (this._prevBrush) {
+                const currSel: any = d3BrushSelection(this.svgBrush.node());
+                if (currSel) {
+                    const ratio = maxCurrExtent / this._prevBrush.maxCurrExtent;
+                    this.svgBrush.transition()
+                        .on("start", function () {
+                            currBrush.on("end", null);
+                        })
+                        .call(currBrush.move, [currSel[0] * ratio, currSel[1] * ratio])
+                        .on("end", function () {
+                            currBrush.on("end", function () {
+                                return context.brushMoved();
+                            });
+                        })
+                        ;
+                }
+            } else {
+                this.svgBrush
+                    .call(currBrush.move, [0, maxCurrExtent])
+                    ;
+            }
+            this._prevBrush = {
+                orientation: this.orientation(),
+                maxCurrExtent
+            };
         }
-        this.svgBrush.call(tmpBrush.move, [0.3, 0.5].map(this.domainAxis.d3Scale));
-        */
+
         this.updateFocusChart(domNode, element, this.margin, width, height, isHorizontal);
         this.updateChart(domNode, element, this.margin, width, height, isHorizontal, 250);
     };

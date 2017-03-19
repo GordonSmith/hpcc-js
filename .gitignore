@@ -10,3 +10,4 @@ nbproject
 docx
 .project
 .vs*
+*.log
