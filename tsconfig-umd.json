@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./tmp/test-umd",
+        "module": "umd"
+    },
+    "include": [
+        "./demos/dermatology.ts",
+        "./src/loader.ts",
+        "./src/index.ts"
+    ]
+}
