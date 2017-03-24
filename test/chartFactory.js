@@ -1,15 +1,15 @@
 ﻿"use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define([], factory);
+        define(["./es6Require"], factory);
     } else {
         root.test_chartFactory = factory();
     }
-}(this, function () {
+}(this, function (es6Require) {
     var chartFactory = {
         Column: {
             simple: function (callback) {
-                require(["test/DataFactory", "hpcc-js-viz/chart/Column"], function (DataFactory, Column) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Column"], function (DataFactory, Column) {
                     callback(new Column()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
@@ -17,7 +17,7 @@
                 });
             },
             longLabels: function (callback) {
-                require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Column"], function (DataFactory, Column) {
                     callback(new Column()
                         .columns(DataFactory.ND.subjects.columns)
                         .data([
@@ -38,7 +38,7 @@
                 });
             },
             ordinalRange: function (callback) {
-                require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Column"], function (DataFactory, Column) {
                     callback(new Column()
                         .columns(DataFactory.ordinalRange.default.columns)
                         .data(DataFactory.ordinalRange.default.data)
@@ -49,7 +49,7 @@
                 });
             },
             linear: function (callback) {
-                require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Column"], function (DataFactory, Column) {
                     callback(new Column()
                         .columns(DataFactory.linear.default.columns)
                         .data(DataFactory.linear.default.data)
@@ -60,7 +60,7 @@
                 });
             },
             timeX: function (callback) {
-                require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Column"], function (DataFactory, Column) {
                     callback(new Column()
                         .columns(DataFactory.timeX.default.columns)
                         .data(DataFactory.timeX.default.data)
@@ -72,7 +72,7 @@
                 });
             },
             timeY: function (callback) {
-                require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Column"], function (DataFactory, Column) {
                     callback(new Column()
                         .columns(DataFactory.timeY.default.columns)
                         .data(DataFactory.timeY.default.data)
@@ -86,7 +86,7 @@
         },
         Bar: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Bar"], function (DataFactory, Bar) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Bar"], function (DataFactory, Bar) {
                     callback(new Bar()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
@@ -96,7 +96,7 @@
         },
         Gantt: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Gantt"], function (DataFactory, Gantt) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Gantt"], function (DataFactory, Gantt) {
                     callback(new Gantt()
                         .yAxisTypeTimePattern("%Y-%m-%d")
                         .columns(["Project", "Date Range"])
@@ -111,7 +111,7 @@
         },
         Bubble: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Bubble"], function (DataFactory, Bubble) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Bubble"], function (DataFactory, Bubble) {
                     callback(new Bubble()
                         .columns(DataFactory.TwoD.subjects.columns)
                         .data(DataFactory.TwoD.subjects.data)
@@ -121,7 +121,7 @@
         },
         Scatter: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Scatter"], function (DataFactory, Scatter) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Scatter"], function (DataFactory, Scatter) {
                     callback(new Scatter()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
@@ -131,7 +131,7 @@
         },
         HexBin: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/HexBin"], function (DataFactory, HexBin) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/HexBin"], function (DataFactory, HexBin) {
                     var randomX = d3.random.normal(200, 80),
                         randomY = d3.random.normal(200, 80),
                         points = d3.range(2000).map(function () { return [randomX(), randomY()]; });
@@ -147,7 +147,7 @@
         },
         Line: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Line"], function (DataFactory, Line) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Line"], function (DataFactory, Line) {
                     callback(new Line()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
@@ -155,7 +155,7 @@
                 });
             },
             timeX: function (callback) {
-                require(["test/DataFactory", "src/chart/Line"], function (DataFactory, Line) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Line"], function (DataFactory, Line) {
                     callback(new Line()
                         .columns(DataFactory.timeX.default.columns)
                         .data(DataFactory.timeX.default.data)
@@ -167,7 +167,7 @@
                 });
             },
             cardinal_interpolation: function (callback) {
-                require(["test/DataFactory", "src/chart/Line"], function (DataFactory, Line) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Line"], function (DataFactory, Line) {
                     callback(new Line()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
@@ -178,7 +178,7 @@
         },
         Area: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Area"], function (DataFactory, Area) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Area"], function (DataFactory, Area) {
                     callback(new Area()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
@@ -188,7 +188,7 @@
         },
         Pie: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Pie"], function (DataFactory, Pie) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Pie"], function (DataFactory, Pie) {
                     callback(new Pie()
                         .columns(DataFactory.TwoD.subjects.columns)
                         .data(DataFactory.TwoD.subjects.data)
@@ -198,7 +198,7 @@
         },
         Step: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Step"], function (DataFactory, Step) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Step"], function (DataFactory, Step) {
                     callback(new Step()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
@@ -208,7 +208,7 @@
         },
         Summary: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Summary"], function (DataFactory, Summary) {
+                es6Require(["test/DataFactory", "src/chart/Summary"], function (DataFactory, Summary) {
                     callback(new Summary()
                         .columns(["Summary", "Score", "Details", "Status", "Icon"])
                         .data([
@@ -230,7 +230,7 @@
         },
         MultiChart: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
+                es6Require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
                     callback(new MultiChart()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
@@ -238,7 +238,7 @@
                 });
             },
             dataBreach: function (callback) {
-                require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
+                es6Require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
                     callback(new MultiChart()
                         .chartType("TABLE")
                         .chartTypeDefaults({
@@ -250,7 +250,7 @@
                 });
             },
             flightPath: function (callback) {
-                require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
+                es6Require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
                     callback(new MultiChart()
                         .chartType("TABLE")
                         .chartTypeDefaults({
@@ -262,7 +262,7 @@
                 });
             },
             stockMarket: function (callback) {
-                require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
+                es6Require(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {
                     callback(new MultiChart()
                         .chartType("TABLE")
                         .chartTypeDefaults({
@@ -276,7 +276,7 @@
         },
         MultiChartSurface: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/MultiChartSurface"], function (DataFactory, MultiChartSurface) {
+                es6Require(["test/DataFactory", "src/chart/MultiChartSurface"], function (DataFactory, MultiChartSurface) {
                     callback(new MultiChartSurface()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
@@ -286,7 +286,7 @@
         },
         Axis: {
             ordinal: function (callback) {
-                require(["src/chart/Axis"], function (Axis) {
+                es6Require(["hpcc-js-viz/chart/Axis"], function (Axis) {
                     callback(new Axis()
                         .type("ordinal")
                         .ordinals(["Year 1", "Year 2", "Year 3", "Year 4"])
@@ -294,7 +294,7 @@
                 });
             },
             longLabels: function (callback) {
-                require(["src/chart/Axis"], function (Axis) {
+                es6Require(["hpcc-js-viz/chart/Axis"], function (Axis) {
                     callback(new Axis()
                         .type("ordinal")
                         .ordinals(["Geography-Geography-Geography-Geography-Geography", "English-English-English-English-English-English", "Math-Math-Math-Math-Math-Math-Math-Math-Math-Math", "Science-Science-Science-Science-Science-Science"])
@@ -302,7 +302,7 @@
                 });
             },
             linear: function (callback) {
-                require(["src/chart/Axis"], function (Axis) {
+                es6Require(["hpcc-js-viz/chart/Axis"], function (Axis) {
                     callback(new Axis()
                         .type("linear")
                         .low(0)
@@ -311,7 +311,7 @@
                 });
             },
             time: function (callback) {
-                require(["src/chart/Axis"], function (Axis) {
+                es6Require(["hpcc-js-viz/chart/Axis"], function (Axis) {
                     callback(new Axis()
                         .type("time")
                         .low("2010-03-15")
@@ -322,7 +322,7 @@
         },
         Bullet: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Bullet"], function (DataFactory, Bullet) {
+                es6Require(["test/DataFactory", "src/chart/Bullet"], function (DataFactory, Bullet) {
                     callback(new Bullet()
                         .columns(["title", "subtitle", "ranges", "measures", "markers"])
                         .data([

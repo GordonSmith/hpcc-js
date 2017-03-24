@@ -7,7 +7,14 @@
     function optimizerConfig(require) {
         var load = requirejs.load;
         require.load = function (context, moduleId, url) {
+            //  Temp hook for transition to ts /d3.v4 ---
             if (moduleId.length >= 4 && moduleId.indexOf(".css") === moduleId.length - 4) {
+                var newUrl = url.substring(0, url.length - 3);
+                var link = document.createElement("link");
+                link.type = "text/css";
+                link.rel = "stylesheet";
+                link.href = newUrl;
+                document.getElementsByTagName("head")[0].appendChild(link);
                 url = "../rjs.noop.js";
             }
             return load(context, moduleId, url);

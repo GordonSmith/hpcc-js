@@ -1,15 +1,15 @@
 ﻿"use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define([], factory);
+        define(["./es6Require"], factory);
     } else {
         root.test_commonFactory = factory();
     }
-}(this, function () {
+}(this, function (es6Require) {
     var commonFactory = {
         Text: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/common/Text"], function (DataFactory, Text) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/Text"], function (DataFactory, Text) {
                     callback(new Text()
                         .text(DataFactory.Text.simple.text)
                     );
@@ -18,7 +18,7 @@
         },
         Shape: {
             simple: function (callback) {
-                require(["src/common/Shape"], function (Shape) {
+                es6Require(["hpcc-js-viz/common/Shape"], function (Shape) {
                     callback(new Shape()
                     );
                 });
@@ -26,7 +26,7 @@
         },
         FAChar: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/common/FAChar"], function (DataFactory, FAChar) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/FAChar"], function (DataFactory, FAChar) {
                     callback(new FAChar()
                         .char(DataFactory.FAChar.simple.char)
                     );
@@ -35,7 +35,7 @@
         },
         TextBox: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/common/TextBox"], function (DataFactory, TextBox) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/TextBox"], function (DataFactory, TextBox) {
                     callback(new TextBox()
                         .text(DataFactory.Text.simple.text)
                     );
@@ -44,46 +44,46 @@
         },
         Image: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/common/Image"], function (DataFactory, Image) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/Image"], function (DataFactory, Image) {
                     callback(new Image().source(DataFactory.Image.floorplan));
                 });
             },
             layered: function (callback) {
-                require(["test/DataFactory", "src/layout/Layered", "src/layout/AbsoluteSurface", "src/common/Image", "src/other/HeatMap"], function (DataFactory, Layered, AbsoluteSurface, Image, HeatMap) {
+                es6Require(["test/DataFactory", "src/layout/Layered", "src/layout/AbsoluteSurface", "hpcc-js-viz/common/Image", "src/other/HeatMap"], function (DataFactory, Layered, AbsoluteSurface, Image, HeatMap) {
                     var retVal = new Layered()
                         .addLayer(new AbsoluteSurface().widgetX(0).widgetY(0).widgetWidth(100).widgetHeight(100).widget(
-                                new Image()
-                                    .source(DataFactory.Image.floorplan)
-                                    .alignment("origin")
-                            )
+                            new Image()
+                                .source(DataFactory.Image.floorplan)
+                                .alignment("origin")
+                        )
                         )
                         .addLayer(new AbsoluteSurface().widgetX(0).widgetY(0).widgetWidth(100).widgetHeight(100).opacity(0.66).widget(
-                                new HeatMap()
-                                    .columns(DataFactory.HeatMap.floorplan.columns)
-                                    .data(DataFactory.HeatMap.floorplan.data)
-                            )
+                            new HeatMap()
+                                .columns(DataFactory.HeatMap.floorplan.columns)
+                                .data(DataFactory.HeatMap.floorplan.data)
                         )
-                    ;
+                        )
+                        ;
                     callback(retVal);
                 });
             },
             url: function (callback) {
-                require(["test/DataFactory", "src/common/Image"], function (DataFactory, Image) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/Image"], function (DataFactory, Image) {
                     callback(new Image().source("http://scoop.previewsworld.com/Image/NewsImage/4/41615/88069/1"));
                 });
             }
-            
+
         },
         Icon: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/common/Icon"], function (DataFactory, Icon) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/Icon"], function (DataFactory, Icon) {
                     callback(new Icon()
                         .faChar(DataFactory.FAChar.simple.char)
                     );
                 });
             },
             image: function (callback) {
-                require(["test/DataFactory", "src/common/Icon"], function (DataFactory, Icon) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/Icon"], function (DataFactory, Icon) {
                     callback(new Icon()
                         .faChar("")
                         .diameter(64)
@@ -94,7 +94,7 @@
         },
         List: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/common/List"], function (DataFactory, List) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/List"], function (DataFactory, List) {
                     callback(new List()
                         .data(DataFactory.List.simple.data)
                     );
@@ -103,7 +103,7 @@
         },
         Menu: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/common/Menu"], function (DataFactory, Menu) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/Menu"], function (DataFactory, Menu) {
                     callback(new Menu()
                         .data(DataFactory.List.simple.data)
                     );
@@ -112,7 +112,7 @@
         },
         Surface: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/common/Surface", "src/common/Text"], function (DataFactory, Surface, Text) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/Surface", "hpcc-js-viz/common/Text"], function (DataFactory, Surface, Text) {
                     callback(new Surface()
                         .title("Surface")
                         .menu(DataFactory.Surface.simple.menu)
@@ -126,7 +126,7 @@
         },
         ResizeSurface: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/common/ResizeSurface", "src/common/Text"], function (DataFactory, ResizeSurface, Text) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/common/ResizeSurface", "hpcc-js-viz/common/Text"], function (DataFactory, ResizeSurface, Text) {
                     callback(new ResizeSurface()
                         .title("Resize")
                         .menu(DataFactory.Surface.simple.menu)
@@ -140,17 +140,17 @@
         },
         Composition: {
             simple: function (callback) {
-                require(["test/DataFactory",
-                    "src/common/Utility", "src/common/Surface", "src/common/ResizeSurface", "src/common/Text", "src/common/TextBox", "src/common/Shape", "src/common/FAChar", "src/common/Icon", "src/common/List", "src/common/Menu", "src/common/Palette",
+                es6Require(["test/DataFactory",
+                    "hpcc-js-viz/common/Utility", "hpcc-js-viz/common/Surface", "hpcc-js-viz/common/ResizeSurface", "hpcc-js-viz/common/Text", "hpcc-js-viz/common/TextBox", "hpcc-js-viz/common/Shape", "hpcc-js-viz/common/FAChar", "hpcc-js-viz/common/Icon", "hpcc-js-viz/common/List", "hpcc-js-viz/common/Menu", "hpcc-js-viz/common/Palette",
                     "src/graph/Graph", "src/graph/Edge", "src/graph/Vertex",
                     "src/tree/SunburstPartition", "src/tree/CirclePacking",
                     "test/chartFactory", "test/otherFactory",
                     "src/other/MorphText", "src/form/Slider", "src/other/Table"], function (DataFactory,
                         Utility, Surface, ResizeSurface, Text, TextBox, Shape, FAChar, Icon, List, Menu, Palette,
-                    Graph, Edge, Vertex,
-                    SunburstPartition, CirclePacking,
-                    chartFactory, otherFactory,
-                    MorphText, Slider, Table) {
+                        Graph, Edge, Vertex,
+                        SunburstPartition, CirclePacking,
+                        chartFactory, otherFactory,
+                        MorphText, Slider, Table) {
                         function createEdge(source, target, label) {
                             return new Edge()
                                 .sourceVertex(source)
@@ -158,7 +158,7 @@
                                 .sourceMarker("circle")
                                 .targetMarker("arrow")
                                 .text(label || "")
-                            ;
+                                ;
                         }
                         chartFactory.Column.simple(function (column) {
                             otherFactory.Table.simple(function (table) {
@@ -195,24 +195,24 @@
         },
         Exporter: {
             Simple: function (callback) {
-                require(["test/DataFactory", "src/layout/Surface", "src/chart/Line", "src/common/Utility"], function (DataFactory, Surface, Line, Utility) {
+                es6Require(["test/DataFactory", "src/layout/Surface", "src/chart/Line", "hpcc-js-viz/common/Utility"], function (DataFactory, Surface, Line, Utility) {
                     var retVal = new Surface()
                         .title(DataFactory.Surface.simple.title)
-                        .buttonAnnotations([{id:"export_CSV",label:"CSV",width:"50px", height:"18px",padding:"0px 5px", format:"CSV"},
-                            {id:"export_TSV",label:"TSV",width:"50px", height:"18px",padding:"0px 5px", format:"TSV"},
-                            {id:"export_CSV",label:"JSON",width:"50px", height:"18px",padding:"0px 5px", format:"JSON"}])
+                        .buttonAnnotations([{ id: "export_CSV", label: "CSV", width: "50px", height: "18px", padding: "0px 5px", format: "CSV" },
+                        { id: "export_TSV", label: "TSV", width: "50px", height: "18px", padding: "0px 5px", format: "TSV" },
+                        { id: "export_CSV", label: "JSON", width: "50px", height: "18px", padding: "0px 5px", format: "JSON" }])
                         .widget(new Line()
                             .columns(DataFactory.ND.subjects.columns)
                             .data(DataFactory.ND.subjects.data)
                         )
-                        .on("click", function(d) {
+                        .on("click", function (d) {
                             var formattedData = retVal.widget().export(d.format);
                             var classID = retVal.widget().classID();
                             if (confirm("The data in " + d.format + " format:\n\n" + formattedData + "\n\n Would you like to save it as a file?")) {
                                 Utility.downloadData(d.format, formattedData, classID);
                             }
                         })
-                    ;
+                        ;
                     callback(retVal);
                 });
             }
