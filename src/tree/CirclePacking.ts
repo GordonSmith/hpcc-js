@@ -1,6 +1,7 @@
 import { hierarchy as d3Hierarchy, pack as d3Pack } from "d3-hierarchy";
 import { interpolateZoom as d3InterpolateZoom } from "d3-interpolate";
 import { event as d3Event } from "d3-selection";
+import "d3-transition";
 import { ITree } from "../api/ITree";
 import { SVGWidget } from "../common/SVGWidget";
 import "./CirclePacking.css";
