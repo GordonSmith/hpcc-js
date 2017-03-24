@@ -5,6 +5,13 @@
 
     //  Keep at the top for the optimizer to find (optimizer requires 100% JSON in require.config call) ---
     function optimizerConfig(require) {
+        var load = requirejs.load;
+        require.load = function (context, moduleId, url) {
+            if (moduleId.length >= 4 && moduleId.indexOf(".css") === moduleId.length - 4) {
+                url = "../rjs.noop.js";
+            }
+            return load(context, moduleId, url);
+        };
         return require.config({
             baseUrl: ".",
             paths: {
@@ -49,7 +56,46 @@
                 "simpleheat": "../bower_components/simpleheat/index",
                 "autoComplete": "../bower_components/javascript-auto-complete/auto-complete",
 
-                "src": "../src"
+                "src": "../src",
+
+                "tslib": "../../hpcc-js-viz/node_modules/tslib/tslib",
+                "d3-array": "../../hpcc-js-viz/node_modules/d3-array/build/d3-array",
+                "d3-axis": "../../hpcc-js-viz/node_modules/d3-axis/build/d3-axis",
+                "d3-brush": "../../hpcc-js-viz/node_modules/d3-brush/build/d3-brush",
+                "d3-bullet": "../../hpcc-js-viz/node_modules/d3-bullet/build/d3-bullet",
+                "d3-chord": "../../hpcc-js-viz/node_modules/d3-chord/build/d3-chord",
+                "d3-collection": "../../hpcc-js-viz/node_modules/d3-collection/build/d3-collection",
+                "d3-color": "../../hpcc-js-viz/node_modules/d3-color/build/d3-color",
+                "d3-dispatch": "../../hpcc-js-viz/node_modules/d3-dispatch/build/d3-dispatch",
+                "d3-drag": "../../hpcc-js-viz/node_modules/d3-drag/build/d3-drag",
+                "d3-dsv": "../../hpcc-js-viz/node_modules/d3-dsv/build/d3-dsv",
+                "d3-ease": "../../hpcc-js-viz/node_modules/d3-ease/build/d3-ease",
+                "d3-force": "../../hpcc-js-viz/node_modules/d3-force/build/d3-force",
+                "d3-format": "../../hpcc-js-viz/node_modules/d3-format/build/d3-format",
+                "d3-geo": "../../hpcc-js-viz/node_modules/d3-geo/build/d3-geo",
+                "d3-hexbin": "../../hpcc-js-viz/node_modules/d3-hexbin/build/d3-hexbin",
+                "d3-hierarchy": "../../hpcc-js-viz/node_modules/d3-hierarchy/build/d3-hierarchy",
+                "d3-interpolate": "../../hpcc-js-viz/node_modules/d3-interpolate/build/d3-interpolate",
+                "d3-path": "../../hpcc-js-viz/node_modules/d3-path/build/d3-path",
+                "d3-polygon": "../../hpcc-js-viz/node_modules/d3-polygon/build/d3-polygon",
+                "d3-quadtree": "../../hpcc-js-viz/node_modules/d3-quadtree/build/d3-quadtree",
+                "d3-queue": "../../hpcc-js-viz/node_modules/d3-queue/build/d3-queue",
+                "d3-random": "../../hpcc-js-viz/node_modules/d3-random/build/d3-random",
+                "d3-request": "../../hpcc-js-viz/node_modules/d3-request/build/d3-request",
+                "d3-sankey": "../../hpcc-js-viz/node_modules/d3-sankey/build/d3-sankey",
+                "d3-scale": "../../hpcc-js-viz/node_modules/d3-scale/build/d3-scale",
+                "d3-selection": "../../hpcc-js-viz/node_modules/d3-selection/build/d3-selection",
+                "d3-shape": "../../hpcc-js-viz/node_modules/d3-shape/build/d3-shape",
+                "d3-time": "../../hpcc-js-viz/node_modules/d3-time/build/d3-time",
+                "d3-time-format": "../../hpcc-js-viz/node_modules/d3-time-format/build/d3-time-format",
+                "d3-timer": "../../hpcc-js-viz/node_modules/d3-timer/build/d3-timer",
+                "d3-tip": "../../hpcc-js-viz/node_modules/d3-tip/lib-browser/index",
+                "d3-transition": "../../hpcc-js-viz/node_modules/d3-transition/build/d3-transition",
+                "d3-voroni": "../../hpcc-js-viz/node_modules/d3-voroni/build/d3-voroni",
+                "d3-zoom": "../../hpcc-js-viz/node_modules/d3-zoom/build/d3-zoom",
+                "colorbrewer": "../../hpcc-js-viz/node_modules/colorbrewer/colorbrewer",
+
+                "hpcc-js-viz": "../../hpcc-js-viz/lib-umd"
             },
             shim: {
                 "amcharts-funnel": {
@@ -238,7 +284,7 @@
             myInfo.url = document.currentScript.src;
         } else {
             var scripts = document.getElementsByTagName('script');
-            for (var i = scripts.length - 1; i >= 0 ; --i) {
+            for (var i = scripts.length - 1; i >= 0; --i) {
                 var script = scripts[i];
                 var url = script.getAttribute.length !== undefined ? script.src : script.getAttribute('src', -1);
                 if (url.indexOf("loader.js") > 0 || url.indexOf("hpcc-viz.js") > 0) {
@@ -302,7 +348,7 @@
             }
 
             return {
-                cdnHost: function(_) {
+                cdnHost: function (_) {
                     if (!arguments.length) return cdnHost;
                     cdnHost = _;
                     return this;
@@ -312,10 +358,10 @@
                     switch (arguments.length) {
                         case 1:
                             branch = "master";
-                            /* falls through */
+                        /* falls through */
                         case 2:
                             org = "hpcc-systems";
-                            /* falls through */
+                        /* falls through */
                         case 3:
                             repo = "Visualization";
                             break;

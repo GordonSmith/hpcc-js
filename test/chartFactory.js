@@ -9,7 +9,7 @@
     var chartFactory = {
         Column: {
             simple: function (callback) {
-                require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
+                require(["test/DataFactory", "hpcc-js-viz/chart/Column"], function (DataFactory, Column) {
                     callback(new Column()
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
@@ -18,7 +18,7 @@
             },
             longLabels: function (callback) {
                 require(["test/DataFactory", "src/chart/Column"], function (DataFactory, Column) {
-                    callback(new Column()                        
+                    callback(new Column()
                         .columns(DataFactory.ND.subjects.columns)
                         .data([
                             ["Geography Geography Geography\nGeography Geography", 75, 68, 65],
@@ -42,7 +42,7 @@
                     callback(new Column()
                         .columns(DataFactory.ordinalRange.default.columns)
                         .data(DataFactory.ordinalRange.default.data)
-                        
+
                         .yAxisType("linear")
                         .xAxisType("ordinal")
                     );
@@ -53,7 +53,7 @@
                     callback(new Column()
                         .columns(DataFactory.linear.default.columns)
                         .data(DataFactory.linear.default.data)
-                        
+
                         .xAxisType("linear")
                         .yAxisType("linear")
                     );
@@ -64,7 +64,7 @@
                     callback(new Column()
                         .columns(DataFactory.timeX.default.columns)
                         .data(DataFactory.timeX.default.data)
-                        
+
                         .xAxisType("time")
                         .xAxisTypeTimePattern("%Y-%m-%dT%H:%M:%S")
                         .yAxisType("linear")
@@ -76,7 +76,7 @@
                     callback(new Column()
                         .columns(DataFactory.timeY.default.columns)
                         .data(DataFactory.timeY.default.data)
-                      
+
                         .xAxisType("ordinal")
                         .yAxisType("time")
                         .yAxisTypeTimePattern("%Y-%m-%d")
@@ -159,7 +159,7 @@
                     callback(new Line()
                         .columns(DataFactory.timeX.default.columns)
                         .data(DataFactory.timeX.default.data)
-                        
+
                         .xAxisType("time")
                         .xAxisTypeTimePattern("%Y-%m-%dT%H:%M:%S")
                         .yAxisType("linear")
@@ -324,13 +324,13 @@
             simple: function (callback) {
                 require(["test/DataFactory", "src/chart/Bullet"], function (DataFactory, Bullet) {
                     callback(new Bullet()
-                        .columns(["title",      "subtitle",             "ranges",           "measures",     "markers"])
+                        .columns(["title", "subtitle", "ranges", "measures", "markers"])
                         .data([
-                              ["Revenue",       "US$, in thousands",    [150,225,300],      [220,270],      [250, 25]],
-                              ["Profit  ",      "%",                    [20,25,30],         [21,23],        [26]],
-                              ["Order Size",    "US$, average",         [350,500,600],      [100,320],      [550]],
-                              ["New Customers", "count",      [1400,2000,2500],   [1000,1650],    2100],
-                              ["Satisfaction",  "out of 5",             [3.5,4.25,5],       [3.2,4.7],      [4.4]]
+                            ["Revenue", "US$, in thousands", [150, 225, 300], [220, 270], [250, 25]],
+                            ["Profit  ", "%", [20, 25, 30], [21, 23], [26]],
+                            ["Order Size", "US$, average", [350, 500, 600], [100, 320], [550]],
+                            ["New Customers", "count", [1400, 2000, 2500], [1000, 1650], 2100],
+                            ["Satisfaction", "out of 5", [3.5, 4.25, 5], [3.2, 4.7], [4.4]]
                         ])
                         .titleColumn("title")
                         .subtitleColumn("subtitle")
