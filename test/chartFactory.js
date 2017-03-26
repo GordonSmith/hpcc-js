@@ -3,7 +3,7 @@
     if (typeof define === "function" && define.amd) {
         define(["./es6Require"], factory);
     } else {
-        root.test_chartFactory = factory();
+        root.test_graphFactory = factory(root.test_es6Require);
     }
 }(this, function (es6Require) {
     var chartFactory = {
@@ -208,7 +208,7 @@
         },
         Summary: {
             simple: function (callback) {
-                es6Require(["test/DataFactory", "src/chart/Summary"], function (DataFactory, Summary) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Summary"], function (DataFactory, Summary) {
                     callback(new Summary()
                         .columns(["Summary", "Score", "Details", "Status", "Icon"])
                         .data([
@@ -322,7 +322,7 @@
         },
         Bullet: {
             simple: function (callback) {
-                es6Require(["test/DataFactory", "src/chart/Bullet"], function (DataFactory, Bullet) {
+                es6Require(["test/DataFactory", "hpcc-js-viz/chart/Bullet"], function (DataFactory, Bullet) {
                     callback(new Bullet()
                         .columns(["title", "subtitle", "ranges", "measures", "markers"])
                         .data([

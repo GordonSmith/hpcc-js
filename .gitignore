@@ -1,7 +1,10 @@
-node_modules
-bower_components
-dist
-dist-amd
+.vs/
+.vscode/
+node_modules/
+bower_components/
+dist/
+dist-amd/
+out/
 Web.config
 nbproject
 .project
