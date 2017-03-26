@@ -17,9 +17,9 @@
         "lib": "lib/"
     },
     "scripts": {
-        "clean": "rimraf lib && rimraf tmp && rimraf coverage && rimraf .nyc_output && mkdir lib",
+        "clean": "rimraf lib && rimraf umd && rimraf tmp && rimraf coverage && rimraf .nyc_output && mkdir lib",
         "copy-resources": "cpx src/**/*.css tmp/src && cpx src/**/*.css lib-umd/",
-        "copy-resources-test": "cpx src/**/*.css tmp/test-es6/src",
+        "copy-resources-test": "cpx src/**/*.css tmp/lib-test/src",
         "compile": "tsc -p ./tsconfig.json && npm run copy-resources",
         "compile-test": "tsc -p ./tsconfig-test.json && npm run copy-resources-test",
         "bundle-browser": "cross-env RUNTIME=browser BUILD=src rollup -c",
@@ -28,7 +28,7 @@
         "build-browser": "npm run bundle-browser && npm run bundle-browser-min",
         "build": "npm run compile && npm run build-browser",
         "watch": "cross-env RUNTIME=browser BUILD=src rollup -w -c",
-        "watch-test": "cross-env RUNTIME=browser BUILD=test rollup -w -c",
+        "watch-test": "npm run copy-resources-test && cross-env RUNTIME=browser BUILD=test rollup -w -c",
         "prepublish": "npm run clean && npm run build",
         "lint": "tslint ./src/**/*",
         "test": "mocha ./lib-test/test/index.js",

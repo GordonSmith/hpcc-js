@@ -53,7 +53,7 @@ switch (process.env.BUILD) {
         entry = "src/" + entry;
         break;
     case "test":
-        entry = "test-es6/demos/dermatology";
+        entry = "lib-test/test/index";
         dest += "-test";
         //config.format = "umd";
         //config.external.push("chai");
@@ -71,6 +71,6 @@ if (process.env.VIZ) {
 }
 
 config.entry = "./tmp/" + entry + ".js";
-config.dest = "./lib/" + dest + ".js";
+config.dest = "./dist/" + dest + ".js";
 
 module.exports = config;

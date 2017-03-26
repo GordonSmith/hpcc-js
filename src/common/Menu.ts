@@ -1,12 +1,14 @@
-import "./Menu.css";
 import { event as d3Event, select as d3Select } from "d3-selection";
-import { SVGWidget } from "./SVGWidget";
+import { Icon } from "./Icon";
 import { IMenu } from "./IMenu";
-import "css!./Menu.css";
+import { List } from "./List";
+import { SVGWidget } from "./SVGWidget";
+
+import "./Menu.css";
 
 export class Menu extends SVGWidget implements IMenu {
-    protected _icon;
-    protected _list;
+    protected _icon = new Icon();
+    protected _list = new List();
     protected _open;
 
     constructor() {

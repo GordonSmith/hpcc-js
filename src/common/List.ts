@@ -1,7 +1,8 @@
-import "./List.css";
 import { IList } from "./IList";
 import { TextBox } from "./TextBox";
 import "css!./List.css";
+
+import "./List.css";
 
 export class List extends SVGWidget implements IList {
 
@@ -54,7 +55,7 @@ export class List extends SVGWidget implements IList {
             ++listCount;
         }
 
-        var yPos = -listHeight / 2;// + lineHeight / 2;
+        let yPos = -listHeight / 2; // + lineHeight / 2;
         lineEnter.merge(line).each(function (d) {
             var widget = context._listWidgets[d];
             var bbox = widget.getBBox();
@@ -77,7 +78,9 @@ export class List extends SVGWidget implements IList {
 
     exit(domNode, element) {
         for (var key in this._listWidgets) {
-            this._listWidgets[key].target(null);
+            if (this._listWidgets.hasOwnProperty(key)) {
+                this._listWidgets[key].target(null);
+            }
         }
         super.exit(domNode, element);
     };

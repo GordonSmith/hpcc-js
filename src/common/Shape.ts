@@ -32,7 +32,7 @@ Shape.prototype.radius = function (_) {
 Shape.prototype.intersection = function (pointA, pointB) {
     switch (this.shape()) {
         case "circle":
-            return this.intersectCircle(pointA, pointB);
+            return this.intersectCircle(this.radius(), pointA, pointB);
     }
     return SVGWidget.prototype.intersection.apply(this, arguments);
 };

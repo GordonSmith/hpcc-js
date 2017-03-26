@@ -4,7 +4,20 @@
     "version": "0.1.0",
     "tasks": [
         {
-            "taskName": "build",
+            "taskName": "build-es6-test",
+            "command": "tsc",
+            "isShellCommand": true,
+            "args": [
+                "-w",
+                "-p",
+                "./tsconfig-test.json"
+            ],
+            "showOutput": "silent",
+            "isBackground": true,
+            "problemMatcher": "$tsc-watch"
+        },
+        {
+            "taskName": "build-umd",
             "command": "tsc",
             "isShellCommand": true,
             "args": [
@@ -14,6 +27,19 @@
             ],
             "showOutput": "silent",
             "isBuildCommand": true,
+            "isBackground": true,
+            "problemMatcher": "$tsc-watch"
+        },
+        {
+            "taskName": "build-es6",
+            "command": "tsc",
+            "isShellCommand": true,
+            "args": [
+                "-w",
+                "-p",
+                "./tsconfig.json"
+            ],
+            "showOutput": "silent",
             "isBackground": true,
             "problemMatcher": "$tsc-watch"
         }

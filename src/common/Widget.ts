@@ -1,8 +1,11 @@
 import { event as d3Event, select as d3Select } from "d3-selection";
+import "d3-transition";
+import { Field, Grid } from "./Database";
 import { } from "./Platform";
 import { debounce } from "./Utility";
 import { PropertyExt } from "./PropertyExt";
 import { Field, Grid } from "./Database";
+
 import "./Widget.css";
 
 export interface IPos {
@@ -154,7 +157,7 @@ export class Widget extends PropertyExt {
                 var val = row[idx + 1];
                 if (val) {
                     var newItem = {
-                        rowIdx: rowIdx,
+                        rowIdx,
                         colIdx: idx + 1,
                         label: row[0],
                         value: val

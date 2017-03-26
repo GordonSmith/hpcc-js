@@ -1,6 +1,9 @@
+import { select as d3Select } from "d3-selection";
 import { HTMLWidget } from "./HTMLWidget";
 
 export class Image extends HTMLWidget {
+    private _imgElement;
+
     constructor() {
         super();
         this._drawStartPos = "center";
@@ -19,46 +22,47 @@ export class Image extends HTMLWidget {
             .append("img")
             .attr("src", this.source())
             .on("load", function () {
-                img.style(context.calcSize());
+                this._imgElement = d3Select(this);
+                context.styleImageElement();
             })
-            .merge(img)
-            .style(this.calcSize());
+            ;
+        this.styleImageElement();
         img.exit()
             .remove()
             ;
     };
 
-    calcSize() {
-        var retVal = {
-            width: "auto",
-            height: "auto"
-        };
+    styleImageElement() {
+        if (!this._imgElement) return;
         switch (this.sizing()) {
+            case "actual":
+                this._imgElement.style("width", "auto");
+                this._imgElement.style("height", "auto");
+                break;
             case "fit":
                 if (this.lockAspectRatio()) {
-                    var img = this.element().select("img");
-                    img.style({ width: "auto", height: "auto" });
-                    var bbox = img.node().getBoundingClientRect();
-                    var xScale = bbox.width / this.width();
-                    var yScale = bbox.height / this.height();
+                    this._imgElement.style("width", "auto");
+                    this._imgElement.style("height", "auto");
+                    const bbox = this._imgElement.node().getBoundingClientRect();
+                    const xScale = bbox.width / this.width();
+                    const yScale = bbox.height / this.height();
                     if (xScale > yScale) {
-                        retVal.width = this.width() + "px";
-                        retVal.height = (bbox.height / xScale) + "px";
+                        this._imgElement.style("width", this.width() + "px");
+                        this._imgElement.style("height", (bbox.height / xScale) + "px");
                     } else {
-                        retVal.width = (bbox.width / yScale) + "px";
-                        retVal.height = this.height() + "px";
+                        this._imgElement.style("width", (bbox.width / yScale) + "px");
+                        this._imgElement.style("height", this.height() + "px");
                     }
                 } else {
-                    retVal.width = this.width() + "px";
-                    retVal.height = this.height() + "px";
+                    this._imgElement.style("width", this.width() + "px");
+                    this._imgElement.style("height", this.height() + "px");
                 }
                 break;
             case "custom":
-                retVal.width = this.customWidth();
-                retVal.height = this.customHeight();
+                this._imgElement.style("width", this.customWidth());
+                this._imgElement.style("height", this.customHeight());
                 break;
         }
-        return retVal;
     };
 
     exit(domNode, element) {
@@ -76,8 +80,8 @@ Image.prototype._class += " common_Image";
 
 Image.prototype.publish("source", null, "string", "Image Source", null, { tags: ["Basic"] });
 Image.prototype.publish("sizing", "actual", "set", "Controls sizing mode", ["actual", "fit", "custom"], { tags: ["Basic"] });
-Image.prototype.publish("customWidth", "50%", "string", "Applies this width to IMG element if 'sizing' is set to 'custom'", null, { tags: ["Basic"], disable: function (w) { return w.sizing() !== "custom"; } });
-Image.prototype.publish("customHeight", "20%", "string", "Applies this height to IMG element if 'sizing' is set to 'custom'", null, { tags: ["Basic"], disable: function (w) { return w.sizing() !== "custom"; } });
-Image.prototype.publish("lockAspectRatio", true, "boolean", "Locks the aspect ratio when scaling/stretching", null, { tags: ["Basic"], disable: function (w) { return w.sizing() !== "fit"; } });
+Image.prototype.publish("customWidth", "50%", "string", "Applies this width to IMG element if 'sizing' is set to 'custom' (user should set 'px' or 'em' etc.)", null, { tags: ["Basic"], disable: (w) => { return w.sizing() !== "custom"; } });
+Image.prototype.publish("customHeight", "20%", "string", "Applies this height to IMG element if 'sizing' is set to 'custom' (user should set 'px' or 'em' etc.)", null, { tags: ["Basic"], disable: (w) => { return w.sizing() !== "custom"; } });
+Image.prototype.publish("lockAspectRatio", true, "boolean", "Locks the aspect ratio when scaling/stretching", null, { tags: ["Basic"], disable: (w) => { return w.sizing() !== "fit"; } });
 Image.prototype.publish("alignment", "center", "set", "Image Alignment", ["center", "origin"], { tags: ["Basic"] });
 

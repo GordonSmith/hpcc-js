@@ -1,14 +1,14 @@
-import "./Surface.css";
 import { select as d3Select } from "d3-selection";
-import { SVGWidget } from "./SVGWidget";
+import "d3-transition";
 import { Icon } from "./Icon";
 import { Shape } from "./Shape";
 import { Text } from "./Text";
 import { Menu } from "./Menu";
 import "css!./Surface.css";
 
-export class Surface extends SVGWidget {
+import "./Surface.css";
 
+export class Surface extends SVGWidget {
     _origMenuParam;
     _origShowContent;
 
