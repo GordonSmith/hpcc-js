@@ -6,6 +6,8 @@ bower_components
 tmp/
 lib/
 lib-umd/
+lib-test/
+dist/
 Web.config
 nbproject
 docx

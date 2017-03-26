@@ -1,9 +1,10 @@
-import "./Summary";
-import "font-awesome";
 import { rgb as d3Rgb } from "d3-color";
 import { select as d3Select } from "d3-selection";
+import "d3-transition";
+import "font-awesome/css/font-awesome.css";
 import { I2DChart } from "../api/I2DChart";
 import { HTMLWidget } from "../common/HTMLWidget";
+import "./Summary.css";
 
 const TEXT = "text";
 const HTML = "html";
@@ -22,26 +23,26 @@ Summary.prototype.implements(I2DChart.prototype);
 Summary.prototype._class += " chart_Summary";
 
 Summary.prototype.publish("iconColumn", null, "set", "Select Icon Column", function () { return this.columns(); }, { optional: true });
-Summary.prototype.publish("icon", "fa-briefcase", "string", "FA Char icon class", null, { disable: function (w) { return w.iconColumn(); } });
+Summary.prototype.publish("icon", "fa-briefcase", "string", "FA Char icon class", null, { disable: (w) => { return w.iconColumn(); } });
 
 Summary.prototype.publish("hideLabel", false, "boolean", "Hide label column");
-Summary.prototype.publish("labelColumn", null, "set", "Select display value", function () { return this.columns(); }, { optional: true, disable: function (w) { return w.hideLabel(); } });
-Summary.prototype.publish("labelHTML", false, "boolean", "Allow HTML", null, { disable: function (w) { return w.hideLabel(); } });
+Summary.prototype.publish("labelColumn", null, "set", "Select display value", function () { return this.columns(); }, { optional: true, disable: (w) => { return w.hideLabel(); } });
+Summary.prototype.publish("labelHTML", false, "boolean", "Allow HTML", null, { disable: (w) => { return w.hideLabel(); } });
 
 Summary.prototype.publish("valueColumn", null, "set", "Select display value", function () { return this.columns(); }, { optional: true });
 Summary.prototype.publish("valueHTML", false, "boolean", "Allow HTML");
 
 Summary.prototype.publish("hideMore", false, "boolean", "Hide More Information");
-Summary.prototype.publish("moreIconColumn", null, "set", "Select More Icon Column", function () { return this.columns(); }, { optional: true, disable: function (w) { return w.hideMore(); } });
-Summary.prototype.publish("moreIcon", "fa-info-circle", "string", "FA Char icon class", null, { disable: function (w) { return w.hideMore() || w.moreIconColumn(); } });
-Summary.prototype.publish("moreTextColumn", null, "set", "Select display value", function () { return this.columns(); }, { optional: true, disable: function (w) { return w.hideMore(); } });
-Summary.prototype.publish("moreText", "More Info", "string", "More text", null, { disable: function (w) { return w.hideMore() || w.moreTextColumn(); } });
-Summary.prototype.publish("moreTextHTML", false, "boolean", "Allow HTML", null, { disable: function (w) { return w.hideMore(); } });
+Summary.prototype.publish("moreIconColumn", null, "set", "Select More Icon Column", function () { return this.columns(); }, { optional: true, disable: (w) => { return w.hideMore(); } });
+Summary.prototype.publish("moreIcon", "fa-info-circle", "string", "FA Char icon class", null, { disable: (w) => { return w.hideMore() || w.moreIconColumn(); } });
+Summary.prototype.publish("moreTextColumn", null, "set", "Select display value", function () { return this.columns(); }, { optional: true, disable: (w) => { return w.hideMore(); } });
+Summary.prototype.publish("moreText", "More Info", "string", "More text", null, { disable: (w) => { return w.hideMore() || w.moreTextColumn(); } });
+Summary.prototype.publish("moreTextHTML", false, "boolean", "Allow HTML", null, { disable: (w) => { return w.hideMore(); } });
 
 Summary.prototype.publish("colorFillColumn", null, "set", "Column for color", function () { return this.columns(); }, { optional: true });
-Summary.prototype.publish("colorFill", "#3498db", "html-color", "Fill Color", null, { disable: function (w) { return w.colorFillColumn(); } });
+Summary.prototype.publish("colorFill", "#3498db", "html-color", "Fill Color", null, { disable: (w) => { return w.colorFillColumn(); } });
 Summary.prototype.publish("colorStrokeColumn", null, "set", "Column for color", function () { return this.columns(); }, { optional: true });
-Summary.prototype.publish("colorStroke", "#ffffff", "html-color", "Fill Color", null, { disable: function (w) { return w.colorStrokeColumn(); } });
+Summary.prototype.publish("colorStroke", "#ffffff", "html-color", "Fill Color", null, { disable: (w) => { return w.colorStrokeColumn(); } });
 
 Summary.prototype.publish("fixedSize", true, "boolean", "Fix Size to Min Width/Height");
 Summary.prototype.publish("minWidth", 225, "number", "Minimum Width");
@@ -158,12 +159,10 @@ Summary.prototype.update = function (_domNode, element) {
     this._mainDiv
         .attr("class", "content bgIcon " + row.icon)
         .transition()
-        .style({
-            "background-color": row.fill,
-            "color": row.stroke,
-            "min-width": this.minWidth_exists() ? this.minWidth() + "px" : null,
-            "min-height": this.minHeight_exists() ? this.minHeight() + "px" : null
-        })
+        .style("background-color", row.fill)
+        .style("color", row.stroke)
+        .style("min-width", this.minWidth_exists() ? this.minWidth() + "px" : null)
+        .style("min-height", this.minHeight_exists() ? this.minHeight() + "px" : null)
         ;
     this._headerDiv
         .transition()
@@ -187,17 +186,14 @@ Summary.prototype.update = function (_domNode, element) {
             const element2 = d3Select(this);
             element2.append("i");
             element2.append("span");
-        })
-        ;
-    moreDivs
+        }).merge(moreDivs)
         .transition()
         .style("background-color", d3Rgb(row.fill).darker(0.75))
         ;
     moreDivs.select("i")
         .attr("class", function (d) { return "fa " + d.moreIcon; })
         ;
-    moreDivs.select("span")
-    [this.moreTextHTML() ? HTML : TEXT](function (d) { return d.moreText; })
+    moreDivs.select("span")[this.moreTextHTML() ? HTML : TEXT](function (d) { return d.moreText; })
         ;
     moreDivs.exit().remove();
 };

@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "outDir": "./tmp/src",
+        "outDir": "./lib-es6",
         "module": "es6",
         "moduleResolution": "node",
         "importHelpers": true,

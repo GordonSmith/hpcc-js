@@ -1,8 +1,9 @@
-import * as d3 from 'd3';
+import { select as d3Select } from "d3-selection";
+import { Icon } from "../common/Icon";
 import { SVGWidget } from "../common/SVGWidget";
 import { TextBox } from "../common/TextBox";
-import { Icon } from "../common/Icon";
-import "./Vertex";
+
+import "./Vertex.css";
 
 export function Vertex() {
     SVGWidget.call(this);
@@ -37,7 +38,7 @@ Vertex.prototype.publish("annotationSpacing", 3, "number", "Annotation Spacing",
 Vertex.prototype.publish("annotationIcons", [], "array", "Annotations", null, { tags: ["Private"] });
 
 //  Render  ---
-Vertex.prototype.enter = function (domNode, element) {
+Vertex.prototype.enter = function (domNode, _element) {
     SVGWidget.prototype.enter.apply(this, arguments);
     this._icon
         .target(domNode)
@@ -49,64 +50,65 @@ Vertex.prototype.enter = function (domNode, element) {
         ;
 };
 
-Vertex.prototype.update = function (domNode, element) {
+Vertex.prototype.update = function (_domNode, element) {
     SVGWidget.prototype.update.apply(this, arguments);
     this._icon
         .tooltip(this.tooltip())
         .render()
         ;
-    var iconClientSize = this._icon.getBBox(true);
+    const iconClientSize = this._icon.getBBox(true);
     this._textBox
         .tooltip(this.tooltip())
         .render()
         ;
-    var bbox = this._textBox.getBBox(true);
+    const bbox = this._textBox.getBBox(true);
     switch (this.iconAnchor()) {
-        case 'start':
+        case "start":
             this._icon
                 .move({
                     x: -(bbox.width / 2) + (iconClientSize.width / 3),
                     y: -(bbox.height / 2) - (iconClientSize.height / 3)
                 });
             break;
-        case 'middle':
+        case "middle":
             this._icon
                 .move({
                     x: 0,
                     y: -(bbox.height / 2) - (iconClientSize.height / 3)
                 });
             break;
-        case 'end':
+        case "end":
             this._icon
                 .move({
                     x: (bbox.width / 2) - (iconClientSize.width / 3),
                     y: -(bbox.height / 2) - (iconClientSize.height / 3)
                 });
             break;
+        default:
     }
 
-    var context = this;
-    var annotations = element.selectAll(".annotation").data(this.annotationIcons());
-    annotations.enter().append("g")
+    const context = this;
+    const annotations = element.selectAll(".annotation").data(this.annotationIcons());
+    const annotationsEnter = annotations.enter().append("g")
         .attr("class", "annotation")
-        .each(function (d, idx) {
+        .each(function (_d, idx) {
             context._annotationWidgets[idx] = new Icon()
                 .target(this)
                 .shape("square")
                 ;
         })
         ;
-    var xOffset = bbox.width / 2;
-    var yOffset = bbox.height / 2;
-    annotations
+    let xOffset = bbox.width / 2;
+    const yOffset = bbox.height / 2;
+    annotationsEnter.merge(annotations)
         .each(function (d, idx) {
-            var annotationWidget = context._annotationWidgets[idx];
+            const annotationWidget = context._annotationWidgets[idx];
             annotationWidget
                 .diameter(context.annotationDiameter())
                 .shape_colorFill(context.textbox_shape_colorFill())
                 .shape_colorStroke(context.textbox_shape_colorStroke())
                 ;
-            for (var key in d) {
+            for (const key in d) {
                 if (annotationWidget[key]) {
                     annotationWidget[key](d[key]);
                 } else if ((window as any).__hpcc_debug) {
@@ -115,7 +117,7 @@ Vertex.prototype.update = function (domNode, element) {
             }
             annotationWidget.render();
 
-            var aBBox = annotationWidget.getBBox(true);
+            const aBBox = annotationWidget.getBBox(true);
             annotationWidget
                 .move({
                     x: xOffset - aBBox.width / 2 + 4,
@@ -126,20 +128,20 @@ Vertex.prototype.update = function (domNode, element) {
         })
         ;
     annotations.exit()
-        .each(function (d, idx) {
-            var element = d3.select(this);
+        .each(function (_d, idx) {
+            const element2 = d3Select(this);
             delete context._annotationWidgets[idx];
-            element.remove();
+            element2.remove();
         })
         ;
 };
 
 //  Methods  ---
 Vertex.prototype.intersection = function (pointA, pointB) {
-    var i1 = this._icon.intersection(pointA, pointB, this._pos);
+    const i1 = this._icon.intersection(pointA, pointB, this._pos);
     if (i1)
         return i1;
-    var i2 = this._textBox.intersection(pointA, pointB, this._pos);
+    const i2 = this._textBox.intersection(pointA, pointB, this._pos);
     if (i2)
         return i2;
     return null;
