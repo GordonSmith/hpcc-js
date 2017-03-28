@@ -1,4 +1,4 @@
-import { forceSimulation as d3ForceSimulation } from "d3-force";
+import { forceCenter as d3ForceCenter, forceLink as d3ForceLink, forceManyBody as d3ForceManyBody, forceSimulation as d3ForceSimulation, } from "d3-force";
 import * as dagre from "dagre";
 
 export function Circle(graphData?, width?, height?, radius?) {
@@ -15,8 +15,8 @@ export function Circle(graphData?, width?, height?, radius?) {
         const size = value.getBBox(true);
         const maxSize = Math.max(size.width, size.height);
         context.pos[u] = {
-            x: value.fixed ? value.x : Math.cos(currStep) * (radius - maxSize),
-            y: value.fixed ? value.y : Math.sin(currStep) * (radius - maxSize),
+            x: value.fixed ? value.x : width / 2 + Math.cos(currStep) * (radius - maxSize),
+            y: value.fixed ? value.y : height / 2 + Math.sin(currStep) * (radius - maxSize),
             width: size.width,
             height: size.height
         };
@@ -50,7 +50,7 @@ None.prototype.edgePoints = function (_e) {
     return [];
 };
 
-export function ForceDirected(graphData, _width, _height, options) {
+export function ForceDirected(graphData, width, height, options) {
     options = options || {};
     const context = this;
     this.pos = {};
@@ -58,15 +58,15 @@ export function ForceDirected(graphData, _width, _height, options) {
     this.vertices = [];
     this.vertexMap = {};
     graphData.eachNode(function (u) {
-        const value = graphData.node(u);
-        const size = value.getBBox(true);
+        const vertex = graphData.node(u);
+        const size = vertex.getBBox(true);
         const newItem = {
             id: u,
-            x: value.pos().x,
-            y: value.pos().y,
+            x: vertex.pos().x,
+            y: vertex.pos().y,
             width: size.width,
             height: size.height,
-            value
+            value: vertex
         };
         context.vertices.push(newItem);
         context.vertexMap[u] = newItem;
@@ -74,14 +74,31 @@ export function ForceDirected(graphData, _width, _height, options) {
     this.edges = [];
     graphData.eachEdge(function (_e, s, t) {
         context.edges.push({
-            source: context.vertexMap[s],
-            target: context.vertexMap[t]
+            source: s,
+            target: t
         });
     });
+    const forceLink = d3ForceLink()
+        .id(function (d: any) {
+            return d.id;
+        })
+        .distance(options.linkDistance)
+        .strength(options.linkStrength)
+        //        .friction(options.friction)
+        ;
+    const forceManyBody = d3ForceManyBody()
+        .strength(function (d: any) {
+            const cs = d.value.getBBox();
+            return options.charge * Math.max(cs.width, cs.height);
+        })
+        ;
     this.force = d3ForceSimulation()
+        .force("link", forceLink)
+        .force("charge", forceManyBody)
+        .force("center", d3ForceCenter(width / 2, height / 2))
         //.linkDistance(options.linkDistance)
         //.linkStrength(options.linkStrength)
-        //.friction(options.friction)
+        .velocityDecay(options.friction)
         //.charge(function (d) {
         //    const cs = d.value.getBBox();
         //    return options.charge * Math.max(cs.width, cs.height);
@@ -90,10 +107,14 @@ export function ForceDirected(graphData, _width, _height, options) {
         //.theta(options.theta)
         //.gravity(options.gravity)
         .nodes(this.vertices)
-        //.links(this.edges)
         ;
+    forceLink
+        .links(this.edges)
+        ;
+
+
     if (options.oneShot) {
-        this.force.start();
+        this.force.restart();
         let total = graphData.nodeCount();
         total = Math.min(total * total, 500);
         for (let i = 0; i < total; ++i) {
