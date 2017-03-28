@@ -1,3 +1,4 @@
+
 import "./Icon.css";
 
 export class Icon extends SVGWidget {
