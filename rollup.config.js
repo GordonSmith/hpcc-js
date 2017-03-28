@@ -23,7 +23,10 @@ var config = {
             jsnext: true,
             main: true
         }),
-        commonjs({}),
+        commonjs({
+            //include: 'node_modules/**',
+            namedExports: { "ciena-graphlib": ["Graph"] }
+        }),
         css({}),
         sourcemaps()
     ]
