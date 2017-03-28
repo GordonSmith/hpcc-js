@@ -4,10 +4,7 @@ import { Graph } from "../src/graph/Graph";
 import { Vertex } from "../src/graph/Vertex";
 import { Graph as GraphData } from "./data";
 
-const graph = new Graph()
-    .target("placeholder")
-    .layout("hierarchy")
-    ;
+const graph = new Graph();
 const vertices = [];
 const edges = [];
 const palette = Palette.ordinal("dark2");
@@ -40,7 +37,4 @@ rawData.links.forEach(function (link: any, idx: number) {
         ;
 }, graph);
 
-graph
-    .data({ vertices, edges })
-    .render()
-    ;
+graph.data({ vertices, edges });
