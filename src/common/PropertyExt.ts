@@ -24,6 +24,9 @@ function Meta(id, defaultValue, type, description, set, ext) {
     this.ext = ext;
 
     switch (type) {
+        case "any":
+            this.checkedAssign = _ => _;
+            break;
         case "set":
             this.checkedAssign = function (_) {
                 var options = typeof set === "function" ? set.call(this) : set;
@@ -123,7 +126,16 @@ function MetaProxy(id, proxy, method, defaultValue, ext?) {
     this.ext = ext || {};
 }
 
-var propExtID = 0;
+export type PublishTypes = "any" | "number" | "boolean" | "string" | "set" | "array" | "object" | "widget" | "widgetArray" | "propertyArray" | "html-color";
+export interface IPublishExt {
+    override?: Function;
+    disable?: Function;
+    optional?: boolean;
+    tags?: string[];
+    autoExpand?;
+}
+
+let propExtID = 0;
 export class PropertyExt extends Class {
     protected _id: string;
     private _watchArrIdx: number;
@@ -210,7 +222,7 @@ export class PropertyExt extends Class {
         }
     };
 
-    publish(id, defaultValue, type?, description?, set?, ext: any = {}) {
+    publish(id, defaultValue, type?: PublishTypes, description?: string, set?: string[] | Function | IPublishExt, ext: IPublishExt = {}) {
         if (this[__meta_ + id] !== undefined && !ext.override) {
             throw id + " is already published.";
         }
@@ -429,3 +441,9 @@ export class PropertyExt extends Class {
     };
 }
 PropertyExt.prototype._class += " common_PropertyExt";
+
+export function publish(defaultValue, description?, set?, ext: any = {}) {
+    return function (target: any, key: string) {
+        target.publish(key, defaultValue, "any", description, set, ext);
+    }
+}

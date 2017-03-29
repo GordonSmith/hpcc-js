@@ -36,3 +36,6 @@ export { Graph } from "./graph/Graph";
 export { Vertex } from "./graph/Vertex";
 export { Edge } from "./graph/Edge";
 export { Column as SankeyColumn, Sankey } from "./graph/Sankey";
+
+//  Timeline  ---
+export { MiniGantt } from "./timeline/MiniGantt";
