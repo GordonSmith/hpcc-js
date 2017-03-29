@@ -1,5 +1,4 @@
-﻿import { brush as d3Brush } from "d3-brush";
-import { drag as d3Drag } from "d3-drag";
+﻿import { drag as d3Drag } from "d3-drag";
 import { event as d3Event, select as d3Select } from "d3-selection";
 import { IGraph } from "../api/IGraph";
 import { svgMarkerGlitch } from "../common/Platform";
@@ -19,13 +18,11 @@ export class Graph extends SVGZoomWidget {
     protected graphData;
     protected highlight;
     protected _selection;
-    //protected brush;
     protected _dragging;
     protected forceLayout;
     protected drag;
     protected defs;
     protected svg;
-    //protected _svgBrush;
     protected svgC;
     protected svgE;
     protected svgV;
@@ -52,17 +49,7 @@ export class Graph extends SVGZoomWidget {
     };
 
     size(_) {
-        const retVal = SVGZoomWidget.prototype.size.apply(this, arguments);
-        /*
-        if (arguments.length && this._svgZoom) {
-            this._svgZoom
-                .attr("x", -this._size.width / 2)
-                .attr("y", -this._size.height / 2)
-                .attr("width", this._size.width)
-                .attr("height", this._size.height)
-                ;
-        }
-        */
+        const retVal = super.size.apply(this, arguments);
         return retVal;
     };
 
@@ -114,143 +101,11 @@ export class Graph extends SVGZoomWidget {
         return this;
     };
 
-    /*
-    setZoom(_translation, _scale, _transitionDuration) {
-        if (this.zoom) {
-             this.zoom.translate(translation);
-             this.zoom.scale(scale);
-             this.applyZoom(transitionDuration);
-        }
-    };
-
-    applyZoom(transitionDuration) {
-
-        if (d3Event && d3Event.sourceEvent && d3Event.sourceEvent.ctrlKey && (d3Event.sourceEvent.type === "wheel" || d3Event.sourceEvent.type === "mousewheel" || d3Event.sourceEvent.type === "DOMMouseScroll")) {
-            if (d3Event.sourceEvent.wheelDelta) {
-                this.zoom.translate([this.prevTranslate[0], this.prevTranslate[1] + d3Event.sourceEvent.wheelDelta]);
-                this.zoom.scale(this.prevScale);
-            }
-        }
-        (transitionDuration ? this.svg.transition().duration(transitionDuration) : this.svg)
-            .attr("transform", "translate(" + this.zoom.translate() + ")scale(" + this.zoom.scale() + ")")
-            ;
-        this.prevTranslate = this.zoom.translate();
-        if (this.prevScale !== this.zoom.scale()) {
-            this._fixIEMarkers();
-            this.prevScale = this.zoom.scale();
-        }
-        // this.brush.x(d3.scale.identity().domain([(-this.prevTranslate[0] - this._size.width / 2) * 1 / this.zoom.scale(), (-this.prevTranslate[0] + this._size.width / 2) * 1 / this.zoom.scale()]));
-        // this.brush.y(d3.scale.identity().domain([(-this.prevTranslate[1] - this._size.height / 2) * 1 / this.zoom.scale(), (-this.prevTranslate[1] + this._size.height / 2) * 1 / this.zoom.scale()]));
-    };
-    */
-    protected prevTranslate;
-    protected prevScale;
     enter(domNode, _element) {
         super.enter(domNode, _element);
 
 
         const context = this;
-
-        //  Zoom  ---
-        this.prevTranslate = [0, 0];
-        this.prevScale = 1;
-        /*
-        this.zoom = d3Zoom()
-            .scaleExtent([0.01, 4])
-            .on("start", function () {
-                context.prevTranslate = context.zoom.translate();
-                context.prevScale = context.zoom.scale();
-                if (d3Event.sourceEvent && d3Event.sourceEvent.shiftKey && d3Event.sourceEvent.ctrlKey) {
-                    context._zoomMode = "selection";
-                } else if (d3Event.sourceEvent && d3Event.sourceEvent.shiftKey) {
-                    context._zoomMode = "selection";
-                    context._selection.clear();
-                } else {
-                    context._zoomMode = "zoom";
-                }
-                switch (context._zoomMode) {
-                    case "selection":
-                        element.select(".extent")
-                            .style("visibility", null)
-                            ;
-                        break;
-                    default:
-                        element.select(".extent")
-                            .style("visibility", "hidden")
-                            ;
-                        break;
-                }
-            })
-            .on("end", function () {
-                switch (context._zoomMode) {
-                    case "selection":
-                        context.zoom.translate(context.prevTranslate);
-                        context.zoom.scale(context.prevScale);
-                        break;
-                    default:
-                        break;
-                }
-                context._svgBrush.call(context.brush.clear());
-            })
-            .on("zoom", function () {
-                switch (context._zoomMode) {
-                    case "selection":
-                        break;
-                    default:
-                        context.applyZoom();
-                        break;
-                }
-            })
-            ;
-            */
-        /*
-    this.brush = d3Brush()
-            .x(d3.scale.identity().domain([-context._size.width / 2, context._size.width / 2]))
-            .y(d3.scale.identity().domain([-context._size.height / 2, context._size.height / 2]))
-            .on("brushstart", function (args) {
-                switch (context._zoomMode) {
-                    case "selection":
-                        break;
-                    default:
-                        break;
-                }
-            })
-            .on("brushend", function (args) {
-                switch (context._zoomMode) {
-                    case "selection":
-                        var extent = d3Event.target.extent();
-                        context.svgV.selectAll(".graphVertex").select("*")
-                            .each(function (d) {
-                                if (extent[0][0] <= d.x() && d.x() < extent[1][0] && extent[0][1] <= d.y() && d.y() < extent[1][1]) {
-                                    context._selection.append(d);
-                                }
-                            })
-                            ;
-                        context.graph_selection(context.selection());
-                        break;
-                    default:
-                        break;
-                }
-            })
-            .on("brush", function () {
-                switch (context._zoomMode) {
-                    case "selection":
-                        var zt = context.zoom.translate();
-                        console.log(zt[0]);
-                        var extent = d3Event.target.extent();
-                        context.svgV.selectAll(".graphVertex").select("*")
-                            .classed("selected", function (d) {
-                                return context._selection.isSelected(d) ||
-                                    (extent[0][0] <= d.x() && d.x() < extent[1][0] && extent[0][1] <= d.y() && d.y() < extent[1][1]);
-                            })
-                            ;
-                        break;
-                    default:
-                        break;
-                }
-            })
-            */
-        ;
 
         //  Drag  ---
         function dragstart(d) {
@@ -364,54 +219,11 @@ export class Graph extends SVGZoomWidget {
         return this.getBounds(this._selection.get(), layoutEngine);
     };
 
-    /*
-        shrinkToFit(bounds, _transitionDuration) {
-            const width = this.width();
-            const height = this.height();
-
-            const dx = bounds[1][0] - bounds[0][0];
-            const dy = bounds[1][1] - bounds[0][1];
-            const x = (bounds[0][0] + bounds[1][0]) / 2;
-            const y = (bounds[0][1] + bounds[1][1]) / 2;
-            let scale = 1.0 / Math.max(dx / width, dy / height);
-            if (scale > 1) {
-                scale = 1;
-            }
-            const translate = [-scale * x, -scale * y];
-            this.setZoom(translate, scale, transitionDuration);
-        };
-
-        zoomTo(level, transitionDuration) {
-            switch (level) {
-                case "all":
-                    this.shrinkToFit(this.getVertexBounds(), transitionDuration);
-                    break;
-                case "width":
-                    const bounds = this.getVertexBounds();
-                    bounds[0][1] = 0;
-                    bounds[1][1] = 0;
-                    this.shrinkToFit(bounds, transitionDuration);
-                    break;
-                case "selection":
-                    this.shrinkToFit(this._selection.isEmpty() ? this.getVertexBounds() : this.getSelectionBounds(), transitionDuration);
-                    break;
-                default:
-                    let scale = parseInt(level);
-                    if (isNaN(scale) || scale <= 0 || scale > 200) {
-                        scale = 100;
-                    }
-                    this.zoom.scale(scale / 100);
-                    this.applyZoom(transitionDuration);
-                    break;
-            }
-        };
-    */
-
-    centerOn(_bounds, _transitionDuration) {
-        //        const x = (bounds[0][0] + bounds[1][0]) / 2;
-        //        const y = (bounds[0][1] + bounds[1][1]) / 2;
-        //        const translate = [x, y];
-        //        this.setZoom(translate, 1, transitionDuration);
+    centerOn(bounds, transitionDuration) {
+        const x = (bounds[0][0] + bounds[1][0]) / 2;
+        const y = (bounds[0][1] + bounds[1][1]) / 2;
+        const translate = [x, y];
+        this.zoomTo(translate, 1, transitionDuration);
     };
 
     //  Render  ---

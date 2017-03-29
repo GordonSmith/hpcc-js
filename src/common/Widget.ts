@@ -109,7 +109,7 @@ export class Widget extends PropertyExt {
     };
 
     //  Events  ---
-    on(eventID, func, stopPropagation) {
+    on(eventID, func, stopPropagation = false): this {
         var context = this;
         this.overrideMethod(eventID, function (origFunc, args) {
             var retVal;
@@ -126,7 +126,9 @@ export class Widget extends PropertyExt {
     };
 
     //  Implementation  ---
-    columns(_?, asDefault?) {
+    columns(): string[];
+    columns(_: string[], asDefault?: boolean): this;
+    columns(_?: string[], asDefault?: boolean): string[] | this {
         if (!arguments.length) return this._db.legacyColumns();
         this._db.legacyColumns(_, asDefault);
         return this;
@@ -224,16 +226,16 @@ export class Widget extends PropertyExt {
     };
 
     width(): number;
-    width(_): Widget;
-    width(_?): number | Widget {
+    width(_): this;
+    width(_?): number | this {
         if (!arguments.length) return this._size.width;
         this.size({ width: _, height: this._size.height });
         return this;
     };
 
     height(): number;
-    height(_): Widget;
-    height(_?): number | Widget {
+    height(_): this;
+    height(_?): number | this {
         if (!arguments.length) return this._size.height;
         this.size({ width: this._size.width, height: _ });
         return this;
