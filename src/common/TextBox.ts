@@ -1,19 +1,25 @@
-import "./TextBox.css";
 import { Shape } from "./Shape";
 import { Text } from "./Text";
 import "css!./TextBox.css";
 
+import "./TextBox.css";
+
 export class TextBox extends SVGWidget {
 
-    protected _shape;
-    protected _text;
-    protected _tooltipElement;
+    protected _shape: Shape;
+    protected _text: Text;
 
     constructor() {
         super();
 
         this._shape = new Shape()
             .shape("rect")
+            .on("click", () => {
+                this.click();
+            })
+            .on("dblclick", () => {
+                this.dblclick();
+            })
             ;
         this._text = new Text();
     }
@@ -28,20 +34,19 @@ export class TextBox extends SVGWidget {
 
     enter(domNode, element) {
         super.enter(domNode, element);
-        this._tooltipElement = element.append("title");
         this._shape
             .target(domNode)
+            .tooltip(this.tooltip())
             .render()
             ;
         this._text
-            .target(domNode)
+            .target(element.append("g").node())
             .render()
             ;
     };
 
     update(domNode, element) {
         super.update(domNode, element);
-        this._tooltipElement.text(this.tooltip());
         this._text
             .render()
             ;
@@ -71,6 +76,8 @@ export class TextBox extends SVGWidget {
                     break;
             }
         }
+        const bbox = this._text.getBBox();
+        this._text.visible(bbox.width <= size.width && bbox.height <= size.height);
     };
 
     exit(domNode, element) {
@@ -83,17 +90,23 @@ export class TextBox extends SVGWidget {
         super.exit(domNode, element);
     };
 
-    text: { (): string; (_: string): TextBox; }
-    shape_colorFill: { (): string; (_: string): TextBox; }
-    shape_colorStroke: { (): string; (_: string): TextBox; }
-    text_colorFill: { (): string; (_: string): TextBox; }
-    paddingLeft: { (): number; (_: number): TextBox; }
-    paddingRight: { (): number; (_: number): TextBox; }
-    paddingTop: { (): number; (_: number): TextBox; }
-    paddingBottom: { (): number; (_: number): TextBox; }
-    anchor: { (): string; (_: string): TextBox; }
-    fixedSize: { (): ISize; (_: ISize): TextBox; }
-    tooltip: { (): string; (_: string): TextBox; }
+    click() {
+    }
+
+    dblclick() {
+    }
+
+    text: { (): string; (_: string): TextBox; };
+    shape_colorFill: { (): string; (_: string): TextBox; };
+    shape_colorStroke: { (): string; (_: string): TextBox; };
+    text_colorFill: { (): string; (_: string): TextBox; };
+    paddingLeft: { (): number; (_: number): TextBox; };
+    paddingRight: { (): number; (_: number): TextBox; };
+    paddingTop: { (): number; (_: number): TextBox; };
+    paddingBottom: { (): number; (_: number): TextBox; };
+    anchor: { (): string; (_: string): TextBox; };
+    fixedSize: { (): ISize; (_: ISize): TextBox; };
+    tooltip: { (): string; (_: string): TextBox; };
 }
 TextBox.prototype._class += " common_TextBox";
 
