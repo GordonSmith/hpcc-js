@@ -1,7 +1,8 @@
-import "./TextBox.css";
 import { Shape } from "./Shape";
 import { Text } from "./Text";
 import "css!./TextBox.css";
+
+import "./TextBox.css";
 
 export class TextBox extends SVGWidget {
 
