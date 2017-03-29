@@ -4,6 +4,8 @@
         "outDir": "./lib-es6",
         "module": "es6",
         "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": false,
         "importHelpers": true,
         "declaration": true,
         "noUnusedLocals": true,
