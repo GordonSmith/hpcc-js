@@ -1,7 +1,8 @@
-import "font-awesome/css/font-awesome.css";
-import "./FAChar.css";
 import { SVGWidget } from "./SVGWidget";
 import { Text } from "./Text";
+
+import "font-awesome/css/font-awesome.css";
+import "./FAChar.css";
 
 export class FAChar extends SVGWidget {
 
