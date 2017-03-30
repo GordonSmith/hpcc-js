@@ -53,7 +53,9 @@ export class Edge extends SVGWidget {
         return this;
     };
 
-    weight(_) {
+    weight(): number;
+    weight(_: number): Edge;
+    weight(_?: number): number | Edge {
         if (!arguments.length) return this._weight;
         this._weight = _;
         return this;
