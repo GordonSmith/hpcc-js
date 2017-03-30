@@ -100,7 +100,10 @@
                 "d3-transition": "../../hpcc-js-viz/node_modules/d3-transition/build/d3-transition",
                 "d3-voroni": "../../hpcc-js-viz/node_modules/d3-voroni/build/d3-voroni",
                 "d3-zoom": "../../hpcc-js-viz/node_modules/d3-zoom/build/d3-zoom",
+                "ciena-dagre": "../../hpcc-js-viz/node_modules/ciena-dagre/index",
+                "ciena-graphlib": "../../hpcc-js-viz/node_modules/ciena-graphlib/index",
                 "colorbrewer": "../../hpcc-js-viz/node_modules/colorbrewer/colorbrewer",
+                "lodash": "../../hpcc-js-viz/node_modules/lodash/index",
 
                 "hpcc-js-viz": "../../hpcc-js-viz/lib-umd"
             },
