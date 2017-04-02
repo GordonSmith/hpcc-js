@@ -525,6 +525,8 @@ export abstract class XYAxis extends SVGWidget {
     xAxisGuideLines_default: { (): boolean; (_: boolean): XYAxis; };
     xAxisFocus: { (): boolean; (_: boolean): XYAxis; };
     xAxisFocusHeight: { (): number; (_: number): XYAxis; };
+    xAxisHidden: { (): boolean; (_: boolean): XYAxis; };
+    xAxisHidden_default: { (): boolean; (_: boolean): XYAxis; };
 
     yAxisTitle: { (): string; (_: string): XYAxis; };
     yAxisTickCount: { (): number; (_: number): XYAxis; };
@@ -540,6 +542,8 @@ export abstract class XYAxis extends SVGWidget {
     yAxisDomainPadding: { (): number; (_: number): XYAxis; };
     yAxisGuideLines: { (): boolean; (_: boolean): XYAxis; };
     yAxisGuideLines_default: { (): boolean; (_: boolean): XYAxis; };
+    yAxisHidden: { (): boolean; (_: boolean): XYAxis; };
+    yAxisHidden_default: { (): boolean; (_: boolean): XYAxis; };
 
     regions: { (): any[]; (_: string): XYAxis; };
     sampleData: { (): string; (_: string): XYAxis; };
@@ -565,6 +569,7 @@ XYAxis.prototype.publishProxy("xAxisDomainPadding", "domainAxis", "extend");
 XYAxis.prototype.publish("xAxisGuideLines", false, "boolean", "Y-Axis Guide Lines");
 XYAxis.prototype.publish("xAxisFocus", false, "boolean", "X-Axis Focus", null, { disable: (w) => { return w.orientation() !== "horizontal"; } });
 XYAxis.prototype.publish("xAxisFocusHeight", 80, "number", "X-Axis Focus Height", null, { disable: (w) => { return !w.xAxisFocus(); } });
+XYAxis.prototype.publishProxy("xAxisHidden", "domainAxis", "hidden");
 
 XYAxis.prototype.publishProxy("yAxisTitle", "valueAxis", "title");
 XYAxis.prototype.publishProxy("yAxisTickCount", "valueAxis", "tickCount");
@@ -578,6 +583,7 @@ XYAxis.prototype.publish("yAxisDomainLow", null, "string", "Y-Axis Low", null, {
 XYAxis.prototype.publish("yAxisDomainHigh", null, "string", "Y-Axis High", null, { optional: true, disable: (w) => { return w.yAxisType() === "ordinal"; } });
 XYAxis.prototype.publishProxy("yAxisDomainPadding", "valueAxis", "extend");
 XYAxis.prototype.publish("yAxisGuideLines", true, "boolean", "Y-Axis Guide Lines");
+XYAxis.prototype.publishProxy("yAxisHidden", "valueAxis", "hidden");
 
 XYAxis.prototype.publish("regions", [], "array", "Regions");
 

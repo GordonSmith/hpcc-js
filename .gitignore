@@ -6,6 +6,7 @@ bower_components
 tmp/
 lib/
 lib-umd/
+lib-es6/
 lib-test/
 dist/
 Web.config

@@ -6,6 +6,15 @@ import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-fo
 import { SVGWidget } from "../common/SVGWidget";
 import "./Axis.css";
 
+export interface IOverflow {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+    depth: number;
+    tickOverlapModulus: number;
+}
+
 export class Axis extends SVGWidget {
     protected parser;
     protected parserInvert;
@@ -366,8 +375,18 @@ export class Axis extends SVGWidget {
         return retVal;
     };
 
-    calcOverflow(element, ignoreText?) {
+    calcOverflow(element, ignoreText?): IOverflow {
         this.updateScale();
+        if (this.hidden()) {
+            return {
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                depth: 0,
+                tickOverlapModulus: 1
+            };
+        }
         const isHorizontal = this.isHorizontal();
         this.range(isHorizontal ? [0, this.width()] : [this.height(), 0]);
         const tmpSvg = element.append("g").attr("class", this.classID());
@@ -380,11 +399,12 @@ export class Axis extends SVGWidget {
             element.selectAll(".tick > text").remove();
         }
 
-        const retVal: any = {
+        const retVal: IOverflow = {
             left: 0,
             top: 0,
             right: 0,
             bottom: 0,
+            depth: 0,
             tickOverlapModulus: this.calcTickOverlapModulus(tmpSvgG)
         };
         this.adjustText(tmpSvgG, retVal.tickOverlapModulus);
@@ -462,6 +482,8 @@ export class Axis extends SVGWidget {
 
     update(_domNode, _element) {
         SVGWidget.prototype.update.apply(this, arguments);
+
+        this.svg.style("display", this.hidden() ? "none" : null);
 
         const overlap = this.calcOverflow(_element);
 
@@ -587,6 +609,7 @@ export class Axis extends SVGWidget {
     labelRotation: { (): number; (_: number): Axis; };
     shrinkToFit: { (): string; (_: string): Axis; };
     extend: { (): number; (_: number): Axis; };
+    hidden: { (): boolean; (_: boolean): Axis; };
 }
 Axis.prototype._class += " chart_Axis";
 
@@ -606,6 +629,7 @@ Axis.prototype.publish("overlapMode", "none", "set", "Label Overlap Mode", ["non
 Axis.prototype.publish("labelRotation", 33, "number", "Label Rotation", null, { optional: true, disable: (w) => { return w.overlapMode() !== "rotate"; } });
 Axis.prototype.publish("shrinkToFit", "both", "set", "Size to fit", ["none", "low", "high", "both"]);
 Axis.prototype.publish("extend", 5, "number", "Extend axis %", { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
+Axis.prototype.publish("hidden", false, "boolean", "Hide Axis");
 
 const type = Axis.prototype.type;
 Axis.prototype.type = function (_) {
