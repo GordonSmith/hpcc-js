@@ -126,7 +126,9 @@ export class Widget extends PropertyExt {
     };
 
     //  Implementation  ---
-    columns(_?, asDefault?) {
+    columns(): string[];
+    columns(_: string[], asDefault?: boolean): this;
+    columns(_?: string[], asDefault?: boolean): string[] | this {
         if (!arguments.length) return this._db.legacyColumns();
         this._db.legacyColumns(_, asDefault);
         return this;
@@ -232,8 +234,8 @@ export class Widget extends PropertyExt {
     };
 
     height(): number;
-    height(_): Widget;
-    height(_?): number | Widget {
+    height(_): this;
+    height(_?): number | this {
         if (!arguments.length) return this._size.height;
         this.size({ width: this._size.width, height: _ });
         return this;
