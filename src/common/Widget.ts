@@ -226,8 +226,8 @@ export class Widget extends PropertyExt {
     };
 
     width(): number;
-    width(_): Widget;
-    width(_?): number | Widget {
+    width(_): this;
+    width(_?): number | this {
         if (!arguments.length) return this._size.width;
         this.size({ width: _, height: this._size.height });
         return this;
