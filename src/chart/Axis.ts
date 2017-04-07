@@ -132,6 +132,7 @@ export class Axis extends SVGWidget {
         this._guideElement = d3Select(_)
             .attr("class", this._class)
             ;
+        return this;
     };
 
     enter(_domNode, element) {
@@ -275,6 +276,17 @@ export class Axis extends SVGWidget {
             .tickFormat("")
             .ticks(this.tickCount())
             ;
+        const customTicks = this.ticks();
+        if (!customTicks.length) {
+        } else {
+            this.d3Axis
+                .tickValues(customTicks.map(d => this.parse(d.value)))
+                .tickFormat((_d, i) => {
+                    return customTicks[i].label;
+                });
+            this.d3Guides
+                .tickValues(customTicks.map(d => this.parse(d.value)))
+        }
     };
 
     adjustText(svg, tickOverlapModulus) {
@@ -588,8 +600,8 @@ export class Axis extends SVGWidget {
 
     title: { (): string; (_: string): Axis; };
     orientation: { (): string; (_: string): Axis; };
-    type: (_?: string) => string | Axis;
-    timePattern: (_?: string) => string | Axis;
+    type: { (): string; (_: string): Axis; };
+    timePattern: { (): string; (_: string): Axis; };
     timePattern_exists: () => boolean;
     powExponent: { (): number; (_: number): Axis; };
     logBase: { (): number; (_: number): Axis; };
@@ -599,6 +611,7 @@ export class Axis extends SVGWidget {
     tickFormat: { (): string; (_: string): Axis; };
     tickFormat_exists: () => boolean;
     tickLength: { (): number; (_: number): Axis; };
+    ticks: { (): { value: string, label: string }[]; (_: { value: string, label: string }[]): Axis; };
     xAxisDomainLow: { (): string; (_: string): Axis; };
     xAxisDomainHigh: { (): string; (_: string): Axis; };
     low: { (): any; (_: any): Axis; };
@@ -623,6 +636,7 @@ Axis.prototype.publish("ordinals", [], "array", "Ordinal Values", null, { disabl
 Axis.prototype.publish("tickCount", null, "number", "Tick Count", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 Axis.prototype.publish("tickFormat", null, "string", "Tick Format", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 Axis.prototype.publish("tickLength", null, "number", "Tick Length", { optional: true });
+Axis.prototype.publish("ticks", [], "array", "Custom Ticks", { optional: true });
 Axis.prototype.publish("low", null, "any", "Low", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 Axis.prototype.publish("high", null, "any", "High", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 Axis.prototype.publish("overlapMode", "none", "set", "Label Overlap Mode", ["none", "stagger", "hide", "rotate", "linebreak", "wrap"]);
@@ -632,7 +646,7 @@ Axis.prototype.publish("extend", 5, "number", "Extend axis %", { optional: true,
 Axis.prototype.publish("hidden", false, "boolean", "Hide Axis");
 
 const type = Axis.prototype.type;
-Axis.prototype.type = function (_) {
+(Axis.prototype as any).type = function (_?: string): string | Axis {
     const retVal = type.apply(this, arguments);
     if (arguments.length) {
         this.updateScale();
@@ -641,7 +655,7 @@ Axis.prototype.type = function (_) {
 };
 
 const timePattern = Axis.prototype.timePattern;
-Axis.prototype.timePattern = function (_) {
+(Axis.prototype as any).timePattern = function (_) {
     const retVal = timePattern.apply(this, arguments);
     if (arguments.length) {
         this.updateScale();
