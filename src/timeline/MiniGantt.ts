@@ -7,7 +7,7 @@ import "./MiniGantt.css";
 export class MiniGantt extends SVGWidget {
     protected topAxis: Axis;
     protected bottomAxis: Axis;
-    protected svgCircles;
+    protected svgEvents;
     protected svg;
     protected svgGuide;
 
@@ -37,7 +37,7 @@ export class MiniGantt extends SVGWidget {
         super.enter(domNode, element);
         this.svg = element.append("g");
         this.svgGuide = this.svg.append("g");
-        this.svgCircles = this.svg.append("g");
+        this.svgEvents = this.svg.append("g");
         this.topAxis
             .target(this.svg.node())
             .guideTarget(this.svgGuide.node())
@@ -55,13 +55,15 @@ export class MiniGantt extends SVGWidget {
         const width = this.width();
         const height = this.height();
         const extent = this.extent();
-
+        const events = this.data().filter(d => !d[2] || d[0] === "WhenQueryStarted");
+        const ranges = this.data().filter(d => !(!d[2] || d[0] === "WhenQueryStarted"));
+        const eventTicks = events.map(d => { return { label: d[0], value: d[1] }; });
         this.topAxis
             .low(extent[0])
             .high(extent[1])
             .width(width)
             .height(height)
-            .ticks(this.data().filter(d => d[2] === undefined || d[2] === null).map(d => { return { label: d[0], value: d[1] }; }))
+            .ticks(eventTicks)
             .render()
             ;
         const topAxisBBox = this.topAxis.getBBox();
@@ -75,17 +77,31 @@ export class MiniGantt extends SVGWidget {
             ;
         const bottomAxisBBox = this.bottomAxis.getBBox();
 
-        const circles = this.svgCircles.selectAll(".line").data(this.data(), d => d[0]);
-        circles.enter().append("line")
+        const rects = this.svgEvents.selectAll(".rect").data(ranges, d => {
+            return d[0];
+        });
+        rects.enter().append("rect")
+            .attr("class", "rect")
+            .attr("x", d => this.bottomAxis.scalePos(d[1]) - width / 2)
+            .attr("y", (_d, i) => 10)
+            .attr("width", d => (this.bottomAxis.scalePos(d[2]) - this.bottomAxis.scalePos(d[1])))
+            .attr("height", 8)
+            .merge(rects)
+            ;
+        rects.exit().remove();
+
+        const lines = this.svgEvents.selectAll(".line").data(events, d => {
+            return d[0];
+        });
+        lines.enter().append("line")
             .attr("class", "line")
             .attr("x1", d => this.bottomAxis.scalePos(d[1]) - width / 2)
             .attr("x2", d => this.bottomAxis.scalePos(d[1]) - width / 2)
             .attr("y1", -height / 2 + topAxisBBox.height)
             .attr("y2", height / 2 - bottomAxisBBox.height)
-            .merge(circles)
+            .merge(lines)
             ;
-
-        circles.exit().remove();
+        lines.exit().remove();
     };
 }
 MiniGantt.prototype._class += " timeline_MiniGantt";

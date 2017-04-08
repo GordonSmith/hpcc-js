@@ -4,3 +4,9 @@
   opacity: 0.7;
 }
 
+.timeline_MiniGantt .rect {
+  fill: lightskyblue;
+  stroke: blue;
+  opacity: 0.5;
+}
+
