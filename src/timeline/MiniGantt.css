@@ -10,3 +10,8 @@
   opacity: 0.5;
 }
 
+.timeline_MiniGantt .rect text {
+  fill: black;
+  stroke: none;
+}
+
