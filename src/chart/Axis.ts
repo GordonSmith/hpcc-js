@@ -635,14 +635,14 @@ Axis.prototype.publish("logBase", 10, "number", "Base for log on Value Axis", nu
 Axis.prototype.publish("ordinals", [], "array", "Ordinal Values", null, { disable: (w) => { return w.type() !== "ordinal"; } });
 Axis.prototype.publish("tickCount", null, "number", "Tick Count", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 Axis.prototype.publish("tickFormat", null, "string", "Tick Format", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
-Axis.prototype.publish("tickLength", null, "number", "Tick Length", { optional: true });
-Axis.prototype.publish("ticks", [], "array", "Custom Ticks", { optional: true });
+Axis.prototype.publish("tickLength", null, "number", "Tick Length", null, { optional: true });
+Axis.prototype.publish("ticks", [], "array", "Custom Ticks", null, { optional: true });
 Axis.prototype.publish("low", null, "any", "Low", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 Axis.prototype.publish("high", null, "any", "High", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 Axis.prototype.publish("overlapMode", "none", "set", "Label Overlap Mode", ["none", "stagger", "hide", "rotate", "linebreak", "wrap"]);
 Axis.prototype.publish("labelRotation", 33, "number", "Label Rotation", null, { optional: true, disable: (w) => { return w.overlapMode() !== "rotate"; } });
 Axis.prototype.publish("shrinkToFit", "both", "set", "Size to fit", ["none", "low", "high", "both"]);
-Axis.prototype.publish("extend", 5, "number", "Extend axis %", { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
+Axis.prototype.publish("extend", 5, "number", "Extend axis %", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
 Axis.prototype.publish("hidden", false, "boolean", "Hide Axis");
 
 const type = Axis.prototype.type;
