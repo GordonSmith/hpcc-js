@@ -45,6 +45,7 @@ export class Text extends SVGWidget {
         let yOffset = -(bbox.y + bbox.height / 2);
         switch (this.anchor()) {
             case "start":
+
                 xOffset = -bbox.x + bbox.width / 2;
                 break;
             case "end":

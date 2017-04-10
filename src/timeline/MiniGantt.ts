@@ -1,8 +1,9 @@
 import { extent as d3Extent } from "d3-array";
 import { scaleBand as d3ScaleBand } from "d3-scale";
 import { SVGWidget } from "../common/SVGWidget";
+import { publish } from "../common/PropertyExt";
 import { Axis } from "../chart/Axis";
-import { Text } from "../common/Text";
+import { TextBox } from "../common/TextBox";
 
 import "./MiniGantt.css";
 
@@ -13,6 +14,9 @@ export class MiniGantt extends SVGWidget {
     protected svgEvents;
     protected svg;
     protected svgGuide;
+
+    @publish(2, "Force new lane if start/end is within X pixels")
+    overlapTolerence: { (): number; (_: number): MiniGantt; };
 
     constructor() {
         super();
@@ -100,19 +104,19 @@ export class MiniGantt extends SVGWidget {
         interface bucketInfo {
             endPos: number;
         }
-        const buckets: bucketInfo[] = [];
+        const data: bucketInfo[] = [];
         ranges.forEach(d => {
-            for (let i = 0; i < buckets.length; ++i) {
-                const bucket = buckets[i];
-                if (bucket.endPos + 3 < this.dataStartPos(d)) {
+            for (let i = 0; i < data.length; ++i) {
+                const bucket = data[i];
+                if (bucket.endPos + this.overlapTolerence() < this.dataStartPos(d)) {
                     d.bucket = i;
                     bucket.endPos = this.dataEndPos(d);
                     break;
                 }
             }
             if (d.bucket === undefined) {
-                d.bucket = buckets.length;
-                buckets.push({
+                d.bucket = data.length;
+                data.push({
                     endPos: this.dataEndPos(d)
                 });
             }
@@ -120,36 +124,32 @@ export class MiniGantt extends SVGWidget {
 
         this.verticalBands
             .range([-height / 2 + topAxisBBox.height, height / 2 - bottomAxisBBox.height])
-            .domain(buckets.map((_d, i) => i))
+            .domain(data.map((_d, i) => i))
             ;
 
-        const rects = this.svgEvents.selectAll(".rect").data(ranges, d => {
-            return d[0];
-        });
-        const enterRects = rects.enter().append("rect")
-            .attr("class", "rect")
-            .attr("x", d => this.dataStartPos(d) - width / 2)
-            .attr("y", d => this.verticalBands(d.bucket))
-            .attr("width", d => this.dataWidth(d))
-            .attr("height", this.verticalBands.bandwidth())
-            ;
-        enterRects.append("title")
-            ;
-        enterRects.each(function (d) {
-            d._text = new Text()
-                .target(this)
-                .text(d[0])
-                .render()
-                ;
-        });
-        enterRects.merge(rects).select("title")
-            .text(d => d[0])
-            ;
-        enterRects.merge(rects).select("text")
-            .attr("transform", d => `translate(${this.dataStartPos(d) - width / 2},${this.verticalBands(d.bucket)})`)
-            .text(d => d[0])
-            ;
-        rects.exit().remove();
+        const buckets = this.svgEvents.selectAll(".buckets").data(ranges, d => d[0]);
+        const enterBuckets = buckets.enter().append("g")
+            .attr("class", "buckets")
+            .each(function (d) {
+                d._text = new TextBox()
+                    .target(this)
+                    .anchor("start")
+                    ;
+            });
+        enterBuckets
+            .merge(buckets)
+            .attr("transform", d => `translate(${this.dataStartPos(d) - width / 2}, ${this.verticalBands(d.bucket)})`)
+            .each(d => {
+                d._text
+                    .pos({ x: this.dataWidth(d) / 2, y: this.verticalBands.bandwidth() / 2 })
+                    .fixedSize({ width: this.dataWidth(d), height: this.verticalBands.bandwidth() })
+                    .text(d[0])
+                    .tooltip(d[0])
+                    .render()
+                    ;
+            });
+
+        buckets.exit().remove();
 
         const lines = this.svgEvents.selectAll(".line").data(events, d => {
             return d[0];
@@ -166,3 +166,4 @@ export class MiniGantt extends SVGWidget {
     };
 }
 MiniGantt.prototype._class += " timeline_MiniGantt";
+

@@ -7,9 +7,8 @@ import "./TextBox.css";
 
 export class TextBox extends SVGWidget {
 
-    protected _shape;
-    protected _text;
-    protected _tooltipElement;
+    protected _shape: Shape;
+    protected _text: Text;
 
     constructor() {
         super();
@@ -30,20 +29,19 @@ export class TextBox extends SVGWidget {
 
     enter(domNode, element) {
         super.enter(domNode, element);
-        this._tooltipElement = element.append("title");
         this._shape
             .target(domNode)
+            .tooltip(this.tooltip())
             .render()
             ;
         this._text
-            .target(domNode)
+            .target(element.append("g").node())
             .render()
             ;
     };
 
     update(domNode, element) {
         super.update(domNode, element);
-        this._tooltipElement.text(this.tooltip());
         this._text
             .render()
             ;
@@ -74,6 +72,8 @@ export class TextBox extends SVGWidget {
                 default:
             }
         }
+        const bbox = this._text.getBBox();
+        this._text.visible(bbox.width <= size.width && bbox.height <= size.height);
     };
 
     exit(domNode, element) {

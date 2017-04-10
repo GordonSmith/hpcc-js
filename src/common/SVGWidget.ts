@@ -92,7 +92,7 @@ export class SVGWidget extends Widget {
 
     protected _boundingBox;
     protected transition;
-    protected _drawStartPos;
+    protected _drawStartPos: "center" | "origin";
     protected _parentRelativeDiv;
     protected _parentOverlay;
 
@@ -158,7 +158,7 @@ export class SVGWidget extends Widget {
         return retVal;
     };
 
-    target(_) {
+    target(_): this {
         if (!arguments.length) return this._target;
         if (this._target && _ && (this._target.__data__.id !== _.__data__.id)) {
             throw "Target can only be assigned once.";
