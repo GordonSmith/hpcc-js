@@ -196,9 +196,9 @@
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-1.0.0.tgz#6af48a0d492c09068e97cb78e6bef940d57fb36d"
 
-"@types/graphlib@^2.1.3":
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/@types/graphlib/-/graphlib-2.1.3.tgz#81df4b1d757b8f25b18f20ea7717869cb32fa117"
+"@types/graphlib@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@types/graphlib/-/graphlib-2.1.4.tgz#1b517f4111e07766555cf1bd9304bec9053b0240"
 
 "@types/handlebars@^4.0.31":
   version "4.0.32"
