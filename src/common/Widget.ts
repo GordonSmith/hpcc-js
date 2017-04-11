@@ -109,7 +109,7 @@ export class Widget extends PropertyExt {
     };
 
     //  Events  ---
-    on(eventID, func, stopPropagation): this {
+    on(eventID, func, stopPropagation = false): this {
         const context = this;
         this.overrideMethod(eventID, function (origFunc, args) {
             let retVal;

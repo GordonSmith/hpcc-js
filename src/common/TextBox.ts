@@ -15,6 +15,12 @@ export class TextBox extends SVGWidget {
 
         this._shape = new Shape()
             .shape("rect")
+            .on("click", () => {
+                this.click();
+            })
+            .on("dblclick", () => {
+                this.dblclick();
+            })
             ;
         this._text = new Text();
     }
@@ -85,6 +91,12 @@ export class TextBox extends SVGWidget {
             ;
         super.exit(domNode, element);
     };
+
+    click() {
+    }
+
+    dblclick() {
+    }
 
     text: { (): string; (_: string): TextBox; };
     shape_colorFill: { (): string; (_: string): TextBox; };
