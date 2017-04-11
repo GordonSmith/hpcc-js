@@ -14,6 +14,12 @@ export class TextBox extends SVGWidget {
 
         this._shape = new Shape()
             .shape("rect")
+            .on("click", () => {
+                this.click();
+            })
+            .on("dblclick", () => {
+                this.dblclick();
+            })
             ;
         this._text = new Text();
     }
@@ -84,17 +90,23 @@ export class TextBox extends SVGWidget {
         super.exit(domNode, element);
     };
 
-    text: { (): string; (_: string): TextBox; }
-    shape_colorFill: { (): string; (_: string): TextBox; }
-    shape_colorStroke: { (): string; (_: string): TextBox; }
-    text_colorFill: { (): string; (_: string): TextBox; }
-    paddingLeft: { (): number; (_: number): TextBox; }
-    paddingRight: { (): number; (_: number): TextBox; }
-    paddingTop: { (): number; (_: number): TextBox; }
-    paddingBottom: { (): number; (_: number): TextBox; }
-    anchor: { (): string; (_: string): TextBox; }
-    fixedSize: { (): ISize; (_: ISize): TextBox; }
-    tooltip: { (): string; (_: string): TextBox; }
+    click() {
+    }
+
+    dblclick() {
+    }
+
+    text: { (): string; (_: string): TextBox; };
+    shape_colorFill: { (): string; (_: string): TextBox; };
+    shape_colorStroke: { (): string; (_: string): TextBox; };
+    text_colorFill: { (): string; (_: string): TextBox; };
+    paddingLeft: { (): number; (_: number): TextBox; };
+    paddingRight: { (): number; (_: number): TextBox; };
+    paddingTop: { (): number; (_: number): TextBox; };
+    paddingBottom: { (): number; (_: number): TextBox; };
+    anchor: { (): string; (_: string): TextBox; };
+    fixedSize: { (): ISize; (_: ISize): TextBox; };
+    tooltip: { (): string; (_: string): TextBox; };
 }
 TextBox.prototype._class += " common_TextBox";
 

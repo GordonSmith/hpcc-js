@@ -276,9 +276,8 @@ export class Axis extends SVGWidget {
             .tickFormat("")
             .ticks(this.tickCount())
             ;
-        const customTicks = this.ticks();
-        if (!customTicks.length) {
-        } else {
+        let customTicks = this.ticks();
+        if (customTicks.length) {
             this.d3Axis
                 .tickValues(customTicks.map(d => this.parse(d.value)))
                 .tickFormat((_d, i) => {

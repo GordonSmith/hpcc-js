@@ -29,6 +29,12 @@ export class Shape extends SVGWidget {
             var element = d3Select(this);
             context._tooltipElement = element.append("title");
             })
+            .on("click", () => {
+                this.click();
+            })
+            .on("dblclick", () => {
+                this.dblclick()
+            })
             .merge(shape)
             .style("fill", this.colorFill())
             .style("stroke", this.colorStroke())
@@ -70,6 +76,12 @@ export class Shape extends SVGWidget {
             ;
         shape.exit().remove();
     };
+
+    click() {
+    }
+
+    dblclick() {
+    }
 
     shape: { (): string; (_: string): Shape; };
     colorStroke: { (): number; (_: number): Shape; };
