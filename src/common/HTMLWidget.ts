@@ -25,11 +25,11 @@ export class HTMLWidget extends Widget {
             parseFloat(element.style("border-right-width"))
             ;
         return retVal;
-    };
+    }
 
     calcWidth(element) {
         return parseFloat(element.style("width")) - this.calcFrameWidth(element);
-    };
+    }
 
     calcFrameHeight(element) {
         var retVal = parseFloat(element.style("padding-top")) +
@@ -40,29 +40,29 @@ export class HTMLWidget extends Widget {
             parseFloat(element.style("border-bottom-width"))
             ;
         return retVal;
-    };
+    }
 
     calcHeight(element) {
         return parseFloat(element.style("height")) + this.calcFrameHeight(element);
-    };
+    }
 
     hasHScroll(element) {
         element = element || this._element;
         return element.property("scrollWidth") > element.property("clientWidth");
-    };
+    }
 
     hasVScroll(element) {
         element = element || this._element;
         return element.property("scrollHeight") > element.property("clientHeight");
-    };
+    }
 
     clientWidth() {
         return this._size.width - this.calcFrameWidth(this._element);
-    };
+    }
 
     clientHeight() {
         return this._size.height - this.calcFrameHeight(this._element);
-    };
+    }
 
     getBBox(refresh = false, round = false) {
         if (refresh || this._boundingBox === null) {
@@ -91,7 +91,7 @@ export class HTMLWidget extends Widget {
             width: (round ? Math.round(this._boundingBox.width) : this._boundingBox.width) * this._scale,
             height: (round ? Math.round(this._boundingBox.height) : this._boundingBox.height) * this._scale
         };
-    };
+    }
 
     resize(size) {
         var retVal = super.resize(size);
@@ -100,13 +100,13 @@ export class HTMLWidget extends Widget {
             .style("height", this._size.height + "px")
             ;
         return retVal;
-    };
+    }
 
     //  Properties  ---
     target(_) {
         if (!arguments.length) return this._target;
         if (this._target && _) {
-            throw "Target can only be assigned once.";
+            throw new Error("Target can only be assigned once.");
         }
         this._target = _;
 
@@ -152,7 +152,7 @@ export class HTMLWidget extends Widget {
             this.exit();
         }
         return this;
-    };
+    }
 
     postUpdate(domNode, element) {
         super.postUpdate(domNode, element);
@@ -171,7 +171,7 @@ export class HTMLWidget extends Widget {
                 .style("top", this._pos.y + (this._size.height - bbox.height) / 2 + "px")
                 ;
         }
-    };
+    }
 
     exit(domNode?, element?) {
         if (this.observer) {
@@ -182,7 +182,7 @@ export class HTMLWidget extends Widget {
             this._parentElement.remove();
         }
         super.exit(domNode, element);
-    };
+    }
 }
 HTMLWidget.prototype._class += " common_HTMLWidget";
 

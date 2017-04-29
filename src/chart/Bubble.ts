@@ -1,5 +1,6 @@
 import { hierarchy as d3Hierarchy, pack as d3Pack } from "d3-hierarchy";
-import { select as d3Select } from "d3-selection";
+import { select as d3Select, Selection } from "d3-selection";
+import "d3-transition";
 import { I2DChart } from "../api/I2DChart";
 import { ITooltip } from "../api/ITooltip";
 import { FAChar } from "../common/FAChar";
@@ -36,7 +37,7 @@ export class Bubble extends SVGWidget {
                 ;
         }
         return retVal;
-    };
+    }
 
     enter(_domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
@@ -47,7 +48,7 @@ export class Bubble extends SVGWidget {
                 return context.tooltipFormat({ label: d.data[0], value: d.data[1] });
             })
             ;
-    };
+    }
 
     update(_domNode, element) {
         const context = this;
@@ -141,11 +142,11 @@ export class Bubble extends SVGWidget {
             .style("opacity", 0)
             .remove()
             ;
-    };
+    }
 
     exit(_domNode, _element) {
         SVGWidget.prototype.exit.apply(this, arguments);
-    };
+    }
 
     paletteID: { (): string; (_: string): Bubble; };
     useClonedPalette: { (): boolean; (_: boolean): Bubble; };

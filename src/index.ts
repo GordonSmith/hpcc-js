@@ -1,3 +1,4 @@
+/*
 //  Common  ---
 export * from "./common/CanvasWidget";
 export * from "./common/HTMLWidget";
@@ -7,7 +8,6 @@ export * from "./common/Image";
 export * from "./common/List";
 export * from "./common/Menu";
 export * from "./common/Shape";
-export * from "./common/Text";
 export * from "./common/Text";
 export * from "./common/TextBox";
 
@@ -39,3 +39,7 @@ export { Column as SankeyColumn, Sankey } from "./graph/Sankey";
 
 //  Timeline  ---
 export { MiniGantt } from "./timeline/MiniGantt";
+
+*/
+//  html  ---
+export { Test } from "./html/test";

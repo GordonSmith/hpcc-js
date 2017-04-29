@@ -96,16 +96,16 @@ export function ForceDirected(graphData, width, height, options) {
         .force("link", forceLink)
         .force("charge", forceManyBody)
         .force("center", d3ForceCenter(width / 2, height / 2))
-        //.linkDistance(options.linkDistance)
-        //.linkStrength(options.linkStrength)
+        // .linkDistance(options.linkDistance)
+        // .linkStrength(options.linkStrength)
         .velocityDecay(options.friction)
-        //.charge(function (d) {
+        // .charge(function (d) {
         //    const cs = d.value.getBBox();
         //    return options.charge * Math.max(cs.width, cs.height);
-        //})
-        //.chargeDistance(options.chargeDistance)
-        //.theta(options.theta)
-        //.gravity(options.gravity)
+        // })
+        // .chargeDistance(options.chargeDistance)
+        // .theta(options.theta)
+        // .gravity(options.gravity)
         .nodes(this.vertices)
         ;
     forceLink
