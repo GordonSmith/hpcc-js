@@ -1,9 +1,9 @@
-import { local as d3Local } from "d3-selection";
 import { extent as d3Extent } from "d3-array";
 import { scaleBand as d3ScaleBand } from "d3-scale";
-import { SVGWidget } from "../common/SVGWidget";
-import { publish } from "../common/PropertyExt";
+import { local as d3Local } from "d3-selection";
 import { Axis } from "../chart/Axis";
+import { publish } from "../common/PropertyExt";
+import { SVGWidget } from "../common/SVGWidget";
 import { TextBox } from "../common/TextBox";
 
 import "./MiniGantt.css";
@@ -92,7 +92,7 @@ export class MiniGantt extends SVGWidget {
             .guideTarget(this.svgGuide.node())
             .shrinkToFit("none")
             ;
-    };
+    }
 
     update(domNode, element) {
         super.update(domNode, element);
@@ -109,7 +109,12 @@ export class MiniGantt extends SVGWidget {
         const data = this.data();
         const events = data.filter(d => !d[2]);
         const ranges = data.filter(d => !!d[2]);
-        const eventTicks = events.map(d => { return { label: d[0], value: d[1] }; });
+        const eventTicks = events.map((d) => {
+            return {
+                label: d[0],
+                value: d[1]
+            };
+        });
 
         this.topAxis
             .width(width - 1)
@@ -130,10 +135,10 @@ export class MiniGantt extends SVGWidget {
             ;
         const bottomAxisBBox = this.bottomAxis.getBBox();
 
-        interface bucketInfo {
+        interface BucketInfo {
             endPos: number;
         }
-        const bucketData: bucketInfo[] = [];
+        const bucketData: BucketInfo[] = [];
         const bucketIndex = {};
         ranges.forEach(d => {
             for (let i = 0; i < bucketData.length; ++i) {
@@ -201,7 +206,6 @@ export class MiniGantt extends SVGWidget {
             .attr("y2", height / 2 - bottomAxisBBox.height)
             ;
         lines.exit().remove();
-    };
+    }
 }
 MiniGantt.prototype._class += " timeline_MiniGantt";
-
