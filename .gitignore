@@ -7,7 +7,7 @@ tmp/
 lib/
 lib-umd/
 lib-es6/
-lib-test/
+lib-test-*/
 dist/
 lib
 build
