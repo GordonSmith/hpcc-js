@@ -263,4 +263,4 @@ Dendrogram.prototype.publish("circleRadius", 4.5, "number", "Text offset from ci
 Dendrogram.prototype.publish("separation", 240, "number", "Leaf Separation");
 Dendrogram.prototype.publish("dendrogram", true, "boolean", "Dendrogram");
 Dendrogram.prototype.publish("radial", false, "boolean", "Radial");
-Dendrogram.prototype.publish("orientation", "horizontal", "set", "Orientation", ["horizontal", "vertical"], { tags: ["Private"], disabled: function () { return this.radial(); } });
+Dendrogram.prototype.publish("orientation", "horizontal", "set", "Orientation", ["horizontal", "vertical"], { tags: ["Private"], disable: function () { return this.radial(); } });
