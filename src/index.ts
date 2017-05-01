@@ -39,3 +39,6 @@ export { Column as SankeyColumn, Sankey } from "./graph/Sankey";
 
 //  Timeline  ---
 export { MiniGantt } from "./timeline/MiniGantt";
+
+//  html  ---
+export { Test } from "./html/test";

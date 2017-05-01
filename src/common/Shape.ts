@@ -33,7 +33,7 @@ export class Shape extends SVGWidget {
                 this.click();
             })
             .on("dblclick", () => {
-                this.dblclick()
+                this.dblclick();
             })
             .merge(shape)
             .style("fill", this.colorFill())
