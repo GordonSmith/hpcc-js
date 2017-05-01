@@ -13,6 +13,7 @@
                 "./tsconfig-test.json"
             ],
             "showOutput": "silent",
+            "isBuildCommand": true,
             "isBackground": true,
             "problemMatcher": "$tsc-watch"
         },
@@ -26,7 +27,6 @@
                 "./tsconfig-umd.json"
             ],
             "showOutput": "silent",
-            "isBuildCommand": true,
             "isBackground": true,
             "problemMatcher": "$tsc-watch"
         },

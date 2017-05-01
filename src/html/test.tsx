@@ -1,38 +1,88 @@
-export class Test {
-    classID() {
-        return "myCLass";
-    }
+import { HTMLWidget } from "../common/HTMLWidget";
+import { IVirtualDOM, ReactD3 } from "./reactD3";
 
-    id() {
-        return "myID";
-    }
+export class Test extends HTMLWidget {
+    someStr = "Hello and Welcome";
+    someData = ["bb1", "bb1", "bb3"]
 
-    createElement(_component, _attrs, ..._children) {
-    }
-
-    repeat(props) {
-        const items = [];
-        for (let i = 0; i < props.numTimes; i++) {
-            items.push(props.children(i));
-        }
-        return <div>{items}</div>;
-    }
-
-    doTest() {
-        return <div class={this.classID()} id={this.id()}>
-            Here is a list:
+    test() {
+        return <div>
+            <h1>{this.someStr}</h1>
+            <h2>Here is a list:</h2>
             <ul>
-                <li>Item 1</li>
-                <li>Item 2</li>
-            </ul>
-            <ul>
-                <this.repeat numTimes={10}>
-                    {(index) => <div key={index}>This is item {index} in the list</div>}
-                </this.repeat>
+                <li>aaa</li>
+                <li>bbb</li>
+                <li>ccc</li>
             </ul>
         </div>;
     }
-}
+    test1() {
+        return <ul>
+            <li>aaa</li>
+            <this.li />
+            <li>ccc</li>
+        </ul>;
+    }
+    test2() {
+        return <div>
+            <h1>{this.someStr}</h1>
+            <h2>Here is a list:</h2>
+            <ul>
+                <li>aaa</li>
+                <li>ddd</li>
+                <li>ccc</li>
+            </ul>
+            <ul>
+                <this.li></this.li>
+            </ul>
+        </div>;
+    }
 
-const tmp = new Test();
-tmp.doTest();
+    li(_targetElement, _vdom: IVirtualDOM[]): void {
+    }
+
+    enter(_domNode, root) {
+        function Welcome(props) {
+            return <li>Hello, {props.name}</li>;
+        }
+
+        function Welcome2(props) {
+            return (targetElement) => {
+                const lis = targetElement.selectAll("li").data(props.data);
+                lis.enter().append("li")
+                    .merge(lis)
+                    .text(d => d)
+            }
+        };
+
+        const element = <div>
+            <ul>
+                <Welcome name="Sara" />
+                <Welcome name="Gordon" />
+                <Welcome name="Sara" />
+            </ul>
+            <ul>
+                <Welcome2 data={["Sara", "Gordon", "Tom"]} />
+            </ul>
+        </div>;
+
+        ReactD3.render(
+            element,
+            root
+        );
+
+        //this.test1().render(element);
+        // this.test().render(element);
+        // this.test2().render(element);
+    }
+
+    update(_domNode, element) {
+        ReactD3.render(
+            element,
+            element
+        );
+    }
+
+    exit(_domNode, _element) {
+    }
+}
