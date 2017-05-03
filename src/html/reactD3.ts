@@ -1,71 +1,134 @@
-import { select as d3Select, SelectionFn } from "d3-selection";
+import { select as d3Select, selection as d3Selection } from "d3-selection";
+import { Component, h, render } from "preact";
 
-export type ReactFn = (attrs: { [key: string]: string }) => IVirtualDOM;
-export type RenderFn = (targetElement: SelectionFn, vdom: IVirtualDOM) => void;
-export type RenderChildrenFn = (targetElement: SelectionFn, vdom: IVirtualDOM[]) => void;
+export type ReactFn = (attrs: { [key: string]: string }) => VNode;
 
-export class IVirtualDOM {
-    type: string | Function;
-    attrs: { [key: string]: string };
-    children: Array<string | IVirtualDOM>;
-    render?: RenderFn;
-    instance?: any;
+export interface IVNode {
+    new (attrs: { [key: string]: string }, children: VNode[]): VNode;
 }
 
-function update(d) {
-    const element = d3Select(this);
-    for (const key in d.attrs) {
-        element.attr(key, d.attrs[key]);
+export class VNode {
+    protected _attrs: { [key: string]: string };
+    protected _children: VNode[];
+
+    constructor(attrs: { [key: string]: string }, children: VNode[]) {
+        this._attrs = attrs;
+        this._children = children;
     }
-    renderChildren(element, d.children);
-}
 
-function render(targetElement): void {
-    const elements = targetElement.selectAll(`${targetElement.node().tagName} > ${this.type}`).data([this]);
-    elements.enter()
-        .append(this.type)
-        .merge(elements)
-        .each(update)
-        ;
-    elements.exit().remove();
-}
+    type(): string {
+        return "div";
+    };
 
-function renderChildren(targetElement, vdom: Array<string | IVirtualDOM | Function>): void {
-    const funcs = vdom.filter(d => typeof d === "function");
-    const text = vdom.filter(d => typeof d === "string");
-    const vdoms = vdom.filter(d => typeof d !== "string");
-    if (funcs.length) {
-        funcs.forEach((f: Function) => {
-            f(targetElement);
-        });
-    } else if (text.length) {
-        targetElement.text(text.join(""));
-    } else {
-        const elements = targetElement.selectAll(`${targetElement.node().tagName} > *`).data(vdoms);
-        elements.enter()
-            .append(function (d) {
-                if (typeof d === "string") {
-                    return document.createTextNode(d);
-                }
-                return document.createElement(d.type);
+    attrs(): { [key: string]: string } {
+        return this._attrs;
+    };
+
+    attr(key) {
+        return this._attrs[key];
+    }
+
+    children(): VNode[] {
+        return this._children;
+    }
+
+    update(targetElement) {
+        for (const key in this._attrs) {
+            targetElement.attr(key, this._attrs[key]);
+        }
+    }
+
+    render(targetElement) {
+        const thisElement = targetElement.selectAll(`${targetElement.node().tagName} > *`).data([this]);
+        thisElement.exit()
+            .each(d => console.log(`render:  Exit - ${d.type()}`))
+            .remove();
+        return thisElement.enter().append(this.type())
+            .each(d => console.log(`render:  Enter - ${d.type()}`))
+            .attr("reactd3", 0)
+            .merge(thisElement)
+            .each(function (d: VNode) {
+                const element = d3Select(this);
+                d.update(element);
+                d.renderChildren(element);
             })
-            .merge(elements)
-            .each(update)
             ;
-        elements.exit().remove();
     }
+
+    renderChildren(targetElement) {
+        const thisElement = targetElement.selectAll(`${targetElement.node().tagName} > *`).data(this._children);
+        thisElement.exit()
+            .each(d => console.log(`renderChildren:  Exit - ${d.type()}`))
+            .remove();
+        return thisElement.enter().append(d => document.createElement(d.type()))
+            .each(d => console.log(`renderChildren:  Enter - ${d.type()}`))
+            .attr("reactd3", (_d, i) => i)
+            .merge(thisElement)
+            .each(function (d: VNode) {
+                const element = d3Select(this);
+                d.update(element);
+                d.renderChildren(element);
+            })
+            ;
+    }
+}
+
+class ConstVNode extends VNode {
+    protected _type: string;
+
+    constructor(type: string, attrs: { [key: string]: string }, children: VNode[]) {
+        super(attrs, children);
+        this._type = type;
+    }
+
+    type(): string {
+        return this._type;
+    }
+}
+
+class TextVNode extends VNode {
+    protected _text: string;
+
+    constructor(text: string) {
+        super({}, []);
+        this._text = text;
+    }
+
+    type(): string {
+        return "span";
+    }
+
+    update(targetElement) {
+        super.update(targetElement);
+        targetElement.text(this._text);
+    }
+};
+
+function isReactFn(_): _ is ReactFn {
+    return typeof _ === "function";
+}
+
+function isIVNode(_: any): _ is IVNode {
+    return _.prototype && _.prototype instanceof VNode;
 }
 
 export class ReactD3 {
-    static createElement(type: string | ReactFn, attrs: { [key: string]: string }, ...children: Array<string | IVirtualDOM>): IVirtualDOM {
-        if (typeof type === "function") {
+    static createElementXXX(type: string | ReactFn | IVNode, attrs: { [key: string]: string }, ...children: Array<string | VNode>): VNode {
+    static createElementXXX(type: string | ReactFn | IVNode, attrs: { [key: string]: string }, ...children: Array<string | VNode>): VNode {
+        if (isIVNode(type)) {
+            return new (<any>type)(attrs);
+        } else if (isReactFn(type)) {
             return type(attrs);
         }
-        return { type, attrs, children };
+        return new ConstVNode(type, attrs, children.map(child => {
+            if (typeof child === "string") {
+                return new TextVNode(child);
+            }
+            return child;
+        }));
     }
 
-    static render(vdom: IVirtualDOM, targetElement) {
-        render.call(vdom, targetElement);
+    static render(vdom: VNode, targetElement) {
+        vdom.render(targetElement);
     }
 }
-
