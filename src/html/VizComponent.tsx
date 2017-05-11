@@ -16,11 +16,16 @@ export class VizComponent extends JSXWidget.Component<any, any> {
             .target(this.base)
             ;
         this.refreshProps();
-        this.widget.render();
+        this.widget
+            .render()
+            ;
     }
 
-    componentDidUnmount() {
-        this.widget.target(null);
+    componentWillUnmount() {
+        this.widget
+            .target(null)
+            .render()
+            ;
     }
 
     render() {
