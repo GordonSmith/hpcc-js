@@ -1,5 +1,3 @@
-// import { select as d3Select } from "d3-selection";
-import { Component, h, render } from "preact";
 import { Test } from "../src/html/test";
 
 const test = new Test()
@@ -14,11 +12,12 @@ const test = new Test()
 
 let idx = 0;
 setInterval(() => {
-    test.title = "Hello" + ++idx;
+    test.title = "Hello instance:  " + ++idx;
     test
         .data([
             ["Test", 200 * Math.random()],
-            ["Test2", 100 * Math.random()]
+            ["Test2", 100 * Math.random()],
+            ["Test3", 100 * Math.random()]
         ])
         .render();
-}, 1000000);
+}, 3000);
