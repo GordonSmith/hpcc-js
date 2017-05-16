@@ -1,9 +1,9 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "outDir": "./lib"
+        "outDir": "./lib-test-es6"
     },
     "include": [
-        "./src/index.ts"
+        "./test/index-browser.ts"
     ]
 }

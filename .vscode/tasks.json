@@ -4,13 +4,13 @@
     "version": "0.1.0",
     "tasks": [
         {
-            "taskName": "build-es6-test",
+            "taskName": "test-browser",
             "command": "tsc",
             "isShellCommand": true,
             "args": [
                 "-w",
                 "-p",
-                "./tsconfig-test.json"
+                "./tsconfig-test-browser.json"
             ],
             "showOutput": "silent",
             "isBuildCommand": true,
