@@ -1,5 +1,5 @@
 import { scaleBand as d3ScaleBand } from "d3-scale";
-import { select as d3Select } from "d3-selection";
+import { select as d3Select, Selection } from "d3-selection";
 import "d3-transition";
 import { INDChart } from "../api/INDChart";
 import { ITooltip } from "../api/ITooltip";

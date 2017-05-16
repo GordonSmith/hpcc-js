@@ -57,10 +57,12 @@ export class GraphData extends dagre.graphlib.Graph {
             const vertexIDs = vertices.map(function (item) { return item._id; });
             this.filterNodes(function (item) { return vertexIDs.indexOf(item) < 0; })
                 .forEach(function (item) {
+                    /*  TODO  ---
                     try {
                         context.delNode(item);
                     } catch (e) {
                     }
+                    */
                 })
                 ;
         }
