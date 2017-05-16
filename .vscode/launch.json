@@ -5,7 +5,7 @@
             "name": "Debug Chrome",
             "type": "chrome",
             "request": "launch",
-            "url": "file:///C:/Users/gordon/git/hpcc-js/hpcc-js-viz/test/index.html",
+            "url": "file:///C:/Users/gordon/git/hpcc-js-viz/test/index.html",
             "sourceMaps": true,
             "webRoot": "${workspaceRoot}/demos",
             "pathMapping": {

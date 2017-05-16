@@ -37,7 +37,7 @@ export class Bubble extends SVGWidget {
                 ;
         }
         return retVal;
-    };
+    }
 
     enter(_domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
@@ -48,7 +48,7 @@ export class Bubble extends SVGWidget {
                 return context.tooltipFormat({ label: d.data[0], value: d.data[1] });
             })
             ;
-    };
+    }
 
     update(_domNode, element) {
         const context = this;
@@ -142,11 +142,11 @@ export class Bubble extends SVGWidget {
             .style("opacity", 0)
             .remove()
             ;
-    };
+    }
 
     exit(_domNode, _element) {
         SVGWidget.prototype.exit.apply(this, arguments);
-    };
+    }
 
     paletteID: { (): string; (_: string): Bubble; };
     useClonedPalette: { (): boolean; (_: boolean): Bubble; };

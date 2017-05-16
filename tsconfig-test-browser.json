@@ -4,6 +4,6 @@
         "outDir": "./lib-test-es6"
     },
     "include": [
-        "./test/index-browser.ts"
+        "./test/index.ts"
     ]
 }

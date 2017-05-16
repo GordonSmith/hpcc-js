@@ -5,6 +5,7 @@ const argv = require('yargs').argv;
 const shell = require('gulp-shell')
 const runSequence = require('run-sequence');
 const rimraf = require('rimraf'); // rimraf directly
+const cpx = require('cpx');
 
 const rollup = require('rollup');
 const nodeResolve = require('rollup-plugin-node-resolve');
@@ -49,14 +50,23 @@ gulp.task("clean", [], function () {
         rmdir("lib"),
         rmdir("lib-umd"),
         rmdir("lib-test-*"),
+        rmdir("tmp"),
         rmdir("docx"),
         rmdir("coverage"),
         rmdir(".nyc_output")
     ]);
 });
 
+//  Copy resources   ---
+gulp.task("copy-css", shell.task([
+    //  TODO:  Convert to native cpx.
+    "node ./node_modules/cpx/bin/index.js src/**/*.css lib/",
+    "node ./node_modules/cpx/bin/index.js src/**/*.css lib-test-es6/src/",
+    "node ./node_modules/cpx/bin/index.js test/**/*.css lib-test-es6/test/"
+]));
+
 //  Compile  ---
-gulp.task("compile-src", shell.task([
+gulp.task("compile-src", ["copy-css"], shell.task([
     "tsc -p ./tsconfig.json"
 ]));
 
@@ -64,19 +74,15 @@ gulp.task("compile-src-watch", shell.task([
     "tsc -w -p ./tsconfig.json"
 ]));
 
-gulp.task("compile-test-node", shell.task([
-    //  "tsc -p ./tsconfig-test-node.json"
-]));
-
 gulp.task("compile-test-browser", shell.task([
-    //  "tsc -p ./tsconfig-test-browser.json"
+    "tsc -p ./tsconfig-test-browser.json"
 ]));
 
 gulp.task("compile-test-browser-watch", shell.task([
     "tsc -w -p ./tsconfig-test-browser.json"
 ]));
 
-gulp.task("compile-test", ["compile-test-node", "compile-test-browser"]);
+gulp.task("compile-test", ["compile-test-browser"]);
 
 gulp.task("compile-all", ["compile-src", "compile-test"]);
 
@@ -92,10 +98,16 @@ function doRollup(entry, dest, format, min, external) {
     const plugins = [
         alias({}),
         nodeResolve({
-            jsnext: true,
-            main: true
+            jsnext: true//,
+            //main: true
         }),
-        commonjs({}),
+        commonjs({
+            namedExports: {
+                "dagre": ["graphlib, layout"],
+                "react": ["Component", "createElement"],
+                "react-dom": ["render"]
+            }
+        }),
         css({}),
         sourcemaps()
     ];
@@ -112,7 +124,7 @@ function doRollup(entry, dest, format, min, external) {
         cache = bundle;
         return bundle.write({
             format: format,
-            moduleName: "HPCCComms",
+            moduleName: "HPCCViz",
             dest: dest + (min ? ".min" : "") + ".js",
             sourceMap: true
         });
@@ -121,34 +133,26 @@ function doRollup(entry, dest, format, min, external) {
 
 gulp.task("bundle-browser", function () {
     return Promise.all([
-        doRollup("lib/index-browser", "dist/comms-browser", "umd", false),
-        doRollup("lib/index-browser", "dist/comms-browser", "umd", true)
+        doRollup("lib/index-browser", "dist/viz-browser", "umd", false)//,
+        //doRollup("lib/index-browser", "dist/viz-browser", "umd", true)
     ]);
 });
 
-const nodeLibs = ["os", "path", "fs", "child_process"];
-gulp.task("bundle-node", function () {
+gulp.task("bundle-test-browser", function () {
     return Promise.all([
-        doRollup("lib/index-node", "dist/comms-node", "cjs", false, Object.keys(dependencies).concat(nodeLibs)),
-        doRollup("lib/index-node", "dist/comms-node", "cjs", true, Object.keys(dependencies).concat(nodeLibs))
-    ]);
-});
-
-gulp.task("bundle-test-browser", ["compile-test-browser"], function () {
-    return Promise.all([
-        doRollup("lib-test-es6/test/index-browser", "dist-test/comms-browser", "iife", false, ["chai"])
+        doRollup("lib-test-es6/test/index", "dist-test/viz-browser", "iife", false, ["chai"])
     ]);
 });
 
 gulp.task("bundle-test", ["bundle-test-browser"]);
 
-gulp.task("bundle-all", ["bundle-node", "bundle-browser"]);
+gulp.task("bundle-all", ["bundle-browser"]);
 
 gulp.task("build", function (cb) {
     return sequentialPromise("clean").then(() => {
         return Promise.all([
-            sequentialPromise("compile-src", "bundle-all"),
-            sequentialPromise("docs")
+            sequentialPromise("compile-src", "bundle-all")//,
+            //sequentialPromise("docs")
         ]);
     });
 });
@@ -161,17 +165,18 @@ gulp.task('watch-browser', function () {
     });
 });
 
-gulp.task('watch-node', function () {
-    gulp.start("compile-src-watch");
-    return watch('lib/**/*.js', function () {
-        gulp.start("bundle-node");
-    });
-});
-
 gulp.task('watch-test-browser', function () {
-    gulp.start("compile-test-browser-watch");
+    return Promise.all([
+        sequentialPromise("compile-src", "bundle-all")//,
+        //sequentialPromise("docs")
+    ]);
+
+    gulp.start("copy-css");
+    gulp.start("compile-test-browser");
     return watch('lib-test-es6/**/*.js', function () {
+        console.log("xxx");
         gulp.start("bundle-test-browser");
+        console.log("yyy");
     });
 });
 

@@ -1,23 +1,13 @@
 import { Test } from "../src/html/test";
 
+import "./index.css";
+
 const test = new Test()
-    .target("placeholder")
+    .target("placeholder2")
     .columns(["label", "weight"])
     .data([
-        ["Test", 200],
-        ["Test2", 100]
+        ["Test200", 200],
+        ["Test100", 100]
     ])
     .render()
     ;
-
-let idx = 0;
-setInterval(() => {
-    test.title = "Hello instance:  " + ++idx;
-    test
-        .data([
-            ["Test", 200 * Math.random()],
-            ["Test2", 100 * Math.random()],
-            ["Test3", 100 * Math.random()]
-        ])
-        .render();
-}, 3000);

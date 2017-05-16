@@ -36,4 +36,4 @@ export class VizComponent extends JSXWidget.Component<any, any> {
         this.refreshProps();
         this.widget.render();
     }
-};
+}
