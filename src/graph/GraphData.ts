@@ -67,7 +67,7 @@ export class GraphData extends dagre.graphlib.Graph {
                 ;
         }
         return retVal;
-    };
+    }
 
     filterEdges(pred) {
         const filtered = [];
@@ -77,7 +77,7 @@ export class GraphData extends dagre.graphlib.Graph {
             }
         });
         return filtered;
-    };
+    }
 
     filterNodes(pred) {
         const filtered = [];
@@ -87,7 +87,7 @@ export class GraphData extends dagre.graphlib.Graph {
             }
         });
         return filtered;
-    };
+    }
 
     nodeValues() {
         const retVal = [];
@@ -95,13 +95,13 @@ export class GraphData extends dagre.graphlib.Graph {
             retVal.push(this.node(item));
         }, this);
         return retVal;
-    };
+    }
 
     eachNode(callback) {
         this.nodes().forEach(function (item) {
             callback(item, this.node(item));
         }, this);
-    };
+    }
 
     edgeValues() {
         const retVal = [];
@@ -109,13 +109,13 @@ export class GraphData extends dagre.graphlib.Graph {
             retVal.push(this.edge(item));
         }, this);
         return retVal;
-    };
+    }
 
     eachEdge(callback) {
         this.edges().forEach(function (item) {
             callback(item, item.v, item.w, this.edge(item));
         }, this);
-    };
+    }
 
     getJSON() {
         const graphObj = dagre.graphlib.json.write(this);
@@ -128,6 +128,5 @@ export class GraphData extends dagre.graphlib.Graph {
             }
             return value;
         }, "  ");
-    };
+    }
 }
-
