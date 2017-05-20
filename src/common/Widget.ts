@@ -169,7 +169,7 @@ export class Widget extends PropertyExt {
             }, this);
         }, this);
         return retVal;
-    };
+    }
 
     rowToObj(row) {
         const retVal: any = {};
@@ -180,7 +180,7 @@ export class Widget extends PropertyExt {
             retVal.__lparam = row[this.columns().length];
         }
         return retVal;
-    };
+    }
 
     pos(): IPos;
     pos(_: IPos): this;
@@ -193,7 +193,7 @@ export class Widget extends PropertyExt {
                 ;
         }
         return this;
-    };
+    }
 
     x(): number;
     x(_): Widget;
@@ -201,7 +201,7 @@ export class Widget extends PropertyExt {
         if (!arguments.length) return this._pos.x;
         this.pos({ x: _, y: this._pos.y });
         return this;
-    };
+    }
 
     y(): number;
     y(_): Widget;
@@ -209,7 +209,7 @@ export class Widget extends PropertyExt {
         if (!arguments.length) return this._pos.y;
         this.pos({ x: this._pos.x, y: _ });
         return this;
-    };
+    }
 
     size(): ISize;
     size(_): Widget;
@@ -223,7 +223,7 @@ export class Widget extends PropertyExt {
                 ;
         }
         return this;
-    };
+    }
 
     width(): number;
     width(_): this;
@@ -231,7 +231,7 @@ export class Widget extends PropertyExt {
         if (!arguments.length) return this._size.width;
         this.size({ width: _, height: this._size.height });
         return this;
-    };
+    }
 
     height(): number;
     height(_): this;
@@ -239,9 +239,9 @@ export class Widget extends PropertyExt {
         if (!arguments.length) return this._size.height;
         this.size({ width: this._size.width, height: _ });
         return this;
-    };
+    }
 
-    resize(size: ISize, delta: ISize = { width: 0, height: 0 }) {
+    resize(size?: ISize, delta: ISize = { width: 0, height: 0 }) {
         let width;
         let height;
         if (size && size.width && size.height) {
@@ -257,7 +257,7 @@ export class Widget extends PropertyExt {
             height
         });
         return this;
-    };
+    }
 
     scale(): number;
     scale(_): Widget;
@@ -270,7 +270,7 @@ export class Widget extends PropertyExt {
                 ;
         }
         return this;
-    };
+    }
 
     visible(_?): boolean | Widget {
         if (!arguments.length) return this._visible;
@@ -281,7 +281,7 @@ export class Widget extends PropertyExt {
                 .style("opacity", this._visible ? null : 0);
         }
         return this;
-    };
+    }
 
     display(): boolean;
     display(_): this;
@@ -292,7 +292,7 @@ export class Widget extends PropertyExt {
             this._element.style("display", this._display ? null : "none");
         }
         return this;
-    };
+    }
 
     calcSnap(snapSize) {
         function snap(x, gridSize) {
@@ -312,7 +312,7 @@ export class Widget extends PropertyExt {
         const w = r - l;
         const h = b - t;
         return [{ x: l + w / 2, y: t + h / 2 }, { width: w, height: h }];
-    };
+    }
 
     //  DOM/SVG Node Helpers  ---
     toWidget(domNode) {
@@ -327,7 +327,7 @@ export class Widget extends PropertyExt {
             }
         }
         return null;
-    };
+    }
 
     locateParentWidget(domNode) {
         domNode = domNode || (this._target ? this._target.parentNode : null);
@@ -340,7 +340,7 @@ export class Widget extends PropertyExt {
             }
         }
         return null;
-    };
+    }
 
     locateSVGNode(domNode) {
         if (!domNode) {
@@ -350,7 +350,7 @@ export class Widget extends PropertyExt {
             return domNode;
         }
         return this.locateSVGNode(domNode.parentNode);
-    };
+    }
 
     locateOverlayNode() {
         let widget = this.locateParentWidget(this._target);
@@ -361,7 +361,7 @@ export class Widget extends PropertyExt {
             widget = this.locateParentWidget(widget._target.parentNode);
         }
         return null;
-    };
+    }
 
     getAbsolutePos(domNode, w, h) {
         const root = this.locateSVGNode(domNode);
@@ -384,11 +384,11 @@ export class Widget extends PropertyExt {
             retVal.height = size.y - pos.y;
         }
         return retVal;
-    };
+    }
 
     hasOverlay() {
         return this._overlayElement;
-    };
+    }
 
     syncOverlay() {
         if (this._size.width && this._size.height) {
@@ -413,15 +413,15 @@ export class Widget extends PropertyExt {
             }
             this._prevPos = newPos;
         }
-    };
+    }
 
     element() {
         return this._element;
-    };
+    }
 
     node() {
         return this._element.node();
-    };
+    }
 
     //  Render  ---
     private _prevNow = 0;
@@ -520,17 +520,17 @@ export class Widget extends PropertyExt {
                 break;
         }
         return this;
-    };
+    }
 
     lazyRender = debounce(function () {
         this.render();
     }, 100);
 
-    enter(_domNode, _element) { };
-    preUpdate(_domNode, _element) { };
-    update(_domNode, _element) { };
-    postUpdate(_domNode, _element) { };
-    exit(_domNode, _element) { };
+    enter(_domNode, _element) { }
+    preUpdate(_domNode, _element) { }
+    update(_domNode, _element) { }
+    postUpdate(_domNode, _element) { }
+    exit(_domNode, _element) { }
 
     fields: { (): Field[]; (_: Field[]): Widget };
     classed: (_?) => any | this;
