@@ -1,5 +1,5 @@
 import { scaleBand as d3ScaleBand } from "d3-scale";
-import { select as d3Select, Selection } from "d3-selection";
+import { select as d3Select } from "d3-selection";
 import "d3-transition";
 import { INDChart } from "../api/INDChart";
 import { ITooltip } from "../api/ITooltip";
@@ -19,20 +19,20 @@ export class Column extends XYAxis {
 
     enter(_domNode, _element) {
         XYAxis.prototype.enter.apply(this, arguments);
-        var context = this;
+        const context = this;
         this
             .tooltipHTML(function (d) {
                 let value = d.row[d.idx];
                 if (value instanceof Array) {
                     value = value[1] - value[0];
                 }
-                return context.tooltipFormat({ label: d.row[0], series: context.columns()[d.idx], value: value });
+                return context.tooltipFormat({ label: d.row[0], series: context.columns()[d.idx], value });
             })
             ;
-    };
+    }
 
     adjustedData() {
-        let retVal = this.data().map(function (row) {
+        const retVal = this.data().map(function (row) {
             let prevValue = 0;
             return row.map(function (cell, idx) {
                 if (idx === 0) {
@@ -41,16 +41,16 @@ export class Column extends XYAxis {
                 if (idx >= this.columns().length) {
                     return cell;
                 }
-                let retVal = this.yAxisStacked() ? [prevValue, prevValue + cell] : cell;
+                const retVal2 = this.yAxisStacked() ? [prevValue, prevValue + cell] : cell;
                 prevValue += cell;
-                return retVal;
+                return retVal2;
             }, this);
         }, this);
         return retVal;
-    };
+    }
 
     updateChart(_domNode, _element, _margin, _width, height, isHorizontal, duration) {
-        let context = this;
+        const context = this;
 
         this._palette = this._palette.switch(this.paletteID());
         if (this.useClonedPalette()) {
@@ -74,12 +74,12 @@ export class Column extends XYAxis {
 
         this.tooltip.direction(isHorizontal ? "n" : "e");
 
-        let columnScale = d3ScaleBand()
+        const columnScale = d3ScaleBand()
             .domain(context.columns().filter(function (_d, idx) { return idx > 0; }))
             .rangeRound(isHorizontal ? [0, dataLen] : [dataLen, 0])
             ;
 
-        let column = this.svgData.selectAll(".dataRow")
+        const column = this.svgData.selectAll(".dataRow")
             .data(this.adjustedData())
             ;
 
@@ -138,7 +138,7 @@ export class Column extends XYAxis {
         column.exit().transition().duration(duration)
             .remove()
             ;
-    };
+    }
 
     paletteID: { (): string; (_: string): Column; };
     useClonedPalette: { (): boolean; (_: boolean): Column; };
@@ -159,4 +159,3 @@ Column.prototype.implements(ITooltip.prototype);
 
 Column.prototype.publish("paletteID", "default", "set", "Palette ID", Column.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
 Column.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
-
