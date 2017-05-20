@@ -361,7 +361,7 @@ GraphMappings.prototype = Object.create(SourceMappings.prototype);
         mapStruct(annotationInfo, retVal);
     }
 
-    for (var key in retVal) { // jshint ignore:line
+    for (var _key in retVal) { // jshint ignore:line
         return retVal;
     }
     return null;
@@ -546,19 +546,19 @@ Source.prototype.getYTitle = function () {
     return this.mappings.columns.filter(function (d, i) { return i > 0; }).join(" / ");
 };
 
-    Source.prototype.getMap = function (col) {
-        return (this.mappings && this.mappings.hasMappings) ? this.mappings.getMap(col) : col;
-    };
+Source.prototype.getMap = function (col) {
+    return (this.mappings && this.mappings.hasMappings) ? this.mappings.getMap(col) : col;
+};
 
-    Source.prototype.getReverseMap = function (col) {
-        return (this.mappings && this.mappings.hasMappings) ? this.mappings.getReverseMap(col) : col;
-    };
+Source.prototype.getReverseMap = function (col) {
+    return (this.mappings && this.mappings.hasMappings) ? this.mappings.getReverseMap(col) : col;
+};
 
 //  Viz Events ---
 function EventUpdate(event, update, defMappings) {
     this.event = event;
     this.dashboard = event.visualization.dashboard;
-        this._col = update.col;
+    this._col = update.col;
     this._visualization = update.visualization;
     this._instance = update.instance;
     this._datasource = update.datasource;
@@ -578,21 +578,21 @@ EventUpdate.prototype.mapData = function (row) {
     var retVal = {};
     if (row) {
         for (var key in this._mappings) {
-                var origKey = this.getReverseMap(key);
+            var origKey = this.getReverseMap(key);
             retVal[this._mappings[key]] = row[origKey];
         }
     }
     return retVal;
 };
 
-    EventUpdate.prototype.getMap = function (col) {
-        return this.event.visualization.source.getMap(col);
-    };
+EventUpdate.prototype.getMap = function (col) {
+    return this.event.visualization.source.getMap(col);
+};
 
-    EventUpdate.prototype.getReverseMap = function (col) {
-        return this.event.visualization.source.getReverseMap(col);
-    };
-    
+EventUpdate.prototype.getReverseMap = function (col) {
+    return this.event.visualization.source.getReverseMap(col);
+};
+
 EventUpdate.prototype.mapSelected = function () {
     if (this.event.visualization.hasSelection()) {
         return this.mapData(this.event.visualization._widgetState.row);
@@ -643,10 +643,10 @@ Event.prototype.exists = function () {
 };
 
 Event.prototype.getUpdates = function () {
-        return this._updates.filter(function (updateInfo) {
-            if (!updateInfo._col) return true;
-            return updateInfo._col === updateInfo.getMap(this.visualization._widgetState.col);
-        }, this);
+    return this._updates.filter(function (updateInfo) {
+        if (!updateInfo._col) return true;
+        return updateInfo._col === updateInfo.getMap(this.visualization._widgetState.col);
+    }, this);
 };
 
 Event.prototype.getUpdatesDatasources = function () {
@@ -1202,7 +1202,7 @@ Visualization.prototype.setWidget = function (widget) {
     this.events.setWidget(widget);
     if (this.widget.columns) {
         var columns = this.source.getColumns();
-            this.widget.columns(columns, true);
+        this.widget.columns(columns, true);
     }
     for (var key in this.properties) {
         switch (widget.classID()) {
@@ -1375,7 +1375,7 @@ Visualization.prototype.hasSelection = function () {
 
 Visualization.prototype.selection = function () {
     if (this.hasSelection()) {
-            return this._widgetState.row;
+        return this._widgetState.row;
     }
     return null;
 };
@@ -1981,17 +1981,17 @@ Dashboard.prototype.primeData = function (state) {
     this.getVisualizationArray().forEach(function (visualization) {
         var inputVisualizations = visualization.getInputVisualizations();
         var datasource = visualization.source.getDatasource();
-            var hasInputSelection = false;
-            inputVisualizations.forEach(function (inViz) {
-                if (inViz.hasSelection()) {
-                    var request = inViz.calcRequestFor(visualization);
-                    request.refresh = true;
-                    fetchDataOptimizer.appendRequest(datasource, request, visualization);
-                    hasInputSelection = true;
-                }
-            });
-            if (!hasInputSelection && ((datasource && datasource.isRoxie()) || inputVisualizations.length === 0)) {
-                fetchDataOptimizer.appendRequest(datasource, { refresh: true }, visualization);
+        var hasInputSelection = false;
+        inputVisualizations.forEach(function (inViz) {
+            if (inViz.hasSelection()) {
+                var request = inViz.calcRequestFor(visualization);
+                request.refresh = true;
+                fetchDataOptimizer.appendRequest(datasource, request, visualization);
+                hasInputSelection = true;
+            }
+        });
+        if (!hasInputSelection && ((datasource && datasource.isRoxie()) || inputVisualizations.length === 0)) {
+            fetchDataOptimizer.appendRequest(datasource, { refresh: true }, visualization);
         }
     });
     return fetchDataOptimizer.fetchData();

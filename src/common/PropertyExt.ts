@@ -133,6 +133,7 @@ export interface IPublishExt {
     optional?: boolean;
     tags?: string[];
     autoExpand?;
+    render?: boolean;
 }
 
 let propExtID = 0;

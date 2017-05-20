@@ -11,7 +11,7 @@ var lerp = function (point, that, t) {
         x: point.x + (that.x - point.x) * t,
         y: point.y + (that.y - point.y) * t
     };
-};
+}
 
 var intersectLineLine = function (a1, a2, b1, b2) {
     //  From https://github.com/thelonious/js-intersections
@@ -42,7 +42,7 @@ var intersectLineLine = function (a1, a2, b1, b2) {
     }
 
     return result;
-};
+}
 
 var intersectCircleLine = function (c, r, a1, a2) {
     //  From https://github.com/thelonious/js-intersections
@@ -83,7 +83,7 @@ var intersectCircleLine = function (c, r, a1, a2) {
     }
 
     return result;
-};
+}
 
 export class SVGWidget extends Widget {
     static _class = "common_SVGWidget";
@@ -117,7 +117,7 @@ export class SVGWidget extends Widget {
                 ;
         }
         return retVal;
-    };
+    }
 
     size(_?) {
         var retVal = super.size.apply(this, arguments);
@@ -125,9 +125,9 @@ export class SVGWidget extends Widget {
             this._boundingBox = null;
         }
         return retVal;
-    };
+    }
 
-    resize(_size) {
+    resize(_size?) {
         var retVal = super.resize.apply(this, arguments);
         if (this._parentRelativeDiv) {
             this._parentRelativeDiv
@@ -156,7 +156,7 @@ export class SVGWidget extends Widget {
             .attr("height", this._size.height)
             ;
         return retVal;
-    };
+    }
 
     target(_): this {
         if (!arguments.length) return this._target;
@@ -197,15 +197,15 @@ export class SVGWidget extends Widget {
             this.exit();
         }
         return this;
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
-    };
+    }
 
     update(domNode, element) {
         super.update(domNode, element);
-    };
+    }
 
     postUpdate(domNode, element) {
         super.postUpdate(domNode, element);
@@ -214,7 +214,7 @@ export class SVGWidget extends Widget {
         } else {
             this._element.attr("transform", "translate(" + this._pos.x + "," + this._pos.y + ")scale(" + this._scale + ")");
         }
-    };
+    }
 
     exit(domNode?, element?) {
         if (this._parentRelativeDiv) {
@@ -223,7 +223,7 @@ export class SVGWidget extends Widget {
             this._parentRelativeDiv.remove();
         }
         super.exit(domNode, element);
-    };
+    }
 
     getOffsetPos() {
         var retVal = { x: 0, y: 0 };
@@ -234,7 +234,7 @@ export class SVGWidget extends Widget {
             return retVal;
         }
         return retVal;
-    };
+    }
 
     getBBox(refresh = false, round = false) {
         if (refresh || this._boundingBox === null) {
@@ -257,12 +257,12 @@ export class SVGWidget extends Widget {
             width: (round ? Math.round(this._boundingBox.width) : this._boundingBox.width) * this._scale,
             height: (round ? Math.round(this._boundingBox.height) : this._boundingBox.height) * this._scale
         };
-    };
+    }
 
     //  Intersections  ---
     intersection(pointA, pointB) {
         return this.intersectRect(pointA, pointB);
-    };
+    }
 
     intersectRect(pointA, pointB) {
         var center = this.getOffsetPos();
@@ -291,7 +291,7 @@ export class SVGWidget extends Widget {
             return { x: intersection.points[0].x, y: intersection.points[0].y };
         }
         return null;
-    };
+    }
 
     intersectCircle(radius, pointA, pointB) {
         var center = this.getOffsetPos();
@@ -300,11 +300,11 @@ export class SVGWidget extends Widget {
             return { x: intersection.points[0].x, y: intersection.points[0].y };
         }
         return null;
-    };
+    }
 
     distance(pointA, pointB) {
         return Math.sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y));
-    };
+    }
 
     //  IE Fixers  ---
     _pushMarkers(element) {
@@ -317,7 +317,7 @@ export class SVGWidget extends Widget {
                 .attr("marker-end", null)
                 ;
         }
-    };
+    }
 
     _popMarkers(element) {
         if (svgMarkerGlitch) {
@@ -331,7 +331,7 @@ export class SVGWidget extends Widget {
                 .attr("fixme-end", null)
                 ;
         }
-    };
+    }
 
     _popMarkersDebounced = debounce(function (element, d) {
         if (svgMarkerGlitch) {
@@ -344,6 +344,6 @@ export class SVGWidget extends Widget {
             this._pushMarkers(element);
             this._popMarkersDebounced(element, d);
         }
-    };
+    }
 }
 SVGWidget.prototype._class += " common_SVGWidget";
