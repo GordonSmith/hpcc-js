@@ -1,9 +1,10 @@
 import { rgb as d3Rgb } from "d3-color";
 import { select as d3Select } from "d3-selection";
 import "d3-transition";
-import "font-awesome/css/font-awesome.css";
 import { I2DChart } from "../api/I2DChart";
 import { HTMLWidget } from "../common/HTMLWidget";
+
+// import "font-awesome/css/font-awesome.css";
 import "./Summary.css";
 
 const TEXT = "text";

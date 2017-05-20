@@ -1,7 +1,8 @@
 import { select as d3Select } from "d3-selection";
-import "font-awesome/css/font-awesome.css";
 import { HTMLWidget } from "../common/HTMLWidget";
 import { Widget } from "../common/Widget";
+
+// import "font-awesome/css/font-awesome.css";
 import "./Surface.css";
 
 export class Surface extends HTMLWidget {
@@ -145,7 +146,7 @@ export class Surface extends HTMLWidget {
     surfaceBorderRadius: { (): number; (_: number): Surface; };
     surfaceBorderRadius_exists: { (): boolean };
 
-    buttonAnnotations: { (): Widget[]; (_: Widget[]): Surface; };
+    buttonAnnotations: { (): any[]; (_: any[]): Surface; };
 
     widget: { (): Widget; (_: Widget): Surface; };
 
