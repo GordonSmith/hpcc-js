@@ -1,7 +1,8 @@
 import * as AutoComplete from 'autoComplete';
 import { HTMLWidget } from "../common/HTMLWidget";
-import "./AutoCompleteText";
 import "autoComplete";
+
+import "./AutoCompleteText.css";
 
 export function AutoCompleteText() {
     HTMLWidget.call(this);
