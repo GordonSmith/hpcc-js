@@ -1,5 +1,6 @@
 import { HTMLWidget } from "../common/HTMLWidget";
-import "./AbsoluteSurface";
+
+import "./AbsoluteSurface.css";
 
 export function AbsoluteSurface() {
     HTMLWidget.call(this);

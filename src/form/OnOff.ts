@@ -1,6 +1,7 @@
 ﻿import { HTMLWidget } from "../common/HTMLWidget";
 import { IInput } from "../api/IInput";
-import "./OnOff";
+
+import "./OnOff.css";
 
 export function OnOff() {
     HTMLWidget.call(this);

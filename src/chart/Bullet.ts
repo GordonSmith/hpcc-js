@@ -2,7 +2,8 @@ import { bullet as d3Bullet } from "d3-bullet";
 import { select as d3Select } from "d3-selection";
 import { HTMLWidget } from "../common/HTMLWidget";
 import * as Utility from "../common/Utility";
-import "./Bullet";
+
+import "./Bullet.css";
 
 export class Bullet extends HTMLWidget {
     constructor() {

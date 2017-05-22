@@ -44,7 +44,7 @@ export class Grid extends HTMLWidget {
             }
         }, this);
         return size;
-    };
+    }
 
     clearContent(widget) {
         this.content(this.content().filter(function (contentWidget) {
@@ -62,7 +62,7 @@ export class Grid extends HTMLWidget {
             }
             return true;
         }));
-    };
+    }
 
     setContent(row, col, widget, title, rowSpan, colSpan) {
         rowSpan = rowSpan || 1;
@@ -87,7 +87,7 @@ export class Grid extends HTMLWidget {
             this.content().push(cell);
         }
         return this;
-    };
+    }
 
     sortedContent() {
         return this.content().sort(function (l, r) {
@@ -96,7 +96,7 @@ export class Grid extends HTMLWidget {
             }
             return l.gridRow() - r.gridRow();
         });
-    };
+    }
 
     getCell(row, col) {
         let retVal = null;
@@ -109,7 +109,7 @@ export class Grid extends HTMLWidget {
             return false;
         });
         return retVal;
-    };
+    }
 
     getWidgetCell(id) {
         let retVal = null;
@@ -121,7 +121,7 @@ export class Grid extends HTMLWidget {
             return false;
         });
         return retVal;
-    };
+    }
 
     getContent(id) {
         let retVal = null;
@@ -133,7 +133,7 @@ export class Grid extends HTMLWidget {
             return false;
         });
         return retVal;
-    };
+    }
 
     cellToGridItem(cell) {
         return {
@@ -144,7 +144,7 @@ export class Grid extends HTMLWidget {
             id: cell.id(),
             cell
         };
-    };
+    }
 
     gridItemToCell(item) {
         item.cell
@@ -153,7 +153,7 @@ export class Grid extends HTMLWidget {
             .gridColSpan(item.w)
             .gridRowSpan(item.h)
             ;
-    };
+    }
 
     resetItemsPos() {
         this.origItems.forEach(function (origItem) {
@@ -161,7 +161,7 @@ export class Grid extends HTMLWidget {
             item.x = origItem.x;
             item.y = origItem.y;
         }, this);
-    };
+    }
 
     initGridList() {
         this.itemsMap = {};
@@ -175,13 +175,13 @@ export class Grid extends HTMLWidget {
             direction: this.snapping(),
             lanes: this.snapping() === "horizontal" ? this.snappingRows() : this.snappingColumns()
         });
-    };
+    }
 
     killGridList() {
         this.gridList = null;
         delete this.items;
         delete this.itemsMap;
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
@@ -194,7 +194,7 @@ export class Grid extends HTMLWidget {
                 const d = context.cellToGridItem(_d);
                 return { x: d.x * context.cellWidth, y: d.y * context.cellHeight };
             })
-            .on("dragstart", function (_d: any) {
+            .on("start", function (_d: any) {
                 if (!context.designMode()) return;
                 d3Event.sourceEvent.stopPropagation();
                 context.initGridList();
@@ -243,7 +243,7 @@ export class Grid extends HTMLWidget {
                     .style("height", function () { return d.h * context.cellHeight + "px"; })
                     ;
             })
-            .on("dragend", function () {
+            .on("end", function () {
                 if (!context.designMode()) return;
                 d3Event.sourceEvent.stopPropagation();
                 context.dragItem.remove();
@@ -257,7 +257,7 @@ export class Grid extends HTMLWidget {
                 const d = context.cellToGridItem(_d);
                 return { x: (d.x + d.w - 1) * context.cellWidth, y: (d.y + d.h - 1) * context.cellHeight };
             })
-            .on("dragstart", function (_d: any) {
+            .on("start", function (_d: any) {
                 if (!context.designMode()) return;
                 d3Event.sourceEvent.stopPropagation();
                 context.initGridList();
@@ -297,7 +297,7 @@ export class Grid extends HTMLWidget {
                     .style("height", function () { return (-d.y + 1) * context.cellHeight + d3Event.y - context.gutter() + "px"; })
                     ;
             })
-            .on("dragend", function () {
+            .on("end", function () {
                 if (!context.designMode()) return;
                 d3Event.sourceEvent.stopPropagation();
                 context.dragItem.remove();
@@ -305,7 +305,7 @@ export class Grid extends HTMLWidget {
                 context.killGridList();
             })
             ;
-    };
+    }
 
     updateGrid(resize, transitionDuration: number = 0, _noRender: boolean = false) {
         transitionDuration = transitionDuration || 0;
@@ -317,7 +317,7 @@ export class Grid extends HTMLWidget {
             .style("top", function (d) { return d.gridRow() * context.cellHeight + context.gutter() / 2 + "px"; })
             .style("width", function (d) { return d.gridColSpan() * context.cellWidth - context.gutter() + "px"; })
             .style("height", function (d) { return d.gridRowSpan() * context.cellHeight - context.gutter() + "px"; })
-            .each("end", function (d) {
+            .on("end", function (d) {
                 d
                     .surfaceShadow_default(context.surfaceShadow())
                     .surfacePadding_default(context.surfacePadding())
@@ -333,7 +333,7 @@ export class Grid extends HTMLWidget {
                 }
             })
             ;
-    };
+    }
 
     update(domNode, element2) {
         super.update(domNode, element2);
@@ -433,11 +433,11 @@ export class Grid extends HTMLWidget {
         lanes.exit()
             .remove()
             ;
-    };
+    }
 
     exit(domNode, element) {
         super.exit(domNode, element);
-    };
+    }
 
     _createSelectionObject(d) {
         return {
@@ -447,7 +447,7 @@ export class Grid extends HTMLWidget {
             },
             widget: d
         };
-    };
+    }
 
     selection(_) {
         if (!arguments.length) return this._selectionBag.get().map(function (d) { return d._id; });
@@ -455,14 +455,14 @@ export class Grid extends HTMLWidget {
             return this._createSelectionObject(row);
         }, this));
         return this;
-    };
+    }
 
     selectionBagClear() {
         if (!this._selectionBag.isEmpty()) {
             this._selectionBag.clear();
             this.postSelectionChange();
         }
-    };
+    }
 
     selectionBagClick(d) {
         if (d !== null) {
@@ -480,10 +480,10 @@ export class Grid extends HTMLWidget {
                 this.postSelectionChange();
             }
         }
-    };
+    }
 
     postSelectionChange() {
-    };
+    }
 
     designMode: { (): boolean; (_: boolean): Grid; };
     fitTo: { (): string; (_: string): Grid; };

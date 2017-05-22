@@ -24,11 +24,11 @@ export class Surface extends HTMLWidget {
         height -= this.calcFrameHeight(widgetDiv);
         width -= this.calcFrameWidth(widgetDiv);
         return { width, height };
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
-    };
+    }
 
     update(domNode, element2) {
         super.update(domNode, element2);
@@ -115,7 +115,7 @@ export class Surface extends HTMLWidget {
         widgets.exit().each(function (d) {
             d.target(null);
         }).remove();
-    };
+    }
 
     exit(domNode, element) {
         if (this.widget()) {
@@ -123,7 +123,7 @@ export class Surface extends HTMLWidget {
             this.render();
         }
         super.exit(domNode, element);
-    };
+    }
 
     title: { (): string; (_: string): Surface; };
     surfaceTitlePadding: { (): number; (_: number): Surface; };
@@ -153,18 +153,18 @@ export class Surface extends HTMLWidget {
     //  Events  ---
     click(obj) {
         console.log("Clicked: " + obj.id);
-    };
+    }
 }
 Surface.prototype._class += " layout_Surface";
 
 Surface.prototype.publish("title", "", "string", "Title", null, { tags: ["Intermediate"] });
-Surface.prototype.publish("surfaceTitlePadding", null, "number", "Title Padding (px)", null, { tags: ["Advanced"], disable: (w) => { return !w.title(); } });
-Surface.prototype.publish("surfaceTitleFontSize", null, "number", "Title Font Size (px)", null, { tags: ["Advanced"], disable: (w) => { return !w.title(); } });
-Surface.prototype.publish("surfaceTitleFontColor", null, "html-color", "Title Font Color", null, { tags: ["Advanced"], disable: (w) => { return !w.title(); } });
-Surface.prototype.publish("surfaceTitleFontFamily", null, "string", "Title Font Family", null, { tags: ["Advanced"], disable: (w) => { return !w.title(); } });
-Surface.prototype.publish("surfaceTitleFontBold", true, "boolean", "Enable Bold Title Font", null, { tags: ["Advanced"], disable: (w) => { return !w.title(); } });
-Surface.prototype.publish("surfaceTitleBackgroundColor", null, "html-color", "Title Background Color", null, { tags: ["Advanced"], disable: (w) => { return !w.title(); } });
-Surface.prototype.publish("surfaceTitleAlignment", "center", "set", "Title Alignment", ["left", "right", "center"], { tags: ["Basic"], disable: (w) => { return !w.title(); } });
+Surface.prototype.publish("surfaceTitlePadding", null, "number", "Title Padding (px)", null, { tags: ["Advanced"], disable: (w: any) => !w.title() });
+Surface.prototype.publish("surfaceTitleFontSize", null, "number", "Title Font Size (px)", null, { tags: ["Advanced"], disable: (w: any) => !w.title() });
+Surface.prototype.publish("surfaceTitleFontColor", null, "html-color", "Title Font Color", null, { tags: ["Advanced"], disable: (w: any) => !w.title() });
+Surface.prototype.publish("surfaceTitleFontFamily", null, "string", "Title Font Family", null, { tags: ["Advanced"], disable: (w: any) => !w.title() });
+Surface.prototype.publish("surfaceTitleFontBold", true, "boolean", "Enable Bold Title Font", null, { tags: ["Advanced"], disable: (w: any) => !w.title() });
+Surface.prototype.publish("surfaceTitleBackgroundColor", null, "html-color", "Title Background Color", null, { tags: ["Advanced"], disable: (w: any) => !w.title() });
+Surface.prototype.publish("surfaceTitleAlignment", "center", "set", "Title Alignment", ["left", "right", "center"], { tags: ["Basic"], disable: (w: any) => !w.title() });
 
 Surface.prototype.publish("surfaceShadow", false, "boolean", "3D Shadow");
 Surface.prototype.publish("surfacePadding", null, "string", "Surface Padding (px)", null, { tags: ["Intermediate"] });
