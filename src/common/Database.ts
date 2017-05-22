@@ -1,6 +1,6 @@
 import { max as d3Max, mean as d3Mean, min as d3Min, sum as d3Sum } from "d3-array";
 import { map as d3Map, nest as d3Nest } from "d3-collection";
-import { csvFormatRows as d3CsvFormatRows, csvParse as d3CsvParse, tsvParse as d3TsvParse, tsvFormatRows as d3TsvFormatRows } from "d3-dsv";
+import { csvFormatRows as d3CsvFormatRows, csvParse as d3CsvParse, tsvFormatRows as d3TsvFormatRows, tsvParse as d3TsvParse } from "d3-dsv";
 import { format as d3Format } from "d3-format";
 import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";
 import { PropertyExt } from "./PropertyExt";
@@ -13,11 +13,11 @@ const d3Aggr = {
     sum: d3Sum
 };
 
-var lastFoundFormat = null;
+let lastFoundFormat = null;
 
 //  Field  ---
 export class Field extends PropertyExt {
-    //_id: string
+    // _id: string
     constructor(id?) {
         super();
         PropertyExt.call(this);
@@ -25,9 +25,9 @@ export class Field extends PropertyExt {
         this._id = id || this._id;
     }
 
-    //id() {
+    // id() {
     //    return this._id;
-    //};
+    // };
 
     checksum() {
         return Utility.checksum(this.label() + this.type() + this.mask() + this.format());
@@ -81,8 +81,8 @@ export class Field extends PropertyExt {
     }
 
     clone() {
-        var context = this;
-        var retVal = new Field(this._id);
+        const context = this;
+        const retVal = new Field(this._id);
         cloneProp(retVal, "label");
         cloneProp(retVal, "type");
         cloneProp(retVal, "mask");
@@ -98,7 +98,7 @@ export class Field extends PropertyExt {
     }
 
     formatter(format) {
-        var retVal;
+        let retVal;
         if (!format) {
             retVal = function (_) {
                 return _;
@@ -119,11 +119,11 @@ export class Field extends PropertyExt {
         };
         return retVal;
     }
-    label_default: { (): string; (x: string): Field; }
-    label: { (): string; (x: string): Field; }
-    type: { (): string; (x: string): Field; }
-    mask: { (): string; (x: string): Field; }
-    format: { (): string; (x: string): Field; }
+    label_default: { (): string; (x: string): Field; };
+    label: { (): string; (x: string): Field; };
+    type: { (): string; (x: string): Field; };
+    mask: { (): string; (x: string): Field; };
+    format: { (): string; (x: string): Field; };
 }
 Field.prototype._class += " common_Database.Field";
 
@@ -158,7 +158,7 @@ export class Grid extends PropertyExt {
 
     //  Backward compatability  ---
     resetColumns() {
-        var fields = this.fields();
+        const fields = this.fields();
         this.legacyColumns([]);
         this.legacyColumns(fields.map(function (field) {
             return field.label();
@@ -192,7 +192,7 @@ export class Grid extends PropertyExt {
     }
 
     parsedData() {
-        var context = this;
+        const context = this;
         return this._data.map(function (row) {
             return row.map(function (cell, idx) {
                 return context.fields()[idx].parse(cell);
@@ -201,7 +201,7 @@ export class Grid extends PropertyExt {
     }
 
     formattedData() {
-        var context = this;
+        const context = this;
         return this._data.map(function (row) {
             return row.map(function (cell, idx) {
                 return context.fields()[idx].transform(cell);
@@ -237,7 +237,7 @@ export class Grid extends PropertyExt {
     row(row?, _?, asDefault?): any | Grid {
         if (arguments.length < 2) return row === 0 ? this.fields().map(function (d) { return d.label(); }) : this._data[row - 1];
         if (row === 0) {
-            var fieldsArr = this.fields();
+            const fieldsArr = this.fields();
             this.fields(_.map(function (label, idx) {
                 if (asDefault) {
                     return (fieldsArr[idx] || new Field()).label_default(label);
@@ -311,15 +311,16 @@ export class Grid extends PropertyExt {
     }
 
     //  Hipie Helpers  ---
+
     hipieMappings(columns, missingDataString) {
         missingDataString = missingDataString || "";
         if (!this.fields().length || !this._data.length) {
             return [];
         }
-        var mappedColumns = [];
-        var hasRollup = false;
+        const mappedColumns = [];
+        let hasRollup = false;
         columns.forEach(function (mapping, idx) {
-            var mappedColumn = {
+            const mappedColumn = {
                 groupby: false,
                 func: "",
                 params: []
@@ -328,60 +329,58 @@ export class Grid extends PropertyExt {
                 mappedColumn.func = mapping.function();
                 if (mappedColumn.func === "SCALE") {
                     mappedColumn.groupby = true;
-                            } else {
+                } else {
                     hasRollup = true;
-                            }
+                }
 
                 mapping.params().forEach(function (param) {
-                    var field = this.fieldByLabel(param, true);
+                    const field = this.fieldByLabel(param, true);
                     mappedColumn.params.push(field ? field.idx : -1);
-                        }, this);
-                            } else {
+                }, this);
+            } else {
                 mappedColumn.groupby = true;
-                var field = this.fieldByLabel(mapping.id(), true);
+                const field = this.fieldByLabel(mapping.id(), true);
                 mappedColumn.params.push(field ? field.idx : -1);
-                            }
+            }
             mappedColumns.push(mappedColumn);
-                        }, this);
+        }, this);
 
         if (hasRollup) {
-            var retVal = [];
+            const retVal = [];
             this.rollup(mappedColumns.filter(function (mappedColumn) {
                 return mappedColumn.groupby === true;
             }).map(function (d) {
                 return d.params[0];
             }), function (leaves) {
-                var row = mappedColumns.map(function (mappedColumn) {
-                    var param1 = mappedColumn.params[0];
-                    var param2 = mappedColumn.params[1];
+                const row = mappedColumns.map(function (mappedColumn) {
+                    const param1 = mappedColumn.params[0];
+                    const param2 = mappedColumn.params[1];
                     switch (mappedColumn.func) {
-                    case "SUM":
-                            return d3.sum(leaves, function (d) { return d[param1]; });
-                    case "AVE":
-                            return d3.mean(leaves, function (d) { return d[param1] / d[param2]; });
-                    case "MIN":
-                            return d3.min(leaves, function (d) { return d[param1]; });
-                    case "MAX":
-                            return d3.max(leaves, function (d) { return d[param1]; });
+                        case "SUM":
+                            return d3Sum(leaves, function (d) { return d[param1]; });
+                        case "AVE":
+                            return d3Mean(leaves, function (d) { return d[param1] / d[param2]; });
+                        case "MIN":
+                            return d3Min(leaves, function (d) { return d[param1]; });
+                        case "MAX":
+                            return d3Max(leaves, function (d) { return d[param1]; });
                         case "SCALE":
                             console.log("Unexpected function:  " + mappedColumn.func);
-                            //  All leaves should have the same values, use mean just in case they don't?  
-                            return d3.mean(leaves, function (d) { return d[param1] / +param2; });
-                }
-                console.log("Unsupported Mapping Function:  " + mapping.function);
-                return 0;
+                            //  All leaves should have the same values, use mean just in case they don't?
+                            return d3Mean(leaves, function (d) { return d[param1] / +param2; });
+                    }
                     //  All leaves should have the same value.
                     return leaves[0][param1];
-            });
+                });
                 retVal.push(row);
                 return row;
-                });
+            });
             return retVal;
         } else {
             return this._data.map(function (row) {
                 return mappedColumns.map(function (mappedColumn) {
-                    var param1 = mappedColumn.params[0];
-                    var param2 = mappedColumn.params[1];
+                    const param1 = mappedColumn.params[0];
+                    const param2 = mappedColumn.params[1];
                     switch (mappedColumn.func) {
                         case "SCALE":
                             return row[param1] / +param2;
@@ -410,7 +409,7 @@ export class Grid extends PropertyExt {
     }
 
     aggregateView(columnIndicies, aggrType, aggrColumn, aggrDeltaColumn = "") {
-        var context = this;
+        const context = this;
         return new RollupView(this, columnIndicies, function (values) {
             switch (aggrType) {
                 case null:
@@ -419,9 +418,9 @@ export class Grid extends PropertyExt {
                     values.aggregate = values.length;
                     return values;
                 default:
-                    var columns = context.legacyColumns();
-                    var colIdx = columns.indexOf(aggrColumn);
-                    var deltaIdx = columns.indexOf(aggrDeltaColumn);
+                    const columns = context.legacyColumns();
+                    const colIdx = columns.indexOf(aggrColumn);
+                    const deltaIdx = columns.indexOf(aggrDeltaColumn);
                     values.aggregate = d3Aggr[aggrType](values, function (value) {
                         return (+value[colIdx] - (deltaIdx >= 0 ? +value[deltaIdx] : 0)) / (deltaIdx >= 0 ? +value[deltaIdx] : 1);
                     });
@@ -435,7 +434,7 @@ export class Grid extends PropertyExt {
         if (!(columnIndicies instanceof Array)) {
             columnIndicies = [columnIndicies];
         }
-        var nest = d3Nest();
+        const nest = d3Nest();
         columnIndicies.forEach(function (idx) {
             nest.key(function (d) {
                 return d[idx];
@@ -480,14 +479,14 @@ export class Grid extends PropertyExt {
     }
 
     filter(filter) {
-        var filterIdx = {};
+        const filterIdx = {};
         this.row(0).forEach(function (col, idx) {
             filterIdx[col] = idx;
         });
         return new Grid()
             .fields(this.fields(), true)
             .data(this.data().filter(function (row) {
-                for (var key in filter) {
+                for (const key in filter) {
                     if (filter[key] !== row[filterIdx[key]]) {
                         return false;
                     }
@@ -501,13 +500,13 @@ export class Grid extends PropertyExt {
         if (!(columns instanceof Array)) {
             columns = [columns];
         }
-        var retVal = [];
+        const retVal = [];
         columns.forEach(function (col) {
-            var rollup = this.rollup(col, function (leaves) {
+            const rollup = this.rollup(col, function (leaves) {
                 return leaves.length;
             });
             retVal.push(rollup);
-            var keys = rollup.map(function (d) { return d.key; });
+            const keys = rollup.map(function (d) { return d.key; });
             this.fields()[col].isBoolean = typeTest(keys, isBoolean);
             this.fields()[col].isNumber = typeTest(keys, isNumber);
             this.fields()[col].isString = !this.fields()[col].isNumber && typeTest(keys, isString);
@@ -525,7 +524,7 @@ export class Grid extends PropertyExt {
     //  Import/Export  ---
     jsonObj(_?): any | Grid {
         if (!arguments.length) return this._data.map(function (row) {
-            var retVal = {};
+            const retVal = {};
             this.row(0).forEach(function (col, idx) {
                 retVal[col] = row[idx];
             });
@@ -533,9 +532,9 @@ export class Grid extends PropertyExt {
         }, this);
         this.clear();
         this.data(_.map(function (row) {
-            var retVal = [];
-            for (var key in row) {
-                var colIdx = this.row(0).indexOf(key);
+            const retVal = [];
+            for (const key in row) {
+                let colIdx = this.row(0).indexOf(key);
                 if (colIdx < 0) {
                     colIdx = this.fields().length;
                     this.fields().push(new Field().label(key));
@@ -565,12 +564,12 @@ export class Grid extends PropertyExt {
         return this;
     }
 
-    fields: { (): Field[]; (_, clone?): Grid }
+    fields: { (): Field[]; (_, clone?): Grid };
 }
 Grid.prototype._class += " common_Database.Grid";
 
 Grid.prototype.publish("fields", [], "propertyArray", "Fields");
-var fieldsOrig = Grid.prototype.fields;
+const fieldsOrig = Grid.prototype.fields;
 Grid.prototype.fields = function (_?, clone?) {
     if (!arguments.length) return fieldsOrig.apply(this, arguments);
     return fieldsOrig.call(this, clone ? _.map(function (d) { return d.clone(); }) : _);
@@ -667,7 +666,7 @@ export class RollupView extends LegacyView {
         if (this._nestChecksum !== this._grid.checksum()) {
             this._nestChecksum = this._grid.checksum();
 
-            var nest = d3Nest();
+            const nest = d3Nest();
             this._columnIndicies.forEach(function (idx) {
                 nest.key(function (d) {
                     return d[idx];
@@ -689,7 +688,7 @@ export class RollupView extends LegacyView {
         return this.nest().map(this._whichData(opts), d3Map);
     }
     _walkData(entries, prevRow = []) {
-        var retVal = [];
+        let retVal = [];
         entries.forEach(function (entry) {
             if (entry instanceof Array) {
                 retVal.push(prevRow.concat([entry]));
@@ -720,13 +719,13 @@ function isNumber(cell) {
 function isString(cell) {
     return typeof cell === "string";
 }
-var dateTimeFormats = [
+const dateTimeFormats = [
 ];
-var dateFormats = [
+const dateFormats = [
     "%Y-%m-%d",
     "%Y%m%d",
 ];
-var timeFormats = [
+const timeFormats = [
     "%H:%M:%S.%LZ",
     "%H:%M:%SZ",
     "%H:%M:%S"
@@ -737,8 +736,8 @@ dateFormats.forEach(function (d) {
     });
 });
 function formatPicker(formats, cell) {
-    for (var i = 0; i < formats.length; ++i) {
-        var date = d3TimeParse(formats[i])(cell);
+    for (let i = 0; i < formats.length; ++i) {
+        const date = d3TimeParse(formats[i])(cell);
         if (date) {
             lastFoundFormat = formats[i];
             return formats[i];
