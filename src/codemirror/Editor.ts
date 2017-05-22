@@ -3,7 +3,7 @@ import "codemirror/mode/ecl/ecl";
 import "codemirror/mode/javascript/javascript";
 import { HTMLWidget } from "../common/HTMLWidget";
 
-import "./Editor.css"
+import "./Editor.css";
 
 export class Editor extends HTMLWidget {
     protected _codemirror: CodeMirror;

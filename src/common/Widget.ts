@@ -80,7 +80,7 @@ export class Widget extends PropertyExt {
                 return this._db.json();
         }
         return this._db.csv();
-    };
+    }
 
     leakCheck(newNode) {
         var context = this;
@@ -106,7 +106,7 @@ export class Widget extends PropertyExt {
             watchArray.push(pNode);
             pNode = pNode.parentNode;
         }
-    };
+    }
 
     //  Events  ---
     on(eventID, func, stopPropagation = false): this {
@@ -123,7 +123,7 @@ export class Widget extends PropertyExt {
             return func.apply(context, args) || retVal;
         });
         return this;
-    };
+    }
 
     //  Implementation  ---
     columns(): string[];
@@ -132,25 +132,25 @@ export class Widget extends PropertyExt {
         if (!arguments.length) return this._db.legacyColumns();
         this._db.legacyColumns(_, asDefault);
         return this;
-    };
+    }
 
     parsedData() {
         return this._db.parsedData();
-    };
+    }
 
     formattedData() {
         return this._db.formattedData();
-    };
+    }
 
     data(_?) {
         if (!arguments.length) return this._db.legacyData();
         this._db.legacyData(_);
         return this;
-    };
+    }
 
     cloneData() {
         return this.data().map(function (row) { return row.slice(0); });
-    };
+    }
 
     flattenData() {
         var retVal = [];
@@ -451,7 +451,7 @@ export class Widget extends PropertyExt {
         }
         if (this._parentElement) {
             if (!this._tag)
-                throw "No DOM tag specified";
+                throw new Error("No DOM tag specified");
 
             var elements = this._parentElement.selectAll("#" + this._id).data([this], function (d) { return d._id; });
             elements.enter().append(this._tag)
