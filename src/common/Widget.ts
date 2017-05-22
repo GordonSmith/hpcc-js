@@ -2,9 +2,8 @@ import { event as d3Event, select as d3Select } from "d3-selection";
 import "d3-transition";
 import { Field, Grid } from "./Database";
 import { } from "./Platform";
-import { debounce } from "./Utility";
 import { PropertyExt } from "./PropertyExt";
-import { Field, Grid } from "./Database";
+import { debounce } from "./Utility";
 
 import "./Widget.css";
 
@@ -18,7 +17,7 @@ export interface ISize {
     height: number;
 }
 
-var widgetID = 0;
+let widgetID = 0;
 export class Widget extends PropertyExt {
     _idSeed: string;
 
@@ -83,13 +82,13 @@ export class Widget extends PropertyExt {
     }
 
     leakCheck(newNode) {
-        var context = this;
-        var watchArray = [newNode];
-        var destructObserver = new MutationObserver(function (mutations) {
-            var leaks = false;
+        const context = this;
+        const watchArray = [newNode];
+        const destructObserver = new MutationObserver(function (mutations) {
+            let leaks = false;
             mutations.forEach(function (mutation) {
-                for (var i = 0; i < mutation.removedNodes.length; ++i) {
-                    var node = mutation.removedNodes.item(i);
+                for (let i = 0; i < mutation.removedNodes.length; ++i) {
+                    const node = mutation.removedNodes.item(i);
                     if (watchArray.indexOf(node) >= 0 && context._target) {
                         leaks = true;
                         destructObserver.disconnect();
@@ -100,7 +99,7 @@ export class Widget extends PropertyExt {
                 console.log("leak:  " + context.id() + " - " + context.classID() + "\t\twidget.target(null); was not called for this widget before it was removed from the page.");
             }
         });
-        var pNode = newNode.parentNode;
+        let pNode = newNode.parentNode;
         while (pNode) {
             destructObserver.observe(pNode, { childList: true });
             watchArray.push(pNode);
@@ -110,9 +109,9 @@ export class Widget extends PropertyExt {
 
     //  Events  ---
     on(eventID, func, stopPropagation = false): this {
-        var context = this;
+        const context = this;
         this.overrideMethod(eventID, function (origFunc, args) {
-            var retVal;
+            let retVal;
             if (stopPropagation) {
                 if (d3Event) {
                     d3Event.stopPropagation();
@@ -153,12 +152,12 @@ export class Widget extends PropertyExt {
     }
 
     flattenData() {
-        var retVal = [];
+        const retVal = [];
         this.data().forEach(function (row, rowIdx) {
             this.columns().filter(function (_col, idx) { return idx > 0; }).forEach(function (_col, idx) {
-                var val = row[idx + 1];
+                const val = row[idx + 1];
                 if (val) {
-                    var newItem = {
+                    const newItem = {
                         rowIdx,
                         colIdx: idx + 1,
                         label: row[0],
@@ -172,7 +171,7 @@ export class Widget extends PropertyExt {
     }
 
     rowToObj(row) {
-        var retVal: any = {};
+        const retVal: any = {};
         this.fields().forEach(function (field, idx) {
             retVal[field.label_default() || field.label()] = row[idx];
         });
@@ -242,18 +241,19 @@ export class Widget extends PropertyExt {
     }
 
     resize(size?: ISize, delta: ISize = { width: 0, height: 0 }) {
-        var width, height;
+        let width;
+        let height;
         if (size && size.width && size.height) {
             width = size.width;
             height = size.height;
         } else {
-            var style = window.getComputedStyle(this._target, null);
+            const style = window.getComputedStyle(this._target, null);
             width = parseFloat(style.getPropertyValue("width")) - delta.width;
             height = parseFloat(style.getPropertyValue("height")) - delta.height;
         }
         this.size({
-            width: width,
-            height: height
+            width,
+            height
         });
         return this;
     }
@@ -278,6 +278,7 @@ export class Widget extends PropertyExt {
             this._parentElement
                 .style("visibility", this._visible ? null : "hidden")
                 .style("opacity", this._visible ? null : 0)
+                ;
         }
         return this;
     }
@@ -296,7 +297,7 @@ export class Widget extends PropertyExt {
     calcSnap(snapSize) {
         function snap(x, gridSize) {
             function snapDelta(x, gridSize) {
-                var dx = x % gridSize;
+                let dx = x % gridSize;
                 if (Math.abs(dx) > gridSize - Math.abs(dx)) {
                     dx = (gridSize - Math.abs(dx)) * (dx < 0 ? 1 : -1);
                 }
@@ -304,12 +305,12 @@ export class Widget extends PropertyExt {
             }
             return x - snapDelta(x, gridSize);
         }
-        var l = snap(this._pos.x - this._size.width / 2, snapSize);
-        var t = snap(this._pos.y - this._size.height / 2, snapSize);
-        var r = snap(this._pos.x + this._size.width / 2, snapSize);
-        var b = snap(this._pos.y + this._size.height / 2, snapSize);
-        var w = r - l;
-        var h = b - t;
+        const l = snap(this._pos.x - this._size.width / 2, snapSize);
+        const t = snap(this._pos.y - this._size.height / 2, snapSize);
+        const r = snap(this._pos.x + this._size.width / 2, snapSize);
+        const b = snap(this._pos.y + this._size.height / 2, snapSize);
+        const w = r - l;
+        const h = b - t;
         return [{ x: l + w / 2, y: t + h / 2 }, { width: w, height: h }];
     }
 
@@ -318,9 +319,9 @@ export class Widget extends PropertyExt {
         if (!domNode) {
             return null;
         }
-        var element = d3Select(domNode);
+        const element = d3Select(domNode);
         if (element) {
-            var widget = element.datum();
+            const widget = element.datum();
             if (widget && widget instanceof Widget) {
                 return widget;
             }
@@ -331,7 +332,7 @@ export class Widget extends PropertyExt {
     locateParentWidget(domNode) {
         domNode = domNode || (this._target ? this._target.parentNode : null);
         if (domNode) {
-            var widget = this.toWidget(domNode);
+            const widget = this.toWidget(domNode);
             if (widget) {
                 return widget;
             } else if (domNode.parentNode) {
@@ -352,7 +353,7 @@ export class Widget extends PropertyExt {
     }
 
     locateOverlayNode() {
-        var widget = this.locateParentWidget(this._target);
+        let widget = this.locateParentWidget(this._target);
         while (widget) {
             if (widget._parentOverlay) {
                 return widget._parentOverlay;
@@ -362,8 +363,8 @@ export class Widget extends PropertyExt {
         return null;
     }
 
-    Widget.prototype.locateAncestor = function (classID) {
-        var widget = this.locateParentWidget(this._target);
+    locateAncestor(classID) {
+        let widget = this.locateParentWidget(this._target);
         while (widget) {
             if (widget.classID() === classID) {
                 return widget;
@@ -373,20 +374,20 @@ export class Widget extends PropertyExt {
         return null;
     };
 
-    Widget.prototype.getAbsolutePos = function (domNode, w, h) {
-        var root = this.locateSVGNode(domNode);
+    getAbsolutePos(domNode, w, h) {
+        const root = this.locateSVGNode(domNode);
         if (!root) {
             return null;
         }
-        var pos = root.createSVGPoint();
-        var ctm = domNode.getCTM();
+        let pos = root.createSVGPoint();
+        const ctm = domNode.getCTM();
         pos = pos.matrixTransform(ctm);
-        var retVal: any = {
+        const retVal: any = {
             x: pos.x,
             y: pos.y
         };
         if (w !== undefined && h !== undefined) {
-            var size = root.createSVGPoint();
+            let size = root.createSVGPoint();
             size.x = w;
             size.y = h;
             size = size.matrixTransform(ctm);
@@ -402,17 +403,17 @@ export class Widget extends PropertyExt {
 
     syncOverlay() {
         if (this._size.width && this._size.height) {
-            var newPos = this.getAbsolutePos(this._overlayElement.node(), this._size.width, this._size.height);
+            const newPos = this.getAbsolutePos(this._overlayElement.node(), this._size.width, this._size.height);
             if (newPos && (!this._prevPos || newPos.x !== this._prevPos.x || newPos.y !== this._prevPos.y || newPos.width !== this._prevPos.width || newPos.height !== this._prevPos.height)) {
-                var xScale = newPos.width / this._size.width;
-                var yScale = newPos.height / this._size.height;
+                const xScale = newPos.width / this._size.width;
+                const yScale = newPos.height / this._size.height;
                 this._parentElement
                     .style("left", newPos.x - (newPos.width / xScale) / 2 + "px")
                     .style("top", newPos.y - (newPos.height / yScale) / 2 + "px")
                     .style("width", newPos.width / xScale + "px")
                     .style("height", newPos.height / yScale + "px")
                     ;
-                var transform = "scale(" + xScale + "," + yScale + ")";
+                const transform = "scale(" + xScale + "," + yScale + ")";
                 this._parentElement
                     .style("transform", transform)
                     .style("-moz-transform", transform)
@@ -437,7 +438,7 @@ export class Widget extends PropertyExt {
     private _prevNow = 0;
     render(callback?) {
         if ((window as any).__hpcc_debug) {
-            var now = Date.now();
+            const now = Date.now();
             if (now - this._prevNow < 500) {
                 console.log("Double Render:  " + (now - this._prevNow) + " - " + this.id() + " - " + this.classID());
             }
@@ -453,7 +454,7 @@ export class Widget extends PropertyExt {
             if (!this._tag)
                 throw new Error("No DOM tag specified");
 
-            var elements = this._parentElement.selectAll("#" + this._id).data([this], function (d) { return d._id; });
+            const elements = this._parentElement.selectAll("#" + this._id).data([this], function (d) { return d._id; });
             elements.enter().append(this._tag)
                 .classed(this._class, true)
                 .attr("id", this._id)
@@ -467,9 +468,9 @@ export class Widget extends PropertyExt {
                 })
                 .merge(elements)
                 .each(function (context) {
-                    var element = d3Select(this);
-                    var classed = context.classed();
-                    for (var key in classed) {
+                    const element = d3Select(this);
+                    const classed = context.classed();
+                    for (const key in classed) {
                         element.classed(key, classed[key]);
                     }
                     context.preUpdate(this, context._element);
@@ -488,12 +489,12 @@ export class Widget extends PropertyExt {
         }
 
         //  ASync Render Contained Widgets  ---
-        var widgets = [];
+        let widgets = [];
         this.publishedProperties(true).forEach(function (meta) {
             if (!meta.ext || meta.ext.render !== false) {
                 switch (meta.type) {
                     case "widget":
-                        var widget = this[meta.id]();
+                        const widget = this[meta.id]();
                         if (widget) {
                             widgets.push(this[meta.id]());
                         }
@@ -505,7 +506,7 @@ export class Widget extends PropertyExt {
             }
         }, this);
 
-        var context = this;
+        const context = this;
         switch (widgets.length) {
             case 0:
                 callback(this);
@@ -516,7 +517,7 @@ export class Widget extends PropertyExt {
                 });
                 break;
             default:
-                var renderCount = widgets.length;
+                let renderCount = widgets.length;
                 widgets.forEach(function (widget, _idx) {
                     setTimeout(function () {
                         widget.render(function () {
