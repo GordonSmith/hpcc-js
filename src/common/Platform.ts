@@ -3,7 +3,7 @@ import "es6-promise";
 const _version = "1.14.2-dev";
 export function version() {
     return _version;
-};
+}
 
 export const ieVersion = (function () {
     const ua = navigator.userAgent;
@@ -46,7 +46,7 @@ export function getScrollbarWidth() {
         _scrollBarWidth = widthNoScroll - widthWithScroll;
     }
     return _scrollBarWidth;
-};
+}
 
 //  Polyfills  ---
 (window as any).MutationObserver = (window as any).MutationObserver || (window as any).WebKitMutationObserver || (window as any).MozMutationObserver || function (callback) {
@@ -60,6 +60,7 @@ export function getScrollbarWidth() {
         this.type = type;
     };
     MutationListener.prototype = {
+        // tslint:disable-next-line:object-literal-shorthand
         handleEvent: function (evt) {
             const mutation = {
                 type: this.type,

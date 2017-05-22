@@ -128,8 +128,8 @@ function MetaProxy(id, proxy, method, defaultValue, ext?) {
 
 export type PublishTypes = "any" | "number" | "boolean" | "string" | "set" | "array" | "object" | "widget" | "widgetArray" | "propertyArray" | "html-color";
 export interface IPublishExt {
-    override?: Function;
-    disable?: Function;
+    override?: () => boolean;
+    disable?: (w: this) => boolean;
     optional?: boolean;
     tags?: string[];
     autoExpand?;
@@ -198,17 +198,17 @@ export class PropertyExt extends Class {
                 visitor(context, publishItem);
             }
         });
-    };
+    }
 
     publishedProperty(id) {
         return this[__meta_ + id];
-    };
+    }
 
     publishedModified() {
         return this.publishedProperties().some(function (prop) {
             return this[prop.id + "_modified"]();
         }, this);
-    };
+    }
 
     publishReset(privateArr, exceptionsArr) {
         privateArr = (privateArr || []).map(function (id) { return __meta_ + id; });
@@ -222,11 +222,11 @@ export class PropertyExt extends Class {
                 }
             }
         }
-    };
+    }
 
     publish(id, defaultValue, type?: PublishTypes, description?: string, set?: string[] | Function | IPublishExt, ext: IPublishExt = {}) {
         if (this[__meta_ + id] !== undefined && !ext.override) {
-            throw id + " is already published.";
+            throw new Error(id + " is already published.");
         }
         const meta = this[__meta_ + id] = new Meta(id, defaultValue, type, description, set, ext);
         if (meta.ext.internal) {
@@ -308,7 +308,7 @@ export class PropertyExt extends Class {
             }
             return set;
         };
-    };
+    }
 
     publishWidget(prefix, WidgetType, id) {
         for (const key in WidgetType.prototype) {
@@ -317,12 +317,12 @@ export class PropertyExt extends Class {
                 this.publishProxy(prefix + __prop_ + publishItem.id, id, publishItem.method || publishItem.id);
             }
         }
-    };
+    }
 
     publishProxy(id, proxy, method?, defaultValue?) {
         method = method || id;
         if (this[__meta_ + id] !== undefined) {
-            throw id + " is already published.";
+            throw new Error(id + " is already published.");
         }
         this[__meta_ + id] = new MetaProxy(id, proxy, method, defaultValue);
         this[id] = function (_) {
@@ -355,7 +355,7 @@ export class PropertyExt extends Class {
         this[id + "_options"] = function () {
             return this[proxy][method + "_options"]();
         };
-    };
+    }
 
     monitorProperty(propID, func) {
         const meta = this.publishedProperty(propID);
@@ -367,8 +367,7 @@ export class PropertyExt extends Class {
                     });
                 } else {
                     return {
-                        remove: function () {
-                        }
+                        remove: () => { }
                     };
                 }
             default:
@@ -376,25 +375,26 @@ export class PropertyExt extends Class {
                 this._watchArr[idx] = { propertyID: propID, callback: func };
                 const context = this;
                 return {
-                    remove: function () {
+                    remove: () => {
                         delete context._watchArr[idx];
                     }
                 };
         }
-    };
+    }
 
     monitor(func) {
         return {
             _watches: this.publishedProperties().map(function (meta) {
                 return this.monitorProperty(meta.id, func);
             }, this),
+            // tslint:disable-next-line:object-literal-shorthand
             remove: function () {
                 this._watches.forEach(function (watch) {
                     watch.remove();
                 });
             }
         };
-    };
+    }
 
     broadcast(key, newVal, oldVal, source) {
         source = source || this;
@@ -408,7 +408,7 @@ export class PropertyExt extends Class {
                 }
             }
         }
-    };
+    }
 
     applyTheme(theme) {
         if (!theme) {
@@ -432,7 +432,7 @@ export class PropertyExt extends Class {
                 }
             }
         }
-    };
+    }
 
     copyPropsTo(other) {
         this.publishedProperties(false).forEach(function (meta) {
@@ -442,12 +442,12 @@ export class PropertyExt extends Class {
                 other[meta.id + "_reset"]();
             }
         }, this);
-    };
+    }
 }
 PropertyExt.prototype._class += " common_PropertyExt";
 
 export function publish(defaultValue, description?, set?, ext: any = {}) {
     return function (target: any, key: string) {
         target.publish(key, defaultValue, "any", description, set, ext);
-    }
+    };
 }

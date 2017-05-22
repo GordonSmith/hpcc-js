@@ -1,7 +1,7 @@
-import * as d3 from "d3";
 import { HTMLWidget } from "../common/HTMLWidget";
 import { SerialAxis as Axis } from "./SerialAxis";
-import "amcharts-serial";
+
+import "amcharts-serial.css";
 
 export function CommonSerial() {
     HTMLWidget.call(this);

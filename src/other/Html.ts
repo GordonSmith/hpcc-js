@@ -1,5 +1,6 @@
 import { HTMLWidget } from "../common/HTMLWidget";
-import "./Html";
+
+import "./Html.css";
 
 export function Html() {
     HTMLWidget.call(this);

@@ -1,14 +1,15 @@
-import * as d3 from "d3";
-import { Class } from '../common/Class';
-import * as Database from '../common/Database';
-import * as Utility from '../common/Utility';
-import { Widget } from '../common/Widget';
-import * as Comms from '../other/Comms';
-import { MultiChart } from '../chart/MultiChart';
-import { Table } from '../other/Table';
+import { map as d3Map } from "d3-collection";
+import { MultiChart } from "../chart/MultiChart";
+import { Class } from "../common/Class";
+import * as Database from "../common/Database";
+import * as Utility from "../common/Utility";
+import { Widget } from "../common/Widget";
+import { Table as DGridTable } from "../dgrid/Table";
+import * as Comms from "../other/Comms";
+import { Table } from "../other/Table";
 
-var LOADING = "...loading...";
-var _CHANGED = "_changed";
+const LOADING = "...loading...";
+const _CHANGED = "_changed";
 
 function faCharFix(faChar) {
     if (faChar) {
@@ -20,8 +21,8 @@ function faCharFix(faChar) {
 //  Mappings ---
 function SourceMappings(visualization, mappings) {
     this.visualization = visualization;
-    var newMappings = {};
-    for (var key in mappings) {
+    const newMappings = {};
+    for (const key in mappings) {
         if (mappings[key] instanceof Array) {
             mappings[key].forEach(function (mapingItem, idx) {
                 newMappings[idx === 0 ? key : key + "_" + idx] = mapingItem;
@@ -40,7 +41,7 @@ function SourceMappings(visualization, mappings) {
 }
 
 SourceMappings.prototype.init = function () {
-    for (var key in this.mappings) {
+    for (const key in this.mappings) {
         this.reverseMappings[this.mappings[key]] = key;
         if (this.columnsIdx[key] === undefined) {
             this.columns.push(key);
@@ -110,11 +111,11 @@ SourceMappings.prototype.contains = function (key) {
 };
 
 SourceMappings.prototype.doMap = function (item) {
-    var retVal = [];
-    for (var key in this.mappings) {
-        var rhsKey = this.mappings[key];
+    const retVal = [];
+    for (const key in this.mappings) {
+        const rhsKey = this.mappings[key];
         try {
-            var val = item[rhsKey];
+            let val = item[rhsKey];
             if (val === undefined) {
                 val = item[rhsKey.toLowerCase()];
             }
@@ -127,11 +128,11 @@ SourceMappings.prototype.doMap = function (item) {
 };
 
 SourceMappings.prototype.doReverseMap = function (item) {
-    var retVal = {};
-    for (var key in this.mappings) {
-        var rhsKey = this.mappings[key];
+    const retVal = {};
+    for (const key in this.mappings) {
+        const rhsKey = this.mappings[key];
         try {
-            var val = item[key];
+            let val = item[key];
             if (val === undefined) {
                 val = item[key.toLowerCase()];
             }
@@ -191,7 +192,7 @@ function ChoroMappings2(visualization, mappings) {
         this.columns = ["geohash", "label"];
         this.columnsIdx = { geohash: 0, label: 1 };
     }
-    var weightOffset = this.columns.length;
+    const weightOffset = this.columns.length;
     mappings.weight.forEach(function (w, i) {
         this.columns.push(w);
         this.columnsIdx[i === 0 ? "weight" : "weight_" + i] = i + weightOffset;
@@ -209,7 +210,7 @@ function HeatMapMappings(visualization, mappings) {
 HeatMapMappings.prototype = Object.create(SourceMappings.prototype);
 
 function LineMappings(visualization, mappings) {
-    var newMappings = {
+    const newMappings = {
         label: mappings.x[0]
     };
     mappings.y.forEach(function (item, idx) {
@@ -221,8 +222,8 @@ function LineMappings(visualization, mappings) {
 LineMappings.prototype = Object.create(SourceMappings.prototype);
 
 function TableMappings(visualization, mappings) {
-    var newMappings = {};
-    for (var key in mappings) {
+    const newMappings = {};
+    for (const key in mappings) {
         mappings[key].forEach(function (mapingItem, idx) {
             newMappings[visualization.label[idx]] = mapingItem;
         });
@@ -244,50 +245,50 @@ TableMappings.prototype.init = function () {
 };
 
 TableMappings.prototype.doMapAll = function (data) {
-    var retVal = SourceMappings.prototype.doMapAll.apply(this, arguments);
+    let retVal = SourceMappings.prototype.doMapAll.apply(this, arguments);
     if (retVal instanceof Array) {
-        var columnsRHSIdx = this.visualization.source.getColumnsRHSIdx();
+        const columnsRHSIdx = this.visualization.source.getColumnsRHSIdx();
         this.visualization.fields.forEach(function (field) {
-            var fieldType = (!field || !field.properties) ? "unknown" : hipieType2DBType(field.properties.type);
-            var colIdx = columnsRHSIdx[field.id];
+            const fieldType = (!field || !field.properties) ? "unknown" : hipieType2DBType(field.properties.type);
+            const colIdx = columnsRHSIdx[field.id];
             if (colIdx === undefined) {
                 console.log("Invalid Mapping:  " + field.id);
             } else {
                 retVal = retVal.map(function (row) {
-                    var cell = row[colIdx];
+                    let cell = row[colIdx];
                     if (cell && cell.Row) {
                         cell = cell.Row;
                     }
                     if (cell instanceof Array) {
                         switch (fieldType) {
                             case "dataset":
-                                var columns = [];
-                                var columnsIdx = {};
-                                var data = cell.map(function (row, idx) {
-                                    var retVal = [];
-                                    retVal.length = columns.length;
-                                    for (var key in row) {
+                                const columns = [];
+                                const columnsIdx = {};
+                                const data2 = cell.map(function (row2, idx) {
+                                    const retVal2 = [];
+                                    retVal2.length = columns.length;
+                                    for (const key in row2) {
                                         if (idx === 0) {
                                             columnsIdx[key] = columns.length;
                                             columns.push(key);
                                         }
-                                        retVal[columnsIdx[key]] = row[key];
+                                        retVal2[columnsIdx[key]] = row2[key];
                                     }
-                                    return retVal;
+                                    return retVal2;
                                 });
-                                var table = new Table()
+                                const table = new Table()
                                     .columns(columns)
-                                    .data(data)
+                                    .data(data2)
                                     ;
                                 row[colIdx] = table;
                                 break;
                             case "widget":
-                                var viz = this.visualization.vizDeclarations[field.properties.localVisualizationID];
-                                var output = viz.source.getOutput();
-                                var db = output.db;
+                                const viz = this.visualization.vizDeclarations[field.properties.localVisualizationID];
+                                const output = viz.source.getOutput();
+                                const db = output.db;
                                 output.setData(cell, []);
-                                var widget = viz.widget;
-                                var newWidget = new widget.constructor()
+                                const widget = viz.widget;
+                                const newWidget = new widget.constructor()
                                     .showToolbar(false)
                                     .chartType(widget.chartType())
                                     .chartTypeDefaults(widget.chartTypeDefaults())
@@ -323,45 +324,45 @@ function GraphMappings(visualization, mappings, link) {
 GraphMappings.prototype = Object.create(SourceMappings.prototype);
 
 GraphMappings.prototype.calcIconInfo = function (field, origItem, forAnnotation) {
-    var retVal = {};
-    function mapStruct(struct, retVal) {
+    const retVal = {};
+    function mapStruct(struct, retVal2) {
         if (struct) {
-            for (var key in struct) {
+            for (const key in struct) {
                 switch (key) {
                     case "faChar":
-                        retVal.faChar = faCharFix(struct.faChar);
+                        retVal2.faChar = faCharFix(struct.faChar);
                         break;
                     default:
                         if (forAnnotation && key.indexOf("icon_") === 0) { //  Backward compatability
                             console.log("Deprecated flag property:  " + key);
-                            retVal[key.split("icon_")[1]] = struct[key];
+                            retVal2[key.split("icon_")[1]] = struct[key];
                         } else {
-                            retVal[key] = struct[key];
+                            retVal2[key] = struct[key];
                         }
                 }
             }
         }
     }
     if (origItem && origItem[field.fieldid] && field.valuemappings) {
-        var annotationInfo = field.valuemappings[origItem[field.fieldid]];
+        const annotationInfo = field.valuemappings[origItem[field.fieldid]];
         mapStruct(annotationInfo, retVal);
     }
 
-    for (var _key in retVal) { // jshint ignore:line
+    for (const _key in retVal) { // jshint ignore:line
         return retVal;
     }
     return null;
 };
 
 GraphMappings.prototype.doMapAll = function (db) {
-    var data = db.jsonObj();
-    var context = this;
-    var vertexMap = {};
-    var vertices = [];
-    var graph = this.visualization.widget;
+    const data = db.jsonObj();
+    const context = this;
+    const vertexMap = {};
+    const vertices = [];
+    const graph = this.visualization.widget;
     function getVertex(item, origItem?) {
-        var id = "uid_" + item[0];
-        var retVal = vertexMap[id];
+        const id = "uid_" + item[0];
+        let retVal = vertexMap[id];
         if (!retVal && origItem) {
             retVal = new graph.Vertex()
                 .faChar((context.icon && context.icon.faChar ? faCharFix(context.icon.faChar) : "\uf128"))
@@ -373,9 +374,9 @@ GraphMappings.prototype.doMapAll = function (db) {
             vertices.push(retVal);
 
             //  Icon  ---
-            var iconInfo = context.calcIconInfo(context.visualization.icon, origItem, false);
+            const iconInfo = context.calcIconInfo(context.visualization.icon, origItem, false);
             if (iconInfo) {
-                for (var key in iconInfo) {
+                for (const key in iconInfo) {
                     if (retVal[key]) {
                         retVal[key](iconInfo[key]);
                     }
@@ -383,10 +384,10 @@ GraphMappings.prototype.doMapAll = function (db) {
             }
 
             // Annotations  ---
-            var annotations = [];
+            const annotations = [];
             context.visualization.flag.forEach(function (field) {
-                var iconInfo = context.calcIconInfo(field, origItem, true);
-                if (iconInfo) {
+                const iconInfo2 = context.calcIconInfo(field, origItem, true);
+                if (iconInfo2) {
                     annotations.push(iconInfo);
                 }
             });
@@ -394,21 +395,21 @@ GraphMappings.prototype.doMapAll = function (db) {
         }
         return retVal;
     }
-    var edges = [];
+    const edges = [];
     data.forEach(function (item) {
-        var mappedItem = context.doMap(item);
+        const mappedItem = context.doMap(item);
         getVertex(mappedItem, item);
     });
     data.forEach(function (item) {
-        var mappedItem = context.doMap(item);
-        var vertex = getVertex(mappedItem, item);
+        const mappedItem = context.doMap(item);
+        const vertex = getVertex(mappedItem, item);
         if (item[context.link.childfile] && item[context.link.childfile] instanceof Array) {
-            var childItems = item[context.link.childfile];
+            const childItems = item[context.link.childfile];
             childItems.forEach(function (childItem, i) {
-                var childMappedItem = context.linkMappings.doMap(childItem);
-                var childVertex = getVertex(childMappedItem);
+                const childMappedItem = context.linkMappings.doMap(childItem);
+                const childVertex = getVertex(childMappedItem);
                 if (childVertex && vertex.id() !== childVertex.id()) {
-                    var edge = new graph.Edge()
+                    const edge = new graph.Edge()
                         .sourceVertex(vertex)
                         .targetVertex(childVertex)
                         .sourceMarker("circle")
@@ -420,7 +421,7 @@ GraphMappings.prototype.doMapAll = function (db) {
             });
         }
     });
-    return { vertices: vertices, edges: edges, merge: false };
+    return { vertices, edges, merge: false };
 };
 
 //  Viz Source ---
@@ -479,7 +480,7 @@ Source.prototype.getDatasource = function () {
 };
 
 Source.prototype.getOutput = function () {
-    var datasource = this.getDatasource();
+    const datasource = this.getDatasource();
     if (datasource && datasource.outputs) {
         return datasource.outputs[this._output];
     }
@@ -507,12 +508,12 @@ Source.prototype.getColumns = function () {
 };
 
 Source.prototype.getData = function () {
-    var db = this.getOutput().db;
-    var dataRef = db.data();
+    const db = this.getOutput().db;
+    const dataRef = db.data();
     if (dataRef.length && this.sort) {
         Utility.multiSort(dataRef, db.hipieMapSortArray(this.sort));
     }
-    var retVal = this.mappings.doMapAll(db);
+    const retVal = this.mappings.doMapAll(db);
     if (this.reverse) {
         retVal.reverse();
     }
@@ -559,10 +560,10 @@ EventUpdate.prototype.getVisualization = function () {
 };
 
 EventUpdate.prototype.mapData = function (row) {
-    var retVal = {};
+    const retVal = {};
     if (row) {
-        for (var key in this._mappings) {
-            var origKey = this.getReverseMap(key);
+        for (const key in this._mappings) {
+            const origKey = this.getReverseMap(key);
             retVal[this._mappings[key]] = row[origKey];
         }
     }
@@ -585,15 +586,15 @@ EventUpdate.prototype.mapSelected = function () {
 };
 
 EventUpdate.prototype.calcRequestFor = function (visualization) {
-    var retVal = {};
-    var updateVisualization = this.getVisualization();
+    const retVal = {};
+    const updateVisualization = this.getVisualization();
     updateVisualization.getInputVisualizations().forEach(function (inViz, idx) {
         //  Calc request for each visualization to be updated  ---
-        var changed = inViz === visualization;
+        const changed = inViz === visualization;
         inViz.getUpdatesForVisualization(updateVisualization).forEach(function (inVizUpdateObj) {
             //  Gather all contributing "input visualization events" for the visualization that is to be updated  ---
-            var inVizRequest = inVizUpdateObj.mapSelected();
-            for (var key in inVizRequest) {
+            const inVizRequest = inVizUpdateObj.mapSelected();
+            for (const key in inVizRequest) {
                 if (retVal[key] && retVal[key] !== inVizRequest[key]) {
                     console.log("Duplicate Filter with mismatched value (defaulting to 'first' or 'first changed' instance):  " + key);
                     if (changed) {
@@ -633,10 +634,10 @@ Event.prototype.getUpdates = function () {
 };
 
 Event.prototype.getUpdatesDatasources = function () {
-    var dedup = {};
-    var retVal = [];
+    const dedup = {};
+    const retVal = [];
     this.getUpdatesVisualizations().forEach(function (item, idx) {
-        var datasource = item.source.getDatasource();
+        const datasource = item.source.getDatasource();
         if (datasource && !dedup[datasource.id]) {
             dedup[datasource.id] = true;
             retVal.push(datasource);
@@ -646,10 +647,10 @@ Event.prototype.getUpdatesDatasources = function () {
 };
 
 Event.prototype.getUpdatesVisualizations = function () {
-    var dedup = {};
-    var retVal = [];
+    const dedup = {};
+    const retVal = [];
     this._updates.forEach(function (updateObj, idx) {
-        var visualization = updateObj.getVisualization();
+        const visualization = updateObj.getVisualization();
         if (!dedup[visualization.id]) {
             dedup[visualization.id] = true;
             retVal.push(visualization);
@@ -659,7 +660,7 @@ Event.prototype.getUpdatesVisualizations = function () {
 };
 
 Event.prototype.fetchData = function () {
-    var fetchDataOptimizer = new VisualizationRequestOptimizer();
+    const fetchDataOptimizer = new VisualizationRequestOptimizer();
     this.getUpdates().forEach(function (updateObj) {
         fetchDataOptimizer.appendRequest(updateObj.getDatasource(), updateObj.calcRequestFor(this.visualization), updateObj.getVisualization());
     }, this);
@@ -669,14 +670,14 @@ Event.prototype.fetchData = function () {
 function Events(visualization, events) {
     this.visualization = visualization;
     this.events = {};
-    for (var key in events) {
+    for (const key in events) {
         this.events[key] = new Event(visualization, key, events[key]);
     }
 }
 
 Events.prototype.setWidget = function (widget) {
-    var context = this;
-    for (var key in this.events) {
+    const context = this;
+    for (const key in this.events) {
         if (widget["vertex_" + key]) {
             widget["vertex_" + key] = function (row, col, selected) {
                 context.visualization.processEvent(key, context.events[key], row, col, selected);
@@ -694,24 +695,24 @@ Events.prototype.exists = function () {
 };
 
 Events.prototype.getUpdates = function () {
-    var retVal = [];
-    for (var key in this.events) {
+    let retVal = [];
+    for (const key in this.events) {
         retVal = retVal.concat(this.events[key].getUpdates());
     }
     return retVal;
 };
 
 Events.prototype.getUpdatesDatasources = function () {
-    var retVal = [];
-    for (var key in this.events) {
+    let retVal = [];
+    for (const key in this.events) {
         retVal = retVal.concat(this.events[key].getUpdatesDatasources());
     }
     return retVal;
 };
 
 Events.prototype.getUpdatesVisualizations = function () {
-    var retVal = [];
-    for (var key in this.events) {
+    let retVal = [];
+    for (const key in this.events) {
         retVal = retVal.concat(this.events[key].getUpdatesVisualizations());
     }
     return retVal;
@@ -752,10 +753,10 @@ export function Visualization(dashboard, visualization, parentVisualization) {
             this.hasVizDeclarations = true;
         }, this);
     }
-    var context = this;
+    const context = this;
     switch (this.type) {
         case "CHORO":
-            var chartType = visualization.properties && visualization.properties.charttype ? visualization.properties.charttype : "";
+            let chartType = visualization.properties && visualization.properties.charttype ? visualization.properties.charttype : "";
             if (parentVisualization) {
                 switch (chartType) {
                     case "MAP_PINS":
@@ -788,7 +789,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
                 }
                 Promise.all(context.layers.map(function (layer) { return layer.loadedPromise(); })).then(function () {
                     context.loadWidget("src/composite/MegaChart", function (widget) {
-                        var layers = context.layers.map(function (layer) { return layer.widget; });
+                        const layers = context.layers.map(function (layer) { return layer.widget; });
                         try {
                             switch (widget.classID()) {
                                 case "composite_MegaChart":
@@ -800,7 +801,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
                                             autoScaleMode: layers.length ? "data" : "mesh"
                                         })
                                         .chartTypeProperties({
-                                            layers: layers
+                                            layers
                                         })
                                         ;
                                     break;
@@ -867,8 +868,8 @@ export function Visualization(dashboard, visualization, parentVisualization) {
                         .id(visualization.id)
                         ;
                     if (visualization.range) {
-                        var selectionLabel = "";
-                        for (var key in visualization.source.mappings) {
+                        let selectionLabel = "";
+                        for (const key in visualization.source.mappings) {
                             selectionLabel = key;
                             break;
                         }
@@ -899,20 +900,20 @@ export function Visualization(dashboard, visualization, parentVisualization) {
             break;
         case "FORM":
             this.loadWidgets(["src/form/Form", "src/form/Input", "src/form/Button", "src/form/CheckBox", "src/form/ColorInput", "src/form/Radio", "src/form/Range", "src/form/Select", "src/form/Slider", "src/form/TextArea"], function (widget, widgetClasses) {
-                var Input = widgetClasses[1];
-                var CheckBox = widgetClasses[3];
-                var Radio = widgetClasses[5];
-                var Select = widgetClasses[7];
-                var TextArea = widgetClasses[9];
+                const Input = widgetClasses[1];
+                const CheckBox = widgetClasses[3];
+                const Radio = widgetClasses[5];
+                const Select = widgetClasses[7];
+                const TextArea = widgetClasses[9];
 
                 try {
                     widget
                         .id(visualization.id)
                         .inputs(visualization.fields.map(function (field) {
 
-                            var selectOptions = [];
-                            var options = [];
-                            var inp;
+                            const selectOptions = [];
+                            let options = [];
+                            let inp;
                             switch (field.properties.charttype) {
                                 case "TEXT":
                                     inp = new Input()
@@ -937,7 +938,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
                                     if (field.properties.enumvals) {
                                         inp = new Select();
                                         options = field.properties.enumvals;
-                                        for (var val in options) {
+                                        for (const val in options) {
                                             selectOptions.push([val, options[val]]);
                                         }
                                     } else {
@@ -955,7 +956,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
                                 ;
 
                             if (inp instanceof CheckBox || inp instanceof Radio) { // change this to instanceof?
-                                var vals = Object.keys(field.properties.enumvals);
+                                const vals = Object.keys(field.properties.enumvals);
                                 inp.selectOptions_default(vals);
                             } else if (selectOptions.length) {
                                 inp.selectOptions_default(selectOptions);
@@ -1003,9 +1004,9 @@ Visualization.prototype.getQualifiedID = function () {
 };
 
 Visualization.prototype.loadedPromise = function () {
-    var context = this;
+    const context = this;
     return new Promise(function (resolve, reject) {
-        var intervalHandle = setInterval(function () {
+        const intervalHandle = setInterval(function () {
             if (context.isLoaded()) {
                 clearInterval(intervalHandle);
                 resolve();
@@ -1022,10 +1023,9 @@ Visualization.prototype.isLoaded = function () {
     return this.widget instanceof Widget;
 };
 
-
 Visualization.prototype.loadMegaChartWidget = function (widgetPath, callback) {
     this.loadWidgets(["src/composite/MegaChart", widgetPath], function (megaChart, widgets) {
-        var chart = new widgets[1]();
+        const chart = new widgets[1]();
         megaChart
             .chartType_default(MultiChart.prototype._allChartTypesByClass[chart.classID()].id)
             .chart(chart)
@@ -1040,11 +1040,17 @@ Visualization.prototype.loadWidget = function (widgetPath, callback) {
     this.loadWidgets([widgetPath], callback);
 };
 
+function debugRequire(deps: string[], callback: (...objs: any[]) => void) {
+    callback(...deps.map(() => {
+        return DGridTable;
+    }));
+}
+
 function es6Require(deps, callback, errback?, _require?) {
-    var require = _require || (window as any).require;
+    const require = _require || (window as any).require || debugRequire;
     require(deps, function (objs) {
-        for (var i = 0; i < arguments.length; ++i) {
-            var depParts = deps[i].split("/");
+        for (let i = 0; i < arguments.length; ++i) {
+            const depParts = deps[i].split("/");
             if (depParts.length && arguments[i][depParts[depParts.length - 1]]) {
                 arguments[i] = arguments[i][depParts[depParts.length - 1]];
             }
@@ -1056,9 +1062,9 @@ function es6Require(deps, callback, errback?, _require?) {
 Visualization.prototype.loadWidgets = function (widgetPaths, callback) {
     this.widget = null;
 
-    var context = this;
+    const context = this;
     es6Require(widgetPaths, function (Widget) {
-        var existingWidget = context.dashboard.marshaller._widgetMappings.get(context.id);
+        const existingWidget = context.dashboard.marshaller._widgetMappings.get(context.id);
         if (existingWidget) {
             if (Widget.prototype._class !== existingWidget._class) {
                 console.log("Unexpected persisted widget type (old persist string?)");
@@ -1077,10 +1083,10 @@ Visualization.prototype.setWidget = function (widget) {
     this.widget = widget;
     this.events.setWidget(widget);
     if (this.widget.columns) {
-        var columns = this.source.getColumns();
+        const columns = this.source.getColumns();
         this.widget.columns(columns, true);
     }
-    for (var key in this.properties) {
+    for (const key in this.properties) {
         switch (widget.classID()) {
             case "chart_MultiChart":
             case "composite_MegaChart":
@@ -1124,14 +1130,14 @@ Visualization.prototype.getUpdatesForVisualization = function (otherViz) {
 
 Visualization.prototype.update = function (params) {
     if (!params) {
-        var paramsArr = [];
-        var dedupParams = {};
-        var updatedBy = this.getInputVisualizations();
+        const paramsArr = [];
+        const dedupParams = {};
+        const updatedBy = this.getInputVisualizations();
         updatedBy.forEach(function (viz) {
             if (viz.hasSelection()) {
                 viz.getUpdatesForVisualization(this).forEach(function (updateObj) {
-                    var mappedData = updateObj.mapSelected();
-                    for (var key in mappedData) {
+                    const mappedData = updateObj.mapSelected();
+                    for (const key in mappedData) {
                         if (mappedData[key]) {
                             if (!dedupParams[key]) {
                                 dedupParams[key] = true;
@@ -1145,7 +1151,7 @@ Visualization.prototype.update = function (params) {
         params = paramsArr.join(", ");
     }
 
-    var titleWidget = null;
+    let titleWidget = null;
     if (!this.parentVisualization) {
         titleWidget = this.widget;
         while (titleWidget && !titleWidget.title) {
@@ -1153,11 +1159,11 @@ Visualization.prototype.update = function (params) {
         }
     }
 
-    var context = this;
+    const context = this;
     return new Promise(function (resolve, reject) {
         if (titleWidget) {
-            var title = titleWidget.title();
-            var titleParts = title.split(" (");
+            const title = titleWidget.title();
+            const titleParts = title.split(" (");
             titleWidget
                 .title(titleParts[0] + (params ? " (" + params + ")" : ""))
                 .render(function () {
@@ -1165,7 +1171,7 @@ Visualization.prototype.update = function (params) {
                 })
                 ;
         } else {
-            var ddlViz = context;
+            let ddlViz = context;
             while (ddlViz.parentVisualization) {
                 ddlViz = ddlViz.parentVisualization;
             }
@@ -1183,7 +1189,7 @@ Visualization.prototype.update = function (params) {
 
 Visualization.prototype.notify = function () {
     if (this.widget) {
-        var data = this.source.hasData() ? this.source.getData() : [];
+        const data = this.source.hasData() ? this.source.getData() : [];
         this.widget.data(data);
         return this.update();
     }
@@ -1212,7 +1218,7 @@ Visualization.prototype.clear = function () {
 };
 
 Visualization.prototype.on = function (eventID, func) {
-    var context = this;
+    const context = this;
     this.overrideMethod(eventID, function (origFunc, args) {
         origFunc.apply(context, args);
         setTimeout(function () {
@@ -1223,7 +1229,7 @@ Visualization.prototype.on = function (eventID, func) {
 };
 
 Visualization.prototype.calcRequestFor = function (visualization) {
-    var retVal = {};
+    let retVal = {};
     this.getUpdatesForVisualization(visualization).forEach(function (updatesObj) {
         //  TODO:  When we support more than "click" this will need enhancment...
         retVal = updatesObj.calcRequestFor(visualization);
@@ -1233,11 +1239,11 @@ Visualization.prototype.calcRequestFor = function (visualization) {
 
 Visualization.prototype.processEvent = function (eventID, event, row, col, selected) {
     this._widgetState = {
-        row: row,
-        col: col,
+        row,
+        col,
         selected: selected === undefined ? true : selected
     };
-    var context = this;
+    const context = this;
     setTimeout(function () {
         event.fetchData().then(function (promises) {
             context.dashboard.marshaller.vizEvent(context.widget, "post_" + eventID, row, col, selected);
@@ -1265,7 +1271,7 @@ Visualization.prototype.reverseMappedSelection = function () {
 
 Visualization.prototype.getInputVisualizations = function () {
     return this.dashboard.marshaller.getVisualizationArray().filter(function (viz) {
-        var updates = viz.events.getUpdatesVisualizations();
+        const updates = viz.events.getUpdatesVisualizations();
         if (updates.indexOf(this) >= 0) {
             return true;
         }
@@ -1274,7 +1280,7 @@ Visualization.prototype.getInputVisualizations = function () {
 };
 
 Visualization.prototype.serializeState = function () {
-    var state: any = {
+    const state: any = {
         widgetState: this._widgetState
     };
     if (this.widget) {
@@ -1317,7 +1323,7 @@ Output.prototype.getQualifiedID = function () {
 };
 
 Output.prototype.getUpdatesVisualizations = function () {
-    var retVal = [];
+    const retVal = [];
     this.notify.forEach(function (item) {
         retVal.push(this.dataSource.dashboard.getVisualization(item));
     }, this);
@@ -1329,11 +1335,11 @@ Output.prototype.accept = function (visitor) {
 };
 
 Output.prototype.vizNotify = function (updates) {
-    var promises = [];
+    const promises = [];
     this.notify.filter(function (item) {
         return !updates || updates.indexOf(item) >= 0;
     }).forEach(function (item) {
-        var viz = this.dataSource.dashboard.getVisualization(item);
+        const viz = this.dataSource.dashboard.getVisualization(item);
         promises.push(viz.notify());
     }, this);
     return Promise.all(promises);
@@ -1351,26 +1357,26 @@ function DatasourceRequestOptimizer() {
 }
 
 DatasourceRequestOptimizer.prototype.appendRequest = function (updateDatasource, request, updateVisualization) {
-    var datasourceRequestID = updateDatasource.id + "(" + JSON.stringify(request) + ")";
+    const datasourceRequestID = updateDatasource.id + "(" + JSON.stringify(request) + ")";
     if (!this.datasourceRequests[datasourceRequestID]) {
         this.datasourceRequests[datasourceRequestID] = {
-            updateDatasource: updateDatasource,
-            request: request,
+            updateDatasource,
+            request,
             updates: []
         };
     } else if ((window as any).__hpcc_debug) {
         console.log("Optimized duplicate fetch:  " + datasourceRequestID);
     }
-    var datasourceOptimizedItem = this.datasourceRequests[datasourceRequestID];
+    const datasourceOptimizedItem = this.datasourceRequests[datasourceRequestID];
     if (datasourceOptimizedItem.updates.indexOf(updateVisualization.id) < 0) {
         datasourceOptimizedItem.updates.push(updateVisualization.id);
     }
 };
 
 DatasourceRequestOptimizer.prototype.fetchData = function () {
-    var promises = [];
-    for (var key in this.datasourceRequests) {
-        var item = this.datasourceRequests[key];
+    const promises = [];
+    for (const key in this.datasourceRequests) {
+        const item = this.datasourceRequests[key];
         promises.push(item.updateDatasource.fetchData(item.request, item.updates));
     }
     return Promise.all(promises);
@@ -1384,25 +1390,25 @@ function VisualizationRequestOptimizer(skipClear?) {
 
 VisualizationRequestOptimizer.prototype.appendRequest = function (updateDatasource, request, updateVisualization) {
     if (updateDatasource && updateVisualization) {
-        var visualizationRequestID = updateVisualization.id + "(" + updateDatasource.id + ")";
+        const visualizationRequestID = updateVisualization.id + "(" + updateDatasource.id + ")";
         if (!this.visualizationRequests[visualizationRequestID]) {
             this.visualizationRequests[visualizationRequestID] = {
-                updateVisualization: updateVisualization,
-                updateDatasource: updateDatasource,
+                updateVisualization,
+                updateDatasource,
                 request: {}
             };
         } else if ((window as any).__hpcc_debug) {
             console.log("Optimized duplicate fetch:  " + visualizationRequestID);
         }
-        var visualizationOptimizedItem = this.visualizationRequests[visualizationRequestID];
+        const visualizationOptimizedItem = this.visualizationRequests[visualizationRequestID];
         Utility.mixin(visualizationOptimizedItem.request, request);
     }
 };
 
 VisualizationRequestOptimizer.prototype.fetchData = function () {
-    var datasourceRequestOptimizer = new DatasourceRequestOptimizer();
-    for (var key in this.visualizationRequests) {
-        var item = this.visualizationRequests[key];
+    const datasourceRequestOptimizer = new DatasourceRequestOptimizer();
+    for (const key in this.visualizationRequests) {
+        const item = this.visualizationRequests[key];
         if (!this.skipClear && item.updateVisualization.type !== "GRAPH") {
             item.updateVisualization.clear();
         }
@@ -1422,9 +1428,9 @@ export function DataSource(dashboard, dataSource, proxyMappings, timeout) {
     this.databomb = dataSource.databomb;
     this._loadedCount = 0;
 
-    var context = this;
+    const context = this;
     this.outputs = {};
-    var hipieResults = [];
+    const hipieResults = [];
     dataSource.outputs.forEach(function (item) {
         context.outputs[item.id] = new Output(context, item);
         hipieResults.push({
@@ -1459,8 +1465,8 @@ DataSource.prototype.getQualifiedID = function () {
 };
 
 DataSource.prototype.getUpdatesVisualizations = function () {
-    var retVal = [];
-    for (var key in this.outputs) {
+    const retVal = [];
+    for (const key in this.outputs) {
         this.outputs[key].getUpdatesVisualizations().forEach(function (visualization) {
             retVal.push(visualization);
         });
@@ -1470,21 +1476,21 @@ DataSource.prototype.getUpdatesVisualizations = function () {
 
 DataSource.prototype.accept = function (visitor) {
     visitor.visit(this);
-    for (var key in this.outputs) {
+    for (const key in this.outputs) {
         this.outputs[key].accept(visitor);
     }
 };
 
-var transactionID = 0;
-var transactionQueue = [];
+let transactionID = 0;
+const transactionQueue = [];
 DataSource.prototype.fetchData = function (request, updates) {
-    var myTransactionID = ++transactionID;
+    const myTransactionID = ++transactionID;
     transactionQueue.push(myTransactionID);
 
-    var dsRequest: any = {};
+    const dsRequest: any = {};
     this.filter.forEach(function (item) {
         dsRequest[item + _CHANGED] = request[item + _CHANGED] || false;
-        var value = request[item] === undefined ? null : request[item];
+        const value = request[item] === undefined ? null : request[item];
         if (dsRequest[item] !== value) {
             dsRequest[item] = value;
         }
@@ -1493,18 +1499,18 @@ DataSource.prototype.fetchData = function (request, updates) {
     if ((window as any).__hpcc_debug) {
         console.log("fetchData:  " + JSON.stringify(updates) + "(" + JSON.stringify(request) + ")");
     }
-    for (var key in dsRequest) {
+    for (const key in dsRequest) {
         if (dsRequest[key] === null) {
             delete dsRequest[key];
         }
     }
-    var now = Date.now();
+    const now = Date.now();
     this.dashboard.marshaller.commsEvent(this, "request", dsRequest);
-    var context = this;
+    const context = this;
     return new Promise(function (resolve, reject) {
         context.comms.call(dsRequest).then(function (_response) {
-            var response = JSON.parse(JSON.stringify(_response));
-            var intervalHandle = setInterval(function () {
+            const response = JSON.parse(JSON.stringify(_response));
+            const intervalHandle = setInterval(function () {
                 if (transactionQueue[0] === myTransactionID && Date.now() - now >= 500) {  //  500 is to allow for all "clear" transitions to complete...
                     clearTimeout(intervalHandle);
                     context.processResponse(response, request, updates).then(function () {
@@ -1523,13 +1529,13 @@ DataSource.prototype.fetchData = function (request, updates) {
 };
 
 DataSource.prototype.processResponse = function (response, request, updates) {
-    var lowerResponse = {};
-    for (var responseKey in response) {
+    const lowerResponse = {};
+    for (const responseKey in response) {
         lowerResponse[responseKey.toLowerCase()] = response[responseKey];
     }
-    var promises = [];
-    for (var key in this.outputs) {
-        var from = this.outputs[key].from;
+    const promises = [];
+    for (const key in this.outputs) {
+        let from = this.outputs[key].from;
         if (!from) {
             //  Temp workaround for older services  ---
             from = this.outputs[key].id.toLowerCase();
@@ -1550,8 +1556,8 @@ DataSource.prototype.processResponse = function (response, request, updates) {
                 promises.push(this.outputs[key].vizNotify(updates));
             }
         } else {
-            var responseItems = [];
-            for (var responseKey2 in response) {
+            const responseItems = [];
+            for (const responseKey2 in response) {
                 responseItems.push(responseKey2);
             }
             console.log("Unable to locate '" + from + "' in response {" + responseItems.join(", ") + "}");
@@ -1579,7 +1585,7 @@ export function Dashboard(marshaller, dashboard, proxyMappings, timeout?) {
     this.id = dashboard.id;
     this.title = dashboard.title;
 
-    var context = this;
+    const context = this;
     this.datasources = {};
     this.datasourceTotal = 0;
     dashboard.datasources.forEach(function (item) {
@@ -1596,7 +1602,7 @@ export function Dashboard(marshaller, dashboard, proxyMappings, timeout?) {
 }
 
 Dashboard.prototype.createVisualization = function (ddlVisualization, parentVisualization) {
-    var retVal = new Visualization(this, ddlVisualization, parentVisualization);
+    const retVal = new Visualization(this, ddlVisualization, parentVisualization);
     this._visualizations[ddlVisualization.id] = retVal;
     this._visualizationArray.push(retVal);
     this.marshaller._visualizations[ddlVisualization.id] = retVal;
@@ -1634,7 +1640,7 @@ Dashboard.prototype.getVisualizationTotal = function () {
 
 Dashboard.prototype.accept = function (visitor) {
     visitor.visit(this);
-    for (var key in this.datasources) {
+    for (const key in this.datasources) {
         this.datasources[key].accept(visitor);
     }
     this._visualizationArray.forEach(function (item) {
@@ -1643,14 +1649,14 @@ Dashboard.prototype.accept = function (visitor) {
 };
 
 Dashboard.prototype.primeData = function (state) {
-    var fetchDataOptimizer = new VisualizationRequestOptimizer(true);
+    const fetchDataOptimizer = new VisualizationRequestOptimizer(true);
     this.getVisualizationArray().forEach(function (visualization) {
         //  Clear all charts back to their default values ---
         visualization.clear();
         visualization.update();
         if (state && state[visualization.id]) {
             if (Utility.exists("source.mappings.mappings", visualization)) {
-                for (var key in visualization.source.mappings.mappings) {
+                for (const key in visualization.source.mappings.mappings) {
                     if (state[visualization.id][visualization.source.mappings.mappings[key]]) {
                         visualization._widgetState.row[key] = state[visualization.id][visualization.source.mappings.mappings[key]];
                         visualization._widgetState.selected = true;
@@ -1660,12 +1666,12 @@ Dashboard.prototype.primeData = function (state) {
         }
     });
     this.getVisualizationArray().forEach(function (visualization) {
-        var inputVisualizations = visualization.getInputVisualizations();
-        var datasource = visualization.source.getDatasource();
-        var hasInputSelection = false;
+        const inputVisualizations = visualization.getInputVisualizations();
+        const datasource = visualization.source.getDatasource();
+        let hasInputSelection = false;
         inputVisualizations.forEach(function (inViz) {
             if (inViz.hasSelection()) {
-                var request = inViz.calcRequestFor(visualization);
+                const request = inViz.calcRequestFor(visualization);
                 request.refresh = true;
                 fetchDataOptimizer.appendRequest(datasource, request, visualization);
                 hasInputSelection = true;
@@ -1679,14 +1685,14 @@ Dashboard.prototype.primeData = function (state) {
 };
 
 Dashboard.prototype.serializeState = function () {
-    var retVal = {
+    const retVal = {
         datasources: {},
         visualizations: {}
     };
-    for (var key in this.datasources) {
+    for (const key in this.datasources) {
         retVal.datasources[key] = this.datasources[key].serializeState();
     }
-    for (var vizKey in this._visualizations) {
+    for (const vizKey in this._visualizations) {
         retVal.visualizations[vizKey] = this._visualizations[vizKey].serializeState();
     }
     return retVal;
@@ -1694,12 +1700,12 @@ Dashboard.prototype.serializeState = function () {
 
 Dashboard.prototype.deserializeState = function (state) {
     if (!state) return;
-    for (var key in this.datasources) {
+    for (const key in this.datasources) {
         if (state.datasources[key]) {
             this.datasources[key].deserializeState(state.datasources[key]);
         }
     }
-    for (var vizKey in this._visualizations) {
+    for (const vizKey in this._visualizations) {
         if (state.visualizations[vizKey]) {
             this._visualizations[vizKey].deserializeState(state.visualizations[vizKey]);
         }
@@ -1711,7 +1717,7 @@ export function Marshaller() {
     Class.call(this);
 
     this._proxyMappings = {};
-    this._widgetMappings = d3.map();
+    this._widgetMappings = d3Map();
     this._clearDataOnUpdate = true;
     this._propogateClear = false;
     this.id = "Marshaller";
@@ -1721,8 +1727,8 @@ Marshaller.prototype = Object.create(Class.prototype);
 Marshaller.prototype.constructor = Marshaller;
 
 Marshaller.prototype.commsDataLoaded = function () {
-    for (var i = 0; i < this.dashboardArray.length; i++) {
-        for (var ds in this.dashboardArray[i].datasources) {
+    for (let i = 0; i < this.dashboardArray.length; i++) {
+        for (const ds in this.dashboardArray[i].datasources) {
             if (this.dashboardArray[i].datasources[ds]._loadedCount === 0) {
                 return false;
             }
@@ -1738,7 +1744,7 @@ Marshaller.prototype.getVisualization = function (id) {
 Marshaller.prototype.accept = function (visitor) {
     visitor.visit(this);
     this.dashboardTotal = 0;
-    for (var key in this.dashboards) {
+    for (const key in this.dashboards) {
         this.dashboards[key].accept(visitor);
         ++this.dashboardTotal;
     }
@@ -1748,8 +1754,8 @@ Marshaller.prototype.url = function (url, callback) {
     this.espUrl = new Comms.ESPUrl()
         .url(url)
         ;
-    var transport = null;
-    var hipieResultName = "HIPIE_DDL";
+    let transport = null;
+    let hipieResultName = "HIPIE_DDL";
     if (this.espUrl.isWorkunitResult()) {
         hipieResultName = this.espUrl._params["ResultName"];
         transport = new Comms.HIPIEWorkunit()
@@ -1765,11 +1771,11 @@ Marshaller.prototype.url = function (url, callback) {
             ;
     }
 
-    var context = this;
+    const context = this;
     transport.fetchResults().then(function (response) {
         if (Utility.exists(hipieResultName, response)) {
             return transport.fetchResult(hipieResultName).then(function (ddlResponse) {
-                var json = ddlResponse[0][hipieResultName];
+                const json = ddlResponse[0][hipieResultName];
                 context.parse(json, function () {
                     callback(response);
                 });
@@ -1819,7 +1825,7 @@ Marshaller.prototype.missingDataString = function (_) {
 };
 
 Marshaller.prototype.parse = function (json, callback) {
-    var context = this;
+    const context = this;
     this._json = json;
     this._jsonParsed = JSON.parse(this._json);
     this.dashboards = {};
@@ -1827,7 +1833,7 @@ Marshaller.prototype.parse = function (json, callback) {
     this._visualizations = {};
     this._visualizationArray = [];
     this._jsonParsed.forEach(function (item) {
-        var newDashboard = new Dashboard(context, item, context._proxyMappings);
+        const newDashboard = new Dashboard(context, item, context._proxyMappings);
         context.dashboards[item.id] = newDashboard;
         context.dashboardArray.push(newDashboard);
     });
@@ -1854,9 +1860,9 @@ Marshaller.prototype.getVisualizationArray = function () {
 };
 
 Marshaller.prototype.on = function (eventID, func) {
-    var context = this;
+    const context = this;
     this.overrideMethod(eventID, function (origFunc, args) {
-        var retVal = origFunc.apply(context, args);
+        const retVal = origFunc.apply(context, args);
         return func.apply(context, args) || retVal;
     });
     return this;
@@ -1898,13 +1904,13 @@ Marshaller.prototype.commsEvent = function (ddlSource, eventID, request, respons
 };
 
 Marshaller.prototype.createDatabomb = function () {
-    var retVal = {};
+    const retVal = {};
     this.dashboardArray.forEach(function (dashboard) {
-        for (var key in dashboard.datasources) {
-            var comms = dashboard.datasources[key].comms;
+        for (const key in dashboard.datasources) {
+            const comms = dashboard.datasources[key].comms;
             retVal[key] = {};
-            for (var key2 in comms._hipieResults) {
-                var hipieResult = comms._hipieResults[key2];
+            for (const key2 in comms._hipieResults) {
+                const hipieResult = comms._hipieResults[key2];
                 retVal[key][key2] = comms._resultNameCache[hipieResult.from];
             }
         }
@@ -1913,14 +1919,14 @@ Marshaller.prototype.createDatabomb = function () {
 };
 
 Marshaller.prototype.primeData = function (state) {
-    var promises = this.dashboardArray.map(function (dashboard) {
+    const promises = this.dashboardArray.map(function (dashboard) {
         return dashboard.primeData(state);
     });
     return Promise.all(promises);
 };
 
 Marshaller.prototype.serializeState = function () {
-    var retVal = {};
+    const retVal = {};
     this.dashboardArray.forEach(function (dashboard, idx) {
         retVal[dashboard.id] = dashboard.serializeState();
     });
@@ -1934,4 +1940,3 @@ Marshaller.prototype.deserializeState = function (state) {
     });
     return this;
 };
-

@@ -5,11 +5,11 @@ export class Class {
         if (!arguments.length) return this._class;
         this._class = _;
         return this;
-    };
+    }
 
     classID() {
         return this._class.split(" ").pop();
-    };
+    }
 
     implements(source) {
         for (const prop in source) {
@@ -21,7 +21,7 @@ export class Class {
                 }
             }
         }
-    };
+    }
 
     mixin(mixinClass) {
         this.implements(mixinClass.prototype);
@@ -29,17 +29,17 @@ export class Class {
         if (mixinClass.prototype.hasOwnProperty("_class")) {
             this._class += " " + mixinClass.prototype._class.split(" ").pop();
         }
-    };
+    }
 
     overrideMethod(methodID, newMethod) {
         if (this[methodID] === undefined) {
-            throw "Method:  " + methodID + " does not exist.";
+            throw new Error("Method:  " + methodID + " does not exist.");
         }
         const origMethod = this[methodID];
         this[methodID] = function () {
             return newMethod(origMethod, arguments);
         };
         return this;
-    };
+    }
 }
 Class.prototype._class = "common_Class";
