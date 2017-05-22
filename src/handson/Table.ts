@@ -4,8 +4,9 @@ import { Widget } from "../common/Widget";
 import { HTMLWidget } from "../common/HTMLWidget";
 import { PropertyExt } from "../common/PropertyExt";
 import * as Utility from "../common/Utility";
+
 import "handsontable";
-import "./Table";
+import "./Table.css";
 
 function Column(owner) {
     PropertyExt.call(this);

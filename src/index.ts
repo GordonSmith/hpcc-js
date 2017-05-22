@@ -40,6 +40,12 @@ export { Column as SankeyColumn, Sankey } from "./graph/Sankey";
 //  Timeline  ---
 export { MiniGantt } from "./timeline/MiniGantt";
 
-*/
 //  html  ---
 export { Test } from "./html/test";
+*/
+
+export * from "./codemirror/JSONEditor";
+export * from "./common/HTMLWidget";
+export * from "./common/SVGWidget";
+export * from "./marshaller/HTML";
+export * from "./dgrid/Table";

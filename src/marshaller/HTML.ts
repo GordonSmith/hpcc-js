@@ -1,8 +1,9 @@
-import { Grid } from '../layout/Grid';
-import { HipieDDLMixin } from './HipieDDLMixin';
+import { Grid } from "../layout/Grid";
+import { HipieDDLMixin } from "./HipieDDLMixin";
 
 export class HTML extends Grid {
     _ddlDashboards: any[];
+    // tslint:disable-next-line:variable-name
     surfacePadding_default: (n: number) => void;
     _marshallerRender: (...args: any[]) => any;
 
@@ -14,11 +15,11 @@ export class HTML extends Grid {
     }
 
     populateContent() {
-        var cellRow = 0;
-        var cellCol = 0;
-        var cellDensity = 3;
+        let cellRow = 0;
+        let cellCol = 0;
+        const cellDensity = 3;
         this._ddlDashboards.forEach(function (dashboard) {
-            var maxCol = Math.floor(Math.sqrt(dashboard.visualizations.length));
+            const maxCol = Math.floor(Math.sqrt(dashboard.visualizations.length));
             dashboard.visualizations.forEach(function (viz) {
                 if (viz.newWidgetSurface) {
                     while (this.getCell(cellRow * cellDensity, cellCol * cellDensity) !== null) {
@@ -33,9 +34,9 @@ export class HTML extends Grid {
             }, this);
         }, this);
 
-        var vizCellMap = {};
+        const vizCellMap = {};
         this.content().forEach(function (cell) {
-            var widget: any = cell.widget();
+            let widget: any = cell.widget();
             if (widget && widget.classID() === "layout_Surface") {
                 widget = widget.widget();
             }
@@ -49,8 +50,8 @@ export class HTML extends Grid {
                 if (viz.properties.flyout || viz.parentVisualization) {
                     return;
                 }
-                var targetVizs = viz.events.getUpdatesVisualizations();
-                var targetIDs = targetVizs.filter(function (targetViz) {
+                const targetVizs = viz.events.getUpdatesVisualizations();
+                const targetIDs = targetVizs.filter(function (targetViz) {
                     return vizCellMap[targetViz.id];
                 }).map(function (targetViz) {
                     return vizCellMap[targetViz.id].id();
@@ -58,21 +59,20 @@ export class HTML extends Grid {
                 vizCellMap[viz.id].indicateTheseIds(targetIDs);
             });
         }, this);
-    };
+    }
 
     enter(domNode, element) {
         Grid.prototype.enter.apply(this, arguments);
-    };
+    }
 
     render(callback) {
         this._marshallerRender(Grid.prototype, callback);
         return this;
-    };
+    }
 
     commsError(source, error) {
         alert("Comms Error:\n" + source + "\n" + error);
-    };
+    }
 }
 HTML.prototype.mixin(HipieDDLMixin);
 HTML.prototype._class += " marshaller_HTML";
-

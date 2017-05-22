@@ -98,14 +98,15 @@ function doRollup(entry, dest, format, min, external) {
     const plugins = [
         alias({}),
         nodeResolve({
-            jsnext: true//,
-            //main: true
+            jsnext: true,
+            main: true
         }),
         commonjs({
             namedExports: {
                 "dagre": ["graphlib, layout"],
                 "react": ["Component", "createElement"],
-                "react-dom": ["render"]
+                "react-dom": ["render"],
+                "..\\dojo-webpack\\dist\\dgrid.js": ["Memory", "PagingGrid"]
             }
         }),
         css({}),
@@ -133,8 +134,8 @@ function doRollup(entry, dest, format, min, external) {
 
 gulp.task("bundle-browser", function () {
     return Promise.all([
-        doRollup("lib/index-browser", "dist/viz-browser", "umd", false)//,
-        //doRollup("lib/index-browser", "dist/viz-browser", "umd", true)
+        //doRollup("lib/index-browser", "dist/viz-browser", "umd", true),
+        doRollup("lib/index-browser", "dist/viz-browser", "umd", false)
     ]);
 });
 
@@ -159,7 +160,7 @@ gulp.task("build", function (cb) {
 
 //  Watch for browser ---
 gulp.task('watch-browser', function () {
-    gulp.start("compile-src-watch");
+    gulp.start("compile-src");
     return watch('lib/**/*.js', function () {
         gulp.start("bundle-browser");
     });

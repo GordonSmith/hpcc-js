@@ -1,6 +1,7 @@
 import { HTMLWidget } from "../common/HTMLWidget";
 import { FAChar } from "../common/FAChar";
-import "./Accordion";
+
+import "./Accordion.css";
 
 export function Accordion() {
     HTMLWidget.call(this);

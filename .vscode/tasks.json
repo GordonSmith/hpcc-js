@@ -13,7 +13,6 @@
                 "./tsconfig-test-browser.json"
             ],
             "showOutput": "silent",
-            "isBuildCommand": true,
             "isBackground": true,
             "problemMatcher": "$tsc-watch"
         },
@@ -40,6 +39,7 @@
                 "./tsconfig.json"
             ],
             "showOutput": "silent",
+            "isBuildCommand": true,
             "isBackground": true,
             "problemMatcher": "$tsc-watch"
         }

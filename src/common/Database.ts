@@ -31,7 +31,7 @@ export class Field extends PropertyExt {
 
     checksum() {
         return Utility.checksum(this.label() + this.type() + this.mask() + this.format());
-    };
+    }
 
     typeTransformer(_) {
         switch (this.type()) {
@@ -46,15 +46,15 @@ export class Field extends PropertyExt {
                 return this.maskTransformer(_);
         }
         return _;
-    };
+    }
 
     maskTransformer(_) {
         return this.formatter(this.mask()).parse(String(_));
-    };
+    }
 
     formatTransformer(_) {
         return this.formatter(this.format())(_);
-    };
+    }
 
     parse(_) {
         if (!_) {
@@ -66,7 +66,7 @@ export class Field extends PropertyExt {
             console.log("Unable to parse:  " + _);
             return null;
         }
-    };
+    }
 
     transform(_) {
         if (!_) {
@@ -78,7 +78,7 @@ export class Field extends PropertyExt {
             console.log("Unable to transform:  " + _);
             return null;
         }
-    };
+    }
 
     clone() {
         var context = this;
@@ -95,7 +95,7 @@ export class Field extends PropertyExt {
             }
         }
         return retVal;
-    };
+    }
 
     formatter(format) {
         var retVal;
@@ -118,7 +118,7 @@ export class Field extends PropertyExt {
             return _;
         };
         return retVal;
-    };
+    }
     label_default: { (): string; (x: string): Field; }
     label: { (): string; (x: string): Field; }
     type: { (): string; (x: string): Field; }
@@ -129,7 +129,7 @@ Field.prototype._class += " common_Database.Field";
 
 Field.prototype.publish("label", "", "string", "Label", null, { optional: true });
 Field.prototype.publish("type", "", "set", "Type", ["", "string", "number", "boolean", "time", "hidden"], { optional: true });
-Field.prototype.publish("mask", "", "string", "Time Mask", null, { disable: function (w) { return w.type() !== "time"; }, optional: true });
+Field.prototype.publish("mask", "", "string", "Time Mask", null, { disable: (w: any) => w.type() !== "time", optional: true });
 Field.prototype.publish("format", "", "string", "Format", null, { optional: true });
 
 //  Grid  ---
@@ -154,7 +154,7 @@ export class Grid extends PropertyExt {
         this._dataChecksums = [];
         ++this._dataVersion;
         return this;
-    };
+    }
 
     //  Backward compatability  ---
     resetColumns() {
@@ -163,33 +163,33 @@ export class Grid extends PropertyExt {
         this.legacyColumns(fields.map(function (field) {
             return field.label();
         }));
-    };
+    }
 
     legacyColumns(_?, asDefault?): any | Grid {
         if (!arguments.length) return this.row(0);
         this.row(0, _, asDefault);
         return this;
-    };
+    }
 
     legacyData(_?, _clone?) {
         return Grid.prototype.data.apply(this, arguments);
-    };
+    }
 
     //  Meta  ---
     field(idx) {
         return this.fields()[idx];
-    };
+    }
 
     fieldByLabel(_, ignoreCase) {
         return this.fields().filter(function (field: any, idx) { field.idx = idx; return ignoreCase ? field.label().toLowerCase() === _.toLowerCase() : field.label() === _; })[0];
-    };
+    }
 
     data(_?, clone?): any | Grid {
         if (!arguments.length) return this._data;
         this._data = clone ? _.map(function (d) { return d.map(function (d2) { return d2; }); }) : _;
         this._dataCalcChecksum();
         return this;
-    };
+    }
 
     parsedData() {
         var context = this;
@@ -198,7 +198,7 @@ export class Grid extends PropertyExt {
                 return context.fields()[idx].parse(cell);
             });
         });
-    };
+    }
 
     formattedData() {
         var context = this;
@@ -207,19 +207,19 @@ export class Grid extends PropertyExt {
                 return context.fields()[idx].transform(cell);
             });
         });
-    };
+    }
 
     fieldsChecksum() {
         return Utility.checksum(this.fields().map(function (field) { return field.checksum(); }));
-    };
+    }
 
     dataChecksum() {
         return Utility.checksum(this._dataChecksum ? this._dataChecksums : this._dataVersion);
-    };
+    }
 
     checksum() {
         return Utility.checksum([this.dataChecksum(), this.fieldsChecksum()]);
-    };
+    }
 
     //  Row Access  ---
     private _dataCalcChecksum(idx?) {
@@ -232,7 +232,7 @@ export class Grid extends PropertyExt {
             }
         }
         return this;
-    };
+    }
 
     row(row?, _?, asDefault?): any | Grid {
         if (arguments.length < 2) return row === 0 ? this.fields().map(function (d) { return d.label(); }) : this._data[row - 1];
@@ -250,7 +250,7 @@ export class Grid extends PropertyExt {
             this._dataCalcChecksum(row - 1);
         }
         return this;
-    };
+    }
 
     rows(_?): any | Grid {
         if (!arguments.length) return [this.row(0)].concat(this._data);
@@ -258,7 +258,7 @@ export class Grid extends PropertyExt {
         this._data = _.filter(function (_row, idx) { return idx > 0; });
         this._dataCalcChecksum();
         return this;
-    };
+    }
 
     //  Column Access  ---
     column(col, _?): any | Grid {
@@ -272,7 +272,7 @@ export class Grid extends PropertyExt {
             }
         }, this);
         return this;
-    };
+    }
 
     columnData(col, _): any | Grid {
         if (arguments.length < 2) return this._data.map(function (row, _idx) { return row[col]; });
@@ -281,7 +281,7 @@ export class Grid extends PropertyExt {
             this._dataCalcChecksum(idx);
         }, this);
         return this;
-    };
+    }
 
     columns(_?): any | Grid {
         if (!arguments.length) return this.fields().map(function (_col, idx) {
@@ -291,7 +291,7 @@ export class Grid extends PropertyExt {
             this.column(idx, _[idx]);
         }, this);
         return this;
-    };
+    }
 
     //  Cell Access  ---
     cell(row, col, _) {
@@ -303,12 +303,12 @@ export class Grid extends PropertyExt {
             this._dataCalcChecksum(row);
         }
         return this;
-    };
+    }
 
     //  Grid Access  ---
     grid(_?) {
         return Grid.prototype.rows.apply(this, arguments);
-    };
+    }
 
     //  Hipie Helpers  ---
     hipieMappings(columns, missingDataString) {
@@ -395,19 +395,19 @@ export class Grid extends PropertyExt {
                 });
             });
         }
-    };
+    }
 
     legacyView() {
         return new LegacyView(this);
-    };
+    }
 
     nestView(columnIndicies) {
         return new RollupView(this, columnIndicies);
-    };
+    }
 
     rollupView(columnIndicies, rollupFunc?) {
         return new RollupView(this, columnIndicies, rollupFunc);
-    };
+    }
 
     aggregateView(columnIndicies, aggrType, aggrColumn, aggrDeltaColumn = "") {
         var context = this;
@@ -428,7 +428,7 @@ export class Grid extends PropertyExt {
                     return values;
             }
         });
-    };
+    }
 
     //  Nesting  ---
     private _nest(columnIndicies, _rollup?) {
@@ -442,42 +442,42 @@ export class Grid extends PropertyExt {
             });
         });
         return nest;
-    };
+    }
 
     nest(columnIndicies) {
         return this._nest(columnIndicies)
             .entries(this._data)
             ;
-    };
+    }
 
     rollup(columnIndicies, rollup) {
         return this._nest(columnIndicies)
             .rollup(rollup)
             .entries(this._data)
             ;
-    };
+    }
 
     //  Util  ---
     length() {
         return this._data.length + 1;
-    };
+    }
 
     width() {
         return this.fields().length;
-    };
+    }
 
     pivot() {
         this.resetColumns();
         this.rows(this.columns());
         return this;
-    };
+    }
 
     clone(deep) {
         return new Grid()
             .fields(this.fields(), deep)
             .data(this.data(), deep)
             ;
-    };
+    }
 
     filter(filter) {
         var filterIdx = {};
@@ -495,7 +495,7 @@ export class Grid extends PropertyExt {
                 return true;
             }))
             ;
-    };
+    }
 
     analyse(columns) {
         if (!(columns instanceof Array)) {
@@ -520,7 +520,7 @@ export class Grid extends PropertyExt {
             this.fields()[col].isTimeFormat = lastFoundFormat;
         }, this);
         return retVal;
-    };
+    }
 
     //  Import/Export  ---
     jsonObj(_?): any | Grid {
@@ -545,25 +545,25 @@ export class Grid extends PropertyExt {
             return retVal;
         }, this));
         return this;
-    };
+    }
 
     json(_?): string | Grid {
         if (!arguments.length) return JSON.stringify(this.jsonObj(), null, "  ");
         this.jsonObj(JSON.parse(_));
         return this;
-    };
+    }
 
     csv(_?): string | Grid {
         if (!arguments.length) return d3CsvFormatRows(this.grid());
         this.jsonObj(d3CsvParse(_));
         return this;
-    };
+    }
 
     tsv(_?): string | Grid {
         if (!arguments.length) return d3TsvFormatRows(this.grid());
         this.jsonObj(d3TsvParse(_));
         return this;
-    };
+    }
 
     fields: { (): Field[]; (_, clone?): Grid }
 }
@@ -591,40 +591,40 @@ export class LegacyView {
     checksum() {
         const value = this._grid.on.apply(this._grid, arguments);
         return value === this._grid ? this : value;
-    };
+    }
 
     fields() {
         const value = this._grid.on.apply(this._grid, arguments);
         return value === this._grid ? this : value;
-    };
+    }
 
     grid() {
         return this._grid;
-    };
+    }
     columns(_?) {
         if (!arguments.length) return this._grid.legacyColumns();
         this._grid.legacyColumns(_);
         return this;
-    };
+    }
     rawData(_?) {
         if (!arguments.length) return this._grid.legacyData();
         this._grid.legacyData(_);
         return this;
-    };
+    }
     formattedData() {
         if (this._formattedDataChecksum !== this._grid.checksum()) {
             this._formattedDataChecksum = this._grid.checksum();
             this._formattedData = this._grid.formattedData();
         }
         return this._formattedData;
-    };
+    }
     parsedData() {
         if (this._parsedDataChecksum !== this._grid.checksum()) {
             this._parsedDataChecksum = this._grid.checksum();
             this._parsedData = this._grid.parsedData();
         }
         return this._parsedData;
-    };
+    }
     protected _whichData(opts?) {
         if (opts) {
             if (opts.parsed) {
@@ -634,10 +634,10 @@ export class LegacyView {
             }
         }
         return this.rawData();
-    };
+    }
     data(_) {
         return LegacyView.prototype.rawData.apply(this, arguments);
-    };
+    }
 }
 
 export class RollupView extends LegacyView {
@@ -678,16 +678,16 @@ export class RollupView extends LegacyView {
                 ;
         }
         return this._nest;
-    };
+    }
     entries(opts?) {
         return this.nest().entries(this._whichData(opts));
-    };
+    }
     map(opts) {
         return this.nest().map(this._whichData(opts));
-    };
+    }
     d3Map(opts) {
         return this.nest().map(this._whichData(opts), d3Map);
-    };
+    }
     _walkData(entries, prevRow = []) {
         var retVal = [];
         entries.forEach(function (entry) {
@@ -698,10 +698,10 @@ export class RollupView extends LegacyView {
             }
         }, this);
         return retVal;
-    };
+    }
     data(opts) {
         return this._walkData(this.entries(opts));
-    };
+    }
 }
 
 //  --- --- ---
