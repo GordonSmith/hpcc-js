@@ -246,7 +246,7 @@ export function urlParams() {
                     retVal[decodeURIComponent(paramParts[0])] = decodeURIComponent(paramParts[1]);
                     break;
                 default:
-                    throw "Invalid URL Param:  " + param;
+                    throw new Error("Invalid URL Param:  " + param);
             }
         });
     }
@@ -266,18 +266,21 @@ export function endsWith(str, searchStr, pos) {
 export function d3ArrayAdapter(array) {
     return {
         ownerDocument: {
+            // tslint:disable-next-line:object-literal-shorthand
             createElement: function (_tagName) {
                 return {
                     get __data__() { return this.row; },
                     set __data__(_) { this.row = array[this.index] = _; }
                 };
             },
+            // tslint:disable-next-line:object-literal-shorthand
             createElementNS: function (_ns, tagName) {
                 return this.createElement(tagName);
             }
         },
+        // tslint:disable-next-line:object-literal-shorthand
         querySelectorAll: function (selectors) {
-            if (selectors) throw "unsupported";
+            if (selectors) throw new Error("unsupported");
             var context = this;
             return array.map(function (row, idx) {
                 return {
@@ -288,12 +291,14 @@ export function d3ArrayAdapter(array) {
                 };
             });
         },
+        // tslint:disable-next-line:object-literal-shorthand
         appendChild: function (node) {
             node.parentNode = this;
             node.index = array.length;
             array.push(null);
             return node;
         },
+        // tslint:disable-next-line:object-literal-shorthand
         insertBefore: function (node, referenceNode) {
             var idx = array.indexOf(node.__data__);
             var refIdx = array.indexOf(referenceNode.__data__);
@@ -304,6 +309,7 @@ export function d3ArrayAdapter(array) {
             }
             return node;
         },
+        // tslint:disable-next-line:object-literal-shorthand
         removeChild: function (node) {
             array.splice(array.indexOf(node.__data__), 1);
             return node;
@@ -397,6 +403,7 @@ export function checksum(s) {
     for (var i = 0, l = s.length; i < l; ++i) {
         chk += (s.charCodeAt(i) * (i + 1));
     }
+    // tslint:disable-next-line:no-bitwise
     return (chk & 0xffffffff).toString(16);
 }
 export function getTime() {
@@ -465,4 +472,4 @@ export function debounce(func, threshold = 100, execAsap = false) {
             func.apply(obj, args);
         obj.__hpcc_debounce_timeout = setTimeout(delayed, threshold);
     };
-};
+}

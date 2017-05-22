@@ -1,6 +1,7 @@
 import { Layer } from './Layer';
 import { HeatMap } from '../other/HeatMap';
-import "./Heat";
+
+import "./Heat.css";
 
 export function Heat() {
     Layer.call(this);

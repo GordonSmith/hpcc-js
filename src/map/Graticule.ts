@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { Layer } from './Layer';
-import "./Graticule";
+import "./Graticule.css";
 
 export function Graticule() {
     Layer.call(this);

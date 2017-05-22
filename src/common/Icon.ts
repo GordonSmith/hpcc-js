@@ -18,7 +18,7 @@ export class Icon extends SVGWidget {
 
     intersection(pointA, pointB) {
         return this._shapeWidget.intersection(pointA, pointB);
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
@@ -52,15 +52,15 @@ export class Icon extends SVGWidget {
                 context.dblclick(el);
             })
             ;
-    };
+    }
 
     click(_domNode) {
         console.log("Clicked the icon");
-    };
+    }
 
     dblclick(_domNode) {
         console.log("Double clicked the icon");
-    };
+    }
 
     update(domNode, element) {
         super.update(domNode, element);
@@ -101,7 +101,7 @@ export class Icon extends SVGWidget {
             .remove()
             ;
         this._tooltipElement.text(this.tooltip());
-    };
+    }
 
     exit(domNode, element) {
         super.exit(domNode, element);
@@ -111,7 +111,7 @@ export class Icon extends SVGWidget {
         this._faChar
             .target(null)
             ;
-    };
+    }
 
     shape: { (): string; (_: string): Icon; };
     faChar: { (): string; (_: string): Icon; };

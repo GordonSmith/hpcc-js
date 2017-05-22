@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import { HTMLWidget } from "../common/HTMLWidget";
-import "./RadioCheckbox";
+
+import "./RadioCheckbox.css";
 
 export function RadioCheckbox(target) {
     HTMLWidget.call(this);
