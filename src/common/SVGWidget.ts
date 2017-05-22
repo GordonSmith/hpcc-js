@@ -15,14 +15,14 @@ var lerp = function (point, that, t) {
 
 var intersectLineLine = function (a1, a2, b1, b2) {
     //  From https://github.com/thelonious/js-intersections
-    var result = { type: "", points: [] };
-    var ua_t = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x);
-    var ub_t = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x);
-    var u_b = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
+    const result = { type: "", points: [] };
+    const uaT = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x);
+    const ubT = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x);
+    const uB = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
 
-    if (u_b !== 0) {
-        var ua = ua_t / u_b;
-        var ub = ub_t / u_b;
+    if (uB !== 0) {
+        const ua = uaT / uB;
+        const ub = ubT / uB;
 
         if (0 <= ua && ua <= 1 && 0 <= ub && ub <= 1) {
             result.type = "Intersection";
@@ -34,7 +34,7 @@ var intersectLineLine = function (a1, a2, b1, b2) {
             result.type = "No Intersection";
         }
     } else {
-        if (ua_t === 0 || ub_t === 0) {
+        if (uaT === 0 || ubT === 0) {
             result.type = "Coincident";
         } else {
             result.type = "Parallel";
@@ -161,7 +161,7 @@ export class SVGWidget extends Widget {
     target(_): this {
         if (!arguments.length) return this._target;
         if (this._target && _ && (this._target.__data__.id !== _.__data__.id)) {
-            throw "Target can only be assigned once.";
+            throw new Error("Target can only be assigned once.");
         }
         this._target = _;
 
