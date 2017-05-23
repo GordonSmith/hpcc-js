@@ -61,23 +61,23 @@ export abstract class XYAxis extends SVGWidget {
     resetSelection() {
         this._prevBrush = null;
         return this;
-    };
+    }
 
     parseData(d) {
         return this.domainAxis.parse(d);
-    };
+    }
 
     parseValue(d) {
         return this.valueAxis.parse(d, true);
-    };
+    }
 
     formatData(d) {
         return this.domainAxis.format(d);
-    };
+    }
 
     formatValue(d) {
         return this.valueAxis.format(d);
-    };
+    }
 
     parsedData() {
         const retVal = this.data().map(function (row) {
@@ -95,7 +95,7 @@ export abstract class XYAxis extends SVGWidget {
             }, this);
         }, this);
         return retVal;
-    };
+    }
 
     protected svg;
     protected svgRegions;
@@ -139,7 +139,7 @@ export abstract class XYAxis extends SVGWidget {
         this.svgBrush = element.append("g")
             .attr("class", "brush")
             ;
-    };
+    }
 
     resizeBrushHandle(d, width, height) {
         let e;
@@ -172,7 +172,7 @@ export abstract class XYAxis extends SVGWidget {
                 "M" + (x + 8) + "," + (4.5 * y) +
                 "H" + (2 * x - 8);
         }
-    };
+    }
 
     brushMoved() {
         let selected = [];
@@ -194,24 +194,24 @@ export abstract class XYAxis extends SVGWidget {
         if (s == null) {
             handlePath.attr("display", "none");
         } else if (isHorizontal) {
-            handlePath.attr("display", null).attr("transform", (_d, i) => { return "translate(" + s[i] + "," + 0 + ")"; });
+            handlePath.attr("display", null).attr("transform", (_d, i) => "translate(" + s[i] + "," + 0 + ")");
         } else {
-            handlePath.attr("display", null).attr("transform", (_d, i) => { return "translate(" + 0 + ", " + s[i] + ")"; });
+            handlePath.attr("display", null).attr("transform", (_d, i) => "translate(" + 0 + ", " + s[i] + ")");
         }
     }
 
     dataPos(d) {
         return this.domainAxis.scalePos(d);
-    };
+    }
 
     valuePos(d) {
         return this.valueAxis.scalePos(d);
-    };
+    }
 
     setScaleRange(width, height) {
         this.xAxis.width(width);
         this.yAxis.height(height);
-    };
+    }
 
     calcMargin(_domNode, element, isHorizontal) {
         const margin = {
@@ -256,7 +256,7 @@ export abstract class XYAxis extends SVGWidget {
         margin.left += yWidth;
         margin.bottom += xHeight;
         return margin;
-    };
+    }
 
     updateRegions(_domNode, _element, isHorizontal) {
         const context = this;
@@ -285,7 +285,7 @@ export abstract class XYAxis extends SVGWidget {
                 ;
         }
         regions.exit().remove();
-    };
+    }
 
     protected _prevXAxisType;
     update(domNode, element) {
@@ -368,7 +368,7 @@ export abstract class XYAxis extends SVGWidget {
         this.updateBrush(width, height, maxCurrExtent, isHorizontal);
         this.updateFocusChart(domNode, element, this.margin, width, height, isHorizontal);
         this.updateChart(domNode, element, this.margin, width, height, isHorizontal, 250);
-    };
+    }
 
     updateBrush(width, height, maxCurrExtent, isHorizontal) {
         const currBrush = isHorizontal ? this.xBrush : this.yBrush;
@@ -385,7 +385,7 @@ export abstract class XYAxis extends SVGWidget {
             .attr("class", "handle--custom")
             .merge(handlePath)
             .attr("cursor", isHorizontal ? "ew-resize" : "ns-resize")
-            .attr("d", (d) => { return this.resizeBrushHandle(d, width, height); })
+            .attr("d", (d) => this.resizeBrushHandle(d, width, height))
             ;
 
         if (this.selectionMode()) {
@@ -494,17 +494,17 @@ export abstract class XYAxis extends SVGWidget {
                 context.xAxis.svgGuides.call(context.xAxis.d3Guides);
             }
         }
-    };
+    }
 
     abstract updateChart(_domNode, _element, _margin, _width, _height, _isHorizontal, _duration): void;
 
     exit(_domNode, _element) {
         SVGWidget.prototype.exit.apply(this, arguments);
-    };
+    }
 
     selection(_selected) {
         console.log(_selected);
-    };
+    }
 
     orientation: { (): string; (_: string): XYAxis; };
     orientation_default: { (): string; (_: string): XYAxis; };
@@ -561,14 +561,14 @@ XYAxis.prototype.publishProxy("xAxisTickCount", "domainAxis", "tickCount");
 XYAxis.prototype.publishProxy("xAxisTickFormat", "domainAxis", "tickFormat");
 XYAxis.prototype.publishProxy("xAxisType", "domainAxis", "type");
 XYAxis.prototype.publishProxy("xAxisTypeTimePattern", "domainAxis", "timePattern");
-XYAxis.prototype.publish("xAxisDomainLow", null, "string", "X-Axis Low", null, { optional: true, disable: (w) => { return w.xAxisType() === "ordinal"; } });
-XYAxis.prototype.publish("xAxisDomainHigh", null, "string", "X-Axis High", null, { optional: true, disable: (w) => { return w.xAxisType() === "ordinal"; } });
+XYAxis.prototype.publish("xAxisDomainLow", null, "string", "X-Axis Low", null, { optional: true, disable: (w: any) => w.xAxisType() === "ordinal" });
+XYAxis.prototype.publish("xAxisDomainHigh", null, "string", "X-Axis High", null, { optional: true, disable: (w: any) => w.xAxisType() === "ordinal" });
 XYAxis.prototype.publishProxy("xAxisOverlapMode", "domainAxis", "overlapMode");
 XYAxis.prototype.publishProxy("xAxisLabelRotation", "domainAxis", "labelRotation");
 XYAxis.prototype.publishProxy("xAxisDomainPadding", "domainAxis", "extend");
 XYAxis.prototype.publish("xAxisGuideLines", false, "boolean", "Y-Axis Guide Lines");
-XYAxis.prototype.publish("xAxisFocus", false, "boolean", "X-Axis Focus", null, { disable: (w) => { return w.orientation() !== "horizontal"; } });
-XYAxis.prototype.publish("xAxisFocusHeight", 80, "number", "X-Axis Focus Height", null, { disable: (w) => { return !w.xAxisFocus(); } });
+XYAxis.prototype.publish("xAxisFocus", false, "boolean", "X-Axis Focus", null, { disable: (w: any) => w.orientation() !== "horizontal" });
+XYAxis.prototype.publish("xAxisFocusHeight", 80, "number", "X-Axis Focus Height", null, { disable: (w: any) => !w.xAxisFocus() });
 XYAxis.prototype.publishProxy("xAxisHidden", "domainAxis", "hidden");
 
 XYAxis.prototype.publishProxy("yAxisTitle", "valueAxis", "title");
@@ -578,9 +578,9 @@ XYAxis.prototype.publishProxy("yAxisType", "valueAxis", "type");
 XYAxis.prototype.publishProxy("yAxisTypeTimePattern", "valueAxis", "timePattern");
 XYAxis.prototype.publishProxy("yAxisTypePowExponent", "valueAxis", "powExponent");
 XYAxis.prototype.publishProxy("yAxisTypeLogBase", "valueAxis", "logBase");
-XYAxis.prototype.publish("yAxisStacked", false, "boolean", "Stacked Chart", null, { tags: ["Basic"], disable: (w) => { return w.xAxisType() !== "ordinal" || w._class.indexOf("chart_Column") < 0; } });
-XYAxis.prototype.publish("yAxisDomainLow", null, "string", "Y-Axis Low", null, { optional: true, disable: (w) => { return w.yAxisType() === "ordinal"; } });
-XYAxis.prototype.publish("yAxisDomainHigh", null, "string", "Y-Axis High", null, { optional: true, disable: (w) => { return w.yAxisType() === "ordinal"; } });
+XYAxis.prototype.publish("yAxisStacked", false, "boolean", "Stacked Chart", null, { tags: ["Basic"], disable: (w: any) => w.xAxisType() !== "ordinal" || w._class.indexOf("chart_Column") < 0 });
+XYAxis.prototype.publish("yAxisDomainLow", null, "string", "Y-Axis Low", null, { optional: true, disable: (w: any) => w.yAxisType() === "ordinal" });
+XYAxis.prototype.publish("yAxisDomainHigh", null, "string", "Y-Axis High", null, { optional: true, disable: (w: any) => w.yAxisType() === "ordinal" });
 XYAxis.prototype.publishProxy("yAxisDomainPadding", "valueAxis", "extend");
 XYAxis.prototype.publish("yAxisGuideLines", true, "boolean", "Y-Axis Guide Lines");
 XYAxis.prototype.publishProxy("yAxisHidden", "valueAxis", "hidden");

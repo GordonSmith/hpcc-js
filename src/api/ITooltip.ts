@@ -65,7 +65,7 @@ export class ITooltip extends Widget {
             })
             ;
         element.call(this.tooltip);
-    };
+    }
 
     tooltipUpdate() {
         let classed = this.tooltip.attr("class");
@@ -73,21 +73,21 @@ export class ITooltip extends Widget {
         this.tooltip
             .attr("class", classed)
             ;
-    };
+    }
 
     tooltipExit() {
         if (this.tooltip) {
             this.tooltip.destroy();
         }
-    };
+    }
 
     _tooltipHTML(d) {
         return d;
-    };
+    }
 
     tooltipHTML(_) {
         return this.tooltip.html(_);
-    };
+    }
 
     tooltipFormat(opts) {
         opts = opts || {};
@@ -107,7 +107,7 @@ export class ITooltip extends Widget {
                 }
                 return "<span style='color:" + this.tooltipLabelColor() + "'>" + opts.label + "</span>:  <span style='color:" + this.tooltipValueColor() + "'>" + opts.value + "</span>";
         }
-    };
+    }
 
     tooltipStyle: { (): string; (_: string): ITooltip; };
     tooltipValueFormat: (_?) => string | ITooltip;
