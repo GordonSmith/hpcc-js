@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import { map as d3Map } from "d3-collection";
 import { MultiChart } from "../chart/MultiChart";
 import { Class } from "../common/Class";
 import * as Database from "../common/Database";
@@ -2030,7 +2030,7 @@ export function Marshaller() {
     Class.call(this);
 
     this._proxyMappings = {};
-    this._widgetMappings = d3.map();
+    this._widgetMappings = d3Map();
     this._clearDataOnUpdate = true;
     this._propogateClear = false;
     this.id = "Marshaller";
