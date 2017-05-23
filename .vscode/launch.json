@@ -5,11 +5,14 @@
             "name": "Debug Chrome",
             "type": "chrome",
             "request": "launch",
-            "url": "file:///C:/Users/gordon/git/hpcc-js-viz/test/index.html",
+            "url": "file:///C:/Users/gordon/git/hpcc-js/tests/quick/index.html",
+            "trace": true,
             "sourceMaps": true,
-            "webRoot": "${workspaceRoot}/demos",
             "pathMapping": {
-                "/": "${workspaceRoot}/"
+                "/": "${workspaceRoot}"
+            },
+            "sourceMapPathOverrides": {
+                "webpack:///C:/Users/gordon/git/hpcc-js/packages/viz/*": "${workspaceRoot}/*"
             }
         }
     ]

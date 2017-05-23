@@ -1,7 +1,9 @@
 export class Class {
     _class: string;
 
-    class(_) {
+    class(): string;
+    class(_: string): this;
+    class(_?: string): string | this {
         if (!arguments.length) return this._class;
         this._class = _;
         return this;
@@ -12,7 +14,7 @@ export class Class {
     }
 
     implements(source) {
-        for (var prop in source) {
+        for (const prop in source) {
             if (source.hasOwnProperty(prop)) {
                 if (this[prop] === undefined) {
                     this[prop] = source[prop];
@@ -35,7 +37,7 @@ export class Class {
         if (this[methodID] === undefined) {
             throw new Error("Method:  " + methodID + " does not exist.");
         }
-        var origMethod = this[methodID];
+        const origMethod = this[methodID];
         this[methodID] = function () {
             return newMethod(origMethod, arguments);
         };

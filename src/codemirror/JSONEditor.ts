@@ -3,9 +3,12 @@ import { Editor } from "./Editor";
 
 export class JSONEditor extends Editor {
     options(): any {
-        const retVal = super.options();
-        retVal.mode = "application/json";
-        return retVal;
+        return {
+            ...super.options(),
+            ...{
+                mode: "application/json"
+            }
+        };
     }
 
     json(): object;
