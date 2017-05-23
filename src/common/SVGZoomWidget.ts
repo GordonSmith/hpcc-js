@@ -1,9 +1,8 @@
 ﻿import { brush as d3Brush } from "d3-brush";
 import { event as d3Event, select as d3Select } from "d3-selection";
 import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from "d3-zoom";
-import { SVGWidget } from "./SVGWidget";
 import { Icon } from "./Icon";
-import "css!./SVGZoomWidget.css";
+import { SVGWidget } from "./SVGWidget";
 
 import "./SVGZoomWidget.css";
 
@@ -39,23 +38,23 @@ export class SVGZoomWidget extends SVGWidget {
         this._zoomElement.transition().duration(transitionDuration)
             .call(this._zoom.transform, d3ZoomIdentity.translate(translate[0], translate[1]).scale(scale))
             ;
-    };
+    }
 
     zoomToFit(transitionDuration?) {
-        var bbox = this._renderElement.node().getBBox();
+        const bbox = this._renderElement.node().getBBox();
         if (bbox.width && bbox.height) {
-            var x = bbox.x + bbox.width / 2;
-            var y = bbox.y + bbox.height / 2;
-            var dx = bbox.width;
-            var dy = bbox.height;
-            var width = this.width();
-            var height = this.height();
+            const x = bbox.x + bbox.width / 2;
+            const y = bbox.y + bbox.height / 2;
+            const dx = bbox.width;
+            const dy = bbox.height;
+            const width = this.width();
+            const height = this.height();
 
-            var scale = 1 / Math.max(dx / width, dy / height);
-            var translate = [width / 2 - scale * x, height / 2 - scale * y];
+            const scale = 1 / Math.max(dx / width, dy / height);
+            const translate = [width / 2 - scale * x, height / 2 - scale * y];
             this.zoomTo(translate, scale, transitionDuration);
         }
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
@@ -121,7 +120,7 @@ export class SVGZoomWidget extends SVGWidget {
             })
             ;
         this._zoomElement.call(this._zoom);
-    };
+    }
 
     update(domNode, element) {
         super.update(domNode, element);
@@ -129,10 +128,10 @@ export class SVGZoomWidget extends SVGWidget {
             .attr("width", this.width())
             .attr("height", this.height())
             ;
-        var context = this;
-        var toolbar = element.selectAll(".toolbar").data(this.zoomToolbar() ? ["dummy"] : []);
-        var iconDiameter = 24;
-        var faCharHeight = 14;
+        const context = this;
+        const toolbar = element.selectAll(".toolbar").data(this.zoomToolbar() ? ["dummy"] : []);
+        const iconDiameter = 24;
+        const faCharHeight = 14;
         toolbar.enter().append("g")
             .attr("class", "toolbar")
             .each(function () {
@@ -200,17 +199,16 @@ export class SVGZoomWidget extends SVGWidget {
             })
             .remove()
             ;
-    };
+    }
 
     exit(domNode, element) {
         super.exit(domNode, element);
-    };
+    }
 
-    zoomToolbar: { (): boolean; (_: boolean): SVGZoomWidget; }
-    zoomDuration: { (): number; (_: number): SVGZoomWidget; }
+    zoomToolbar: { (): boolean; (_: boolean): SVGZoomWidget; };
+    zoomDuration: { (): number; (_: number): SVGZoomWidget; };
 }
 SVGZoomWidget.prototype._class += " common_SVGZoomWidget";
 
 SVGZoomWidget.prototype.publish("zoomToolbar", true, "boolean", "Show Zoom Toolbar");
 SVGZoomWidget.prototype.publish("zoomDuration", 250, "number", "Transition Duration");
-
