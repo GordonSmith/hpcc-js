@@ -61,6 +61,7 @@ gulp.task("clean", [], function () {
 gulp.task("copy-css", shell.task([
     //  TODO:  Convert to native cpx.
     "node ./node_modules/cpx/bin/index.js src/**/*.css lib/",
+    "node ./node_modules/cpx/bin/index.js src/**/*.css lib-umd/",
     "node ./node_modules/cpx/bin/index.js src/**/*.css lib-test-es6/src/",
     "node ./node_modules/cpx/bin/index.js test/**/*.css lib-test-es6/test/"
 ]));
@@ -106,7 +107,7 @@ function doRollup(entry, dest, format, min, external) {
                 "dagre": ["graphlib, layout"],
                 "react": ["Component", "createElement"],
                 "react-dom": ["render"],
-                "..\\dojo-webpack\\dist\\dgrid.js": ["Memory", "PagingGrid"]
+                "..\\dgrid\\dist\\dgrid.js": ["Memory", "PagingGrid"]
             }
         }),
         css({}),

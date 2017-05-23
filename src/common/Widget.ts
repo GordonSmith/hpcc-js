@@ -296,10 +296,10 @@ export class Widget extends PropertyExt {
 
     calcSnap(snapSize) {
         function snap(x, gridSize) {
-            function snapDelta(x, gridSize) {
-                let dx = x % gridSize;
-                if (Math.abs(dx) > gridSize - Math.abs(dx)) {
-                    dx = (gridSize - Math.abs(dx)) * (dx < 0 ? 1 : -1);
+            function snapDelta(x2, gridSize2) {
+                let dx = x2 % gridSize2;
+                if (Math.abs(dx) > gridSize2 - Math.abs(dx)) {
+                    dx = (gridSize2 - Math.abs(dx)) * (dx < 0 ? 1 : -1);
                 }
                 return dx;
             }
@@ -372,7 +372,7 @@ export class Widget extends PropertyExt {
             widget = this.locateParentWidget(widget._target.parentNode);
         }
         return null;
-    };
+    }
 
     getAbsolutePos(domNode, w, h) {
         const root = this.locateSVGNode(domNode);
@@ -458,7 +458,7 @@ export class Widget extends PropertyExt {
             elements.enter().append(this._tag)
                 .classed(this._class, true)
                 .attr("id", this._id)
-                //.attr("opacity", 0.50)  //  Uncomment to debug position offsets  ---
+                // .attr("opacity", 0.50)  //  Uncomment to debug position offsets  ---
                 .each(function (context) {
                     context._element = d3Select(this);
                     context.enter(this, context._element);
@@ -551,4 +551,3 @@ Widget.prototype._idSeed = "_w";
 
 Widget.prototype.publishProxy("fields", "_db", "fields");
 Widget.prototype.publish("classed", {}, "object", "HTML Classes", null, { tags: ["Private"] });
-

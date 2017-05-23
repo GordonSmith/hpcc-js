@@ -1,6 +1,5 @@
 import { select as d3Select } from "d3-selection";
 import { SVGWidget } from "./SVGWidget";
-import "css!./Shape.css";
 
 import "./Shape.css";
 
@@ -17,17 +16,17 @@ export class Shape extends SVGWidget {
                 return this.intersectCircle(this.radius(), pointA, pointB);
         }
         return SVGWidget.prototype.intersection.apply(this, arguments);
-    };
+    }
 
     update(_domNode, element) {
-    var shape = element.selectAll("rect,circle,ellipse").data([this.shape()], function (d) { return d; });
+        const shape = element.selectAll("rect,circle,ellipse").data([this.shape()], function (d) { return d; });
 
-    var context = this;
+        const context = this;
         shape.enter().append(this.shape() === "square" ? "rect" : this.shape())
             .attr("class", "common_Shape")
             .each(function () {
-            var element = d3Select(this);
-            context._tooltipElement = element.append("title");
+                const element2 = d3Select(this);
+                context._tooltipElement = element2.append("title");
             })
             .on("click", () => {
                 this.click();
@@ -39,18 +38,18 @@ export class Shape extends SVGWidget {
             .style("fill", this.colorFill())
             .style("stroke", this.colorStroke())
             .each(function () {
-            var element = d3Select(this);
+                const element2 = d3Select(this);
                 context._tooltipElement.text(context.tooltip());
                 switch (context.shape()) {
                     case "circle":
-                    var radius = context.radius();
-                    element
+                        const radius = context.radius();
+                        element2
                             .attr("r", radius)
                             ;
                         break;
                     case "square":
-                    var width = Math.max(context.width(), context.height());
-                    element
+                        const width = Math.max(context.width(), context.height());
+                        element2
                             .attr("x", -width / 2)
                             .attr("y", -width / 2)
                             .attr("width", width)
@@ -58,7 +57,7 @@ export class Shape extends SVGWidget {
                             ;
                         break;
                     case "rect":
-                    element
+                        element2
                             .attr("x", -context.width() / 2)
                             .attr("y", -context.height() / 2)
                             .attr("width", context.width())
@@ -66,7 +65,7 @@ export class Shape extends SVGWidget {
                             ;
                         break;
                     case "ellipse":
-                    element
+                        element2
                             .attr("rx", context.width() / 2)
                             .attr("ry", context.height() / 2)
                             ;
@@ -75,7 +74,7 @@ export class Shape extends SVGWidget {
             })
             ;
         shape.exit().remove();
-    };
+    }
 
     click() {
     }

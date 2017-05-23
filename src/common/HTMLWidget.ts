@@ -17,7 +17,7 @@ export class HTMLWidget extends Widget {
     }
 
     calcFrameWidth(element) {
-        var retVal = parseFloat(element.style("padding-left")) +
+        const retVal = parseFloat(element.style("padding-left")) +
             parseFloat(element.style("padding-right")) +
             parseFloat(element.style("margin-left")) +
             parseFloat(element.style("margin-right")) +
@@ -32,7 +32,7 @@ export class HTMLWidget extends Widget {
     }
 
     calcFrameHeight(element) {
-        var retVal = parseFloat(element.style("padding-top")) +
+        const retVal = parseFloat(element.style("padding-top")) +
             parseFloat(element.style("padding-bottom")) +
             parseFloat(element.style("margin-top")) +
             parseFloat(element.style("margin-bottom")) +
@@ -66,9 +66,9 @@ export class HTMLWidget extends Widget {
 
     getBBox(refresh = false, round = false) {
         if (refresh || this._boundingBox === null) {
-            var domNode = this._element.node() ? this._element.node().firstElementChild : null;   //  Needs to be first child, as element has its width/height forced onto it.
+            const domNode = this._element.node() ? this._element.node().firstElementChild : null;   //  Needs to be first child, as element has its width/height forced onto it.
             if (domNode instanceof Element) {
-                var rect = domNode.getBoundingClientRect();
+                const rect = domNode.getBoundingClientRect();
                 this._boundingBox = {
                     x: rect.left,
                     y: rect.top,
@@ -94,7 +94,7 @@ export class HTMLWidget extends Widget {
     }
 
     resize(size) {
-        var retVal = super.resize(size);
+        const retVal = super.resize(size);
         this._parentElement
             .style("width", this._size.width + "px")
             .style("height", this._size.height + "px")
@@ -117,7 +117,7 @@ export class HTMLWidget extends Widget {
 
         if (this._target instanceof SVGElement) {
             //  Target is a SVG Node, so create an item in the Overlay and force it "over" the overlay element (cough)  ---
-            var overlay = this.locateOverlayNode();
+            const overlay = this.locateOverlayNode();
             this._parentElement = overlay.append("div")
                 .style("position", "absolute")
                 .style("top", 0)
@@ -126,13 +126,13 @@ export class HTMLWidget extends Widget {
                 ;
             this._overlayElement = d3Select(this._target);
 
-            var context = this;
+            const context = this;
             this._prevPos = null;
             this.observer = new MutationObserver(function (_mutation) {
                 context.syncOverlay();
             });
 
-            var domNode = this._overlayElement.node();
+            let domNode = this._overlayElement.node();
             while (domNode) {
                 this.observer.observe(domNode, { attributes: true });
                 domNode = domNode.parentNode;
@@ -140,11 +140,11 @@ export class HTMLWidget extends Widget {
         } else if (this._target) {
             this._parentElement = d3Select(this._target);
             if (!this._size.width && !this._size.height) {
-                var width = parseFloat(this._parentElement.style("width"));
-                var height = parseFloat(this._parentElement.style("height"));
+                const width = parseFloat(this._parentElement.style("width"));
+                const height = parseFloat(this._parentElement.style("height"));
                 this.size({
-                    width: width,
-                    height: height
+                    width,
+                    height
                 });
             }
             this._parentElement = d3Select(this._target).append("div");
@@ -163,7 +163,7 @@ export class HTMLWidget extends Widget {
                 .style("top", this._pos.y + "px")
                 ;
         } else {
-            var bbox = this.getBBox(true);
+            const bbox = this.getBBox(true);
             this._element
                 .style("position", "relative")
                 .style("float", "left")
@@ -185,4 +185,3 @@ export class HTMLWidget extends Widget {
     }
 }
 HTMLWidget.prototype._class += " common_HTMLWidget";
-
