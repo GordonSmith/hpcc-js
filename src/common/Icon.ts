@@ -1,3 +1,6 @@
+import { FAChar } from "./FAChar";
+import { Shape } from "./Shape";
+import { SVGWidget } from "./SVGWidget";
 
 import "./Icon.css";
 
@@ -43,7 +46,7 @@ export class Icon extends SVGWidget {
             .render()
             ;
         this._tooltipElement = element.append("title");
-        var context = this;
+        const context = this;
         element
             .on("click", function (el) {
                 context.click(el);
@@ -65,8 +68,8 @@ export class Icon extends SVGWidget {
     update(domNode, element) {
         super.update(domNode, element);
 
-        var diameter = this.diameter();
-        var radius = diameter / 2;
+        const diameter = this.diameter();
+        const radius = diameter / 2;
         this._defs.select("circle")
             .attr("r", radius)
             ;
@@ -86,7 +89,7 @@ export class Icon extends SVGWidget {
             .height(diameter)
             .render()
             ;
-        var image = this._root.selectAll("image").data(this.imageUrl() ? [this.imageUrl()] : [], function (d) { return d; });
+        const image = this._root.selectAll("image").data(this.imageUrl() ? [this.imageUrl()] : [], function (d) { return d; });
         image.enter()
             .append("image")
             .attr("xlink:href", this.imageUrl())
@@ -134,4 +137,3 @@ Icon.prototype.publish("diameter", 24, "number", "Diameter", null, { tags: ["Pri
 Icon.prototype.publish("paddingPercent", 45, "number", "Padding Percent", null, { tags: ["Private"] });
 Icon.prototype.publishProxy("shape_colorFill", "_shapeWidget", "colorFill");
 Icon.prototype.publishProxy("shape_colorStroke", "_shapeWidget", "colorStroke");
-

@@ -1,6 +1,7 @@
 import { Shape } from "./Shape";
+import { SVGWidget } from "./SVGWidget";
 import { Text } from "./Text";
-import "css!./TextBox.css";
+import { ISize } from "./Widget";
 
 import "./TextBox.css";
 
@@ -30,7 +31,7 @@ export class TextBox extends SVGWidget {
         this.paddingTop(_);
         this.paddingBottom(_);
         return this;
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
@@ -43,15 +44,15 @@ export class TextBox extends SVGWidget {
             .target(element.append("g").node())
             .render()
             ;
-    };
+    }
 
     update(domNode, element) {
         super.update(domNode, element);
         this._text
             .render()
             ;
-        var textBBox = this._text.getBBox(true);
-        var size = {
+        const textBBox = this._text.getBBox(true);
+        const size = {
             width: this.fixedSize() ? this.fixedSize().width : textBBox.width + this.paddingLeft() + this.paddingRight(),
             height: this.fixedSize() ? this.fixedSize().height : textBBox.height + this.paddingTop() + this.paddingBottom()
         };
@@ -78,7 +79,7 @@ export class TextBox extends SVGWidget {
         }
         const bbox = this._text.getBBox();
         this._text.visible(bbox.width <= size.width && bbox.height <= size.height);
-    };
+    }
 
     exit(domNode, element) {
         this._shape
@@ -88,7 +89,7 @@ export class TextBox extends SVGWidget {
             .target(null)
             ;
         super.exit(domNode, element);
-    };
+    }
 
     click() {
     }
@@ -122,4 +123,3 @@ TextBox.prototype.publishProxy("anchor", "_text");
 TextBox.prototype.publish("fixedSize", null);
 
 TextBox.prototype.publish("tooltip", "", "string", "Tooltip", null, { tags: ["Private"] });
-

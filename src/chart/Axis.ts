@@ -37,11 +37,11 @@ export class Axis extends SVGWidget {
 
     lowValue() {
         return this.parse(this.low());
-    };
+    }
 
     highValue() {
         return this.parse(this.high());
-    };
+    }
 
     parse(d, forceNumeric?) {
         if (d instanceof Array) {
@@ -58,7 +58,7 @@ export class Axis extends SVGWidget {
             }
         }
         return d;
-    };
+    }
 
     parseInvert(d) {
         if (d instanceof Array) {
@@ -70,7 +70,7 @@ export class Axis extends SVGWidget {
             return this.parserInvert(d);
         }
         return d;
-    };
+    }
 
     format(d) {
         if (d instanceof Array) {
@@ -82,7 +82,7 @@ export class Axis extends SVGWidget {
             return this.formatter(d);
         }
         return d;
-    };
+    }
 
     scalePos(d) {
         let retVal = this.d3Scale(this.parse(d));
@@ -90,7 +90,7 @@ export class Axis extends SVGWidget {
             retVal += this.d3Scale.bandwidth() / 2;
         }
         return retVal;
-    };
+    }
 
     isHorizontal() {
         switch (this.orientation()) {
@@ -100,13 +100,13 @@ export class Axis extends SVGWidget {
             default:
         }
         return true;
-    };
+    }
 
     domain(_) {
         if (!arguments.length) return this.d3Scale.domain();
         this.d3Scale.domain(_);
         return this;
-    };
+    }
 
     range(_) {
         if (!arguments.length) {
@@ -122,18 +122,18 @@ export class Axis extends SVGWidget {
             this.d3Scale.range(_);
         }
         return this;
-    };
+    }
 
     invert(pos) {
         return this.d3Scale.invert(pos);
-    };
+    }
 
     guideTarget(_) {
         this._guideElement = d3Select(_)
             .attr("class", this._class)
             ;
         return this;
-    };
+    }
 
     enter(_domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
@@ -146,7 +146,7 @@ export class Axis extends SVGWidget {
         this.svgGuides = (this._guideElement || element).append("g")
             .attr("class", "guide")
             ;
-    };
+    }
 
     protected _prevOrientation;
     updateScale() {
@@ -276,7 +276,7 @@ export class Axis extends SVGWidget {
             .tickFormat("")
             .ticks(this.tickCount())
             ;
-        let customTicks = this.ticks();
+        const customTicks = this.ticks();
         if (customTicks.length) {
             this.d3Axis
                 .tickValues(customTicks.map(d => this.parse(d.value)))
@@ -284,9 +284,9 @@ export class Axis extends SVGWidget {
                     return customTicks[i].label;
                 });
             this.d3Guides
-                .tickValues(customTicks.map(d => this.parse(d.value)))
+                .tickValues(customTicks.map(d => this.parse(d.value)));
         }
-    };
+    }
 
     adjustText(svg, tickOverlapModulus) {
         const isHoriztontal = this.isHorizontal();
@@ -359,7 +359,7 @@ export class Axis extends SVGWidget {
                         ;
             }
         }
-    };
+    }
 
     calcTickOverlapModulus(element) {
         let retVal = 1;
@@ -384,7 +384,7 @@ export class Axis extends SVGWidget {
             default:
         }
         return retVal;
-    };
+    }
 
     calcOverflow(element, ignoreText?): IOverflow {
         this.updateScale();
@@ -441,7 +441,7 @@ export class Axis extends SVGWidget {
         tmpSvg.remove();
 
         return retVal;
-    };
+    }
 
     wrap(_text, bandSize, re) {
         re = re || /\s+/;
@@ -470,7 +470,7 @@ export class Axis extends SVGWidget {
                 line.push(word);
                 tspan.text(line.join(" "));
                 wordsOnLine++;
-                if ((<any>tspan.node()).getComputedTextLength() > bandSize && wordsOnLine >= minWordsPerLine) {
+                if ((tspan.node() as any).getComputedTextLength() > bandSize && wordsOnLine >= minWordsPerLine) {
                     line.pop();
                     tspan.text(line.join(" "));
                     line = [word];
@@ -485,11 +485,11 @@ export class Axis extends SVGWidget {
                     ;
             }
         });
-    };
+    }
 
     linebreak(text, bandSize) {
         this.wrap(text, bandSize, "\n");
-    };
+    }
 
     update(_domNode, _element) {
         SVGWidget.prototype.update.apply(this, arguments);
@@ -586,7 +586,7 @@ export class Axis extends SVGWidget {
         this.svgGuides
             .call(this.d3Guides)
             ;
-    };
+    }
 
     postUpdate(_domNode, _element) {
         SVGWidget.prototype.postUpdate.apply(this, arguments);
@@ -595,7 +595,7 @@ export class Axis extends SVGWidget {
                 .attr("transform", this._element.attr("transform"))
                 ;
         }
-    };
+    }
 
     title: { (): string; (_: string): Axis; };
     orientation: { (): string; (_: string): Axis; };
@@ -610,7 +610,7 @@ export class Axis extends SVGWidget {
     tickFormat: { (): string; (_: string): Axis; };
     tickFormat_exists: () => boolean;
     tickLength: { (): number; (_: number): Axis; };
-    ticks: { (): { value: string, label: string }[]; (_: { value: string, label: string }[]): Axis; };
+    ticks: { (): Array<{ value: string, label: string }>; (_: Array<{ value: string, label: string }>): Axis; };
     xAxisDomainLow: { (): string; (_: string): Axis; };
     xAxisDomainHigh: { (): string; (_: string): Axis; };
     low: { (): any; (_: any): Axis; };
@@ -628,20 +628,20 @@ Axis.prototype._class += " chart_Axis";
 Axis.prototype.publish("title", "", "string", "Title");
 Axis.prototype.publish("orientation", "bottom", "set", "Orientation", ["left", "top", "right", "bottom"]);
 Axis.prototype.publish("type", "linear", "set", "Type", ["none", "ordinal", "linear", "pow", "log", "time"]);
-Axis.prototype.publish("timePattern", "%Y-%m-%d", "string", "Time Series Pattern", null, { disable: (w) => { return w.type() !== "time"; } });
-Axis.prototype.publish("powExponent", 2, "number", "Exponent for Pow on Value Axis", null, { disable: (w) => { return w.type() !== "pow"; } });
-Axis.prototype.publish("logBase", 10, "number", "Base for log on Value Axis", null, { disable: (w) => { return w.type() !== "log"; } });
-Axis.prototype.publish("ordinals", [], "array", "Ordinal Values", null, { disable: (w) => { return w.type() !== "ordinal"; } });
-Axis.prototype.publish("tickCount", null, "number", "Tick Count", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
-Axis.prototype.publish("tickFormat", null, "string", "Tick Format", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
+Axis.prototype.publish("timePattern", "%Y-%m-%d", "string", "Time Series Pattern", null, { disable: (w: any) => w.type() !== "time" });
+Axis.prototype.publish("powExponent", 2, "number", "Exponent for Pow on Value Axis", null, { disable: (w: any) => w.type() !== "pow" });
+Axis.prototype.publish("logBase", 10, "number", "Base for log on Value Axis", null, { disable: (w: any) => w.type() !== "log" });
+Axis.prototype.publish("ordinals", [], "array", "Ordinal Values", null, { disable: (w: any) => w.type() !== "ordinal" });
+Axis.prototype.publish("tickCount", null, "number", "Tick Count", null, { optional: true, disable: (w: any) => w.type() === "ordinal" });
+Axis.prototype.publish("tickFormat", null, "string", "Tick Format", null, { optional: true, disable: (w: any) => w.type() === "ordinal" });
 Axis.prototype.publish("tickLength", null, "number", "Tick Length", null, { optional: true });
 Axis.prototype.publish("ticks", [], "array", "Custom Ticks", null, { optional: true });
-Axis.prototype.publish("low", null, "any", "Low", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
-Axis.prototype.publish("high", null, "any", "High", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
+Axis.prototype.publish("low", null, "any", "Low", null, { optional: true, disable: (w: any) => w.type() === "ordinal" });
+Axis.prototype.publish("high", null, "any", "High", null, { optional: true, disable: (w: any) => w.type() === "ordinal" });
 Axis.prototype.publish("overlapMode", "none", "set", "Label Overlap Mode", ["none", "stagger", "hide", "rotate", "linebreak", "wrap"]);
-Axis.prototype.publish("labelRotation", 33, "number", "Label Rotation", null, { optional: true, disable: (w) => { return w.overlapMode() !== "rotate"; } });
+Axis.prototype.publish("labelRotation", 33, "number", "Label Rotation", null, { optional: true, disable: (w: any) => w.overlapMode() !== "rotate" });
 Axis.prototype.publish("shrinkToFit", "both", "set", "Size to fit", ["none", "low", "high", "both"]);
-Axis.prototype.publish("extend", 5, "number", "Extend axis %", null, { optional: true, disable: (w) => { return w.type() === "ordinal"; } });
+Axis.prototype.publish("extend", 5, "number", "Extend axis %", null, { optional: true, disable: (w: any) => w.type() === "ordinal" });
 Axis.prototype.publish("hidden", false, "boolean", "Hide Axis");
 
 const type = Axis.prototype.type;
