@@ -2,9 +2,8 @@
     "name": "@hpcc-js/viz",
     "version": "2.0.1",
     "description": "hpcc-js-viz - HPCC Systems Visualization Framework",
-    "main": "dist/viz-browser.js",
-    "module": "lib/index",
-    "jsnext": "lib/index.js",
+    "module": "lib/index-browser",
+    "main": "lib/index-node.js",
     "types": "lib/index.d.ts",
     "files": [
         "lib/**/*.d.ts",
@@ -20,7 +19,7 @@
         "compile": "gulp compile-all",
         "doc": "gulp docs",
         "bundle": "gulp bundle-all",
-        "build": "gulp build",
+        "build": "gulp compile-all",
         "watch-browser": "gulp watch-browser",
         "watch-test-browser": "gulp watch-test-browser",
         "lint": "tslint ./src/**/*",
@@ -29,6 +28,7 @@
         "coverage": "npm run pretest && nyc --reporter=html npm run unittest"
     },
     "dependencies": {
+        "@hpcc-js/ddl": "^0.0.0",
         "@hpcc-js/dgrid": "^0.0.0",
         "colorbrewer": "^1.0.0",
         "d3-axis": "^1.0.5",
@@ -57,10 +57,8 @@
     },
     "devDependencies": {
         "@types/chai": "^3.5.2",
-        "@types/d3": "^4.8.0",
         "@types/mocha": "^2.2.41",
-        "@types/react": "^15.0.24",
-        "@types/react-dom": "^15.5.0",
+        "@types/d3": "^4.9.0",
         "chai": "^3.5.0",
         "cpx": "^1.5.0",
         "cross-env": "^3.1.4",

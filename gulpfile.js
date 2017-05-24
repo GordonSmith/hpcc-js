@@ -104,7 +104,7 @@ function doRollup(entry, dest, format, min, external) {
         }),
         commonjs({
             namedExports: {
-                "dagre": ["graphlib, layout"],
+                "dagre": ["graphlib", "layout"],
                 "react": ["Component", "createElement"],
                 "react-dom": ["render"],
                 "..\\dgrid\\dist\\dgrid.js": ["Memory", "PagingGrid"]

@@ -3,7 +3,7 @@ import { select as d3Select } from "d3-selection";
 import { HTMLWidget } from "../common/HTMLWidget";
 import { ISize } from "../common/Widget";
 
-// import "dgrid/css/dgrid.css";
+import "@hpcc-js/dgrid/dist/dgrid.css";
 import "./Table.css";
 
 export class Table extends HTMLWidget {
@@ -56,7 +56,8 @@ export class Table extends HTMLWidget {
             pagingTextBox: true,
             previousNextArrows: true,
             firstLastArrows: true,
-            pageSizeOptions: [10, 15, 25]
+            rowsPerPage: 100,
+            pageSizeOptions: [10, 25, 100, 1000]
         }, this._dgridDiv.node());
         this._dgrid.on("dgrid-select", (evt) => {
             if (evt.rows && evt.rows.length) {

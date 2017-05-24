@@ -32,6 +32,9 @@ export class Editor extends HTMLWidget {
     enter(domNode, element) {
         super.enter(domNode, element);
         this._codemirror = cm.fromTextArea(element.append("textarea").node(), this.options());
+        this._codemirror.on("changes", (changes: object[]) => {
+            this.changes(changes);
+        });
         this.text(this._initialText);
     }
 
@@ -39,6 +42,10 @@ export class Editor extends HTMLWidget {
         super.update(domNode, Element);
         this._codemirror.setSize(this.width(), this.height() - 3);
         this._codemirror.refresh();
+    }
+
+    //  Events  ---
+    changes(changes: object[]) {
     }
 }
 Editor.prototype._class += " codemirror_Editor";

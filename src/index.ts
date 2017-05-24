@@ -44,7 +44,7 @@ export { MiniGantt } from "./timeline/MiniGantt";
 export { Test } from "./html/test";
 */
 
-export * from "./codemirror/JSONEditor";
+export * from "./codemirror/DDLEditor";
 export * from "./common/HTMLWidget";
 export * from "./common/SVGWidget";
 export * from "./marshaller/HTML";
