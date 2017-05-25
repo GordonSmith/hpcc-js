@@ -2,6 +2,91 @@
 # yarn lockfile v1
 
 
+"@phosphor/algorithm@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/algorithm/-/algorithm-1.1.0.tgz#a501408ee52aed28897cf21fae80d9ab3e29a273"
+
+"@phosphor/collections@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/collections/-/collections-1.1.0.tgz#b3a535bd80e66ba08d8d36146be5d4f1d84a08d6"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.0"
+
+"@phosphor/commands@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/commands/-/commands-1.2.0.tgz#3a649f809747e456f2491f88c9ab218709ea1160"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.0"
+    "@phosphor/coreutils" "^1.1.0"
+    "@phosphor/disposable" "^1.1.0"
+    "@phosphor/domutils" "^1.1.0"
+    "@phosphor/keyboard" "^1.1.0"
+    "@phosphor/signaling" "^1.2.0"
+
+"@phosphor/coreutils@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/coreutils/-/coreutils-1.1.0.tgz#b890e330f9871559b8b2b58d06304b1cbfa1e5e4"
+
+"@phosphor/disposable@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/disposable/-/disposable-1.1.0.tgz#b22c80a14c89bc7fde77b75278202a7cb0a40272"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.0"
+
+"@phosphor/domutils@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/domutils/-/domutils-1.1.0.tgz#91448ef7cb25f6da5f5646927bdc446335e8e8f0"
+
+"@phosphor/dragdrop@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/dragdrop/-/dragdrop-1.1.0.tgz#2ecdaf5683822d18af5a9da5c09d34065b6a2e3e"
+  dependencies:
+    "@phosphor/coreutils" "^1.1.0"
+    "@phosphor/disposable" "^1.1.0"
+
+"@phosphor/keyboard@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/keyboard/-/keyboard-1.1.0.tgz#4a9598385456ebc27fc813c912e0ad9e385d33cd"
+
+"@phosphor/messaging@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/messaging/-/messaging-1.2.0.tgz#467090a9677bf5d1bcbe73167160f5d40402d226"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.0"
+    "@phosphor/collections" "^1.1.0"
+
+"@phosphor/properties@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/properties/-/properties-1.1.0.tgz#c2867655947d15677aafb6cfcf12ecb2859e83fe"
+
+"@phosphor/signaling@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/signaling/-/signaling-1.2.0.tgz#d9d9ce480a2c92d6cd8a69f4fb9dcc37d77766e5"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.0"
+
+"@phosphor/virtualdom@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/virtualdom/-/virtualdom-1.1.0.tgz#522f2df41e36ef2ec96b83d7ccaecad2a65499fb"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.0"
+
+"@phosphor/widgets@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/widgets/-/widgets-1.2.0.tgz#9fc3c9a04538b821c3e6bdd7acacc3b3f65d04bd"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.0"
+    "@phosphor/commands" "^1.2.0"
+    "@phosphor/coreutils" "^1.1.0"
+    "@phosphor/disposable" "^1.1.0"
+    "@phosphor/domutils" "^1.1.0"
+    "@phosphor/dragdrop" "^1.1.0"
+    "@phosphor/keyboard" "^1.1.0"
+    "@phosphor/messaging" "^1.2.0"
+    "@phosphor/properties" "^1.1.0"
+    "@phosphor/signaling" "^1.2.0"
+    "@phosphor/virtualdom" "^1.1.0"
+
 "@types/chai@^3.5.2":
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-3.5.2.tgz#c11cd2817d3a401b7ba0f5a420f35c56139b1c1e"

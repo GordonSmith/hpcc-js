@@ -4,7 +4,7 @@ import { JSXWidget } from "../html/JSXWidget";
 import { VizInstance } from "../html/VizInstance";
 import { JSONEditor } from "./JSONEditor";
 
-// import "./DDLEditor.css";
+import "./DDLEditor.css";
 
 export class DDLEditor extends JSXWidget {
     summary: string = "0 Errors";
@@ -15,8 +15,8 @@ export class DDLEditor extends JSXWidget {
         .columns(["dataPath", "keyword", "message", "params"])
     ;
     private jsx = <div>
-        <p><VizInstance instance={this._ddlEditor} /></p>
-        <p><VizInstance instance={this._errorTable} /></p>
+        <VizInstance instance={this._ddlEditor} />
+        <VizInstance instance={this._errorTable} />
     </div >;
 
     ddl(): object;
@@ -55,6 +55,8 @@ export class DDLEditor extends JSXWidget {
 
     update(domNode, _element) {
         super.update(domNode, _element);
+        this._ddlEditor.size({ width: this.width(), height: this.height() * 6 / 9 });
+        this._errorTable.size({ width: this.width(), height: this.height() * 3 / 9 });
         this.jsxRender(this.jsx, domNode);
     }
 

@@ -1,7 +1,6 @@
 ﻿import { Memory, PagingGrid } from "@hpcc-js/dgrid";
 import { select as d3Select } from "d3-selection";
 import { HTMLWidget } from "../common/HTMLWidget";
-import { ISize } from "../common/Widget";
 
 import "@hpcc-js/dgrid/dist/dgrid.css";
 import "./Table.css";
@@ -97,7 +96,7 @@ export class Table extends HTMLWidget {
             this._prevChecksum = this._db.checksum();
             this._store.setData(this.dgridData());
         }
-        const visibleRows = this.calcVisibleRows();
+        // const visibleRows = this.calcVisibleRows();
         // if (this._prevPagination !== this.pagination() || this._prevVisibleRows !== visibleRows) {
         // this._dgrid.set("rowsPerPage", this.pagination() ? visibleRows : this.MAX_SAFE_INTEGER);
         // this._dgrid.set("firstLastArrows", this.pagination() ? true : false);

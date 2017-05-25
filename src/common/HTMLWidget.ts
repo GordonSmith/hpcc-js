@@ -93,7 +93,7 @@ export class HTMLWidget extends Widget {
         };
     }
 
-    resize(size) {
+    resize(size?) {
         const retVal = super.resize(size);
         this._parentElement
             .style("width", this._size.width + "px")

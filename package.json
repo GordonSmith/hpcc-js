@@ -30,6 +30,8 @@
     "dependencies": {
         "@hpcc-js/ddl": "^0.0.0",
         "@hpcc-js/dgrid": "^0.0.0",
+        "@phosphor/widgets": "^1.2.0",
+        "@phosphor/messaging": "^1.2.0",
         "colorbrewer": "^1.0.0",
         "d3-axis": "^1.0.5",
         "d3-brush": "^1.0.3",

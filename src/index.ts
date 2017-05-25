@@ -49,3 +49,5 @@ export * from "./common/HTMLWidget";
 export * from "./common/SVGWidget";
 export * from "./marshaller/HTML";
 export * from "./dgrid/Table";
+export * from "./phosphor/DockPanel";
+export * from "./phosphor/SplitPanel";
