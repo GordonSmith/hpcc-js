@@ -1,3 +1,4 @@
+import { each, IterableOrArrayLike, toArray } from "@phosphor/algorithm";
 import { DockPanel as PDockPanel, Widget as PWidget } from "@phosphor/widgets";
 import { Column } from "../chart/Column";
 import { DDLEditor } from "../codemirror/DDLEditor";
@@ -8,8 +9,32 @@ import { WidgetAdapter } from "./WidgetAdapter";
 import "@phosphor/widgets/style/index.css";
 import "./DockPanel.css";
 
+interface Differences<T> {
+    match: T[];
+    removed: T[];
+    added: T[];
+}
+function diff<T>(source: IterableOrArrayLike<T>, other: IterableOrArrayLike<T>): Differences<T> {
+    const retVal: Differences<T> = {
+        match: [],
+        removed: [],
+        added: []
+    };
+    retVal.added = toArray(other);
+    each(source, (item) => {
+        const idx = retVal.added.indexOf(item);
+        if (idx >= 0) {
+            retVal.match.push(item);
+            retVal.added.splice(idx, 1);
+        } else {
+            retVal.removed.push(item);
+        }
+    });
+    return retVal;
+}
+
 export class DockPanel extends HTMLWidget {
-    protected _dock = new PDockPanel();
+    protected _dock = new PDockPanel({ tabsMovable: false });
 
     constructor() {
         super();
@@ -32,6 +57,11 @@ export class DockPanel extends HTMLWidget {
         this._dock.addWidget(w4);
         this._dock.addWidget(w5);
         PWidget.attach(this._dock, domNode);
+
+        const test = [w1, w3, w5];
+        diff(this._dock.children(), test);
+        setTimeout(() => { this._dock.tabsMovable = true; }, 10000);
+
     }
 
     update(domNode, element) {

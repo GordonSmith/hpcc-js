@@ -1,4 +1,3 @@
-/*
 //  Common  ---
 export * from "./common/CanvasWidget";
 export * from "./common/HTMLWidget";
@@ -24,6 +23,7 @@ export * from "./chart/Summary";
 export * from "./chart/Gantt";
 export * from "./chart/HexBin";
 
+/*
 //  Tree  ---
 export { Column as TreemapColumn, Treemap } from "./tree/Treemap";
 export * from "./tree/CirclePacking";

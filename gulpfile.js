@@ -59,11 +59,10 @@ gulp.task("clean", [], function () {
 
 //  Copy resources   ---
 gulp.task("copy-css", shell.task([
-    //  TODO:  Convert to native cpx.
-    "node ./node_modules/cpx/bin/index.js src/**/*.css lib/",
-    "node ./node_modules/cpx/bin/index.js src/**/*.css lib-umd/",
-    "node ./node_modules/cpx/bin/index.js src/**/*.css lib-test-es6/src/",
-    "node ./node_modules/cpx/bin/index.js test/**/*.css lib-test-es6/test/"
+    cpx.copySync("src/**/*.css", "lib/"),
+    cpx.copySync("src/**/*.css", "lib-umd/"),
+    cpx.copySync("src/**/*.css", "lib-test-es6/src/"),
+    cpx.copySync("test/**/*.css", "lib-test-es6/test/")
 ]));
 
 //  Compile  ---

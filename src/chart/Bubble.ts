@@ -1,5 +1,5 @@
 import { hierarchy as d3Hierarchy, pack as d3Pack } from "d3-hierarchy";
-import { select as d3Select, Selection } from "d3-selection";
+import { select as d3Select } from "d3-selection";
 import "d3-transition";
 import { I2DChart } from "../api/I2DChart";
 import { ITooltip } from "../api/ITooltip";

@@ -16,7 +16,7 @@
     },
     "scripts": {
         "clean": "gulp clean",
-        "compile": "gulp compile-all",
+        "compile": "gulp compile-src",
         "doc": "gulp docs",
         "bundle": "gulp bundle-all",
         "build": "gulp compile-all",
@@ -30,6 +30,7 @@
     "dependencies": {
         "@hpcc-js/ddl": "^0.0.0",
         "@hpcc-js/dgrid": "^0.0.0",
+        "@phosphor/algorithm": "^1.1.0",
         "@phosphor/widgets": "^1.2.0",
         "@phosphor/messaging": "^1.2.0",
         "colorbrewer": "^1.0.0",
