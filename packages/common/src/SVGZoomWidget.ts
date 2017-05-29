@@ -4,7 +4,7 @@ import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from "d3-zoom";
 import { Icon } from "./Icon";
 import { SVGWidget } from "./SVGWidget";
 
-import "./SVGZoomWidget.css";
+import "../src/SVGZoomWidget.css";
 
 export class SVGZoomWidget extends SVGWidget {
 
