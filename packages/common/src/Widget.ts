@@ -5,7 +5,7 @@ import { } from "./Platform";
 import { PropertyExt } from "./PropertyExt";
 import { debounce } from "./Utility";
 
-import "./Widget.css";
+import "../src/Widget.css";
 
 export interface IPos {
     x: number;

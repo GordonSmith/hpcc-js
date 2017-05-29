@@ -2,7 +2,7 @@ import { IList } from "./IList";
 import { SVGWidget } from "./SVGWidget";
 import { TextBox } from "./TextBox";
 
-import "./List.css";
+import "../src/List.css";
 
 export class List extends SVGWidget implements IList {
 

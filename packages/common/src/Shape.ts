@@ -1,7 +1,7 @@
 import { select as d3Select } from "d3-selection";
 import { SVGWidget } from "./SVGWidget";
 
-import "./Shape.css";
+import "../src/Shape.css";
 
 export class Shape extends SVGWidget {
     protected _tooltipElement;
