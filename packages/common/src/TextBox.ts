@@ -3,7 +3,7 @@ import { SVGWidget } from "./SVGWidget";
 import { Text } from "./Text";
 import { ISize } from "./Widget";
 
-import "./TextBox.css";
+import "../src/TextBox.css";
 
 export class TextBox extends SVGWidget {
 

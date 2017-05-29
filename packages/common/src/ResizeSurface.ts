@@ -1,8 +1,9 @@
 import { dispatch as d3Dispatch } from "d3-dispatch";
 import { drag as d3Drag } from "d3-drag";
+import { event as d3Event, select as d3Select } from "d3-selection";
 import { Surface } from "./Surface";
 
-import "./ResizeSurface.css";
+import "../src/ResizeSurface.css";
 
 export class ResizeSurface extends Surface {
 
@@ -27,9 +28,11 @@ export class ResizeSurface extends Surface {
         const context = this;
         this.dispatch = d3Dispatch("sizestart", "size", "sizeend");
         this.drag = d3Drag()
-            .origin(function (d) { return d; })
-            .on("dragstart", function (d) {
-                context.dispatch.sizestart(context, d.loc);
+            .subject(function (d) { return d; })
+            ;
+        this.drag
+            .on("start", function (d) {
+                context.dispatch.call("sizestart", context, d.loc);
                 if (context.allowResize()) {
                     d3Event.sourceEvent.stopPropagation();
                     context._dragHandlePos = { x: d.x, y: d.y };
@@ -106,11 +109,11 @@ export class ResizeSurface extends Surface {
                         .render()
                         .getBBox(true)
                         ;
-                    context.dispatch.size(context, d.loc);
+                    context.dispatch.call("size", context, d.loc);
                     context._prevPosSize = posSize;
                 }
             })
-            .on("dragend", function (d) {
+            .on("end", function (d) {
                 if (context.allowResize()) {
                     d3Event.sourceEvent.stopPropagation();
                     context
@@ -119,7 +122,7 @@ export class ResizeSurface extends Surface {
                         ;
                     context._container.getBBox(true);
                     context._titleRect.getBBox(true);
-                    context.dispatch.sizeend(context, d.loc);
+                    context.dispatch.call("sizeend", context, d.loc);
                 }
             })
             ;
@@ -129,12 +132,12 @@ export class ResizeSurface extends Surface {
         const retVal = super.move.apply(this, arguments);
         this.updateHandles(this._domNode, this._element);
         return retVal;
-    };
+    }
 
     update(domNode, element) {
         super.update(domNode, element);
         this.updateHandles(domNode, element);
-    };
+    }
 
     updateHandles(_domNode, _element) {
         const sizeHandles = this._parentElement.selectAll("rect").data(this.handles, function (d) { return d.loc; });
@@ -210,10 +213,9 @@ export class ResizeSurface extends Surface {
                     ;
             })
             ;
-    };
+    }
     allowResize: { (): boolean; (_: boolean): ResizeSurface; };
 }
 ResizeSurface.prototype._class += " common_ResizeSurface";
 
 ResizeSurface.prototype.publish("allowResize", true, "boolean", "Sets if surface can be resized", null, { tags: ["Private", "Shared"] });
-

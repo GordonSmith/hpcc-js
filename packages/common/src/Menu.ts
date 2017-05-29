@@ -4,17 +4,17 @@ import { IMenu } from "./IMenu";
 import { List } from "./List";
 import { SVGWidget } from "./SVGWidget";
 
-import "./Menu.css";
+import "../src/Menu.css";
 
 export class Menu extends SVGWidget implements IMenu {
-    protected _icon = new Icon();
+    protected _icon = new Icon().shape("square").diameter(14).paddingPercent(0);
     protected _list = new List();
     protected _open;
 
     constructor() {
         super();
 
-        var context = this;
+        const context = this;
         this._list.click = function (d) {
             d3Event.stopPropagation();
             context.hideMenu();
@@ -29,7 +29,7 @@ export class Menu extends SVGWidget implements IMenu {
         } else {
             this.hideMenu();
         }
-    };
+    }
 
     showMenu() {
         this.preShowMenu();
@@ -39,16 +39,16 @@ export class Menu extends SVGWidget implements IMenu {
             .render()
             ;
 
-        var bbox = this._icon.getBBox(true);
-        var menuBBox = this._list.getBBox(true);
-        var pos = {
+        const bbox = this._icon.getBBox(true);
+        const menuBBox = this._list.getBBox(true);
+        const pos = {
             x: bbox.width / 2 - menuBBox.width / 2,
             y: bbox.height / 2 + menuBBox.height / 2
         };
         this._list
             .move(pos)
             ;
-        var context = this;
+        const context = this;
         d3Select("body")
             .on("click." + this._id, function () {
                 console.log("click:  body - " + context._id);
@@ -57,7 +57,7 @@ export class Menu extends SVGWidget implements IMenu {
                 }
             })
             ;
-    };
+    }
 
     hideMenu() {
         d3Select("body")
@@ -69,7 +69,7 @@ export class Menu extends SVGWidget implements IMenu {
             .render()
             ;
         this.postHideMenu();
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
@@ -84,14 +84,14 @@ export class Menu extends SVGWidget implements IMenu {
             .render()
             ;
 
-        var context = this;
+        const context = this;
         this._icon.element()
             .on("click", function () {
                 d3Event.stopPropagation();
                 context.toggleMenu();
             })
             ;
-    };
+    }
 
     update(domNode, element) {
         super.update(domNode, element);
@@ -104,7 +104,7 @@ export class Menu extends SVGWidget implements IMenu {
             .paddingPercent(this.paddingPercent())
             .render()
             ;
-    };
+    }
 
     exit(domNode, element) {
         this._icon
@@ -116,21 +116,21 @@ export class Menu extends SVGWidget implements IMenu {
             ;
 
         super.exit(domNode, element);
-    };
+    }
 
     //  Events  ---
     click(d) {
         console.log("Click:  " + d);
-    };
+    }
     preShowMenu() {
         console.log("preShowMenu");
-    };
+    }
     postHideMenu() {
         console.log("postHideMenu");
-    };
+    }
 
-    faChar: { (): string; (_: string): Menu; }
-    paddingPercent: { (): number; (_: number): Menu; }
+    faChar: { (): string; (_: string): Menu; };
+    paddingPercent: { (): number; (_: number): Menu; };
 }
 Menu.prototype._class += " common_Menu";
 
