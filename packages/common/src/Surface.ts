@@ -6,7 +6,7 @@ import { Shape } from "./Shape";
 import { SVGWidget } from "./SVGWidget";
 import { Text } from "./Text";
 
-import "./Surface.css";
+import "../src/Surface.css";
 
 export class Surface extends SVGWidget {
     _origMenuParam;

@@ -2,6 +2,8 @@
   "name": "hpcc-js",
   "version": "2.0.0-dev",
   "description": "HPCC Visualization Framework",
+  "dependencies": {
+  },
   "devDependencies": {
     "async": "~1.5.0",
     "csso": "~1.7.1",
