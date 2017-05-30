@@ -1,11 +1,11 @@
+import { INDChart, ITooltip } from "@hpcc-js/api";
+import { SVGWidget } from "@hpcc-js/common";
 import { hsl as d3Hsl } from "d3-color";
 import { select as d3Select } from "d3-selection";
 import { area as d3Area, curveBasis as d3CurveBasis, curveBundle as d3CurveBundle, curveCardinal as d3CurveCardinal, curveLinear as d3CurveLinear, curveMonotoneX as d3CurveMonotoneX, curveStep as d3CurveStep, curveStepAfter as d3CurveStepAfter, curveStepBefore as d3CurveStepBefore, line as d3Line } from "d3-shape";
-import { INDChart } from "../api/INDChart";
-import { ITooltip } from "../api/ITooltip";
-import { SVGWidget } from "../common/SVGWidget";
-import "./Scatter.css";
 import { XYAxis } from "./XYAxis";
+
+import "../src/Scatter.css";
 
 export class Scatter extends XYAxis {
     constructor() {
@@ -21,11 +21,11 @@ export class Scatter extends XYAxis {
 
     xPos(d) {
         return this.orientation() === "horizontal" ? this.dataPos(d.label) : this.valuePos(d.value);
-    };
+    }
 
     yPos(d) {
         return this.orientation() === "horizontal" ? this.valuePos(d.value) : this.dataPos(d.label);
-    };
+    }
 
     private curve(): any {
         switch (this.interpolate()) {
@@ -47,7 +47,7 @@ export class Scatter extends XYAxis {
             default:
                 return d3CurveMonotoneX;
         }
-    };
+    }
 
     enter(_domNode, _element) {
         XYAxis.prototype.enter.apply(this, arguments);
@@ -57,7 +57,7 @@ export class Scatter extends XYAxis {
                 return context.tooltipFormat({ label: d.label, series: context.columns()[d.colIdx], value: d.value });
             })
             ;
-    };
+    }
 
     protected _prevPointShape;
     updateChart(_domNode, _element, _margin, _width, height, isHorizontal) {
@@ -212,11 +212,11 @@ export class Scatter extends XYAxis {
                     ;
             });
         lines.exit().remove();
-    };
+    }
 
     exit(_domNode, _element) {
         SVGWidget.prototype.exit.apply(this, arguments);
-    };
+    }
 
     paletteID: { (): string; (_: string): Scatter; };
     useClonedPalette: { (): boolean; (_: boolean): Scatter; };

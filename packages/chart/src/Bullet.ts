@@ -1,9 +1,9 @@
-import { bullet as d3Bullet } from "d3-bullet";
+import { HTMLWidget } from "@hpcc-js/common";
+import { Utility } from "@hpcc-js/common";
+import { bullet as d3Bullet } from "@hpcc-js/d3-bullet";
 import { select as d3Select } from "d3-selection";
-import { HTMLWidget } from "../common/HTMLWidget";
-import * as Utility from "../common/Utility";
 
-import "./Bullet.css";
+import "../src/Bullet.css";
 
 export class Bullet extends HTMLWidget {
     constructor() {
@@ -34,24 +34,24 @@ export class Bullet extends HTMLWidget {
             }
             return [];
         }
-    };
+    }
 
     enter(domNode, element) {
         HTMLWidget.prototype.enter.apply(this, arguments);
         d3Select(domNode.parentNode).style("overflow", "auto");
         this._selection.widgetElement(element);
-    };
+    }
 
     update(_domNode, element) {
         HTMLWidget.prototype.update.apply(this, arguments);
         const context = this;
 
-        const margin = { top: 8, right: 16, bottom: 20, left: 16 };
+        const margin = { left: 2, top: 8, right: 2, bottom: 8 };
         const width = this.width() - margin.left - margin.right;
-        const height = 50 - margin.top - margin.bottom;
+        const height = 40 - margin.top - margin.bottom;
 
         const svg = element.selectAll("svg").data(this.bulletData());
-        svg.enter().append("svg")
+        const svgUpdate = svg.enter().append("svg")
             .attr("class", "bullet")
             .call(this._selection.enter.bind(this._selection))
             .on("click", function (d) {
@@ -76,10 +76,11 @@ export class Bullet extends HTMLWidget {
                     .attr("dy", "1em")
                     ;
             })
+            .merge(svg)
             ;
 
         //  Title ---
-        const title = svg.select(".bulletTitle")
+        const title = svgUpdate.select(".bulletTitle")
             .style("text-anchor", "end")
             .attr("transform", "translate(-6," + height / 2 + ")")
             ;
@@ -89,33 +90,38 @@ export class Bullet extends HTMLWidget {
         title.select(".subtitle")
             .text(function (d) { return d.subtitle; })
             ;
+
         let titleWidth = 0;
         title.each(function () {
             const bbox = this.getBBox();
+            console.log(bbox.width);
             if (bbox.width > titleWidth) {
                 titleWidth = bbox.width;
             }
         });
+        titleWidth; //  Gap between title and bullet bar.
 
         //  Bullet Chart ---
-        const chart = new d3Bullet()
-            .width(width - titleWidth)
+        const chart = d3Bullet()
+            .width(width - titleWidth - 6)
             .height(height)
             ;
-        svg
+        svgUpdate
             .attr("width", width)
             .attr("height", height + margin.top + margin.bottom)
+            .style("margin-left", `${margin.left}px`)
             ;
-        svg.select(".bulletBar")
-            .attr("transform", "translate(" + (titleWidth + margin.left) + "," + margin.top + ")")
+        svgUpdate.select(".bulletBar")
+            .attr("transform", "translate(" + (titleWidth + 6) + "," + margin.top + ")")
             .call(chart)
             ;
+
         svg.exit().remove();
-    };
+    }
 
     exit(_domNode, _element) {
         HTMLWidget.prototype.exit.apply(this, arguments);
-    };
+    }
 
     titleColumn: (_?: string) => string | Bullet;
     subtitleColumn: (_?: string) => string | Bullet;
@@ -126,11 +132,11 @@ export class Bullet extends HTMLWidget {
     //  Events ---
     click(row, column, selected) {
         console.log("Click:  " + JSON.stringify(row) + ", " + column + "," + selected);
-    };
+    }
 
     dblclick(row, column, selected) {
         console.log("Double click:  " + JSON.stringify(row) + ", " + column + "," + selected);
-    };
+    }
 
     //  SimpleSelectionMixin
     _selection;
