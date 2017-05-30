@@ -1,18 +1,15 @@
-import "./Pie.css";
+import { I2DChart, ITooltip } from "@hpcc-js/api";
+import { FAChar, SVGWidget, Text, Utility } from "@hpcc-js/common";
 import { interpolate as d3Interpolate } from "d3-interpolate";
 import { select as d3Select } from "d3-selection";
 import { arc as d3Arc, pie as d3Pie } from "d3-shape";
-import { I2DChart } from "../api/I2DChart";
-import { ITooltip } from "../api/ITooltip";
-import { FAChar } from "../common/FAChar";
-import { SVGWidget } from "../common/SVGWidget";
-import { Text } from "../common/Text";
-import * as Utility from "../common/Utility";
+
+import "../src/Pie.css";
 
 export class Pie extends SVGWidget {
     labelWidgets;
     d3Pie;
-    d3Arc
+    d3Arc;
     constructor() {
         super();
         I2DChart.call(this);
@@ -52,7 +49,7 @@ export class Pie extends SVGWidget {
         angle = (angle < 0) ? (angle + Math.PI * 2) : angle;
 
         return (r1 * r1 <= dist) && (dist <= r2 * r2) && (theta1 <= angle) && (angle <= theta2);
-    };
+    }
 
     boxInArc(pos, bb, ptData) {
         const topLeft = { x: pos.x + bb.x, y: pos.y + bb.y };
@@ -60,15 +57,15 @@ export class Pie extends SVGWidget {
         const bottomLeft = { x: topLeft.x, y: topLeft.y + bb.height };
         const bottomRight = { x: topLeft.x + bb.width, y: topLeft.y + bb.height };
         return this.pointInArc(topLeft, ptData) && this.pointInArc(topRight, ptData) && this.pointInArc(bottomLeft, ptData) && this.pointInArc(bottomRight, ptData);
-    };
+    }
 
     calcRadius() {
         return Math.min(this._size.width, this._size.height) / 2 - 2;
-    };
+    }
 
     intersection(pointA, pointB) {
         return this.intersectCircle(this.calcRadius(), pointA, pointB);
-    };
+    }
 
     enter(_domNode, element) {
         super.enter(_domNode, element);
@@ -79,7 +76,7 @@ export class Pie extends SVGWidget {
                 return context.tooltipFormat({ label: d.data[0], value: d.data[1] });
             })
             ;
-    };
+    }
 
     update(_domNode, element) {
         super.update(_domNode, element);
@@ -89,7 +86,7 @@ export class Pie extends SVGWidget {
         if (this.useClonedPalette()) {
             this._palette = this._palette.cloneNotExists(this.paletteID() + "_" + this.id());
         }
-        this.d3Arc.innerRadius(this.innerRadius_exists() ? this.calcRadius() * this.innerRadius() / 100 : 0);
+        this.d3Arc.innerRadius(this.innerRadius_exists() ? this.calcRadius() * (this.innerRadius() as number) / 100 : 0);
         const arc = element.selectAll(".arc").data(this.d3Pie(this.data()), function (d) {
             return d.data[0];
         });
@@ -194,16 +191,16 @@ export class Pie extends SVGWidget {
                 });
             };
         }
-    };
+    }
 
     exit(_domNode, _element) {
         SVGWidget.prototype.exit.apply(this, arguments);
-    };
+    }
 
     paletteID: (_?: string) => string | Pie;
     useClonedPalette: (_?: boolean) => boolean | Pie;
     outerText: (_?: boolean) => boolean | Pie;
-    innerRadius: { (); number; (_: number): Pie };
+    innerRadius: (_?) => number | Pie;
     innerRadius_exists: () => boolean;
 
     //  I2DChart
@@ -215,10 +212,10 @@ export class Pie extends SVGWidget {
     tooltip;
     tooltipHTML: (_) => string;
     tooltipFormat: (_) => string;
-    tooltipTick: { (): boolean; (_: boolean): ITooltip; };
-    tooltipTick_default: { (): boolean; (_: boolean): ITooltip; };
-    tooltipOffset: { (): number; (_: number): ITooltip; };
-    tooltipOffset_default: { (): number; (_: number): ITooltip; };
+    tooltipTick: { (): boolean; (_: boolean): Pie; };
+    tooltipTick_default: { (): boolean; (_: boolean): Pie; };
+    tooltipOffset: { (): number; (_: number): Pie; };
+    tooltipOffset_default: { (): number; (_: number): Pie; };
 
     //  SimpleSelectionMixin
     _selection;
@@ -233,4 +230,3 @@ Pie.prototype.publish("paletteID", "default", "set", "Palette ID", Pie.prototype
 Pie.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
 Pie.prototype.publish("outerText", false, "boolean", "Sets label position inside or outside chart", null, { tags: ["Basic"] });
 Pie.prototype.publish("innerRadius", 0, "number", "Sets inner pie hole radius as a percentage of the radius of the pie chart", null, { tags: ["Basic"] });
-

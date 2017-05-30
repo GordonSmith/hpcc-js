@@ -1,7 +1,7 @@
+import { INDChart } from "@hpcc-js/api";
 import { map as d3Map } from "d3-collection";
-import { INDChart } from "../api/INDChart";
-import { HTMLWidget } from "../common/HTMLWidget";
-import * as Utility from "../common/Utility";
+import { HTMLWidget } from "@hpcc-js/common";
+import { Utility } from "@hpcc-js/common";
 
 export function MultiChart() {
     HTMLWidget.call(this);
