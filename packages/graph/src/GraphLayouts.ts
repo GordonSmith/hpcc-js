@@ -112,7 +112,6 @@ export function ForceDirected(graphData, width, height, options) {
         .links(this.edges)
         ;
 
-
     if (options.oneShot) {
         this.force.restart();
         let total = graphData.nodeCount();

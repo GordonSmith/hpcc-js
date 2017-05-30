@@ -1,9 +1,9 @@
+import { Icon } from "@hpcc-js/common";
+import { SVGWidget } from "@hpcc-js/common";
+import { TextBox } from "@hpcc-js/common";
 import { select as d3Select } from "d3-selection";
-import { Icon } from "../common/Icon";
-import { SVGWidget } from "../common/SVGWidget";
-import { TextBox } from "../common/TextBox";
 
-import "./Vertex.css";
+import "../src/Vertex.css";
 
 export class Vertex extends SVGWidget {
     protected _icon: Icon;
@@ -28,7 +28,7 @@ export class Vertex extends SVGWidget {
             .target(domNode)
             .render()
             ;
-    };
+    }
 
     update(_domNode, element) {
         SVGWidget.prototype.update.apply(this, arguments);
@@ -114,7 +114,7 @@ export class Vertex extends SVGWidget {
                 element2.remove();
             })
             ;
-    };
+    }
 
     //  Methods  ---
     intersection(pointA, pointB) {
@@ -125,7 +125,7 @@ export class Vertex extends SVGWidget {
         if (i2)
             return i2;
         return null;
-    };
+    }
 
     faChar: { (): string; (_: string): Vertex; };
     imageUrl: { (): string; (_: string): Vertex; };
