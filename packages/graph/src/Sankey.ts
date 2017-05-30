@@ -1,11 +1,12 @@
-﻿import { max as d3Max, median as d3Median, mean as d3Mean, min as d3Min, sum as d3Sum } from "d3-array";
-import { sankey as d3Sankey } from "d3-sankey";
+﻿import { Palette } from "@hpcc-js/common";
+import { PropertyExt } from "@hpcc-js/common";
+import { SVGWidget } from "@hpcc-js/common";
+import { Utility } from "@hpcc-js/common";
+import { max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum } from "d3-array";
+import { sankey as d3Sankey, sankeyLinkHorizontal as d3SankeyLinkHorizontal } from "d3-sankey";
 import { select as d3Select } from "d3-selection";
-import * as Palette from "../common/Palette";
-import { PropertyExt } from "../common/PropertyExt";
-import { SVGWidget } from "../common/SVGWidget";
-import * as Utility from "../common/Utility";
-import "./Sankey.css";
+
+import "../src/Sankey.css";
 
 const d3Aggr = {
     mean: d3Mean,
@@ -15,10 +16,10 @@ const d3Aggr = {
     sum: d3Sum
 };
 
-export class Column extends PropertyExt {
+export class SankeyColumn extends PropertyExt {
     _owner;
 
-    constructor(owner) {
+    constructor(owner?) {
         super();
         this._owner = owner;
     }
@@ -30,24 +31,24 @@ export class Column extends PropertyExt {
             case "":
                 return values.length;
             default:
-                var columns = this._owner.columns();
+                const columns = this._owner.columns();
                 const colIdx = columns.indexOf(this.aggrColumn());
                 return d3Aggr[this.aggrType()](values, function (value) {
                     return +value[colIdx];
                 });
         }
-    };
+    }
 
-    column: { (): Column[]; (_: Column[]): Column; };
-    aggrType: { (): string; (_: string): Column; };
-    aggrColumn: { (): string; (_: string): Column; };
+    column: { (): string; (_: string): SankeyColumn; };
+    aggrType: { (): string; (_: string): SankeyColumn; };
+    aggrColumn: { (): string; (_: string): SankeyColumn; };
 
 }
-Column.prototype._class += " graph_Sankey.Column";
+SankeyColumn.prototype._class += " graph_Sankey.SankeyColumn";
 
-Column.prototype.publish("column", null, "set", "Field", function () { return this._owner ? this._owner.columns() : []; }, { optional: true });
-Column.prototype.publish("aggrType", null, "set", "Aggregation Type", [null, "mean", "median", "sum", "min", "max"], { optional: true, disable: function (w) { return !w._owner || w._owner.mappings().indexOf(w) === 0; } });
-Column.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function () { return this._owner ? this._owner.columns() : []; }, { optional: true, disable: function (w) { return !w._owner || !w.aggrType() || w._owner.mappings().indexOf(w) === 0; } });
+SankeyColumn.prototype.publish("column", null, "set", "Field", function () { return this._owner ? this._owner.columns() : []; }, { optional: true });
+SankeyColumn.prototype.publish("aggrType", null, "set", "Aggregation Type", [null, "mean", "median", "sum", "min", "max"], { optional: true, disable: w => !w._owner || w._owner.mappings().indexOf(w) === 0 });
+SankeyColumn.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function () { return this._owner ? this._owner.columns() : []; }, { optional: true, disable: w => !w._owner || !w.aggrType() || w._owner.mappings().indexOf(w) === 0 });
 
 export class Sankey extends SVGWidget {
     Column;
@@ -71,7 +72,7 @@ export class Sankey extends SVGWidget {
         };
         const mappings = this.mappings().filter(function (mapping) { return mapping.column(); });
         mappings.forEach(function (mapping, idx) {
-            let view = this._db.rollupView([mapping.column()]);
+            const view = this._db.rollupView([mapping.column()]);
             view.entries().forEach(function (row) {
                 const id = mapping.column() + ":" + idx + ":" + row.key;
                 if (!vertexIndex[id]) {
@@ -105,15 +106,14 @@ export class Sankey extends SVGWidget {
         }, this);
 
         return retVal;
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
 
         this._d3Sankey = new d3Sankey();
-        this._d3SankeyPath = this._d3Sankey.link();
         this._selection.widgetElement(element);
-    };
+    }
 
     update(domNode, element) {
         super.update(domNode, element);
@@ -122,14 +122,12 @@ export class Sankey extends SVGWidget {
 
         const sankeyData = this.sankeyData();
         this._d3Sankey
-            .size([this.width(), this.height()])
+            .extent([[0, 0], [this.width(), this.height()]])
             .nodeWidth(this.vertexWidth())
             .nodePadding(this.vertexPadding())
-            .nodes(sankeyData.vertices)
-            .links(sankeyData.edges)
-            .layout(32)
             ;
 
+        this._d3Sankey({ nodes: sankeyData.vertices, links: sankeyData.edges });
         const context = this;
 
         // Links ---
@@ -142,7 +140,7 @@ export class Sankey extends SVGWidget {
                     ;
             })
             .merge(link)
-            .attr("d", this._d3SankeyPath)
+            .attr("d", d3SankeyLinkHorizontal())
             .style("stroke-width", function (d) { return Math.max(1, d.dy); })
             .sort(function (a, b) { return b.dy - a.dy; })
             .select("title")
@@ -215,7 +213,7 @@ export class Sankey extends SVGWidget {
             gElement.attr("transform", "translate(" + d.x + "," + d.y + ")");
             context._d3Sankey.relayout();
             link.attr("d", context._d3SankeyPath);
-    
+
             gElement.select("text")
                 .attr("x", -6)
                 .attr("y", function (d) { return d.dy / 2; })
@@ -229,10 +227,10 @@ export class Sankey extends SVGWidget {
             ;
         }
         */
-    };
+    }
 
     paletteID: { (): string; (_: string): Sankey; };
-    mappings: { (): Column[]; (_: Column[]): Sankey; };
+    mappings: { (): SankeyColumn[]; (_: SankeyColumn[]): Sankey; };
     vertexWidth: { (): number; (_: number): Sankey; };
     vertexPadding: { (): number; (_: number): Sankey; };
     xAxisMovement: { (): boolean; (_: boolean): Sankey; };
@@ -240,25 +238,25 @@ export class Sankey extends SVGWidget {
 
     exit(domNode, element) {
         super.exit(domNode, element);
-    };
+    }
 
     //  Events  ---
     click(row, column, selected) {
         console.log("Click:  " + JSON.stringify(row) + ", " + column + "," + selected);
-    };
+    }
 
     dblclick(row, column, selected) {
         console.log("Double Click:  " + JSON.stringify(row) + ", " + column + "," + selected);
-    };
+    }
 }
 Sankey.prototype._class += " graph_Sankey";
-Sankey.prototype.Column = Column;
+Sankey.prototype.Column = SankeyColumn;
 Sankey.prototype.mixin(Utility.SimpleSelectionMixin);
 
 Sankey.prototype._palette = Palette.ordinal("default");
 
 Sankey.prototype.publish("paletteID", "default", "set", "Palette ID", Sankey.prototype._palette.switch());
-Sankey.prototype.publish("mappings", [], "propertyArray", "Source Columns", null, { autoExpand: Column });
+Sankey.prototype.publish("mappings", [], "propertyArray", "Source Columns", null, { autoExpand: SankeyColumn });
 Sankey.prototype.publish("vertexWidth", 36, "number", "Vertex Width");
 Sankey.prototype.publish("vertexPadding", 40, "number", "Vertex Padding");
 Sankey.prototype.publish("xAxisMovement", false, "boolean", "Enable x-axis movement");

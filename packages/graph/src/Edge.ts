@@ -1,10 +1,10 @@
+import { svgMarkerGlitch } from "@hpcc-js/common";
+import { SVGWidget } from "@hpcc-js/common";
+import { TextBox } from "@hpcc-js/common";
 import { curveBundle as d3CurveBundle, line as d3Line } from "d3-shape";
-import { svgMarkerGlitch } from "../common/Platform";
-import { SVGWidget } from "../common/SVGWidget";
-import { TextBox } from "../common/TextBox";
 import { Vertex } from "./Vertex";
 
-import "./Edge.css";
+import "../src/Edge.css";
 
 export class Edge extends SVGWidget {
     protected _points: any[];
@@ -35,7 +35,7 @@ export class Edge extends SVGWidget {
         if (!arguments.length) return this._graphID;
         this._graphID = _;
         return this;
-    };
+    }
 
     sourceVertex(): Vertex;
     sourceVertex(_: Vertex): Edge;
@@ -43,7 +43,7 @@ export class Edge extends SVGWidget {
         if (!arguments.length) return this._sourceVertex;
         this._sourceVertex = _;
         return this;
-    };
+    }
 
     targetVertex(): Vertex;
     targetVertex(_: Vertex): Edge;
@@ -51,7 +51,7 @@ export class Edge extends SVGWidget {
         if (!arguments.length) return this._targetVertex;
         this._targetVertex = _;
         return this;
-    };
+    }
 
     weight(): number;
     weight(_: number): Edge;
@@ -59,7 +59,7 @@ export class Edge extends SVGWidget {
         if (!arguments.length) return this._weight;
         this._weight = _;
         return this;
-    };
+    }
 
     points(_, transitionDuration, skipPushMarkers) {
         if (!arguments.length) return this._points;
@@ -68,13 +68,13 @@ export class Edge extends SVGWidget {
             this.update(null, this._element, transitionDuration, skipPushMarkers);
         }
         return this;
-    };
+    }
 
     hidden(_) {
         if (!arguments.length) return this._hidden;
         this._hidden = _;
         return this;
-    };
+    }
 
     text(): string;
     text(_: string): Edge;
@@ -82,7 +82,7 @@ export class Edge extends SVGWidget {
         if (!arguments.length) return this._textBox.text();
         this._textBox.text(_);
         return this;
-    };
+    }
 
     enter(domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
@@ -96,7 +96,7 @@ export class Edge extends SVGWidget {
                 .render()
                 ;
         }
-    };
+    }
 
     update(_domNode, element, transitionDuration?, skipPushMarkers?) {
         SVGWidget.prototype.update.apply(this, arguments);
@@ -139,7 +139,7 @@ export class Edge extends SVGWidget {
                 .move(this._findMidPoint(points), transitionDuration)
                 ;
         }
-    };
+    }
 
     _findMidPoint(points) {
         const midIdx = points.length / 2;
@@ -151,7 +151,7 @@ export class Edge extends SVGWidget {
             return { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
         }
         return { x: 0, y: 0 };
-    };
+    }
 
     _calculateEdgePoints(source, target, _points) {
         if (!source || !target) {
@@ -185,20 +185,20 @@ export class Edge extends SVGWidget {
             }
         }
         return points;
-    };
+    }
 
     arcDepth: { (): number; (_: number): Edge; };
     showArc: { (): boolean; (_: boolean): Edge; };
     tooltip: { (): string; (_: string): Edge; };
 
     sourceMarker: { (): string; (_: string): Edge; };
-    sourceMarker_exists: { (): boolean; };
+    sourceMarker_exists: () => boolean;
     targetMarker: { (): string; (_: string): Edge; };
-    targetMarker_exists: { (): boolean; };
+    targetMarker_exists: () => boolean;
     strokeDasharray: { (): string; (_: string): Edge; };
-    strokeDasharray_exists: { (): boolean; };
+    strokeDasharray_exists: () => boolean;
     strokeColor: { (): string; (_: string): Edge; };
-    strokeColor_exists: { (): boolean; };
+    strokeColor_exists: () => boolean;
 }
 Edge.prototype._class += " graph_Edge";
 

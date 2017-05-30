@@ -1,15 +1,16 @@
 import * as dagre from "dagre";
 
-export class GraphData extends dagre.graphlib.Graph {
+export class GraphData extends dagre.graphlib.GraphData {
+    superGraphData: any;  //  Shut the compiler up  ---
     constructor() {
         super({ multigraph: true, compound: true });
-        this.setGraph({});
-        this.setDefaultNodeLabel(function () { return {}; });
-        this.setDefaultEdgeLabel(function () { return {}; });
+        this.superGraphData = this as any;
+        this.superGraphData.setGraph({});
+        this.superGraphData.setDefaultNodeLabel(function () { return {}; });
+        this.superGraphData.setDefaultEdgeLabel(function () { return {}; });
     }
 
     setData(vertices, edges, hierarchy, merge) {
-        const context = this;
         const retVal = {
             addedVertices: [],
             addedEdges: []
@@ -18,16 +19,16 @@ export class GraphData extends dagre.graphlib.Graph {
         //  Add new items  ---
         for (let i = 0; i < vertices.length; ++i) {
             const entity = vertices[i];
-            if (!merge || !this.hasNode(entity._id)) {
-                this.setNode(entity._id, entity);
+            if (!merge || !this.superGraphData.hasNode(entity._id)) {
+                this.superGraphData.setNode(entity._id, entity);
                 retVal.addedVertices.push(entity);
             }
         }
         for (let i = 0; i < edges.length; ++i) {
             const edge = edges[i];
-            if (!merge || !this.hasEdge(edge._id)) {
+            if (!merge || !this.superGraphData.hasEdge(edge._id)) {
                 if (edge._sourceVertex && edge._targetVertex) {
-                    this.setEdge(edge._sourceVertex._id, edge._targetVertex._id, edge, edge._id);
+                    this.superGraphData.setEdge(edge._sourceVertex._id, edge._targetVertex._id, edge, edge._id);
                     retVal.addedEdges.push(edge);
                 } else {
                     console.log("Bad edge definition");
@@ -36,7 +37,7 @@ export class GraphData extends dagre.graphlib.Graph {
         }
         if (hierarchy) {
             for (let i = 0; i < hierarchy.length; ++i) {
-                this.setParent(hierarchy[i].child._id, hierarchy[i].parent._id);
+                this.superGraphData.setParent(hierarchy[i].child._id, hierarchy[i].parent._id);
             }
         }
 
@@ -91,28 +92,28 @@ export class GraphData extends dagre.graphlib.Graph {
 
     nodeValues() {
         const retVal = [];
-        this.nodes().forEach(function (item) {
+        this.superGraphData.nodes().forEach(function (item) {
             retVal.push(this.node(item));
         }, this);
         return retVal;
     }
 
     eachNode(callback) {
-        this.nodes().forEach(function (item) {
+        this.superGraphData.nodes().forEach(function (item) {
             callback(item, this.node(item));
         }, this);
     }
 
     edgeValues() {
         const retVal = [];
-        this.edges().forEach(function (item) {
+        this.superGraphData.edges().forEach(function (item) {
             retVal.push(this.edge(item));
         }, this);
         return retVal;
     }
 
     eachEdge(callback) {
-        this.edges().forEach(function (item) {
+        this.superGraphData.edges().forEach(function (item) {
             callback(item, item.v, item.w, this.edge(item));
         }, this);
     }
