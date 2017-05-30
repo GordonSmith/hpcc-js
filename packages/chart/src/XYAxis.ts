@@ -1,11 +1,11 @@
+import { SVGWidget, Utility } from "@hpcc-js/common";
 import { max as d3Max, min as d3Min } from "d3-array";
 import { brushSelection as d3BrushSelection, brushX as d3BrushX, brushY as d3BrushY } from "d3-brush";
 import { hsl as d3Hsl } from "d3-color";
 import { event as d3Event } from "d3-selection";
-import { SVGWidget } from "../common/SVGWidget";
-import * as Utility from "../common/Utility";
 import { Axis } from "./Axis";
-import "./XYAxis.css";
+
+import "../src/XYAxis.css";
 
 export abstract class XYAxis extends SVGWidget {
     protected domainAxis: Axis;

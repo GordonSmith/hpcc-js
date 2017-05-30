@@ -1,11 +1,10 @@
+import { INDChart, ITooltip } from "@hpcc-js/api";
+import { Palette, SVGWidget } from "@hpcc-js/common";
 import { max as d3Max } from "d3-array";
 import { hexbin as d3HexBin } from "d3-hexbin";
-import { INDChart } from "../api/INDChart";
-import { ITooltip } from "../api/ITooltip";
-import * as Palette from "../common/Palette";
-import { SVGWidget } from "../common/SVGWidget";
-import "./HexBin.css";
 import { XYAxis } from "./XYAxis";
+
+import "../src/HexBin.css";
 
 export class HexBin extends XYAxis {
     _hexbin;
@@ -23,11 +22,11 @@ export class HexBin extends XYAxis {
 
     xPos(d) {
         return this.orientation() === "horizontal" ? this.dataPos(d.label) : this.valuePos(d.value);
-    };
+    }
 
     yPos(d) {
         return this.orientation() === "horizontal" ? this.valuePos(d.value) : this.dataPos(d.label);
-    };
+    }
 
     updateChart(_domNode, _element, _margin, width, height, _isHorizontal, duration) {
         const context = this;
@@ -60,11 +59,11 @@ export class HexBin extends XYAxis {
             .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")scale(0)"; })
             .remove()
             ;
-    };
+    }
 
     exit(_domNode, _element) {
         SVGWidget.prototype.exit.apply(this, arguments);
-    };
+    }
 
     paletteID: { (): string; (_: string): HexBin; };
     useClonedPalette: { (): boolean; (_: boolean): HexBin; };

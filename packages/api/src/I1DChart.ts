@@ -1,4 +1,4 @@
-import * as Palette from "../common/Palette";
+import { Palette } from "@hpcc-js/common";
 
 export function I1DChart() {
 }

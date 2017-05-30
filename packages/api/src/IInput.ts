@@ -1,4 +1,4 @@
-import { Widget } from "../common/Widget";
+import { Widget } from "@hpcc-js/common";
 
 export function IInput() {
     Widget.call(this);
