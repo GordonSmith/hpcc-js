@@ -1,12 +1,11 @@
-﻿import { hierarchy as d3Hierarchy, tree as d3Tree } from "d3-hierarchy";
+﻿import { ITree } from "@hpcc-js/api";
+import { PropertyExt, SVGZoomWidget, Utility } from "@hpcc-js/common";
+import { hierarchy as d3Hierarchy, tree as d3Tree } from "d3-hierarchy";
 import { select as d3Select } from "d3-selection";
-import { ITree } from "../api/ITree";
-import { PropertyExt } from "../common/PropertyExt";
-import { SVGZoomWidget } from "../common/SVGZoomWidget";
-import * as Utility from "../common/Utility";
-import "./Indented.css";
 
-export class Column extends PropertyExt {
+import "../src/Indented.css";
+
+export class IndentedColumn extends PropertyExt {
     _owner;
 
     constructor(owner) {
@@ -14,11 +13,11 @@ export class Column extends PropertyExt {
         this._owner = owner;
     }
 
-    column: (_?: string) => string | Column;
+    column: (_?: string) => string | IndentedColumn;
 }
-Column.prototype._class += " tree_Dendrogram.Column";
+IndentedColumn.prototype._class += " tree_Dendrogram.IndentedColumn";
 
-Column.prototype.publish("column", null, "set", "Field", function () { return this._owner ? this._owner.columns() : []; }, { optional: true });
+IndentedColumn.prototype.publish("column", null, "set", "Field", function () { return this._owner ? this._owner.columns() : []; }, { optional: true });
 
 // ===
 export class Indented extends SVGZoomWidget {
@@ -47,14 +46,14 @@ export class Indented extends SVGZoomWidget {
             return xmlToJson(doc, id).children[0];
         }
         return [];
-    };
+    }
 
     xml(_) {
         if (!arguments.length) return this._xml;
         this._xml = _;
         this.data(this.xmlToData(this._xml));
         return this;
-    };
+    }
 
     IndentedData() {
         if (this.xmlColumn_exists()) {
@@ -101,14 +100,14 @@ export class Indented extends SVGZoomWidget {
                 origRows: node.values
             };
         }
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
         this._svgLinks = this._renderElement.append("g");
         this._svgNodes = this._renderElement.append("g");
         this._selection.widgetElement(this._svgNodes);
-    };
+    }
 
     protected _prevDataChecksum;
     update(domNode, _element) {
@@ -218,11 +217,11 @@ export class Indented extends SVGZoomWidget {
         function color(d) {
             return context._collapsed[getID(d)] ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
         }
-    };
+    }
 
     xmlColumn: { (_: string): Indented; (): string; };
     xmlColumn_exists: () => boolean;
-    mappings: { (_: Column[]): Indented; (): Column[]; };
+    mappings: { (_: IndentedColumn[]): Indented; (): IndentedColumn[]; };
     barHeight: { (_: number): Indented; (): number; };
 
     //  ITree
@@ -236,10 +235,10 @@ export class Indented extends SVGZoomWidget {
 Indented.prototype._class += " tree_Indented";
 Indented.prototype.implements(ITree.prototype);
 Indented.prototype.mixin(Utility.SimpleSelectionMixin);
-Indented.prototype.Column = Column;
+Indented.prototype.Column = IndentedColumn;
 
 Indented.prototype.publish("xmlColumn", null, "set", "Field", function () { return this.columns(); }, { optional: true });
-Indented.prototype.publish("mappings", [], "propertyArray", "Source Columns", null, { autoExpand: Column, disable: (w) => { return w.xmlColumn_exists(); } });
+Indented.prototype.publish("mappings", [], "propertyArray", "Source Columns", null, { autoExpand: IndentedColumn, disable: (w) => w.xmlColumn_exists() });
 Indented.prototype.publish("barHeight", 16, "number", "Bar height");
 
 function xmlToJson(xml, id = "") {

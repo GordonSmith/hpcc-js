@@ -1,10 +1,11 @@
+import { ITree } from "@hpcc-js/api";
+import { SVGWidget } from "@hpcc-js/common";
 import { hierarchy as d3Hierarchy, pack as d3Pack } from "d3-hierarchy";
 import { interpolateZoom as d3InterpolateZoom } from "d3-interpolate";
 import { event as d3Event } from "d3-selection";
 import "d3-transition";
-import { ITree } from "../api/ITree";
-import { SVGWidget } from "../common/SVGWidget";
-import "./CirclePacking.css";
+
+import "../src/CirclePacking.css";
 
 export class CirclePacking extends SVGWidget {
     diameter;
@@ -32,7 +33,7 @@ export class CirclePacking extends SVGWidget {
             .append("g")
             .attr("transform", "rotate(30)")
             ;
-    };
+    }
 
     update(_domNode, _element) {
         const context = this;
@@ -79,7 +80,7 @@ export class CirclePacking extends SVGWidget {
         this._node = this.svg.selectAll("circle,text");
 
         this.zoomTo([root.x, root.y, root.r * 2]);
-    };
+    }
 
     zoom(newFocus) {
         this._focus = newFocus;

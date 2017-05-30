@@ -1,21 +1,20 @@
-﻿import { hierarchy as d3Hierarchy, treemap as d3Treemap } from "d3-hierarchy";
-import { ITree } from "../api/ITree";
-import { HTMLWidget } from "../common/HTMLWidget";
-import { PropertyExt } from "../common/PropertyExt";
-import * as Utility from "../common/Utility";
-import "./Treemap.css";
+﻿import { ITree } from "@hpcc-js/api";
+import { HTMLWidget, PropertyExt, Utility } from "@hpcc-js/common";
+import { hierarchy as d3Hierarchy, treemap as d3Treemap } from "d3-hierarchy";
 
-export class Column extends PropertyExt {
+import "../src/Treemap.css";
+
+export class TreemapColumn extends PropertyExt {
     _owner;
     constructor(owner) {
         super();
         this._owner = owner;
     }
-    column: { (): string; (_: string): Column; };
+    column: { (): string; (_: string): TreemapColumn; };
 }
-Column.prototype._class += " tree_Dendrogram.Column";
+TreemapColumn.prototype._class += " tree_Dendrogram.TreemapColumn";
 
-Column.prototype.publish("column", null, "set", "Field", function () { return this._owner ? this._owner.columns() : []; }, { optional: true });
+TreemapColumn.prototype.publish("column", null, "set", "Field", function () { return this._owner ? this._owner.columns() : []; }, { optional: true });
 
 // ===
 export class Treemap extends HTMLWidget {
@@ -64,7 +63,7 @@ export class Treemap extends HTMLWidget {
                 origRows: node.values
             };
         }
-    };
+    }
 
     enter(_domNode, element) {
         HTMLWidget.prototype.enter.apply(this, arguments);
@@ -72,7 +71,7 @@ export class Treemap extends HTMLWidget {
 
         this._elementDIV = element.append("div");
         this._selection.widgetElement(this._elementDIV);
-    };
+    }
 
     update(_domNode, _element) {
         HTMLWidget.prototype.update.apply(this, arguments);
@@ -155,15 +154,15 @@ export class Treemap extends HTMLWidget {
             }
             return retVal;
         }
-    };
+    }
 
     exit(domNode, element) {
         super.exit(domNode, element);
-    };
+    }
 
     paletteID: { (): string[]; (_: string[]): Treemap; };
     useClonedPalette: { (): boolean[]; (_: boolean[]): Treemap; };
-    mappings: { (): Column[]; (_: Column[]): Treemap; };
+    mappings: { (): TreemapColumn[]; (_: TreemapColumn[]): Treemap; };
     aggrType: { (): string; (_: string): Treemap; };
     aggrColumn: { (): string; (_: string): Treemap; };
     fontSize: { (): number; (_: number): Treemap; };
@@ -178,12 +177,12 @@ export class Treemap extends HTMLWidget {
 Treemap.prototype._class += " tree_Treemap";
 Treemap.prototype.implements(ITree.prototype);
 Treemap.prototype.mixin(Utility.SimpleSelectionMixin);
-Treemap.prototype.Column = Column;
+Treemap.prototype.Column = TreemapColumn;
 
 Treemap.prototype.publish("paletteID", "default", "set", "Palette ID", Treemap.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
 Treemap.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
-Treemap.prototype.publish("mappings", [], "propertyArray", "Source Columns", null, { autoExpand: Column });
+Treemap.prototype.publish("mappings", [], "propertyArray", "Source Columns", null, { autoExpand: TreemapColumn });
 Treemap.prototype.publish("aggrType", null, "set", "Aggregation Type", [null, "mean", "median", "sum", "min", "max"], { optional: true });
-Treemap.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function () { return this.columns(); }, { optional: true, disable: (w) => { return !w.aggrType(); } });
+Treemap.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function () { return this.columns(); }, { optional: true, disable: (w) => !w.aggrType() });
 Treemap.prototype.publish("fontSize", null, "number", "Font Size", null, { optional: true });
 Treemap.prototype.publish("transitionDuration", 250, "number", "Transition Duration");
