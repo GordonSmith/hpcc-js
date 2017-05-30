@@ -1,12 +1,11 @@
+import { ITree } from "@hpcc-js/api";
+import { PropertyExt, SVGZoomWidget, Utility } from "@hpcc-js/common";
 import { cluster as d3Cluster, hierarchy as d3Hierarchy, tree as d3Tree } from "d3-hierarchy";
 import { select as d3Select } from "d3-selection";
-import { ITree } from "../api/ITree";
-import { PropertyExt } from "../common/PropertyExt";
-import { SVGZoomWidget } from "../common/SVGZoomWidget";
-import * as Utility from "../common/Utility";
-import "./Dendrogram.css";
 
-export class Column extends PropertyExt {
+import "../src/Dendrogram.css";
+
+export class DendrogramColumn extends PropertyExt {
     _owner;
 
     constructor(owner) {
@@ -16,9 +15,9 @@ export class Column extends PropertyExt {
 
     column: { (): string; (_: string): Dendrogram; };
 }
-Column.prototype._class += " tree_Dendrogram.Column";
+DendrogramColumn.prototype._class += " tree_Dendrogram.DendrogramColumn";
 
-Column.prototype.publish("column", null, "set", "Field", function () { return this._owner ? this._owner.columns() : []; }, { optional: true });
+DendrogramColumn.prototype.publish("column", null, "set", "Field", function () { return this._owner ? this._owner.columns() : []; }, { optional: true });
 
 // ===
 export class Dendrogram extends SVGZoomWidget {
@@ -56,7 +55,7 @@ export class Dendrogram extends SVGZoomWidget {
                 origRows: node.values
             };
         }
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
@@ -66,7 +65,7 @@ export class Dendrogram extends SVGZoomWidget {
             .attr("opacity", 1)
             ;
         this._selection.widgetElement(this._renderElement);
-    };
+    }
 
     update(domNode, element) {
         super.update(domNode, element);
@@ -230,11 +229,11 @@ export class Dendrogram extends SVGZoomWidget {
         if (!this._renderCount) {
             context.zoomToFit();
         }
-    };
+    }
 
     paletteID: { (): string; (_: string): Dendrogram; };
     useClonedPalette: { (): boolean; (_: boolean): Dendrogram; };
-    mappings: { (): Column[]; (_: Column[]): Dendrogram; };
+    mappings: { (): DendrogramColumn[]; (_: DendrogramColumn[]): Dendrogram; };
 
     circleRadius: { (): number; (_: number): Dendrogram; };
     separation: { (): number; (_: number): Dendrogram; };
@@ -253,14 +252,14 @@ export class Dendrogram extends SVGZoomWidget {
 Dendrogram.prototype._class += " tree_Dendrogram";
 Dendrogram.prototype.implements(ITree.prototype);
 Dendrogram.prototype.mixin(Utility.SimpleSelectionMixin);
-Dendrogram.prototype.Column = Column;
+Dendrogram.prototype.Column = DendrogramColumn;
 
 Dendrogram.prototype.publish("paletteID", "default", "set", "Palette ID", Dendrogram.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
 Dendrogram.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
-Dendrogram.prototype.publish("mappings", [], "propertyArray", "Source Columns", null, { autoExpand: Column });
+Dendrogram.prototype.publish("mappings", [], "propertyArray", "Source Columns", null, { autoExpand: DendrogramColumn });
 
 Dendrogram.prototype.publish("circleRadius", 4.5, "number", "Text offset from circle");
 Dendrogram.prototype.publish("separation", 240, "number", "Leaf Separation");
 Dendrogram.prototype.publish("dendrogram", true, "boolean", "Dendrogram");
 Dendrogram.prototype.publish("radial", false, "boolean", "Radial");
-Dendrogram.prototype.publish("orientation", "horizontal", "set", "Orientation", ["horizontal", "vertical"], { tags: ["Private"], disable: function () { return this.radial(); } });
+Dendrogram.prototype.publish("orientation", "horizontal", "set", "Orientation", ["horizontal", "vertical"], { tags: ["Private"], disable: w => w.radial() });
