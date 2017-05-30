@@ -1,7 +1,6 @@
 import { INDChart } from "@hpcc-js/api";
+import { HTMLWidget, Utility } from "@hpcc-js/common";
 import { map as d3Map } from "d3-collection";
-import { HTMLWidget } from "@hpcc-js/common";
-import { Utility } from "@hpcc-js/common";
 
 export function MultiChart() {
     HTMLWidget.call(this);
@@ -79,7 +78,8 @@ MultiChart.prototype._mapChartTypes = [
     { id: "OPENSTREET", display: "Open Street Map", widgetClass: "map_OpenStreet" }
 ].map(function (item: any) { item.family = "map"; return item; });
 MultiChart.prototype._anyChartTypes = [
-    { id: "TABLE", display: "Table", widgetClass: "other_Table" },
+    { id: "TABLE", display: "Table", widgetClass: "dgrid_Table" },
+    { id: "TABLE_LEGACY", display: "Table (legacy)", widgetClass: "other_Table" },
     { id: "TABLE_NESTED", display: "Nested Table", widgetClass: "other_NestedTable" },
     { id: "TABLE_CALENDAR", display: "Table driven Calendar Heat Map", widgetClass: "other_CalendarHeatMap" },
     { id: "TABLE_BULLET", display: "Table driven bullet chart", widgetClass: "chart_Bullet" },
@@ -227,7 +227,6 @@ MultiChart.prototype.switchChart = function (callback) {
             context.chart(newContent);
             if (oldContent) {
                 oldContent
-                    .data([])
                     .size({ width: 1, height: 1 })
                     .render()
                     ;
