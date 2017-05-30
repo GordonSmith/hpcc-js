@@ -1,5 +1,5 @@
-import { ResizeSurface } from "../common/ResizeSurface";
-import { INDChart } from "../api/INDChart";
+import { INDChart } from "@hpcc-js/api";
+import { ResizeSurface } from "@hpcc-js/common";
 import { MultiChart } from "./MultiChart";
 
 export function MultiChartSurface() {

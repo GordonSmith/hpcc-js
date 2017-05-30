@@ -1,10 +1,11 @@
+import { SVGWidget } from "@hpcc-js/common";
 import { axisBottom as d3AxisBottom, axisLeft as d3AxisLeft, axisRight as d3AxisRight, axisTop as d3AxisTop } from "d3-axis";
 import { format as d3Format } from "d3-format";
 import { scaleBand as d3ScaleBand, scaleLinear as d3ScaleLinear, scaleLog as d3ScaleLog, scalePow as d3ScalePow, scaleTime as d3ScaleTime } from "d3-scale";
 import { select as d3Select } from "d3-selection";
 import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";
-import { SVGWidget } from "../common/SVGWidget";
-import "./Axis.css";
+
+import "../src/Axis.css";
 
 export interface IOverflow {
     left: number;
