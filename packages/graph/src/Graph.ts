@@ -1,15 +1,13 @@
-﻿import { drag as d3Drag } from "d3-drag";
+﻿import { IGraph } from "@hpcc-js/api";
+import { svgMarkerGlitch, SVGZoomWidget, Utility } from "@hpcc-js/common";
+import { drag as d3Drag } from "d3-drag";
 import { event as d3Event, select as d3Select } from "d3-selection";
-import { IGraph } from "../api/IGraph";
-import { svgMarkerGlitch } from "../common/Platform";
-import { SVGZoomWidget } from "../common/SVGZoomWidget";
-import * as Utility from "../common/Utility";
 import { Edge } from "./Edge";
 import { GraphData } from "./GraphData";
 import * as GraphLayouts from "./GraphLayouts";
 import { Vertex } from "./Vertex";
 
-import "./Graph.css";
+import "../src/Graph.css";
 
 export class Graph extends SVGZoomWidget {
     Vertex;
@@ -46,16 +44,16 @@ export class Graph extends SVGZoomWidget {
     //  Properties  ---
     getOffsetPos() {
         return { x: 0, y: 0 };
-    };
+    }
 
     size(_) {
         const retVal = super.size.apply(this, arguments);
         return retVal;
-    };
+    }
 
     clear() {
         this.data({ vertices: [], edges: [], hierarchy: [], merge: false });
-    };
+    }
 
     data(): any;
     data(_: any): Graph;
@@ -93,17 +91,16 @@ export class Graph extends SVGZoomWidget {
             });
         }
         return retVal;
-    };
+    }
 
     selection(_) {
         if (!arguments.length) return this._selection.get();
         this._selection.set(_);
         return this;
-    };
+    }
 
     enter(domNode, _element) {
         super.enter(domNode, _element);
-
 
         const context = this;
 
@@ -178,13 +175,13 @@ export class Graph extends SVGZoomWidget {
         // element.call(this.zoom);
 
         this.svg = this._renderElement.append("g");
-        //this._svgBrush = this.svg.append("g").attr("class", "selectionBrush").call(this.brush);
-        //this._svgBrush.select(".background").style("cursor", null);
+        // this._svgBrush = this.svg.append("g").attr("class", "selectionBrush").call(this.brush);
+        // this._svgBrush.select(".background").style("cursor", null);
         // context._svgBrush.call(context.brush.clear());
         this.svgC = this.svg.append("g").attr("id", this._id + "C");
         this.svgE = this.svg.append("g").attr("id", this._id + "E");
         this.svgV = this.svg.append("g").attr("id", this._id + "V");
-    };
+    }
 
     getBounds(items, layoutEngine) {
         const vBounds = [[null, null], [null, null]];
@@ -206,25 +203,24 @@ export class Graph extends SVGZoomWidget {
             if (vBounds[1][1] === null || vBounds[1][1] < bottomY) {
                 vBounds[1][1] = bottomY;
             }
-            }
         });
         return vBounds;
-    };
+    }
 
     getVertexBounds(layoutEngine) {
         return this.getBounds(this.graphData.nodeValues(), layoutEngine);
-    };
+    }
 
     getSelectionBounds(layoutEngine) {
         return this.getBounds(this._selection.get(), layoutEngine);
-    };
+    }
 
     centerOn(bounds, transitionDuration) {
         const x = (bounds[0][0] + bounds[1][0]) / 2;
         const y = (bounds[0][1] + bounds[1][1]) / 2;
         const translate = [x, y];
         this.zoomTo(translate, 1, transitionDuration);
-    };
+    }
 
     //  Render  ---
     update(domNode, element) {
@@ -391,7 +387,7 @@ export class Graph extends SVGZoomWidget {
             // this.setZoom([0, 0], 1);
             this.layout(this.layout());
         }
-    };
+    }
 
     //  Methods  ---
     getLayoutEngine() {
@@ -429,7 +425,7 @@ export class Graph extends SVGZoomWidget {
             default:
         }
         return null; // new GraphLayouts.None(this.graphData, this._size.width, this._size.height);
-    };
+    }
 
     getNeighborMap(vertex) {
         const vertices = {};
@@ -453,7 +449,7 @@ export class Graph extends SVGZoomWidget {
             vertices,
             edges
         };
-    };
+    }
 
     highlightVerticies(vertexMap) {
         const context = this;
@@ -476,7 +472,7 @@ export class Graph extends SVGZoomWidget {
             })
             ;
         return this;
-    };
+    }
 
     highlightEdges(edgeMap) {
         const context = this;
@@ -497,7 +493,7 @@ export class Graph extends SVGZoomWidget {
             })
             ;
         return this;
-    };
+    }
 
     highlightVertex(_element, d) {
         if (this.highlightOnMouseOverVertex()) {
@@ -511,7 +507,7 @@ export class Graph extends SVGZoomWidget {
                 this.highlightEdges(null);
             }
         }
-    };
+    }
 
     highlightEdge(_element, d) {
         if (this.highlightOnMouseOverEdge()) {
@@ -528,7 +524,7 @@ export class Graph extends SVGZoomWidget {
                 this.highlightEdges(null);
             }
         }
-    };
+    }
 
     refreshIncidentEdges(d, skipPushMarkers) {
         const context = this;
@@ -538,37 +534,37 @@ export class Graph extends SVGZoomWidget {
                 .points([], false, skipPushMarkers)
                 ;
         });
-    };
+    }
 
     //  Events  ---
     graph_selection(_selection) {
-    };
+    }
 
     vertex_click(_row, _col, _sel, more) {
         if (more && more.vertex) {
             more.vertex._parentElement.node().parentNode.appendChild(more.vertex._parentElement.node());
         }
         IGraph.prototype.vertex_click.apply(this, arguments);
-    };
+    }
 
     vertex_dblclick(_row, _col, _sel, _opts) {
-    };
+    }
 
     vertex_mouseover(element, d) {
         this.highlightVertex(element, d);
-    };
+    }
 
     vertex_mouseout(_element, _d) {
         this.highlightVertex(null, null);
-    };
+    }
 
     edge_mouseover(element, d) {
         this.highlightEdge(element, d);
-    };
+    }
 
     edge_mouseout(_element, _d) {
         this.highlightEdge(null, null);
-    };
+    }
 
     addMarkers(clearFirst: boolean = false) {
         if (clearFirst) {
@@ -619,7 +615,7 @@ export class Graph extends SVGZoomWidget {
             .attr("cy", 5)
             .attr("r", 4)
             ;
-    };
+    }
 
     allowDragging: { (): boolean; (_: boolean): Graph; };
     layout: { (): string; (_: string): Graph; };
@@ -704,11 +700,11 @@ Graph.prototype.layout = function (_?, transitionDuration?) {
                     layoutEngine.vertices.forEach(function (item) {
                         const vertex = context.graphData.node(item.id);
                         if (item.fixed) {
-                            //item.x = item.px;
-                            //item.y = item.py;
+                            // item.x = item.px;
+                            // item.y = item.py;
                         } else {
-                            //item.px = item.x;
-                            //item.py = item.y;
+                            // item.px = item.x;
+                            // item.py = item.y;
                             vertex
                                 .move({ x: item.x, y: item.y })
                                 ;
@@ -720,8 +716,8 @@ Graph.prototype.layout = function (_?, transitionDuration?) {
                             ;
                     });
                     if (context.applyScaleOnLayout()) {
-                        //const vBounds = context.getVertexBounds(layoutEngine);
-                        //context.shrinkToFit(vBounds);
+                        // const vBounds = context.getVertexBounds(layoutEngine);
+                        // context.shrinkToFit(vBounds);
                     }
                 });
                 this.forceLayout.force.restart();
