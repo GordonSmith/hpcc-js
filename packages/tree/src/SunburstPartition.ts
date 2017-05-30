@@ -1,11 +1,12 @@
+import { ITree } from "@hpcc-js/api";
+import { SVGWidget } from "@hpcc-js/common";
 import { hierarchy as d3Hierarchy, partition as d3Parition } from "d3-hierarchy";
 import { interpolate as d3Interpolate } from "d3-interpolate";
 import { scaleLinear as d3ScaleLinear, scaleSqrt as d3ScaleSqrt } from "d3-scale";
 import { event as d3Event, select as d3Select } from "d3-selection";
 import { arc as d3Arc } from "d3-shape";
-import { ITree } from "../api/ITree";
-import { SVGWidget } from "../common/SVGWidget";
-import "./SunburstPartition.css";
+
+import "../src/SunburstPartition.css";
 
 export class SunburstPartition extends SVGWidget {
     svg;
@@ -21,7 +22,9 @@ export class SunburstPartition extends SVGWidget {
         ITree.call(this);
     }
 
-    data() {
+    data(): any;
+    data(_: any): this;
+    data(_?: any): any | this {
         const retVal = SVGWidget.prototype.data.apply(this, arguments);
         if (arguments.length) {
             this._resetRoot = true;
@@ -60,7 +63,7 @@ export class SunburstPartition extends SVGWidget {
             ;
 
         this.svg = element.append("g");
-    };
+    }
 
     update(_domNode, _element) {
         const context = this;
@@ -117,7 +120,7 @@ export class SunburstPartition extends SVGWidget {
             this._resetRoot = false;
             this.zoomTo(root);
         }
-    };
+    }
 
     zoomTo(d) {
         const context = this;
