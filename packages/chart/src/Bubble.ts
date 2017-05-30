@@ -1,13 +1,10 @@
+import { I2DChart, ITooltip } from "@hpcc-js/api";
+import { FAChar, SVGWidget, Text, Utility } from "@hpcc-js/common";
 import { hierarchy as d3Hierarchy, pack as d3Pack } from "d3-hierarchy";
 import { select as d3Select } from "d3-selection";
 import "d3-transition";
-import { I2DChart } from "../api/I2DChart";
-import { ITooltip } from "../api/ITooltip";
-import { FAChar } from "../common/FAChar";
-import { SVGWidget } from "../common/SVGWidget";
-import { Text } from "../common/Text";
-import * as Utility from "../common/Utility";
-import "./Bubble.css";
+
+import "../src/Bubble.css";
 
 export class Bubble extends SVGWidget {
     labelWidgets;
@@ -84,8 +81,10 @@ export class Bubble extends SVGWidget {
             })
             .each(function (d) {
                 const element2 = d3Select(this);
+                const pos = { x: d.x, y: d.y };
                 element2.append("circle")
-                    .attr("r", d.r)
+                    .attr("transform", "translate(" + pos.x + "," + pos.y + ")")
+                    .attr("r", 0)
                     .on("mouseout.tooltip", context.tooltip.hide)
                     .on("mousemove.tooltip", context.tooltip.show)
                     ;
@@ -97,7 +96,7 @@ export class Bubble extends SVGWidget {
                         ;
                 } else {
                     context.labelWidgets[d.data[0]] = new Text()
-                        .text(d[0])
+                        .text(d.data[0])
                         .target(this)
                         .render()
                         ;
@@ -122,7 +121,7 @@ export class Bubble extends SVGWidget {
                         ;
                 } else {
                     let label = d.data[0];
-                    const labelWidth = context.labelWidgets[d.data[0]].getBBox().width;
+                    const labelWidth = context.labelWidgets[label].getBBox().width;
                     if (d.r * 2 < 16) {
                         label = "";
                     } else if (d.r * 2 < labelWidth) {

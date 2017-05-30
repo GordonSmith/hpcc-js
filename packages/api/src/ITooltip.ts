@@ -1,8 +1,8 @@
+import { Widget } from "@hpcc-js/common";
 import { format as d3Format } from "d3-format";
 import { tip } from "d3-tip";
 
-import { Widget } from "../common/Widget";
-import "./ITooltip.css";
+import "../src/ITooltip.css";
 
 export class ITooltip extends Widget {
     protected _valueFormatter;

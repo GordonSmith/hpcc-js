@@ -1,10 +1,10 @@
+import { INDChart, ITooltip } from "@hpcc-js/api";
 import { scaleBand as d3ScaleBand } from "d3-scale";
 import { select as d3Select } from "d3-selection";
 import "d3-transition";
-import { INDChart } from "../api/INDChart";
-import { ITooltip } from "../api/ITooltip";
-import "./Column.css";
 import { XYAxis } from "./XYAxis";
+
+import "../src/Column.css";
 
 export class Column extends XYAxis {
     _linearGap: number;

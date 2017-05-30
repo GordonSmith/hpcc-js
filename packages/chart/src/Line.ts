@@ -1,5 +1,6 @@
-import "./Line.css";
 import { Scatter } from "./Scatter";
+
+import "../src/Line.css";
 
 export class Line extends Scatter {
     constructor() {
