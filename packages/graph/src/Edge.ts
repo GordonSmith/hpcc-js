@@ -1,6 +1,4 @@
-import { svgMarkerGlitch } from "@hpcc-js/common";
-import { SVGWidget } from "@hpcc-js/common";
-import { TextBox } from "@hpcc-js/common";
+import { Platform, SVGWidget, TextBox } from "@hpcc-js/common";
 import { curveBundle as d3CurveBundle, line as d3Line } from "d3-shape";
 import { Vertex } from "./Vertex";
 
@@ -101,7 +99,7 @@ export class Edge extends SVGWidget {
     update(_domNode, element, transitionDuration?, skipPushMarkers?) {
         SVGWidget.prototype.update.apply(this, arguments);
         const context = this;
-        if (svgMarkerGlitch && !skipPushMarkers) {
+        if (Platform.svgMarkerGlitch && !skipPushMarkers) {
             element.transition().duration((transitionDuration ? transitionDuration : 0) + 100)
                 .each("start", function () {
                     context._pushMarkers(element);
@@ -125,8 +123,8 @@ export class Edge extends SVGWidget {
         }
         pathElements
             .attr("opacity", this._hidden ? 0 : 1)
-            .attr("marker-start", !(svgMarkerGlitch && skipPushMarkers) && this.sourceMarker_exists() ? "url(#" + this._graphID + "_" + this.sourceMarker() + "Foot)" : null)
-            .attr("marker-end", !(svgMarkerGlitch && skipPushMarkers) && this.targetMarker_exists() ? "url(#" + this._graphID + "_" + this.targetMarker() + "Head)" : null)
+            .attr("marker-start", !(Platform.svgMarkerGlitch && skipPushMarkers) && this.sourceMarker_exists() ? "url(#" + this._graphID + "_" + this.sourceMarker() + "Foot)" : null)
+            .attr("marker-end", !(Platform.svgMarkerGlitch && skipPushMarkers) && this.targetMarker_exists() ? "url(#" + this._graphID + "_" + this.targetMarker() + "Head)" : null)
             .attr("stroke", this.strokeColor_exists() ? this.strokeColor() : null)
             .attr("stroke-dasharray", this.strokeDasharray_exists() ? this.strokeDasharray() : null)
             .attr("d", line)

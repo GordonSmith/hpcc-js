@@ -1,7 +1,8 @@
+import { Widget } from "@hpcc-js/common";
 import { select as d3Select, selectAll as d3SelectAll } from "d3-selection";
-import { Widget } from "../common/Widget";
-import "./Cell.css";
 import { Surface } from "./Surface";
+
+import "../src/Cell.css";
 
 export class Cell extends Surface {
     _indicateTheseIds;
@@ -17,7 +18,7 @@ export class Cell extends Surface {
         if (!arguments.length) return this._indicateTheseIds;
         this._indicateTheseIds = _;
         return this;
-    };
+    }
 
     enter(domNode, element) {
         super.enter(domNode, element);
@@ -27,11 +28,11 @@ export class Cell extends Surface {
             .on("mouseenter", function () { context.onMouseEnter(); })
             .on("mouseleave", function () { context.onMouseLeave(); })
             ;
-    };
+    }
 
     update(domNode, element) {
         super.update(domNode, element);
-    };
+    }
 
     onMouseEnter() {
         const arr = this.indicateTheseIds();
@@ -54,14 +55,14 @@ export class Cell extends Surface {
                     ;
             }
         }
-    };
+    }
 
     onMouseLeave() {
         const arr = this.indicateTheseIds();
         for (let i = 0; i < arr.length; i++) {
             d3SelectAll("#" + arr[i] + " > div.update-indicator").remove();
         }
-    };
+    }
 
     title: { (): string; (_: string): Cell; };
     widget: { (): Widget; (_: Widget): Cell; };

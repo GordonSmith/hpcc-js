@@ -1,11 +1,10 @@
+import { HTMLWidget, Platform, Utility } from "@hpcc-js/common";
 import { drag as d3Drag } from "d3-drag";
 import { event as d3Event, select as d3Select } from "d3-selection";
 import * as GridList from "grid-list";
-import { HTMLWidget } from "../common/HTMLWidget";
-import * as platform from "../common/Platform";
-import * as Utility from "../common/Utility";
 import { Cell } from "./Cell";
-import "./Grid.css";
+
+import "../src/Grid.css";
 
 export class Grid extends HTMLWidget {
     divItems;
@@ -64,7 +63,7 @@ export class Grid extends HTMLWidget {
         }));
     }
 
-    setContent(row, col, widget, title, rowSpan, colSpan) {
+    setContent(row, col, widget, title?, rowSpan?, colSpan?) {
         rowSpan = rowSpan || 1;
         colSpan = colSpan || 1;
         title = title || "";
@@ -186,7 +185,7 @@ export class Grid extends HTMLWidget {
     enter(domNode, element) {
         super.enter(domNode, element);
 
-        this._scrollBarWidth = platform.getScrollbarWidth();
+        this._scrollBarWidth = Platform.getScrollbarWidth();
 
         const context = this;
         this._d3Drag = d3Drag()
@@ -353,8 +352,8 @@ export class Grid extends HTMLWidget {
 
         //  Grid  ---
         const context = this;
-        this.divItems = element2.selectAll("#" + this.id() + " > .ddCell").data(this.content(), function (d) { return d.id(); });
-        this.divItems.enter().append("div")
+        const divItems = element2.selectAll("#" + this.id() + " > .ddCell").data(this.content(), function (d) { return d.id(); });
+        this.divItems = divItems.enter().append("div")
             .attr("class", "ddCell")
             .call(this._d3Drag)
             .each(function (d) {
@@ -380,14 +379,14 @@ export class Grid extends HTMLWidget {
                     .append("div")
                     .attr("class", "resizeHandleDisplay")
                     ;
-            })
+            }).merge(divItems)
             ;
         this.divItems.select(".resizeHandle")
             .style("display", this.designMode() ? null : "none")
             ;
 
         this.updateGrid(true);
-        this.divItems.exit()
+        divItems.exit()
             .each(function (d) {
                 d.target(null);
                 if (d.__grid_watch) {

@@ -1,6 +1,6 @@
 import * as dagre from "dagre";
 
-export class GraphData extends dagre.graphlib.GraphData {
+export class GraphData extends dagre.graphlib.Graph {
     superGraphData: any;  //  Shut the compiler up  ---
     constructor() {
         super({ multigraph: true, compound: true });
