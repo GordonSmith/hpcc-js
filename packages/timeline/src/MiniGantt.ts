@@ -1,12 +1,10 @@
+import { Axis } from "@hpcc-js/chart";
+import { publish, SVGWidget, TextBox } from "@hpcc-js/common";
 import { extent as d3Extent } from "d3-array";
 import { scaleBand as d3ScaleBand } from "d3-scale";
 import { local as d3Local } from "d3-selection";
-import { Axis } from "../chart/Axis";
-import { publish } from "../common/PropertyExt";
-import { SVGWidget } from "../common/SVGWidget";
-import { TextBox } from "../common/TextBox";
 
-import "./MiniGantt.css";
+import "../src/MiniGantt.css";
 
 export class MiniGantt extends SVGWidget {
     protected topAxis: Axis;
