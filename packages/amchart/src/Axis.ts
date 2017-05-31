@@ -1,5 +1,5 @@
-import { Class } from "../common/Class";
-import { PropertyExt } from "../common/PropertyExt";
+import { Class } from "@hpcc-js/common";
+import { PropertyExt } from "@hpcc-js/common";
 
 export function Axis() {
     Class.call(this);
@@ -12,7 +12,7 @@ Axis.prototype.mixin(PropertyExt);
 Axis.prototype.constructor = Axis;
 Axis.prototype._class += " amchart_Axis";
 
-Axis.prototype.publish("type", null, "set", "X/Y Axis Text Font Size", ["x", "y"], { tags: ["Basic", "Shared"] }); //just incase we need it
+Axis.prototype.publish("type", null, "set", "X/Y Axis Text Font Size", ["x", "y"], { tags: ["Basic", "Shared"] }); // just incase we need it
 
 Axis.prototype.id = function (_) {
     if (!arguments.length) return this._id;

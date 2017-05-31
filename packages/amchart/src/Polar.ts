@@ -1,8 +1,8 @@
-import "amcharts-radar";
+import { INDChart } from "@hpcc-js/api";
+import "amcharts3/amcharts/radar";
 import { CommonRadar } from "./CommonRadar";
-import { INDChart } from "../api/INDChart";
 
-import "./Area.css";
+import "../src/Area.css";
 
 export function Polar() {
     CommonRadar.call(this);
@@ -31,9 +31,9 @@ Polar.prototype.updateChartOptions = function () {
 Polar.prototype.buildGraphs = function (gType) {
     this._chart.graphs = [];
 
-    for (var i = 0; i < this.columns().length - 1; i++) {
-        var gRetVal = CommonRadar.prototype.buildGraphObj.call(this, gType, i);
-        var gObj = buildGraphObj.call(this, gRetVal, this._valueField[i], i);
+    for (let i = 0; i < this.columns().length - 1; i++) {
+        const gRetVal = CommonRadar.prototype.buildGraphObj.call(this, gType, i);
+        const gObj = buildGraphObj.call(this, gRetVal, this._valueField[i], i);
 
         this._chart.addGraph(gObj);
     }
