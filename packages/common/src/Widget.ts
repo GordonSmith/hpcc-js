@@ -211,8 +211,8 @@ export class Widget extends PropertyExt {
     }
 
     size(): ISize;
-    size(_): Widget;
-    size(_?): ISize | Widget {
+    size(_): this;
+    size(_?): ISize | this {
         if (!arguments.length) return this._size;
         this._size = _;
         if (this._overlayElement) {

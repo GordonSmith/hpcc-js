@@ -1,7 +1,7 @@
-import * as d3 from "d3";
-import { HTMLWidget } from "../common/HTMLWidget";
+import { HTMLWidget } from "@hpcc-js/common";
+import { select as d3Select } from "d3-selection";
 
-import "./Toolbar.css";
+import "../src/Toolbar.css";
 
 export function Toolbar() {
     HTMLWidget.call(this);
@@ -31,14 +31,14 @@ Toolbar.prototype.enter = function (domNode, element) {
 
 Toolbar.prototype.update = function (domNode, element) {
     HTMLWidget.prototype.update.apply(this, arguments);
-    var context = this;
+    const context = this;
 
     element
         .attr("title", context.title())
         .style("background-color", this.backgroundColor())
         ;
 
-    var title = element.selectAll("div.toolbar-title")
+    const title = element.selectAll("div.toolbar-title")
         .data(this.title() ? [this.title()] : []);
     title.enter().append("div")
         .classed("toolbar-title", true)
@@ -54,13 +54,13 @@ Toolbar.prototype.update = function (domNode, element) {
         ;
     title.exit().remove();
 
-    var childWidgets = element.selectAll("div.toolbar-child")
+    const childWidgets = element.selectAll("div.toolbar-child")
         .data(this.widgets() !== null ? this.widgets() : [], function (d) { return d.id(); });
 
     childWidgets.enter().insert("div", "div.toolbar-title")
         .each(function (d, i) {
-            var widgetClass = context.widgetClasses()[i] ? context.widgetClasses()[i] + " toolbar-child" : "toolbar-child";
-            d3.select(this).classed(widgetClass, true);
+            const widgetClass = context.widgetClasses()[i] ? context.widgetClasses()[i] + " toolbar-child" : "toolbar-child";
+            d3Select(this).classed(widgetClass, true);
             d.target(this);
         });
     childWidgets.exit().each(function (d) {
@@ -70,13 +70,13 @@ Toolbar.prototype.update = function (domNode, element) {
 };
 
 Toolbar.prototype.render = function (callback) {
-    var context = this;
+    const context = this;
     HTMLWidget.prototype.render.call(this, function (w) {
-        var toolbarBBox = context.element().node().getBoundingClientRect();
-        var minX = toolbarBBox.left + toolbarBBox.width;
+        const toolbarBBox = context.element().node().getBoundingClientRect();
+        let minX = toolbarBBox.left + toolbarBBox.width;
         context.element().selectAll("div.toolbar-child")
             .each(function (d, i) {
-                var childBBox = this.getBoundingClientRect();
+                const childBBox = this.getBoundingClientRect();
                 if (minX > childBBox.left)
                     minX = childBBox.left;
             })

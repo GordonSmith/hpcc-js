@@ -1,9 +1,8 @@
+import { HTMLWidget, Widget } from "@hpcc-js/common";
 import { select as d3Select } from "d3-selection";
-import { HTMLWidget } from "../common/HTMLWidget";
-import { Widget } from "../common/Widget";
 
 // import "font-awesome/css/font-awesome.css";
-import "./Surface.css";
+import "../src/Surface.css";
 
 export class Surface extends HTMLWidget {
     _surfaceButtons;
@@ -45,8 +44,7 @@ export class Surface extends HTMLWidget {
         const titles = element2.selectAll(".surfaceTitle").data(this.title() ? [this.title()] : []);
         titles.enter().insert("h3", "div")
             .attr("class", "surfaceTitle")
-            ;
-        titles
+            .merge(titles)
             .text(function (d) { return d; })
             .style("text-align", this.surfaceTitleAlignment())
             .style("color", this.surfaceTitleFontColor())
@@ -100,8 +98,7 @@ export class Surface extends HTMLWidget {
                 d3Select(context.element().node().parentElement).classed("content-icon content-icon-" + (d.classID().split("_")[1]), true);
                 d.target(this);
             })
-            ;
-        widgets
+            .merge(widgets)
             .style("padding", this.surfacePadding_exists() ? this.surfacePadding() + "px" : null)
             .each(function (d) {
                 const widgetSize = context.widgetSize(element2.select("h3"), d3Select(this));
@@ -127,9 +124,9 @@ export class Surface extends HTMLWidget {
 
     title: { (): string; (_: string): Surface; };
     surfaceTitlePadding: { (): number; (_: number): Surface; };
-    surfaceTitlePadding_exists: { (): boolean };
+    surfaceTitlePadding_exists: () => boolean;
     surfaceTitleFontSize: { (): number; (_: number): Surface; };
-    surfaceTitleFontSize_exists: { (): boolean };
+    surfaceTitleFontSize_exists: () => boolean;
     surfaceTitleFontColor: { (): string; (_: string): Surface; };
     surfaceTitleFontFamily: { (): string; (_: string): Surface; };
     surfaceTitleFontBold: { (): boolean; (_: boolean): Surface; };
@@ -138,13 +135,13 @@ export class Surface extends HTMLWidget {
 
     surfaceShadow: { (): boolean; (_: boolean): Surface; };
     surfacePadding: { (): string; (_: string): Surface; };
-    surfacePadding_exists: { (): boolean };
+    surfacePadding_exists: () => boolean;
     surfaceBackgroundColor: { (): string; (_: string): Surface; };
     surfaceBorderWidth: { (): number; (_: number): Surface; };
-    surfaceBorderWidth_exists: { (): boolean };
+    surfaceBorderWidth_exists: () => boolean;
     surfaceBorderColor: { (): string; (_: string): Surface; };
     surfaceBorderRadius: { (): number; (_: number): Surface; };
-    surfaceBorderRadius_exists: { (): boolean };
+    surfaceBorderRadius_exists: () => boolean;
 
     buttonAnnotations: { (): any[]; (_: any[]): Surface; };
 

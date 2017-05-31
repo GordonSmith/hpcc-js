@@ -4,7 +4,8 @@
   "description": "HPCC Visualization Framework",
   "dependencies": {},
   "devDependencies": {
-    "lerna": "^2.0.0-rc.5"
+    "lerna": "^2.0.0-rc.5",
+    "yarn": "^0.24.5"
   },
   "devDependenciesOld": {
     "async": "~1.5.0",
@@ -44,6 +45,7 @@
     "install": "lerna bootstrap --hoist",
     "clean": "lerna run clean",
     "build": "lerna run build",
+    "build:src": "lerna run build --scope \"@hpcc-js/!(test-)*\"",
     "test": "lerna run test --scope \"@hpcc-js/test-*\"",
     "test:chrome": "lerna run test:chrome --scope \"@hpcc-js/test-*\"",
     "test:firefox": "lerna run test:firefox --scope \"@hpcc-js/test-*\"",
