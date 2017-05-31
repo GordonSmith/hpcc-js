@@ -1,5 +1,5 @@
 ﻿import { IGraph } from "@hpcc-js/api";
-import { svgMarkerGlitch, SVGZoomWidget, Utility } from "@hpcc-js/common";
+import { Platform, SVGZoomWidget, Utility } from "@hpcc-js/common";
 import { drag as d3Drag } from "d3-drag";
 import { event as d3Event, select as d3Select } from "d3-selection";
 import { Edge } from "./Edge";
@@ -116,7 +116,7 @@ export class Graph extends SVGZoomWidget {
                     forceNode.fx = forceNode.x;
                     forceNode.fy = forceNode.y;
                 }
-                if (svgMarkerGlitch) {
+                if (Platform.svgMarkerGlitch) {
                     context.graphData.nodeEdges(d.id()).forEach(function (id) {
                         const edge = context.graphData.edge(id);
                         context._pushMarkers(edge.element());
@@ -152,7 +152,7 @@ export class Graph extends SVGZoomWidget {
                     forceNode.fx = null;
                     forceNode.fy = null;
                 }
-                if (svgMarkerGlitch) {
+                if (Platform.svgMarkerGlitch) {
                     context.graphData.nodeEdges(d.id()).forEach(function (id) {
                         const edge = context.graphData.edge(id);
                         context._popMarkers(edge.element());
