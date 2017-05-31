@@ -1,5 +1,5 @@
+import { INDChart } from "@hpcc-js/api";
 import { CommonXY } from "./CommonXY";
-import { INDChart } from "../api/INDChart";
 
 export function Scatter() {
     CommonXY.call(this);
@@ -32,9 +32,9 @@ Scatter.prototype.updateChartOptions = function () {
 Scatter.prototype.buildGraphs = function (gType) {
     this._chart.graphs = [];
 
-    for (var i = 0; i < this.columns().length; i++) {
-        var gRetVal = CommonXY.prototype.buildGraphObj.call(this, gType, i);
-        var gObj = buildGraphObj.call(this, gRetVal, i);
+    for (let i = 0; i < this.columns().length; i++) {
+        const gRetVal = CommonXY.prototype.buildGraphObj.call(this, gType, i);
+        const gObj = buildGraphObj.call(this, gRetVal, i);
 
         this._chart.addGraph(gObj);
     }

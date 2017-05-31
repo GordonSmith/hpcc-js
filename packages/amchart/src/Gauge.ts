@@ -1,7 +1,7 @@
-import * as d3 from 'd3';
-import * as AmCharts from "amcharts-gauge";
-import { HTMLWidget } from "../common/HTMLWidget";
-import { I1DChart } from "../api/I1DChart";
+import { I1DChart } from "@hpcc-js/api";
+import { HTMLWidget } from "@hpcc-js/common";
+import * as AmChartsGauge from "amcharts3/amcharts/gauge";
+import { scaleLinear as d3ScaleLinear } from "d3-scale";
 
 export function Gauge() {
     HTMLWidget.call(this);
@@ -76,14 +76,15 @@ Gauge.prototype.updateChartOptions = function () {
     this._chart.axes[0].startValue = this.low();
 
     // 3 Color Methods
-    var i, l;
+    let i;
+    let l;
     if (this.colorType() === "a") {
-        var scale = d3.scale.linear()
+        const scale = d3ScaleLinear()
             .domain([0, 100])
             .range([this.low(), this.high()])
             ;
         for (i = 0, l = this.numBands(); i < l; i++) {
-            var a_band = {
+            const a_band = {
                 color: this.bandsColor()[i],
                 startValue: scale(this.bandsStartValue()[i]),
                 endValue: scale(this.bandsEndValue()[i]),
@@ -94,18 +95,18 @@ Gauge.prototype.updateChartOptions = function () {
     }
     if (this.colorType() === "b") {
         for (i = 0, l = this.high(); i < l; i++) {
-            var b_band = {
+            const b_band = {
                 color: this._palette(i, this.low(), this.high()),
                 startValue: i,
                 endValue: i + 1,
-                //innerRadius: this._bandsInnerRadius[i] || "", // this has a cool effect might be useful?
+                // innerRadius: this._bandsInnerRadius[i] || "", // this has a cool effect might be useful?
                 innerRadius: this.bandsInnerRadius()[0]
             };
             this._chart.axes[0].bands.push(b_band);
         }
     }
     if (this.colorType() === "c") {
-        var c_band = {
+        const c_band = {
             color: this._palette(this.data(), this.low(), this.high()),
             startValue: this.low(),
             endValue: this.high(),
@@ -139,14 +140,14 @@ Gauge.prototype.enter = function (domNode, element) {
     domNode.style.width = this.size().width + "px";
     domNode.style.height = this.size().height + "px";
 
-    var initObj: any = {
+    const initObj: any = {
         type: "gauge",
         addClassNames: true,
         axes: [{}],
         arrows: [{}],
     };
-    if (typeof define === "function" && define.amd) {
-        initObj.pathToImages = require.toUrl("amchartsImg");
+    if (typeof (window as any).define === "function" && (window as any).define.amd) {
+        initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
     }
-    this._chart = AmCharts.makeChart(domNode, initObj);
+    this._chart = AmChartsGauge.makeChart(domNode, initObj);
 };

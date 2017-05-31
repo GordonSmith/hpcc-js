@@ -1,5 +1,5 @@
+import { INDChart } from "@hpcc-js/api";
 import { CommonSerial } from "./CommonSerial";
-import { INDChart } from "../api/INDChart";
 
 export function Line() {
     CommonSerial.call(this);
@@ -34,9 +34,9 @@ Line.prototype.updateChartOptions = function () {
 Line.prototype.buildGraphs = function (gType) {
     this._chart.graphs = [];
 
-    for (var i = 0; i < this.columns().length - 1; i++) {
-        var gRetVal = CommonSerial.prototype.buildGraphObj.call(this, gType, i);
-        var gObj = buildGraphObj.call(this, gRetVal, i);
+    for (let i = 0; i < this.columns().length - 1; i++) {
+        const gRetVal = CommonSerial.prototype.buildGraphObj.call(this, gType, i);
+        const gObj = buildGraphObj.call(this, gRetVal, i);
 
         this._chart.addGraph(gObj);
     }

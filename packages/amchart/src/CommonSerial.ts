@@ -1,8 +1,12 @@
-import { HTMLWidget } from "../common/HTMLWidget";
-import { ITooltip } from "../api/ITooltip";
+import { ITooltip } from "@hpcc-js/api";
+import { HTMLWidget } from "@hpcc-js/common";
+import "amcharts3";
+import * as AmChartsSerial from "amcharts3/amcharts/Serial";
+import { format as d3Format } from "d3-format";
+import { timeFormat as d3TimeFormat } from "d3-time";
 import { SerialAxis as Axis } from "./SerialAxis";
 
-import "amcharts-serial.css";
+// import "amcharts3/amcharts/serial.css";
 
 export function CommonSerial() {
     HTMLWidget.call(this);
@@ -18,8 +22,8 @@ export function CommonSerial() {
     this._columnsUpdated = 0;
     this._prevColumnsUpdated = -1;
 
-    this._dateParserData = d3.time.format("%Y-%m-%d").parse;
-    this._dateParserValue = d3.time.format("%Y-%m-%d").parse;
+    this._dateParserData = d3TimeFormat("%Y-%m-%d").parse;
+    this._dateParserValue = d3TimeFormat("%Y-%m-%d").parse;
 
     this._colorObj = {};
     this._selectionObj = {};
@@ -34,8 +38,8 @@ export function CommonSerial() {
 CommonSerial.prototype = Object.create(HTMLWidget.prototype);
 CommonSerial.prototype.constructor = CommonSerial;
 CommonSerial.prototype._class += " amchart_CommonSerial";
-    CommonSerial.prototype.implements(ITooltip.prototype);
-    
+CommonSerial.prototype.implements(ITooltip.prototype);
+
 CommonSerial.prototype.publish("backwardsCompatible", true, "boolean", "Allow use of old publish parameters");
 
 CommonSerial.prototype.publish("xAxes", [], "propertyArray", "xAxis", null, { max: 1, tags: ["Basic"] }); // max number of xAxes
@@ -68,7 +72,7 @@ CommonSerial.prototype.publish("useClonedPalette", false, "boolean", "Enable or 
 
 CommonSerial.prototype.publish("axisMinPeriod", "MM", "string", "Minimum period when parsing dates");
 
-//CommonSerial.prototype.publish("balloonType", "amchart", "set", "Balloon Type", ["hpcc", "amchart"]); TODO
+// CommonSerial.prototype.publish("balloonType", "amchart", "set", "Balloon Type", ["hpcc", "amchart"]); TODO
 
 CommonSerial.prototype.publish("selectionColor", "#f00", "html-color", "Font Color", null, { tags: ["Basic"] });
 CommonSerial.prototype.publish("selectionMode", "simple", "set", "Selection Mode", ["simple", "multi"], { tags: ["Intermediate"] });
@@ -145,7 +149,7 @@ CommonSerial.prototype.publishProxy("yAxisTickFormat", "_yAxis", "axisTickFormat
 
 CommonSerial.prototype._origBackwardsCompatible = CommonSerial.prototype.backwardsCompatible;
 CommonSerial.prototype.backwardsCompatible = function (_) {
-    var retVal = CommonSerial.prototype._origBackwardsCompatible.apply(this, arguments);
+    const retVal = CommonSerial.prototype._origBackwardsCompatible.apply(this, arguments);
     if (arguments.length) {
         this.switchProperties(_);
     }
@@ -163,7 +167,7 @@ CommonSerial.prototype.switchProperties = function (val) {
 
 CommonSerial.prototype.xAxis = function (idx) {
     if (!this.xAxes()[idx]) {
-        var xAxis = new Axis();
+        const xAxis = new Axis();
         xAxis._owningWidget = this;
         this.xAxes()[idx] = xAxis;
     }
@@ -172,7 +176,7 @@ CommonSerial.prototype.xAxis = function (idx) {
 
 CommonSerial.prototype.yAxis = function (idx) {
     if (!this.yAxes()[idx]) {
-        var yAxis = new Axis();
+        const yAxis = new Axis();
         yAxis._owningWidget = this;
         this.yAxes()[idx] = yAxis;
     }
@@ -213,15 +217,15 @@ CommonSerial.prototype.formatValue = function (d) {
 
 CommonSerial.prototype.amFormatData = function (dataArr) {
     this._rangeType = null;
-    var dataObjArr = [];
-    var context = this;
+    const dataObjArr = [];
+    const context = this;
 
     dataArr.forEach(function (dataRow) {
-        var dataObj: any = {};
+        const dataObj: any = {};
         dataRow.forEach(function (cell, cIdx) {
-            var colName = context.columns()[cIdx];
+            const colName = context.columns()[cIdx];
             if (cell instanceof Array) {
-                var idx = cIdx - 1;
+                const idx = cIdx - 1;
                 if (cell.length === 2) {
                     dataObj["openField" + idx] = context.formatValue(cell[0]);
                     dataObj["valueField" + idx] = context.formatValue(cell[1]);
@@ -248,12 +252,12 @@ CommonSerial.prototype.amFormatData = function (dataArr) {
     });
 
     if (this.xAxisType() === "time") {
-        var sortField = context.columns()[0];
+        const sortField = context.columns()[0];
         dataObjArr.sort(function (a, b) {
             return a[sortField] - b[sortField];
         });
         this.data(dataObjArr.map(function (row) {
-            var retVal = row.__origRow;
+            const retVal = row.__origRow;
             delete row.__origRow;
             return retVal;
         }));
@@ -263,7 +267,7 @@ CommonSerial.prototype.amFormatData = function (dataArr) {
 };
 
 CommonSerial.prototype.updateChartOptions = function () {
-    var context = this;
+    const context = this;
     this._chart.type = "serial";
     this._chart.startDuration = this.startDuration();
     this._chart.rotate = this.orientation() === "vertical";
@@ -273,11 +277,11 @@ CommonSerial.prototype.updateChartOptions = function () {
     this._chart.fontFamily = this.fontFamily();
 
     this._chart.categoryAxis = {};
-    //this._chart.titles = [];
+    // this._chart.titles = [];
 
-    var xAxis = this.xAxes()[0];
+    const xAxis = this.xAxes()[0];
 
-    //xAxis.type("x");
+    // xAxis.type("x");
 
     this._chart.categoryAxis.position = xAxis.position() ? xAxis.position() : "bottom";
     this._chart.categoryAxis.autoGridCount = xAxis.axisAutoGridCount();
@@ -311,9 +315,9 @@ CommonSerial.prototype.updateChartOptions = function () {
             this._chart.categoryAxis.logarithmic = false;
 
             if (xAxis.axisTickFormat()) {
-                this.dataFormatter = d3.time.format(xAxis.axisTickFormat());
+                this.dataFormatter = d3TimeFormat(xAxis.axisTickFormat());
             } else if (xAxis.axisTypeTimePattern()) {
-                this.dataFormatter = d3.time.format(xAxis.axisTypeTimePattern());
+                this.dataFormatter = d3TimeFormat(xAxis.axisTypeTimePattern());
             } else {
                 this.dataFormatter = function (v) { return v; };
             }
@@ -322,14 +326,14 @@ CommonSerial.prototype.updateChartOptions = function () {
         case "log":
             this._chart.categoryAxis.parseDates = false;
             this._chart.categoryAxis.logarithmic = true;
-            this.dataFormatter = xAxis.axisTickFormat() ? d3.format(xAxis.axisTickFormat()) : function (v) { return v; };
+            this.dataFormatter = xAxis.axisTickFormat() ? d3Format(xAxis.axisTickFormat()) : function (v) { return v; };
             break;
         case "linear":
         /* falls through */
         default:
             this._chart.categoryAxis.parseDates = false;
             this._chart.categoryAxis.logarithmic = false;
-            this.dataFormatter = xAxis.axisTickFormat() ? d3.format(xAxis.axisTickFormat()) : function (v) { return v; };
+            this.dataFormatter = xAxis.axisTickFormat() ? d3Format(xAxis.axisTickFormat()) : function (v) { return v; };
             break;
     }
 
@@ -342,12 +346,12 @@ CommonSerial.prototype.updateChartOptions = function () {
         }
     };
 
-    for (var i = 0; i < this.yAxes().length; i++) {
-        var yAxis = this.yAxes()[i];
-        //yAxis.type("y");
+    for (let i = 0; i < this.yAxes().length; i++) {
+        const yAxis = this.yAxes()[i];
+        // yAxis.type("y");
 
         if (!this._chart.valueAxes[i]) {
-            this._chart.valueAxes.push(new AmCharts.ValueAxis());
+            this._chart.valueAxes.push(new AmChartsSerial.ValueAxis());
         }
 
         this._chart.valueAxes[i].id = "v" + i;
@@ -377,9 +381,9 @@ CommonSerial.prototype.updateChartOptions = function () {
                 this._chart.valueAxes[i].logarithmic = false;
 
                 if (yAxis.axisTickFormat()) {
-                    this.valueFormatter = d3.time.format(yAxis.axisTickFormat());
+                    this.valueFormatter = d3TimeFormat(yAxis.axisTickFormat());
                 } else if (yAxis.axisTypeTimePattern()) {
-                    this.valueFormatter = d3.time.format(yAxis.axisTypeTimePattern());
+                    this.valueFormatter = d3TimeFormat(yAxis.axisTypeTimePattern());
                 } else {
                     this.valueFormatter = function (v) { return v; };
                 }
@@ -388,7 +392,7 @@ CommonSerial.prototype.updateChartOptions = function () {
                 this._chart.valueAxes[i].parseDates = false;
                 this._chart.valueAxes[i].logarithmic = true;
                 this._chart.valueAxes[i].type = "numeric";
-                this.valueFormatter = yAxis.axisTickFormat() ? d3.format(yAxis.axisTickFormat()) : function (v) { return v; };
+                this.valueFormatter = yAxis.axisTickFormat() ? d3Format(yAxis.axisTickFormat()) : function (v) { return v; };
                 break;
             case "linear":
             /* falls through */
@@ -396,7 +400,7 @@ CommonSerial.prototype.updateChartOptions = function () {
                 this._chart.valueAxes[i].parseDates = false;
                 this._chart.valueAxes[i].type = "numeric";
                 this._chart.valueAxes[i].logarithmic = false;
-                this.valueFormatter = yAxis.axisTickFormat() ? d3.format(yAxis.axisTickFormat()) : function (v) { return v; };
+                this.valueFormatter = yAxis.axisTickFormat() ? d3Format(yAxis.axisTickFormat()) : function (v) { return v; };
                 break;
         }
 
@@ -457,14 +461,14 @@ CommonSerial.prototype.updateChartOptions = function () {
         this._chart.categoryAxis.gridCount = this._chart.dataProvider.length;
     }
 
-    var color;
-    var cType;
+    let color;
+    let cType;
     this._chart.colors = [];
     if (context._class.indexOf("amchart_Area") !== -1) {
         cType = "Area";
     }
     this._chart.dataProvider.forEach(function (dataPoint, i) {
-        context.columns().filter(function (d, i) { return i > 0; }).forEach(function (col, idx) {
+        context.columns().filter(function (d, i2) { return i2 > 0; }).forEach(function (col, idx) {
             if (context.paletteGrouping() === "By Category") {
                 color = context._palette(i);
             } else {
@@ -484,7 +488,7 @@ CommonSerial.prototype.updateChartOptions = function () {
             }
 
             context._colorObj[i][idx] = {
-                color: color,
+                color,
                 lineColor: context.lineColor() ? context.lineColor() : color
             };
         });
@@ -494,8 +498,8 @@ CommonSerial.prototype.updateChartOptions = function () {
 };
 
 CommonSerial.prototype.buildGraphObj = function (gType, i) {
-    var context = this;
-    var gObj: any = {};
+    const context = this;
+    const gObj: any = {};
 
     gObj.id = "g" + i;
 
@@ -505,15 +509,15 @@ CommonSerial.prototype.buildGraphObj = function (gType, i) {
         gObj.valueAxis = "v0";
     }
 
-        gObj.balloonFunction = function(d) {
-            //var balloonText = d.category + ", " + context.columns()[d.graph.columnIndex+1]  + ": " + context.data()[d.index][d.graph.columnIndex+1];
-            if (d.graph.type === "line") {
-                return d.category + ", " + context.columns()[d.graph.index + 1]  + ": " + d3.format(context.tooltipValueFormat())(context.data()[d.index][d.graph.columnIndex + 1]);
-            }else if(context && context.tooltipValueFormat){
-                return d.category + ", " + context.columns()[d.graph.columnIndex + 1]  + ": " + d3.format(context.tooltipValueFormat())(context.data()[d.index][d.graph.columnIndex + 1]);
-            } else {
-                return d.category + ", " + context.columns()[d.graph.columnIndex + 1]  + ": " + context.data()[d.index][d.graph.columnIndex + 1];
-            }
+    gObj.balloonFunction = function (d) {
+        // var balloonText = d.category + ", " + context.columns()[d.graph.columnIndex+1]  + ": " + context.data()[d.index][d.graph.columnIndex+1];
+        if (d.graph.type === "line") {
+            return d.category + ", " + context.columns()[d.graph.index + 1] + ": " + d3Format(context.tooltipValueFormat())(context.data()[d.index][d.graph.columnIndex + 1]);
+        } else if (context && context.tooltipValueFormat) {
+            return d.category + ", " + context.columns()[d.graph.columnIndex + 1] + ": " + d3Format(context.tooltipValueFormat())(context.data()[d.index][d.graph.columnIndex + 1]);
+        } else {
+            return d.category + ", " + context.columns()[d.graph.columnIndex + 1] + ": " + context.data()[d.index][d.graph.columnIndex + 1];
+        }
     };
     gObj.lineAlpha = context.lineOpacity();
     gObj.lineColor = context.lineColor();
@@ -523,7 +527,7 @@ CommonSerial.prototype.buildGraphObj = function (gType, i) {
     gObj.type = gType;
 
     gObj.title = "";
-    var fieldArr = ["value", "open", "close", "high", "low"];
+    const fieldArr = ["value", "open", "close", "high", "low"];
     fieldArr.forEach(function (field) {
         if (typeof (context["_" + field + "Field"]) !== "undefined" && typeof (context["_" + field + "Field"][i]) !== "undefined") {
             gObj[field + "Field"] = context["_" + field + "Field"][i];
@@ -532,7 +536,7 @@ CommonSerial.prototype.buildGraphObj = function (gType, i) {
 
     try {
         if (context.useImgPatterns()) {
-            var patternArr = JSON.parse(context.imgPatternArr());
+            const patternArr = JSON.parse(context.imgPatternArr());
             if (typeof (patternArr[i]) !== "undefined") {
                 gObj.pattern = patternArr[i];
             }
@@ -571,37 +575,37 @@ CommonSerial.prototype.enter = function (domNode, element) {
         this.yAxes().push(this._yAxis);
     }
     if (this.y2().length && this.yAxes().length === 1) {
-        var y2Axis = new Axis();
+        const y2Axis = new Axis();
         y2Axis.owningWidget = this;
         this.yAxes().push(y2Axis);
     }
 
-    var context = this;
-    var initObj: any = {
+    const context = this;
+    const initObj: any = {
         type: "serial",
         addClassNames: true,
         chartScrollbar: {},
         chartCursor: {
-            "enabled": false,
-            "valueLineEnabled": false,
-            "valueLineBalloonEnabled": false,
-            "categoryBalloonEnabled": false,
-            "cursorAlpha": 0,
-            "valueLineAlpha": 0.2,
-            "oneBalloonOnly": true,
-            "balloonPointerOrientation": "vertical",
-            "valueBalloonsEnabled": false // always set false
+            enabled: false,
+            valueLineEnabled: false,
+            valueLineBalloonEnabled: false,
+            categoryBalloonEnabled: false,
+            cursorAlpha: 0,
+            valueLineAlpha: 0.2,
+            oneBalloonOnly: true,
+            balloonPointerOrientation: "vertical",
+            valueBalloonsEnabled: false // always set false
         }
     };
-    if (typeof define === "function" && define.amd) {
-        initObj.pathToImages = require.toUrl("amchartsImg");
+    if (typeof (window as any).define === "function" && (window as any).define.amd) {
+        initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
     }
-    this._chart = AmCharts.makeChart(domNode, initObj);
+    this._chart = AmChartsSerial.makeChart(domNode, initObj);
     this._chart.addListener("clickGraphItem", function (e) {
-        var graph = e.graph;
-        var data = e.item.dataContext;
-        var field;
-        var field2;
+        const graph = e.graph;
+        const data = e.item.dataContext;
+        let field;
+        let field2;
 
         if (context._gType === "column") {
             field = graph.fillColorsField;
@@ -612,27 +616,27 @@ CommonSerial.prototype.enter = function (domNode, element) {
             field = graph.colorField;
         }
         if (field) {
-                if (data[field] !== null && data[field] !== undefined) {
-                    delete data[field];
-                    data[field2] = context._colorObj[e.index][e.target.columnIndex].lineColor;
-                    if (context.selectionMode() === "simple") {
-            if (context._selected !== null) {
-                delete context._selected.data[context._selected.field];
-                    context._selected.data[context._selected.field2] = context._colorObj[context._selected.dIdx][context._selected.cIdx].lineColor;
-                }
-            }
-                } else {
-                data[field] = context.selectionColor();
-                    data[field2] = context.selectionColor();
+            if (data[field] !== null && data[field] !== undefined) {
+                delete data[field];
+                data[field2] = context._colorObj[e.index][e.target.columnIndex].lineColor;
                 if (context.selectionMode() === "simple") {
                     if (context._selected !== null) {
                         delete context._selected.data[context._selected.field];
-                            context._selected.data[context._selected.field2] = context._colorObj[context._selected.dIdx][context._selected.cIdx].lineColor;
-                        }
+                        context._selected.data[context._selected.field2] = context._colorObj[context._selected.dIdx][context._selected.cIdx].lineColor;
+                    }
+                }
+            } else {
+                data[field] = context.selectionColor();
+                data[field2] = context.selectionColor();
+                if (context.selectionMode() === "simple") {
+                    if (context._selected !== null) {
+                        delete context._selected.data[context._selected.field];
+                        context._selected.data[context._selected.field2] = context._colorObj[context._selected.dIdx][context._selected.cIdx].lineColor;
+                    }
                     context._selected = {
-                        field: field,
-                        field2: field2,
-                        data: data,
+                        field,
+                        field2,
+                        data,
                         dIdx: e.index,
                         cIdx: e.target.columnIndex
                     };
@@ -642,14 +646,14 @@ CommonSerial.prototype.enter = function (domNode, element) {
             e.chart.validateData();
         }
 
-            context.click(context.rowToObj(context.data()[e.index]), context.columns()[e.target.columnIndex + 1], context._selected !== null);
+        context.click(context.rowToObj(context.data()[e.index]), context.columns()[e.target.columnIndex + 1], context._selected !== null);
     });
 };
 
 CommonSerial.prototype.update = function (domNode, element) {
     HTMLWidget.prototype.update.apply(this, arguments);
 
-    var context = this;
+    const context = this;
 
     // assign correct axe to PPs and correct context to PropertyExt Obj
     this.yAxes().forEach(function (axe, idx) {

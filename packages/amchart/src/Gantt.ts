@@ -1,7 +1,7 @@
-import * as d3 from 'd3';
-import * as AmCharts from "amcharts-gantt";
-import { HTMLWidget } from "../common/HTMLWidget";
-import { INDChart } from "../api/INDChart";
+import { INDChart } from "@hpcc-js/api";
+import { HTMLWidget } from "@hpcc-js/common";
+import * as AmChartsGantt from "amcharts3/amcharts/gantt";
+import { timeFormat as d3TimeFormat } from "d3-time";
 
 export function Gantt() {
     HTMLWidget.call(this);
@@ -16,7 +16,7 @@ export function Gantt() {
     this._columnsUpdated = 0;
     this._prevColumnsUpdated = -1;
 
-    this._dateParserData = d3.time.format("%Y-%m-%d").parse;
+    this._dateParserData = d3TimeFormat("%Y-%m-%d").parse;
 }
 Gantt.prototype = Object.create(HTMLWidget.prototype);
 Gantt.prototype.constructor = Gantt;
@@ -46,17 +46,17 @@ Gantt.prototype.publish("minPeriod", "DD", "string", "Value axis minimum period"
 
 Gantt.prototype.publish("guides", [], "array", "Vertical lines", null, { tags: ["Intermediate"] });
 
-var timePattern = Gantt.prototype.timePattern;
+const timePattern = Gantt.prototype.timePattern;
 Gantt.prototype.timePattern = function (_) {
-    var retVal = timePattern.apply(this, arguments);
+    const retVal = timePattern.apply(this, arguments);
     if (arguments.length) {
-        this._dateParserData = d3.time.format(_).parse;
+        this._dateParserData = d3TimeFormat(_).parse;
     }
     return retVal;
 };
 
 Gantt.prototype.updateChartOptions = function () {
-    var context = this;
+    const context = this;
 
     this._chart.color = this.fontColor();
     this._chart.fontSize = this.fontSize();
@@ -67,13 +67,13 @@ Gantt.prototype.updateChartOptions = function () {
 
     if (this._dataUpdated > this._prevDataUpdated || this._prevTimePattern !== this.timePattern()) {
         this._chart.dataProvider = [];
-        var data = this.amFormattedData();
-        for (var key in data) {
-            var obj: any = {};
+        const data = this.amFormattedData();
+        for (const key in data) {
+            const obj: any = {};
             obj.category = key;
             obj.segments = [];
             data[key].forEach(function (range) {
-                var segment = { "start": context._dateParserData(range[0]), "end": context._dateParserData(range[1]) };
+                const segment = { start: context._dateParserData(range[0]), end: context._dateParserData(range[1]) };
                 obj.segments.push(segment);
             });
             this._chart.dataProvider.push(obj);
@@ -103,7 +103,7 @@ Gantt.prototype.updateChartOptions = function () {
 };
 
 Gantt.prototype.amFormattedData = function () {
-    var obj = {};
+    const obj = {};
     this.data().forEach(function (row) {
         if (!obj[row[0]]) {
             obj[row[0]] = [];
@@ -120,33 +120,33 @@ Gantt.prototype.amFormattedData = function () {
 
 Gantt.prototype.enter = function (domNode, element) {
     HTMLWidget.prototype.enter.apply(this, arguments);
-    var context = this;
+    const context = this;
 
-    var initObj: any = {
-        "type": "gantt",
-        "theme": "none",
-        "autoMargins": true,
-        "valueAxis": {},
-        "graph": {
-            "fillAlphas": 1,
-            "balloonText": "<b>[[category]]</b>: [[open]] - [[value]]" // TODO replace with balloon function
+    const initObj: any = {
+        type: "gantt",
+        theme: "none",
+        autoMargins: true,
+        valueAxis: {},
+        graph: {
+            fillAlphas: 1,
+            balloonText: "<b>[[category]]</b>: [[open]] - [[value]]" // TODO replace with balloon function
         },
-        "rotate": true,
-        "dataProvider": [],
-        "chartScrollbar": {},
-        "export": {
-            "enabled": true
+        rotate: true,
+        dataProvider: [],
+        chartScrollbar: {},
+        export: {
+            enabled: true
         }
     };
 
-    if (typeof define === "function" && define.amd) {
-        initObj.pathToImages = require.toUrl("amchartsImg");
+    if (typeof (window as any).define === "function" && (window as any).define.amd) {
+        initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
     }
-    this._chart = AmCharts.makeChart(domNode, initObj);
+    this._chart = AmChartsGantt.makeChart(domNode, initObj);
 
     this._chart.addListener("clickGraphItem", function (e) {
-        var data = e.graph.segmentData;
-        var field = "color";
+        const data = e.graph.segmentData;
+        const field = "color";
 
         if (data[field] !== null && data[field] !== undefined) {
             delete data[field];
@@ -163,8 +163,8 @@ Gantt.prototype.enter = function (domNode, element) {
                     delete context._selected.data[context._selected.field];
                 }
                 context._selected = {
-                    field: field,
-                    data: data,
+                    field,
+                    data,
                     colIndex: e.target.columnIndex,
                     dIdx: e.index
                 };
