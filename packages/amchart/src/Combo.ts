@@ -1,12 +1,12 @@
+import { INDChart } from "@hpcc-js/api";
 import { CommonSerial } from "./CommonSerial";
-import { INDChart } from "../api/INDChart";
 
-import "./Combo.css";
+import "../src/Combo.css";
 
 export function Combo() {
     CommonSerial.call(this);
     this._tag = "div";
-    //this._gType = "";
+    // this._gType = "";
 }
 Combo.prototype = Object.create(CommonSerial.prototype);
 Combo.prototype.constructor = Combo;
@@ -49,11 +49,12 @@ Combo.prototype.updateChartOptions = function () {
 
 Combo.prototype.buildGraphs = function () {
     this._chart.graphs = [];
+    let gType;
 
-    for (var i = 0; i < this.columns().length - 1; i++) {
-        var gType = this.types()[i] || this.defaultType();
-        var gRetVal = CommonSerial.prototype.buildGraphObj.call(this, gType, i);
-        var gObj = buildGraphObj.call(this, gRetVal, i);
+    for (let i = 0; i < this.columns().length - 1; i++) {
+        gType = this.types()[i] || this.defaultType();
+        const gRetVal = CommonSerial.prototype.buildGraphObj.call(this, gType, i);
+        const gObj = buildGraphObj.call(this, gRetVal, i);
 
         this._chart.addGraph(gObj);
     }

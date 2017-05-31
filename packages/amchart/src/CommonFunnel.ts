@@ -1,7 +1,9 @@
-import * as AmCharts from "amcharts-funnel";
-import { HTMLWidget } from "../common/HTMLWidget";
-import { ITooltip } from "../api/ITooltip";
-
+import { ITooltip } from "@hpcc-js/api";
+import { HTMLWidget } from "@hpcc-js/common";
+import "amcharts3";
+import * as AmChartsFunnel from "amcharts3/amcharts/funnel";
+import { min as d3Min } from "d3-array";
+import { select as d3Select } from "d3-selection";
 
 export function CommonFunnel() {
     HTMLWidget.call(this);
@@ -20,7 +22,7 @@ export function CommonFunnel() {
 CommonFunnel.prototype = Object.create(HTMLWidget.prototype);
 CommonFunnel.prototype.constructor = CommonFunnel;
 CommonFunnel.prototype._class += " amchart_CommonFunnel";
-    CommonFunnel.prototype.implements(ITooltip.prototype);
+CommonFunnel.prototype.implements(ITooltip.prototype);
 
 CommonFunnel.prototype.publish("fontSize", 11, "number", "Font Size", null, { tags: ["Basic", "Shared"] });
 CommonFunnel.prototype.publish("fontFamily", "Verdana", "string", "Font Name", null, { tags: ["Basic", "Shared", "Shared"] });
@@ -65,7 +67,7 @@ CommonFunnel.prototype.updateChartOptions = function () {
     this._chart.depth3D = this.Depth3D();
     this._chart.angle = this.Angle3D();
 
-    var sortingMethod = function (a, b) { return a[1] > b[1] ? 1 : -1; };
+    let sortingMethod = function (a, b) { return a[1] > b[1] ? 1 : -1; };
     if (this.reverseDataSorting()) {
         sortingMethod = function (a, b) { return a[1] < b[1] ? 1 : -1; };
     }
@@ -94,10 +96,10 @@ CommonFunnel.prototype.updateChartOptions = function () {
 };
 
 CommonFunnel.prototype.formatData = function (dataArr) {
-    var dataObjArr = [];
-    var context = this;
+    const dataObjArr = [];
+    const context = this;
     dataArr.forEach(function (dataRow) {
-        var dataObj = {};
+        const dataObj = {};
         context.columns().forEach(function (colName, cIdx) {
             dataObj[colName] = dataRow[cIdx];
         });
@@ -108,21 +110,21 @@ CommonFunnel.prototype.formatData = function (dataArr) {
 
 CommonFunnel.prototype.enter = function (domNode, element) {
     HTMLWidget.prototype.enter.apply(this, arguments);
-    var context = this;
-    var initObj: any = {
+    const context = this;
+    const initObj: any = {
         type: "funnel",
         addClassNames: true,
         autoResize: true,
         autoMargins: true,
         chartScrollbar: {}
     };
-    if (typeof define === "function" && define.amd) {
-        initObj.pathToImages = require.toUrl("amchartsImg");
+    if (typeof (window as any).define === "function" && (window as any).define.amd) {
+        initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
     }
-    this._chart = AmCharts.makeChart(domNode, initObj);
+    this._chart = AmChartsFunnel.makeChart(domNode, initObj);
     this._chart.addListener("clickSlice", function (e) {
-        var field = e.chart.colorField;
-        var data = e.dataItem.dataContext;
+        const field = e.chart.colorField;
+        const data = e.dataItem.dataContext;
 
         if (data[field] !== null && data[field] !== undefined) {
             delete data[field];
@@ -139,8 +141,8 @@ CommonFunnel.prototype.enter = function (domNode, element) {
                     delete context._selected.data[context._selected.field];
                 }
                 context._selected = {
-                    field: field,
-                    data: data,
+                    field,
+                    data,
                     cIdx: 1,
                     dIdx: e.dataItem.index
                 };
@@ -175,34 +177,33 @@ CommonFunnel.prototype.render = function (callback) {
     return HTMLWidget.prototype.render.apply(this, arguments);
 };
 
-
 CommonFunnel.prototype.postUpdate = function (domNode, element) {
-    var context = this;
+    const context = this;
     if (this.labelPosition() !== "center") {
-        var containerBoundingClientRect = context._element.select("svg").node().getBoundingClientRect(); // might need to change this selection (could get a bit more accurate results?)
+        const containerBoundingClientRect = context._element.select("svg").node().getBoundingClientRect(); // might need to change this selection (could get a bit more accurate results?)
         this.d3LabelSelection = element.selectAll(".amcharts-funnel-item");
 
-        var left = [];
-        var right = [];
+        const left = [];
+        const right = [];
 
         this.d3LabelSelection.each(function (d, i) {
-            var boundingRect = d3.select(this).node().getBoundingClientRect();
+            const boundingRect = d3Select(this).node().getBoundingClientRect();
 
-            var labelRightPos = boundingRect.right;
+            const labelRightPos = boundingRect.right;
             if (labelRightPos > containerBoundingClientRect.right) {
                 right.push(containerBoundingClientRect.right - labelRightPos);
             }
 
-            var labelLeftPos = boundingRect.left;
+            const labelLeftPos = boundingRect.left;
             if (labelLeftPos < containerBoundingClientRect.left) {
                 left.push(labelLeftPos - containerBoundingClientRect.left);
             }
         });
 
-        var rightOffset = right.length ? d3.min(right) : 0;
-        var leftOffset = left.length ? d3.min(left) : 0;
+        const rightOffset = right.length ? d3Min(right) : 0;
+        const leftOffset = left.length ? d3Min(left) : 0;
 
-        var smallerOffset = 0;
+        let smallerOffset = 0;
 
         if (rightOffset < 0) {
             smallerOffset += rightOffset;

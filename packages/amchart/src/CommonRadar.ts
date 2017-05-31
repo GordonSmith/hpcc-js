@@ -1,7 +1,8 @@
-import * as d3 from 'd3';
-import * as AmCharts from "amcharts-radar";
-import { HTMLWidget } from "../common/HTMLWidget";
-import { ITooltip } from "../api/ITooltip";
+import { ITooltip } from "@hpcc-js/api";
+import { HTMLWidget } from "@hpcc-js/common";
+import "amcharts3";
+import * as AmChartsRadar from "amcharts3/amcharts/radar";
+import { format as d3Format } from "d3-format";
 
 export function CommonRadar() {
     HTMLWidget.call(this);
@@ -20,7 +21,7 @@ export function CommonRadar() {
 CommonRadar.prototype = Object.create(HTMLWidget.prototype);
 CommonRadar.prototype.constructor = CommonRadar;
 CommonRadar.prototype._class += " amchart_CommonRadar";
-    CommonRadar.prototype.implements(ITooltip.prototype);
+CommonRadar.prototype.implements(ITooltip.prototype);
 
 // NO X-Axis  !!!
 
@@ -55,10 +56,10 @@ CommonRadar.prototype.publish("startDuration", 0.3, "number", "Start Duration (s
 CommonRadar.prototype.publish("yAxisAutoGridCount", true, "boolean", "Specifies whether number of gridCount is specified automatically, acoarding to the axis size", null, { tags: ["Advanced"] });
 CommonRadar.prototype.publish("yAxisGridPosition", "start", "set", "Specifies if a grid line is placed on the center of a cell or on the beginning of a cell", ["start", "middle"], { tags: ["Advanced"] });
 
-//CommonRadar.prototype.publish("yAxisBoldPeriodBeginning", true, "boolean", "When parse dates is on for the category axis, the chart will try to highlight the beginning of the periods, like month, in bold.",null,{tags:["Advanced"]});
-//CommonRadar.prototype.publish("yAxisFillAlpha", 0, "number", "Fill opacity. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.",null,{tags:["Intermediate"]});
-//CommonRadar.prototype.publish("yAxisFillColor", "#FFFFFF", "html-color", "Fill color. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.",null,{tags:["Intermediate"]});
-//CommonRadar.prototype.publish("yAxisGridAlpha", 0.2, "number", "Grid alpha.",null,{tags:["Intermediate"]});
+// CommonRadar.prototype.publish("yAxisBoldPeriodBeginning", true, "boolean", "When parse dates is on for the category axis, the chart will try to highlight the beginning of the periods, like month, in bold.",null,{tags:["Advanced"]});
+// CommonRadar.prototype.publish("yAxisFillAlpha", 0, "number", "Fill opacity. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.",null,{tags:["Intermediate"]});
+// CommonRadar.prototype.publish("yAxisFillColor", "#FFFFFF", "html-color", "Fill color. Every second space between grid lines can be filled with color. Set fillAlpha to a value greater than 0 to see the fills.",null,{tags:["Intermediate"]});
+// CommonRadar.prototype.publish("yAxisGridAlpha", 0.2, "number", "Grid alpha.",null,{tags:["Intermediate"]});
 
 CommonRadar.prototype.publish("yAxisMinimum", [], "array", "", null, { tags: ["Advanced"] });
 CommonRadar.prototype.publish("yAxisTitleOffset", [], "array", "", null, { tags: ["Advanced"] });
@@ -79,7 +80,7 @@ CommonRadar.prototype.publish("selectionColor", "#f00", "html-color", "Font Colo
 CommonRadar.prototype.publish("selectionMode", "simple", "set", "Selection Mode", ["simple", "multi"], { tags: ["Intermediate"] });
 
 CommonRadar.prototype.updateChartOptions = function () {
-    var context = this;
+    const context = this;
 
     this._chart.theme = "none";
     this._chart.type = "radar";
@@ -122,7 +123,7 @@ CommonRadar.prototype.updateChartOptions = function () {
     this._chart.valueAxes[0].gridPosition = this.yAxisGridPosition();
 
     this._chart.valueAxes[0].labelFunction = function (d) {
-        return d3.format(context.yAxisTickFormat())(d);
+        return d3Format(context.yAxisTickFormat())(d);
     };
 
     // Color Palette
@@ -146,11 +147,11 @@ CommonRadar.prototype.updateChartOptions = function () {
 };
 
 CommonRadar.prototype.buildGraphObj = function (gType, i) {
-    var context = this;
-    var gObj: any = {};
+    const context = this;
+    const gObj: any = {};
 
     gObj.balloonFunction = function (d) {
-        var balloonText = d.category + ", " + context.columns()[d.graph.index + 1] + ": " + context.data()[d.index][d.graph.columnIndex + 1];
+        const balloonText = d.category + ", " + context.columns()[d.graph.index + 1] + ": " + context.data()[d.index][d.graph.columnIndex + 1];
         return balloonText;
     };
     gObj.fillAlphas = context.fillOpacity();
@@ -170,10 +171,10 @@ CommonRadar.prototype.buildGraphObj = function (gType, i) {
 };
 
 CommonRadar.prototype.formatData = function (dataArr) {
-    var dataObjArr = [];
-    var context = this;
+    const dataObjArr = [];
+    const context = this;
     dataArr.forEach(function (dataRow) {
-        var dataObj = {};
+        const dataObj = {};
         context.columns().forEach(function (colName, cIdx) {
             dataObj[colName] = dataRow[cIdx];
         });
@@ -184,20 +185,20 @@ CommonRadar.prototype.formatData = function (dataArr) {
 
 CommonRadar.prototype.enter = function (domNode, element) {
     HTMLWidget.prototype.enter.apply(this, arguments);
-    var context = this;
-    var initObj: any = {
+    const context = this;
+    const initObj: any = {
         type: "radar",
         addClassNames: true,
         chartScrollbar: {}
     };
-    if (typeof define === "function" && define.amd) {
-        initObj.pathToImages = require.toUrl("amchartsImg");
+    if (typeof (window as any).define === "function" && (window as any).define.amd) {
+        initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
     }
-    this._chart = AmCharts.makeChart(domNode, initObj);
+    this._chart = AmChartsRadar.makeChart(domNode, initObj);
     this._chart.addListener("clickGraphItem", function (e) {
-        var graph = e.graph;
-        var data = e.item.dataContext;
-        var field = graph.colorField;
+        const graph = e.graph;
+        const data = e.item.dataContext;
+        const field = graph.colorField;
 
         if (data[field] !== null && data[field] !== undefined) {
             delete data[field];
@@ -214,8 +215,8 @@ CommonRadar.prototype.enter = function (domNode, element) {
                     delete context._selected.data[context._selected.field];
                 }
                 context._selected = {
-                    field: field,
-                    data: data,
+                    field,
+                    data,
                     cIdx: e.target.index,
                     dIdx: e.index
                 };

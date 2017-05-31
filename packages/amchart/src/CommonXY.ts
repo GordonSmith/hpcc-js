@@ -1,7 +1,7 @@
-import * as d3 from 'd3';
-import * as AmCharts from "amcharts-xy";
-import { HTMLWidget } from "../common/HTMLWidget";
-import { ITooltip } from "../api/ITooltip";
+import { ITooltip } from "@hpcc-js/api";
+import { HTMLWidget } from "@hpcc-js/common";
+import * as AmChartsXY from "amcharts3/amcharts/xy";
+import { format as d3Format } from "d3-format";
 import { XYAxis as Axis } from "./XYAxis";
 
 export function CommonXY() {
@@ -28,7 +28,7 @@ export function CommonXY() {
 CommonXY.prototype = Object.create(HTMLWidget.prototype);
 CommonXY.prototype.constructor = CommonXY;
 CommonXY.prototype._class += " amchart_CommonXY";
-    CommonXY.prototype.implements(ITooltip.prototype);
+CommonXY.prototype.implements(ITooltip.prototype);
 
 CommonXY.prototype.publish("backwardsCompatible", true, "boolean", "Allow use of old publish parameters");
 
@@ -83,11 +83,10 @@ CommonXY.prototype.publishProxy("yAxisTitleFontColor", "_yAxis", "axisTitleFontC
 CommonXY.prototype.publishProxy("xAxisLabelRotation", "_xAxis", "axisLabelRotation");
 CommonXY.prototype.publishProxy("yAxisLabelRotation", "_yAxis", "axisLabelRotation");
 
-CommonXY.prototype.publish("axisLineWidth", 1, "number", "Thickness of axis", null, { tags: ["Intermediate", "Shared"] }); //??
+CommonXY.prototype.publish("axisLineWidth", 1, "number", "Thickness of axis", null, { tags: ["Intermediate", "Shared"] }); // ??
 
 CommonXY.prototype.publishProxy("xAxisAutoGridCount", "_xAxis", "axisAutoGridCount");
 CommonXY.prototype.publishProxy("yAxisAutoGridCount", "_yAxis", "axisAutoGridCount");
-
 
 CommonXY.prototype.publishProxy("xAxisGridPosition", "_xAxis", "axisGridPosition");
 CommonXY.prototype.publishProxy("yAxisGridPosition", "_yAxis", "axisGridPosition");
@@ -104,7 +103,7 @@ CommonXY.prototype.publishProxy("yAxisGridAlpha", "_yAxis", "axisGridAlpha");
 CommonXY.prototype.publishProxy("xAxisDashLength", "_xAxis", "axisDashLength");
 CommonXY.prototype.publishProxy("yAxisDashLength", "_yAxis", "axisDashLength");
 
-//CommonXY.prototype.publish("yAxisMinimum", null, "number", "",null,{tags:["Intermediate"]});
+// CommonXY.prototype.publish("yAxisMinimum", null, "number", "",null,{tags:["Intermediate"]});
 
 CommonXY.prototype.publishProxy("xAxisTickFormat", "_xAxis", "axisTickFormat");
 CommonXY.prototype.publishProxy("yAxisTickFormat", "_yAxis", "axisTickFormat");
@@ -113,7 +112,7 @@ CommonXY.prototype.publish("axisAlpha", 1, "number", "Axis opacity", null, { tag
 
 CommonXY.prototype._origBackwardsCompatible = CommonXY.prototype.backwardsCompatible;
 CommonXY.prototype.backwardsCompatible = function (_) {
-    var retVal = CommonXY.prototype._origBackwardsCompatible.apply(this, arguments);
+    const retVal = CommonXY.prototype._origBackwardsCompatible.apply(this, arguments);
     if (arguments.length) {
         this.switchProperties(_);
     }
@@ -131,7 +130,7 @@ CommonXY.prototype.switchProperties = function (val) {
 
 CommonXY.prototype.xAxis = function (idx) {
     if (!this.xAxes()[idx]) {
-        var xAxis = new Axis();
+        const xAxis = new Axis();
         xAxis._owningWidget = this;
         this.xAxes()[idx] = xAxis;
     }
@@ -140,7 +139,7 @@ CommonXY.prototype.xAxis = function (idx) {
 
 CommonXY.prototype.yAxis = function (idx) {
     if (!this.yAxes()[idx]) {
-        var yAxis = new Axis();
+        const yAxis = new Axis();
         yAxis._owningWidget = this;
         this.yAxes()[idx] = yAxis;
     }
@@ -148,7 +147,7 @@ CommonXY.prototype.yAxis = function (idx) {
 };
 
 CommonXY.prototype.updateChartOptions = function () {
-    var context = this;
+    const context = this;
 
     this._chart.theme = "none";
     this._chart.type = "xy";
@@ -159,10 +158,10 @@ CommonXY.prototype.updateChartOptions = function () {
 
     // left vAxis must always be 0 and bottom 1 !!
 
-    var vAxisCount = 0;
+    let vAxisCount = 0;
 
-    for (var iy = 0; iy < this.yAxes().length; iy++) {
-        var yAxis = this.yAxes()[iy];
+    for (let iy = 0; iy < this.yAxes().length; iy++) {
+        const yAxis = this.yAxes()[iy];
 
         this._chart.valueAxes[vAxisCount].position = yAxis.position() ? yAxis.position() : "left";
         this._chart.valueAxes[vAxisCount].axisAlpha = yAxis.axisAlpha();
@@ -180,14 +179,14 @@ CommonXY.prototype.updateChartOptions = function () {
         this._chart.valueAxes[vAxisCount].dashLength = yAxis.axisDashLength();
 
         this._chart.valueAxes[vAxisCount].labelFunction = function (d) {
-            return d3.format(yAxis.axisTickFormat())(d);
+            return d3Format(yAxis.axisTickFormat())(d);
         };
 
         vAxisCount++;
     }
 
-    for (var ix = 0; ix < this.xAxes().length; ix++) {
-        var xAxis = this.xAxes()[ix];
+    for (let ix = 0; ix < this.xAxes().length; ix++) {
+        const xAxis = this.xAxes()[ix];
 
         this._chart.valueAxes[vAxisCount].position = xAxis.position() ? xAxis.position() : "bottom";
         this._chart.valueAxes[vAxisCount].axisAlpha = xAxis.axisAlpha();
@@ -207,7 +206,7 @@ CommonXY.prototype.updateChartOptions = function () {
 
         if (xAxis.axisType() === "ordinal") {
             this._chart.valueAxes[vAxisCount].integersOnly = true;
-            //this._chart.valueAxes[vAxisCount].maximum = this.data().length; // (off for now)
+            // this._chart.valueAxes[vAxisCount].maximum = this.data().length; // (off for now)
             this._chart.valueAxes[vAxisCount].labelFunction = function (a, b) {
                 if (b > context.data().length) {
                     return ""; // so the the last dots arent on the edge
@@ -216,7 +215,7 @@ CommonXY.prototype.updateChartOptions = function () {
             };
         } else {
             this._chart.valueAxes[vAxisCount].labelFunction = function (d) {
-                return d3.format(xAxis.axisTickFormat())(d);
+                return d3Format(xAxis.axisTickFormat())(d);
             };
         }
 
@@ -243,7 +242,7 @@ CommonXY.prototype.updateChartOptions = function () {
     }
 
     if (this.showCursor()) {
-        this._chart.precision = this.xAxes()[0].axisType() === "ordinal" ? 1 : undefined; // so ordinal will work with labelfunction 
+        this._chart.precision = this.xAxes()[0].axisType() === "ordinal" ? 1 : undefined; // so ordinal will work with labelfunction
         this._chart.chartCursor.enabled = true;
         this._chart.chartCursor.valueLineEnabled = true;
         this._chart.chartCursor.valueLineBalloonEnabled = true;
@@ -260,17 +259,17 @@ CommonXY.prototype.updateChartOptions = function () {
 };
 
 CommonXY.prototype.buildGraphObj = function (gType, i) {
-    var context = this;
-    var gObj: any = {};
+    const context = this;
+    const gObj: any = {};
 
     gObj.id = "g" + i;
 
     gObj.balloonFunction = function (d) {
-            if(context && context.tooltipValueFormat){
-                return context.columns()[d.graph.index]  + ": " + d3.format(context.tooltipValueFormat())(context.data()[d.index][d.graph.index]);
-            }else{
-                return context.columns()[d.graph.index]  + ": " + context.data()[d.index][d.graph.index];
-            }
+        if (context && context.tooltipValueFormat) {
+            return context.columns()[d.graph.index] + ": " + d3Format(context.tooltipValueFormat())(context.data()[d.index][d.graph.index]);
+        } else {
+            return context.columns()[d.graph.index] + ": " + context.data()[d.index][d.graph.index];
+        }
     };
     gObj.lineAlpha = context.lineOpacity();
     gObj.lineThickness = context.lineWidth();
@@ -299,10 +298,10 @@ CommonXY.prototype.buildGraphObj = function (gType, i) {
 };
 
 CommonXY.prototype.formatData = function (dataArr) {
-    var context = this;
-    var dataObjArr = [];
+    const context = this;
+    const dataObjArr = [];
     dataArr.forEach(function (dataRow, i) {
-        var dataObj = {};
+        const dataObj = {};
         context.columns().forEach(function (colName, cIdx) {
             dataObj[colName] = dataRow[cIdx];
             dataObj["idx"] = i + 1;
@@ -322,23 +321,23 @@ CommonXY.prototype.enter = function (domNode, element) {
         this.yAxes().push(this._yAxis);
     }
 
-    var context = this;
-    var initObj: any = {
+    const context = this;
+    const initObj: any = {
         type: "xy",
         addClassNames: true,
         autoMargins: true,
         chartScrollbar: {},
         valueAxes: [],
         chartCursor: {
-            "enabled": false,
-            "valueLineEnabled": false,
-            "valueLineBalloonEnabled": false,
-            "categoryBalloonEnabled": false,
-            "cursorAlpha": 0,
-            "valueLineAlpha": 0.2,
-            "oneBalloonOnly": true,
-            "balloonPointerOrientation": "vertical",
-            "valueBalloonsEnabled": false //always set false
+            enabled: false,
+            valueLineEnabled: false,
+            valueLineBalloonEnabled: false,
+            categoryBalloonEnabled: false,
+            cursorAlpha: 0,
+            valueLineAlpha: 0.2,
+            oneBalloonOnly: true,
+            balloonPointerOrientation: "vertical",
+            valueBalloonsEnabled: false // always set false
         },
         graphs: [{}],
         dataProvider: [{}],
@@ -346,14 +345,14 @@ CommonXY.prototype.enter = function (domNode, element) {
             enabled: true
         }
     };
-    if (typeof define === "function" && define.amd) {
-        initObj.pathToImages = require.toUrl("amchartsImg");
+    if (typeof (window as any).define === "function" && (window as any).define.amd) {
+        initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
     }
-    this._chart = AmCharts.makeChart(domNode, initObj);
+    this._chart = AmChartsXY.makeChart(domNode, initObj);
     this._chart.addListener("clickGraphItem", function (e) {
-        var graph = e.graph;
-        var data = e.item.dataContext;
-        var field = graph.colorField;
+        const graph = e.graph;
+        const data = e.item.dataContext;
+        const field = graph.colorField;
 
         if (data[field] !== null && data[field] !== undefined) {
             delete data[field];
@@ -370,8 +369,8 @@ CommonXY.prototype.enter = function (domNode, element) {
                     delete context._selected.data[context._selected.field];
                 }
                 context._selected = {
-                    field: field,
-                    data: data,
+                    field,
+                    data,
                     cIdx: e.target.index,
                     dIdx: e.index
                 };
@@ -388,7 +387,7 @@ CommonXY.prototype.enter = function (domNode, element) {
 CommonXY.prototype.update = function (domNode, element) {
     HTMLWidget.prototype.update.apply(this, arguments);
 
-    var context = this;
+    const context = this;
 
     // assign correct axe to PPs and correct context to PropertyExt Obj
     this.yAxes().forEach(function (axe, idx) {

@@ -1,4 +1,4 @@
-import "amcharts-xy";
+import "amcharts3/amcharts/xy";
 import { SerialAxis } from "./SerialAxis";
 
 export function XYAxis() {

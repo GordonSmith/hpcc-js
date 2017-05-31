@@ -1,5 +1,6 @@
+import { I2DChart } from "@hpcc-js/api";
+import { format as d3Format } from "d3-format";
 import { CommonFunnel } from "./CommonFunnel";
-import { I2DChart } from "../api/I2DChart";
 
 export function Pyramid() {
     CommonFunnel.call(this);
@@ -19,13 +20,13 @@ Pyramid.prototype.enter = function (domNode, element) {
 
 Pyramid.prototype.updateChartOptions = function () {
     CommonFunnel.prototype.updateChartOptions.apply(this, arguments);
-        var context = this;
-        this._chart.balloonFunction = function(d) {
-            if(context && context.tooltipValueFormat){
-                return d.title +": " + d3.format(context.tooltipValueFormat())(d.value);
-            }
-        };
+    const context = this;
+    this._chart.balloonFunction = function (d) {
+        if (context && context.tooltipValueFormat) {
+            return d.title + ": " + d3Format(context.tooltipValueFormat())(d.value);
+        }
     };
+};
 
 Pyramid.prototype.update = function (domNode, element) {
     CommonFunnel.prototype.update.apply(this, arguments);
