@@ -128,12 +128,17 @@ function MetaProxy(id, proxy, method, defaultValue, ext?) {
 
 export type PublishTypes = "any" | "number" | "boolean" | "string" | "set" | "array" | "object" | "widget" | "widgetArray" | "propertyArray" | "html-color";
 export interface IPublishExt {
-    override?: () => boolean;
+    override?: boolean;
     disable?: (w) => boolean;
     optional?: boolean;
     tags?: string[];
     autoExpand?;
     render?: boolean;
+    //  Amcharts - really needed?
+    min?: number;
+    max?: number;
+    step?: number;
+    inputType?: string;
 }
 
 let propExtID = 0;
@@ -141,6 +146,7 @@ export class PropertyExt extends Class {
     protected _id: string;
     private _watchArrIdx: number;
     private _watchArr: any;
+    private _generatePublishStubs: boolean = false;
 
     constructor() {
         super();
@@ -222,8 +228,27 @@ export class PropertyExt extends Class {
             }
         }
     }
-
+    static prevClassID: string = "";
     publish(id, defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}) {
+        if (this._generatePublishStubs) {
+            if (PropertyExt.prevClassID !== (this as any).constructor.name) {
+                PropertyExt.prevClassID = (this as any).constructor.name;
+                console.log(`//  ${PropertyExt.prevClassID}  ---`);
+            }
+            let jsType: string = type;
+            switch (type) {
+                case "set":
+                case "html-color":
+                    jsType = "string";
+                    break;
+                case "array":
+                case "widgetArray":
+                case "propertyArray":
+                    jsType = "any[]";
+                    break;
+            }
+            console.log(`${id}: {(): ${jsType};(_: ${jsType}): ${PropertyExt.prevClassID}};\n${id}_exists: () => boolean;`);
+        }
         if (this[__meta_ + id] !== undefined && !ext.override) {
             throw new Error(id + " is already published.");
         }
