@@ -1,16 +1,178 @@
 import { I1DChart } from "@hpcc-js/api";
 import { HTMLWidget } from "@hpcc-js/common";
-import * as AmChartsGauge from "amcharts3/amcharts/gauge";
+import "amcharts3";
+import "amcharts3/amcharts/gauge";
 import { scaleLinear as d3ScaleLinear } from "d3-scale";
 
-export function Gauge() {
-    HTMLWidget.call(this);
-    this._tag = "div";
+const AmCharts = (window as any).AmCharts;
 
-    this._chart = {};
+export class Gauge extends HTMLWidget {
+    _chart: any = {};
+
+    constructor() {
+        super();
+        this._tag = "div";
+    }
+
+    updateChartOptions() {
+        this._chart.type = "gauge";
+        this._chart.theme = "none";
+
+        this._chart.startDuration = this.animatationDuration();
+
+        this._chart.color = this.fontColor();
+        this._chart.fontSize = this.fontSize();
+        this._chart.fontFamily = this.fontFamily();
+
+        this._chart.titles = [];
+        this._chart.allLabels = [];
+
+        if (this.marginLeft()) { this._chart.marginLeft = this.marginLeft(); }
+        if (this.marginRight()) { this._chart.marginRight = this.marginRight(); }
+        if (this.marginTop()) { this._chart.marginTop = this.marginTop(); }
+        if (this.marginBottom()) { this._chart.marginBottom = this.marginBottom(); }
+
+        this._chart.axes[0].axisThickness = this.axisLineWidth();
+        this._chart.axes[0].axisAlpha = this.axisAlpha();
+        this._chart.axes[0].tickAlpha = this.tickAlpha();
+        this._chart.axes[0].valueInterval = this.valueInterval();
+        this._chart.axes[0].bands = [];
+        this._chart.axes[0].bottomText = this.bottomText();
+        this._chart.axes[0].bottomTextYOffset = this.bottomTextYOffset();
+        this._chart.axes[0].endValue = this.high();
+        this._chart.axes[0].startValue = this.low();
+
+        // 3 Color Methods
+        let i;
+        let l;
+        if (this.colorType() === "a") {
+            const scale = d3ScaleLinear()
+                .domain([0, 100])
+                .range([this.low(), this.high()])
+                ;
+            for (i = 0, l = this.numBands(); i < l; i++) {
+                const a_band = {
+                    color: this.bandsColor()[i],
+                    startValue: scale(this.bandsStartValue()[i]),
+                    endValue: scale(this.bandsEndValue()[i]),
+                    innerRadius: this.bandsInnerRadius()[i],
+                };
+                this._chart.axes[0].bands.push(a_band);
+            }
+        }
+        if (this.colorType() === "b") {
+            for (i = 0, l = this.high(); i < l; i++) {
+                const b_band = {
+                    color: this._palette(i, this.low(), this.high()),
+                    startValue: i,
+                    endValue: i + 1,
+                    // innerRadius: this._bandsInnerRadius[i] || "", // this has a cool effect might be useful?
+                    innerRadius: this.bandsInnerRadius()[0]
+                };
+                this._chart.axes[0].bands.push(b_band);
+            }
+        }
+        if (this.colorType() === "c") {
+            const c_band = {
+                color: this._palette(this.data(), this.low(), this.high()),
+                startValue: this.low(),
+                endValue: this.high(),
+                innerRadius: this.bandsInnerRadius()[0]
+            };
+            this._chart.axes[0].bands.push(c_band);
+        }
+
+        this._chart.axes[0].bottomText = this.bottomText().replace("[[data]]", this.data());
+
+        return this._chart;
+    }
+
+    update(domNode, element) {
+        this._palette = this._palette.switch(this.paletteID());
+        if (this.useClonedPalette()) {
+            this._palette = this._palette.cloneNotExists(this.paletteID() + "_" + this.id());
+        }
+
+        domNode.style.width = this.size().width + "px";
+        domNode.style.height = this.size().height + "px";
+
+        this.updateChartOptions();
+        this._chart.arrows[0].setValue(this.data());
+
+        this._chart.validateNow();
+        this._chart.validateData();
+    }
+
+    enter(domNode, element) {
+        domNode.style.width = this.size().width + "px";
+        domNode.style.height = this.size().height + "px";
+
+        const initObj: any = {
+            type: "gauge",
+            addClassNames: true,
+            axes: [{}],
+            arrows: [{}],
+        };
+        if (typeof (window as any).define === "function" && (window as any).define.amd) {
+            initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
+        }
+        this._chart = AmCharts.makeChart(domNode, initObj);
+    }
+
+    paletteID: { (): string; (_: string): Gauge };
+    paletteID_exists: () => boolean;
+    low: { (): number; (_: number): Gauge };
+    low_exists: () => boolean;
+    high: { (): number; (_: number): Gauge };
+    high_exists: () => boolean;
+    fontSize: { (): number; (_: number): Gauge };
+    fontSize_exists: () => boolean;
+    fontFamily: { (): string; (_: string): Gauge };
+    fontFamily_exists: () => boolean;
+    fontColor: { (): string; (_: string): Gauge };
+    fontColor_exists: () => boolean;
+    axisLineWidth: { (): number; (_: number): Gauge };
+    axisLineWidth_exists: () => boolean;
+    colorType: { (): string; (_: string): Gauge };
+    colorType_exists: () => boolean;
+    marginLeft: { (): number; (_: number): Gauge };
+    marginLeft_exists: () => boolean;
+    marginRight: { (): number; (_: number): Gauge };
+    marginRight_exists: () => boolean;
+    marginTop: { (): number; (_: number): Gauge };
+    marginTop_exists: () => boolean;
+    marginBottom: { (): number; (_: number): Gauge };
+    marginBottom_exists: () => boolean;
+    numBands: { (): number; (_: number): Gauge };
+    numBands_exists: () => boolean;
+    bandsColor: { (): any[]; (_: any[]): Gauge };
+    bandsColor_exists: () => boolean;
+    bandsStartValue: { (): any[]; (_: any[]): Gauge };
+    bandsStartValue_exists: () => boolean;
+    bandsEndValue: { (): any[]; (_: any[]): Gauge };
+    bandsEndValue_exists: () => boolean;
+    bandsInnerRadius: { (): any[]; (_: any[]): Gauge };
+    bandsInnerRadius_exists: () => boolean;
+    axisAlpha: { (): number; (_: number): Gauge };
+    axisAlpha_exists: () => boolean;
+    tickAlpha: { (): number; (_: number): Gauge };
+    tickAlpha_exists: () => boolean;
+    valueInterval: { (): number; (_: number): Gauge };
+    valueInterval_exists: () => boolean;
+    bottomText: { (): string; (_: string): Gauge };
+    bottomText_exists: () => boolean;
+    bottomTextYOffset: { (): number; (_: number): Gauge };
+    bottomTextYOffset_exists: () => boolean;
+    animatationDuration: { (): number; (_: number): Gauge };
+    animatationDuration_exists: () => boolean;
+    useClonedPalette: { (): boolean; (_: boolean): Gauge };
+    useClonedPalette_exists: () => boolean;
+
+    //  I1DChart
+    _palette;
+    click: (row, column, selected) => void;
+    dblclick: (row, column, selected) => void;
 }
-Gauge.prototype = Object.create(HTMLWidget.prototype);
-Gauge.prototype.constructor = Gauge;
 Gauge.prototype._class += " amchart_Gauge";
 Gauge.prototype.implements(I1DChart.prototype);
 
@@ -46,108 +208,3 @@ Gauge.prototype.publish("bottomTextYOffset", -20, "number", "Bottom Text Vertica
 Gauge.prototype.publish("animatationDuration", 2, "number", "Animation Duration (sec)", null, { tags: ["Intermediate"] });
 
 Gauge.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
-
-Gauge.prototype.updateChartOptions = function () {
-    this._chart.type = "gauge";
-    this._chart.theme = "none";
-
-    this._chart.startDuration = this.animatationDuration();
-
-    this._chart.color = this.fontColor();
-    this._chart.fontSize = this.fontSize();
-    this._chart.fontFamily = this.fontFamily();
-
-    this._chart.titles = [];
-    this._chart.allLabels = [];
-
-    if (this.marginLeft()) { this._chart.marginLeft = this.marginLeft(); }
-    if (this.marginRight()) { this._chart.marginRight = this.marginRight(); }
-    if (this.marginTop()) { this._chart.marginTop = this.marginTop(); }
-    if (this.marginBottom()) { this._chart.marginBottom = this.marginBottom(); }
-
-    this._chart.axes[0].axisThickness = this.axisLineWidth();
-    this._chart.axes[0].axisAlpha = this.axisAlpha();
-    this._chart.axes[0].tickAlpha = this.tickAlpha();
-    this._chart.axes[0].valueInterval = this.valueInterval();
-    this._chart.axes[0].bands = [];
-    this._chart.axes[0].bottomText = this.bottomText();
-    this._chart.axes[0].bottomTextYOffset = this.bottomTextYOffset();
-    this._chart.axes[0].endValue = this.high();
-    this._chart.axes[0].startValue = this.low();
-
-    // 3 Color Methods
-    let i;
-    let l;
-    if (this.colorType() === "a") {
-        const scale = d3ScaleLinear()
-            .domain([0, 100])
-            .range([this.low(), this.high()])
-            ;
-        for (i = 0, l = this.numBands(); i < l; i++) {
-            const a_band = {
-                color: this.bandsColor()[i],
-                startValue: scale(this.bandsStartValue()[i]),
-                endValue: scale(this.bandsEndValue()[i]),
-                innerRadius: this.bandsInnerRadius()[i],
-            };
-            this._chart.axes[0].bands.push(a_band);
-        }
-    }
-    if (this.colorType() === "b") {
-        for (i = 0, l = this.high(); i < l; i++) {
-            const b_band = {
-                color: this._palette(i, this.low(), this.high()),
-                startValue: i,
-                endValue: i + 1,
-                // innerRadius: this._bandsInnerRadius[i] || "", // this has a cool effect might be useful?
-                innerRadius: this.bandsInnerRadius()[0]
-            };
-            this._chart.axes[0].bands.push(b_band);
-        }
-    }
-    if (this.colorType() === "c") {
-        const c_band = {
-            color: this._palette(this.data(), this.low(), this.high()),
-            startValue: this.low(),
-            endValue: this.high(),
-            innerRadius: this.bandsInnerRadius()[0]
-        };
-        this._chart.axes[0].bands.push(c_band);
-    }
-
-    this._chart.axes[0].bottomText = this.bottomText().replace("[[data]]", this.data());
-
-    return this._chart;
-};
-
-Gauge.prototype.update = function (domNode, element) {
-    this._palette = this._palette.switch(this.paletteID());
-    if (this.useClonedPalette()) {
-        this._palette = this._palette.cloneNotExists(this.paletteID() + "_" + this.id());
-    }
-
-    domNode.style.width = this.size().width + "px";
-    domNode.style.height = this.size().height + "px";
-
-    this.updateChartOptions();
-    this._chart.arrows[0].setValue(this.data());
-
-    this._chart.validateNow();
-    this._chart.validateData();
-};
-
-Gauge.prototype.enter = function (domNode, element) {
-    domNode.style.width = this.size().width + "px";
-    domNode.style.height = this.size().height + "px";
-
-    const initObj: any = {
-        type: "gauge",
-        addClassNames: true,
-        axes: [{}],
-        arrows: [{}],
-    };
-    if (typeof (window as any).define === "function" && (window as any).define.amd) {
-        initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
-    }
-    this._chart = AmChartsGauge.makeChart(domNode, initObj);
-};
