@@ -141,12 +141,13 @@ export interface IPublishExt {
     inputType?: string;
 }
 
+const _generatePublishStubs: boolean = true;
+
 let propExtID = 0;
 export class PropertyExt extends Class {
     protected _id: string;
     private _watchArrIdx: number;
     private _watchArr: any;
-    private _generatePublishStubs: boolean = false;
 
     constructor() {
         super();
@@ -230,7 +231,7 @@ export class PropertyExt extends Class {
     }
     static prevClassID: string = "";
     publish(id, defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}) {
-        if (this._generatePublishStubs) {
+        if (_generatePublishStubs) {
             if (PropertyExt.prevClassID !== (this as any).constructor.name) {
                 PropertyExt.prevClassID = (this as any).constructor.name;
                 console.log(`//  ${PropertyExt.prevClassID}  ---`);
