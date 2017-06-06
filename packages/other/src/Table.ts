@@ -1,5 +1,5 @@
+import { HTMLWidget, Platform, Utility, Widget } from "@hpcc-js/common";
 import { event as d3Event, select as d3Select, selectAll as d3SelectAll } from "d3-selection";
-import { Widget, HTMLWidget, Platform, Utility } from "@hpcc-js/common";
 import { Paginator } from "./Paginator";
 
 import "../src/Table.css";
@@ -155,12 +155,10 @@ export class Table extends HTMLWidget {
         this.fixedHead.style("display", this.fixedHeader() ? "table-row" : "none");
         this.unfixedThead.style("display", this.fixedHeader() ? "none" : "table-row");
 
-        const th = this.thead.selectAll("th").data(this.showHeader() ? columns.filter(function (col, idx) {
+        const thSel = this.thead.selectAll("th").data(this.showHeader() ? columns.filter(function (col, idx) {
             return !context.isHidden(idx);
         }) : []);
-        th
-            .enter()
-            .append("th")
+        const thUpdate = thSel.enter().append("th")
             .each(function (d) {
                 const element2 = d3Select(this);
                 element2
@@ -175,20 +173,19 @@ export class Table extends HTMLWidget {
             .on("click", function (column, idx) {
                 context.headerClick(column, idx);
             })
-            ;
-        th
+            .merge(thSel)
             .style("background-color", this.theadRowBackgroundColor())
             .style("border-color", this.theadCellBorderColor())
             .style("color", this.theadFontColor())
             .style("font-size", this.theadFontSize())
             ;
-        th.select(".thText")
+        thUpdate.select(".thText")
             .style("font-family", this.theadFontFamily())
             .text(function (column, idx) {
                 return context.field(-1, idx).transform(column);
             })
             ;
-        th.select(".thIcon")
+        thUpdate.select(".thIcon")
             .text(function (column, idx) {
                 if (context.descending()) {
                     return context.sortByFieldIndex() === idx ? "\uf078" : "";
@@ -197,10 +194,10 @@ export class Table extends HTMLWidget {
                 }
             })
             ;
-        th.exit()
+        thSel.exit()
             .remove()
             ;
-        th.order();
+        thUpdate.order();
 
         if (this.paginationLimit()) {
             this.pagination(data.length >= parseInt(this.paginationLimit()) ? true : false);
@@ -210,7 +207,7 @@ export class Table extends HTMLWidget {
                 this._paginator.target(element.node());
             }
 
-            const ipp = this._calcRowsPerPage(th);
+            const ipp = this._calcRowsPerPage(thUpdate);
             this.itemsPerPage(ipp);
 
             this._paginator.numItems(data.length);
@@ -258,25 +255,23 @@ export class Table extends HTMLWidget {
                 }
             }
 
-            const tf = this.tfoot.selectAll("td").data(totalRow);
-            tf.enter()
+            const tfSel = this.tfoot.selectAll("td").data(totalRow);
+            tfSel.enter()
                 .append("td")
-                ;
-            tf[this.renderHtmlDataCells() ? "html" : "text"](function (d, idx) {
-                return context.fields()[idx].transform(d);
-            });
-            tf.exit()
-                .remove()
-                ;
-            tf
+                .merge(tfSel)
                 .style("background-color", this.tfootRowBackgroundColor())
                 .style("border-color", this.tfootCellBorderColor())
                 .style("color", this.tfootFontColor())
                 .style("font-size", this.tfootFontSize())
+            [this.renderHtmlDataCells() ? "html" : "text"](function (d, idx) {
+                return context.fields()[idx].transform(d);
+            });
+            tfSel.exit()
+                .remove()
                 ;
         }
 
-        const rows = this.tbody.selectAll("tr.tr_" + this.id()).data(tData.map(function (d, idx) {
+        const rowsSel = this.tbody.selectAll("tr.tr_" + this.id()).data(tData.map(function (d, idx) {
             //  TODO - Move fix closer to data source?
             for (let i = 0; i < d.length; ++i) {
                 if (d[i] === undefined) {
@@ -288,7 +283,7 @@ export class Table extends HTMLWidget {
                 row: d
             };
         }));
-        rows.enter().append("tr")
+        const rowsUpdate = rowsSel.enter().append("tr")
             .attr("class", "tr_" + this.id())
             .on("click.selectionBag", function (_d) {
                 if (_d.row) {
@@ -323,20 +318,19 @@ export class Table extends HTMLWidget {
                     context.applyFirstColRowStyles(fixedLeftRows);
                 }
             })
-            ;
-        rows
+            .merge(rowsSel)
             .classed("selected", function (_d) {
                 const d = _d.row;
                 return context._selectionBag.isSelected(context._createSelectionObject(d));
             })
             .classed("trId" + this._id, true)
             ;
-        rows.exit()
+        rowsSel.exit()
             .remove()
             ;
-        this.applyStyleToRows(rows);
+        this.applyStyleToRows(rowsUpdate);
 
-        const cells = rows.selectAll(".td_" + this.id()).data(function (_d, _trIdx) {
+        const cellsSel = rowsUpdate.selectAll(".td_" + this.id()).data(function (_d, _trIdx) {
             return _d.row.filter(function (cell, idx) {
                 return idx < columns.length && !context.isHidden(idx);
             }).map(function (cell, idx) {
@@ -347,7 +341,7 @@ export class Table extends HTMLWidget {
                 };
             });
         });
-        cells.enter()
+        cellsSel.enter()
             .append("td")
             .attr("class", "td_" + this.id())
             .on("click", function (tdContents) {
@@ -370,8 +364,7 @@ export class Table extends HTMLWidget {
                     .classed("tr-" + tdContents.rowInfo.rowIdx + "-td-" + tdIdx, true)
                     ;
             })
-            ;
-        cells
+            .merge(cellsSel)
             .each(function (tdContents) {
                 const el = d3Select(this);
                 if (tdContents.cell instanceof Widget) {
@@ -398,8 +391,7 @@ export class Table extends HTMLWidget {
                                 .target(widgetDiv2.node())
                                 ;
                         })
-                        ;
-                    widgetDiv
+                        .merge(widgetDiv)
                         .each(function (d) {
                             d
                                 .resize()
@@ -416,7 +408,7 @@ export class Table extends HTMLWidget {
                 }
             })
             ;
-        cells.exit()
+        cellsSel.exit()
             .remove()
             ;
         const tableMarginHeight = parseInt(this.thead.node().offsetHeight);
@@ -433,10 +425,8 @@ export class Table extends HTMLWidget {
         this.size(this._size);
 
         let fixedColWidth = 0;
-        const fixedColTh = this.fixedColHeadRow.selectAll("th").data(this.fixedColumn() && this.showHeader() ? [columns[0]] : []);
-        fixedColTh
-            .enter()
-            .append("th")
+        const fixedColThSel = this.fixedColHeadRow.selectAll("th").data(this.fixedColumn() && this.showHeader() ? [columns[0]] : []);
+        const fixedColThUpdate = fixedColThSel.enter().append("th")
             .each(function (d) {
                 const element2 = d3Select(this);
                 element2
@@ -451,20 +441,19 @@ export class Table extends HTMLWidget {
             .on("click", function (column, idx) {
                 context.headerClick(column, idx);
             })
-            ;
-        fixedColTh
+            .merge(fixedColThSel)
             .style("background-color", this.theadRowBackgroundColor())
             .style("border-color", this.theadCellBorderColor())
             .style("color", this.theadFontColor())
             .style("font-size", this.theadFontSize())
             ;
-        fixedColTh.select(".thText")
+        fixedColThUpdate.select(".thText")
             .style("font-family", this.theadFontFamily())
             .text(function (column) {
                 return column;
             })
             ;
-        fixedColTh.select(".thIcon")
+        fixedColThUpdate.select(".thIcon")
             .text(function (column, idx) {
                 if (context.descending()) {
                     return context.sortByFieldIndex() === idx ? "\uf078" : "";
@@ -473,96 +462,88 @@ export class Table extends HTMLWidget {
                 }
             })
             ;
-        fixedColTh.exit()
+        fixedColThSel.exit()
             .remove()
             ;
 
-        const fixedColTr = this.fixedColBody.selectAll("tr").data(this.fixedColumn() ? tData : []);
-        fixedColTr.enter()
-            .append("tr")
+        const fixedColTrSel = this.fixedColBody.selectAll("tr").data(this.fixedColumn() ? tData : []);
+        const fixedColTrUpdate = fixedColTrSel.enter().append("tr")
             .attr("class", function () {
                 return "trId" + context._id;
             })
-            ;
-        fixedColTr
+            .merge(fixedColTrSel)
             .on("click", function (d, i) {
-                (d3Select(rows[0][i]).on("click.selectionBag") as any)(rows.data()[i], i)
+                (d3Select(rowsUpdate[0][i]).on("click.selectionBag") as any)(rowsUpdate.data()[i], i)
                     ;
             })
             .on("mouseover", function (d, i) {
-                (d3Select(rows[0][i]).on("mouseover") as any)(rows.data()[i], i)
+                (d3Select(rowsUpdate[0][i]).on("mouseover") as any)(rowsUpdate.data()[i], i)
                     ;
             })
             .on("mouseout", function (d, i) {
-                (d3Select(rows[0][i]).on("mouseout") as any)(rows.data()[i], i)
+                (d3Select(rowsUpdate[0][i]).on("mouseout") as any)(rowsUpdate.data()[i], i)
                     ;
             })
             .classed("selected", function (d) {
                 return context._selectionBag.isSelected(context._createSelectionObject(d));
             })
             ;
-        fixedColTr.exit()
+        fixedColTrSel.exit()
             .remove()
             ;
-        const fixedColTd = fixedColTr.selectAll("td").data(function (d, i) {
+        const fixedColTdSel = fixedColTrUpdate.selectAll("td").data(function (d, i) {
             return [d[0]];
         });
-        fixedColTd
-            .enter()
-            .append("td")
-            ;
-        fixedColTd[this.renderHtmlDataCells() ? "html" : "text"](function (d): any {
-            if (typeof (d) === "string") {
-                return d.trim();
-            } else if (typeof (d) === "number") {
-                return d;
-            }
-            return "";
-        });
-        fixedColTd.exit()
+        const fixedColTdUpdate = fixedColTdSel.enter().append("td")
+            .merge(fixedColTdSel)[this.renderHtmlDataCells() ? "html" : "text"](function (d): any {
+                if (typeof (d) === "string") {
+                    return d.trim();
+                } else if (typeof (d) === "number") {
+                    return d;
+                }
+                return "";
+            });
+        fixedColTdSel.exit()
             .remove()
             ;
 
-        const fixedColFootTd = this.fixedColFootRow.selectAll("td").data(this.fixedColumn() && this.totalledLabel() ? [this.totalledLabel()] : []);
-        fixedColFootTd
-            .enter()
-            .append("td")
-            ;
-        fixedColFootTd[this.renderHtmlDataCells() ? "html" : "text"](function (d): any {
-            if (typeof (d) === "string") {
-                return d.trim();
-            } else if (typeof (d) === "number") {
-                return d;
-            }
-            return "";
-        });
-        fixedColFootTd.exit()
+        const fixedColFootTdSel = this.fixedColFootRow.selectAll("td").data(this.fixedColumn() && this.totalledLabel() ? [this.totalledLabel()] : []);
+        const fixedColFootTdUpdate = fixedColFootTdSel.enter().append("td")
+            .merge(fixedColFootTdSel)[this.renderHtmlDataCells() ? "html" : "text"](function (d): any {
+                if (typeof (d) === "string") {
+                    return d.trim();
+                } else if (typeof (d) === "number") {
+                    return d;
+                }
+                return "";
+            });
+        fixedColFootTdSel.exit()
             .remove()
             ;
 
-        if (this.fixedColumn() && !this.fixedSize() && fixedColTd.length) {
+        if (this.fixedColumn() && !this.fixedSize() && fixedColFootTdUpdate.length) {
             if (this.showHeader()) {
-                fixedColWidth = fixedColTd.property("offsetWidth") > fixedColTh.property("offsetWidth") ? fixedColTd.property("offsetWidth") : fixedColTh.property("offsetWidth");
+                fixedColWidth = fixedColFootTdUpdate.property("offsetWidth") > fixedColFootTdUpdate.property("offsetWidth") ? fixedColFootTdUpdate.property("offsetWidth") : fixedColFootTdUpdate.property("offsetWidth");
             } else {
-                fixedColWidth = fixedColTd.property("offsetWidth");
+                fixedColWidth = fixedColFootTdUpdate.property("offsetWidth");
             }
             this.fixedCol
                 .style("position", "absolute")
                 .style("margin-top", -this.tableDiv.property("scrollTop") + tableMarginHeight + "px")
                 ;
-            fixedColTd
+            fixedColTdUpdate
                 .style("width", fixedColWidth + "px")
                 ;
             this.fixedColHead
                 .style("position", "absolute")
                 .style("margin-top", (this.fixedHeader() ? this.tableDiv.property("scrollTop") : 0) - tableMarginHeight + "px")
                 ;
-            fixedColTh
+            fixedColThUpdate
                 .style("width", fixedColWidth + "px")
                 ;
-            rows.each(function (d, i) {
+            rowsUpdate.each(function (d, i) {
                 const height = d3Select(this).select("td").property("offsetHeight");
-                d3Select(fixedColTd[i][0]).style("height", height + "px");
+                d3Select(fixedColTdUpdate[i][0]).style("height", height + "px");
             });
         }
 
@@ -574,7 +555,7 @@ export class Table extends HTMLWidget {
             .style("width", this.width() - fixedColWidth + "px")
             ;
 
-        if (!rows.empty()) this.setColumnWidths(rows);
+        if (!rowsUpdate.empty()) this.setColumnWidths(rowsUpdate);
 
         let box;
         let newTableHeight;

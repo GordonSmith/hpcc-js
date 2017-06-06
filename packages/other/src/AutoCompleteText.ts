@@ -1,6 +1,5 @@
 import { HTMLWidget } from "@hpcc-js/common";
 import * as AutoComplete from "javascript-autocomplete";
-import "javascript-autoComplete";
 
 import "../src/AutoCompleteText.css";
 
@@ -23,7 +22,7 @@ export class AutoCompleteText extends HTMLWidget {
                 idx,
                 text: row.key,
                 value: row.values.length ? row.values[0].key : "",
-                origRow: row.values.length && row.values[0].values.length ? row.values[0].values[0] : []
+                origRow: row.values.length && row.values[0].value.length ? row.values[0].value[0] : []
             };
         }, this);
     }
