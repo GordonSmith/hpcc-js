@@ -134,6 +134,10 @@ export interface IPublishExt {
     tags?: string[];
     autoExpand?;
     render?: boolean;
+    icons?: string[];
+    editor_input?: (context, widget, cell, param) => void;
+    saveButton?: string;
+    saveButtonID?: string;
     //  Amcharts - really needed?
     min?: number;
     max?: number;

@@ -1,4 +1,4 @@
-import * as Utility from "../common/Utility";
+import { Utility } from "@hpcc-js/common";
 
 var TIMEOUT_DEFAULT = 60;
 function espValFix(val) {
@@ -27,96 +27,116 @@ function espRowFix(row) {
     return row;
 }
 
-export function ESPUrl() {
-    this._protocol = "http:";
-    this._hostname = "localhost";
-}
+export class ESPUrl {
+    private _protocol = "http:";
+    private _hostname = "localhost";
+    private _url;
+    private _port;
+    private _search;
+    private _pathname;
+    private _params;
+    private _hash;
+    private _host;
 
-ESPUrl.prototype.url = function (_) {
-    if (!arguments.length) return this._url;
-    this._url = _;
-    var parser = document.createElement("a");
-    parser.href = this._url;
-    parser.href = parser.href; //This fixes an IE9/IE10 DOM value issue
+    constructor() {
+    }
 
-    var params = {};
-    if (parser.search.length) {
-        var tmp: any = parser.search;
-        if (tmp[0] === "?") {
-            tmp = tmp.substring(1);
+    url(_: string): this;
+    url(): string;
+    url(_?): string | this {
+        if (!arguments.length) return this._url;
+        this._url = _;
+        var parser = document.createElement("a");
+        parser.href = this._url;
+        parser.href = parser.href; //This fixes an IE9/IE10 DOM value issue
+
+        var params = {};
+        if (parser.search.length) {
+            var tmp: any = parser.search;
+            if (tmp[0] === "?") {
+                tmp = tmp.substring(1);
+            }
+            tmp = tmp.split("&");
+            tmp.map(function (item) {
+                var tmpItem = item.split("=");
+                params[decodeURIComponent(tmpItem[0])] = decodeURIComponent(tmpItem[1]);
+            });
         }
-        tmp = tmp.split("&");
-        tmp.map(function (item) {
-            var tmpItem = item.split("=");
-            params[decodeURIComponent(tmpItem[0])] = decodeURIComponent(tmpItem[1]);
-        });
-    }
-    this._protocol = parser.protocol;
-    this._hostname = parser.hostname;
-    this._port = parser.port;
-    this._pathname = parser.pathname;
-    while (this._pathname.length && this._pathname[0] === "/") {
-        this._pathname = this._pathname.substring(1);
-    }
-    this._search = parser.search;
-    this._params = params;
-    this._hash = parser.hash;
-    this._host = parser.host;
+        this._protocol = parser.protocol;
+        this._hostname = parser.hostname;
+        this._port = parser.port;
+        this._pathname = parser.pathname;
+        while (this._pathname.length && this._pathname[0] === "/") {
+            this._pathname = this._pathname.substring(1);
+        }
+        this._search = parser.search;
+        this._params = params;
+        this._hash = parser.hash;
+        this._host = parser.host;
 
-    return this;
-};
-
-ESPUrl.prototype.protocol = function (_) {
-    if (!arguments.length) return this._protocol;
-    this._protocol = _;
-    return this;
-};
-
-ESPUrl.prototype.hostname = function (_) {
-    if (!arguments.length) return this._hostname;
-    this._hostname = _;
-    return this;
-};
-
-ESPUrl.prototype.port = function (_) {
-    if (!arguments.length) return this._port;
-    this._port = _;
-    return this;
-};
-
-ESPUrl.prototype.pathname = function (_) {
-    if (!arguments.length) return this._pathname;
-    this._pathname = _;
-    return this;
-};
-
-    ESPUrl.prototype.param = function (key) {
-        return this._params[key];
+        return this;
     };
 
-    ESPUrl.prototype.isWsWorkunits = function () {
-    return this._pathname.toLowerCase().indexOf("wsworkunits") >= 0 || this._params["Wuid"];
-};
+    protocol(_: string): this;
+    protocol(): string;
+    protocol(_?: string): string | this {
+        if (!arguments.length) return this._protocol;
+        this._protocol = _;
+        return this;
+    };
 
-ESPUrl.prototype.isWorkunitResult = function () {
-    return this.isWsWorkunits() && (this._params["Sequence"] || this._params["ResultName"]);
-};
+    hostname(_: string): this;
+    hostname(): string;
+    hostname(_?: string): string | this {
+        if (!arguments.length) return this._hostname;
+        this._hostname = _;
+        return this;
+    };
 
-ESPUrl.prototype.isWsEcl = function () {
-    return this._pathname.toLowerCase().indexOf("wsecl") >= 0 || (this._params["QuerySetId"] && this._params["Id"]);
-};
+    port(_: string): this;
+    port(): string;
+    port(_?: string) {
+        if (!arguments.length) return this._port;
+        this._port = _;
+        return this;
+    };
 
-ESPUrl.prototype.isWsWorkunits_GetStats = function () {
-    return this._pathname.toLowerCase().indexOf("wsworkunits/wugetstats") >= 0 && this._params["WUID"];
-};
+    pathname(_: string): this;
+    pathname(): string;
+    pathname(_?: string) {
+        if (!arguments.length) return this._pathname;
+        this._pathname = _;
+        return this;
+    };
 
-ESPUrl.prototype.getUrl = function (overrides) {
-    overrides = overrides || {};
-    return (overrides.protocol !== undefined ? overrides.protocol : this._protocol) + "//" +
-        (overrides.hostname !== undefined ? overrides.hostname : this._hostname) + ":" +
-        (overrides.port !== undefined ? overrides.port : this._port) + "/" +
-        (overrides.pathname !== undefined ? overrides.pathname : this._pathname);
-};
+    param(key: string) {
+        return this._params[key];
+    }
+
+    isWsWorkunits() {
+        return this._pathname.toLowerCase().indexOf("wsworkunits") >= 0 || this._params["Wuid"];
+    };
+
+    isWorkunitResult() {
+        return this.isWsWorkunits() && (this._params["Sequence"] || this._params["ResultName"]);
+    };
+
+    isWsEcl() {
+        return this._pathname.toLowerCase().indexOf("wsecl") >= 0 || (this._params["QuerySetId"] && this._params["Id"]);
+    };
+
+    isWsWorkunits_GetStats() {
+        return this._pathname.toLowerCase().indexOf("wsworkunits/wugetstats") >= 0 && this._params["WUID"];
+    };
+
+    getUrl(overrides) {
+        overrides = overrides || {};
+        return (overrides.protocol !== undefined ? overrides.protocol : this._protocol) + "//" +
+            (overrides.hostname !== undefined ? overrides.hostname : this._hostname) + ":" +
+            (overrides.port !== undefined ? overrides.port : this._port) + "/" +
+            (overrides.pathname !== undefined ? overrides.pathname : this._pathname);
+    };
+}
 
 export function ESPMappings(mappings) {
     this._mappings = mappings;
@@ -177,12 +197,12 @@ var serialize = function (obj) {
     var str = [];
     for (var key in obj) {
         if (obj.hasOwnProperty(key)) {
-                var val = obj[key];
-                if (val !== undefined && val !== null) {
-                    str.push(encodeURIComponent(key) + "=" + encodeURIComponent(val));
+            var val = obj[key];
+            if (val !== undefined && val !== null) {
+                str.push(encodeURIComponent(key) + "=" + encodeURIComponent(val));
+            }
         }
     }
-        }
     return str.join("&");
 };
 
@@ -231,8 +251,8 @@ Comms.prototype.jsonp = function (url, request, callback) {
                 .url(url)
                 ;
             url = newUrl + this._proxyMappings[key];
-                request.IP = espUrl.hostname();
-                request.PORT = espUrl.port();
+            request.IP = espUrl.hostname();
+            request.PORT = espUrl.port();
             if (newUrlParts.length > 0) {
                 request.PATH = newUrlParts[1];
             }
@@ -350,29 +370,29 @@ function locateRoxieResponse(response) {
         if (response[key].Row && response[key].Row instanceof Array) {
             return response;
         }
-            var retVal;
-            if(typeof(response[key]) !== "string"){
-                retVal = locateRoxieResponse(response[key]);
-            }
+        var retVal;
+        if (typeof (response[key]) !== "string") {
+            retVal = locateRoxieResponse(response[key]);
+        }
         if (retVal) {
             return retVal;
         }
     }
     return null;
 }
-    
-    function locateRoxieException(response) {
-        for (var key in response) {
-            if (response[key].Exception && response[key].Exception instanceof Array) {
-                return response[key];
-            }
-            var retVal = locateRoxieException(response[key]);
-            if (retVal) {
-                return retVal;
-            }
+
+function locateRoxieException(response) {
+    for (var key in response) {
+        if (response[key].Exception && response[key].Exception instanceof Array) {
+            return response[key];
         }
-        return null;
+        var retVal = locateRoxieException(response[key]);
+        if (retVal) {
+            return retVal;
+        }
     }
+    return null;
+}
 
 export function WsECL() {
     Comms.call(this);
@@ -442,11 +462,11 @@ WsECL.prototype.call = function (target, request, callback) {
         pathname: "WsEcl/submit/query/" + target.target + "/" + target.query + "/json"
     });
     return this.jsonp(url, request).then(function (response) {
-            var _response = locateRoxieResponse(response);
-            if(!_response){
-                _response = locateRoxieException(response);
-            }
-            response = _response;
+        var _response = locateRoxieResponse(response);
+        if (!_response) {
+            _response = locateRoxieException(response);
+        }
+        response = _response;
 
         // Check for exceptions
         if (response.Exception) {
@@ -472,9 +492,9 @@ WsECL.prototype.call = function (target, request, callback) {
     });
 };
 
-    WsECL.prototype.send = function (request, callback) {
+WsECL.prototype.send = function (request, callback) {
     return this.call({ target: this._target, query: this._query }, request, callback);
-    };
+};
 
 export function WsWorkunits() {
     Comms.call(this);
@@ -800,11 +820,11 @@ HIPIERoxie.prototype.fetchResults = function (request, callback) {
     this._resultNameCacheCount = 0;
     var context = this;
     return this.jsonp(url, request).then(function (response) {
-            var _response = locateRoxieResponse(response);
-            if(!_response){
-                _response = locateRoxieException(response);
-            }
-            response = _response;
+        var _response = locateRoxieResponse(response);
+        if (!_response) {
+            _response = locateRoxieException(response);
+        }
+        response = _response;
 
         // Check for exceptions
         if (response.Exception) {
@@ -853,17 +873,17 @@ export function HIPIEWorkunit() {
 }
 HIPIEWorkunit.prototype = Object.create(WsWorkunits.prototype);
 
-    function hasFilter(hipieResult, fieldid) {
-        return getFilter(hipieResult, fieldid).length > 0;
-    }
+function hasFilter(hipieResult, fieldid) {
+    return getFilter(hipieResult, fieldid).length > 0;
+}
 
-    function getFilter(hipieResult, fieldid) {
-        return hipieResult.filters.filter(function(filter) {
-            return filter.fieldid === fieldid;
-        });
-    }
+function getFilter(hipieResult, fieldid) {
+    return hipieResult.filters.filter(function (filter) {
+        return filter.fieldid === fieldid;
+    });
+}
 
-    HIPIEWorkunit.prototype.hipieResults = function (_) {
+HIPIEWorkunit.prototype.hipieResults = function (_) {
     if (!arguments.length) return this._hipieResults;
     this._hipieResultsLength = 0;
     this._hipieResults = {};
@@ -919,30 +939,30 @@ HIPIEWorkunit.prototype.call = function (request, callback) {
         var changedFilter = {};
         for (var key in request) {
             if (request[key] !== undefined && request[key + "_changed"] !== undefined) {
-                    changedFilter[key] = {
-                        value: request[key]
-                    };
+                changedFilter[key] = {
+                    value: request[key]
+                };
             }
         }
         var retVal = {};
         for (var hipieKey in context._hipieResults) {
             var item = context._hipieResults[hipieKey];
-                var outputFilter = {};
+            var outputFilter = {};
             for (var key2 in changedFilter) {
-                    if (hasFilter(item, key2)) {
-                        outputFilter[key2] = changedFilter[key2];
-                        outputFilter[key2].filter = getFilter(item, key2)[0];
+                if (hasFilter(item, key2)) {
+                    outputFilter[key2] = changedFilter[key2];
+                    outputFilter[key2].filter = getFilter(item, key2)[0];
                 }
             }
-                retVal[item.from] = context._resultNameCache[item.from].filter(function (row) {
-                    for (var key2 in outputFilter) {
-                        if (!outputFilter[key2].filter.matches(row, outputFilter[key2].value)) {
-                            return false;
-                        }
+            retVal[item.from] = context._resultNameCache[item.from].filter(function (row) {
+                for (var key2 in outputFilter) {
+                    if (!outputFilter[key2].filter.matches(row, outputFilter[key2].value)) {
+                        return false;
                     }
-                    return true;
-                });
-            }
+                }
+                return true;
+            });
+        }
         return retVal;
     }
 };
