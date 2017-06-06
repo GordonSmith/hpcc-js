@@ -19,7 +19,7 @@ export class Select extends HTMLWidget {
             return {
                 text: row.key,
                 value: row.values.length ? row.values[0].key : "",
-                origRow: row.values.length && row.values[0].values.length ? row.values[0].values[0] : []
+                origRow: row.values.length && row.values[0].value.length ? row.values[0].value[0] : []
             };
         }, this));
         if (this.sort_exists()) {
@@ -76,15 +76,14 @@ export class Select extends HTMLWidget {
             ;
 
         const option = this._select.selectAll(".dataRow").data(this.selectData());
-        option.enter().append("option")
+        const optionUpdate = option.enter().append("option")
             .attr("class", "dataRow")
-            ;
-        option
+            .merge(option)
             .attr("value", function (row) { return row.value; })
             .text(function (row) { return row.text; })
             ;
         option.exit().remove();
-        option.order();
+        optionUpdate.order();
     }
 
     exit(domNode, element) {
