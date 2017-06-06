@@ -1,16 +1,16 @@
 ﻿import { Table } from "./Table";
 
-export function NestedTable(target) {
-    Table.call(this);
-    this.minWidgetHeight(240);
-    this.minWidgetWidth(360);
+export class NestedTable extends Table {
+    constructor() {
+        super();
+        this.minWidgetHeight(240);
+        this.minWidgetWidth(360);
+    }
 }
-NestedTable.prototype = Object.create(Table.prototype);
-NestedTable.prototype.constructor = NestedTable;
 NestedTable.prototype._class += " other_NestedTable";
 
-var origColumns = NestedTable.prototype.columns;
-NestedTable.prototype.columns = function (_) {
+const origColumns = NestedTable.prototype.columns;
+NestedTable.prototype.columns = function (_?) {
     if (arguments.length) {
         this._columns = _;
         return origColumns.call(this, _.map(function (col) {
@@ -23,18 +23,18 @@ NestedTable.prototype.columns = function (_) {
     return origColumns.apply(this, arguments);
 };
 
-var origData = NestedTable.prototype.data;
+const origData = NestedTable.prototype.data;
 NestedTable.prototype.data = function (_) {
     if (arguments.length) {
-        var context = this;
+        const context = this;
         return origData.call(this, _.map(function (row) {
             return row.map(function (cell, idx) {
                 if (cell instanceof Array) {
-                    var columns = [];
+                    let columns = [];
                     if (typeof context._columns[idx] === "object" && context._columns[idx].columns) {
                         columns = context._columns[idx].columns;
                     } else {
-                        for (var i = 0; i < cell.length; ++i) {
+                        for (let i = 0; i < cell.length; ++i) {
                             columns.push(context._columns[idx] + "." + i);
                         }
                     }

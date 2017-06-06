@@ -1,4 +1,4 @@
-import * as Utility from "../common/Utility";
+import { Utility } from "@hpcc-js/common";
 
 export function discover(widget) {
     return widget.publishedProperties(false, true);

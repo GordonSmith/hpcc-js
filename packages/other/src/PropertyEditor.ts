@@ -1,10 +1,10 @@
 import { select as d3Select, selectAll as d3SelectAll } from "d3-selection";
-import { HTMLWidget } from "../common/HTMLWidget";
-import * as platform from "../common/Platform";
-import { Widget } from "../common/Widget";
-import { Grid } from "../layout/Grid";
-import * as Persist from "../other/Persist";
-import "./PropertyEditor.css";
+import { HTMLWidget, Platform } from "@hpcc-js/common";
+import { Widget } from "@hpcc-js/common";
+import { Grid } from "@hpcc-js/layout";
+import * as Persist from "./Persist";
+
+import "../src/PropertyEditor.css";
 
 function hasProperties(type) {
     switch (type) {
@@ -483,7 +483,7 @@ export class PropertyEditor extends HTMLWidget {
                         context.setProperty(widget, param.id, this.value);
                     })
                     ;
-                if (param.type === "html-color" && !platform.isIE) {
+                if (param.type === "html-color" && !Platform.isIE) {
                     cell.append("input")
                         .attr("id", this.id() + "_" + param.id + "_2")
                         .classed("property-input", true)

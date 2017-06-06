@@ -1207,6 +1207,12 @@ d3-chord@1.0.3:
     d3-array "1"
     d3-path "1"
 
+d3-cloud@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/d3-cloud/-/d3-cloud-1.2.4.tgz#3e169403adab74fdb0c867638d7f0bb8e6ae71ff"
+  dependencies:
+    d3-dispatch "1"
+
 d3-collection@1, d3-collection@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/d3-collection/-/d3-collection-1.0.3.tgz#00bdea94fbc1628d435abbae2f4dc2164e37dd34"
@@ -1450,6 +1456,10 @@ d3-timer@1:
 d3-timer@1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.3.tgz#7a308a10c8524778e6b32d1d6c1c329209ae0ebf"
+
+d3-timer@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.6.tgz#4044bf15d7025c06ce7d1149f73cd07b54dbd784"
 
 d3-tip@GordonSmith/d3-tip#vJSNEXT:
   version "0.8.0-alpha.1"
@@ -2661,6 +2671,10 @@ isobject@^2.0.0:
 isstream@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
+
+javascript-autocomplete@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/javascript-autocomplete/-/javascript-autocomplete-1.0.3.tgz#67f151c7c5cdac4e36f4a2f0aaad1308f468d8dc"
 
 jodid25519@^1.0.0:
   version "1.0.2"
@@ -4300,6 +4314,10 @@ shelljs@^0.7.0:
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
+
+simpleheat@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/simpleheat/-/simpleheat-0.4.0.tgz#e2de8d4548fcf1a6960b636bfa939d05bcd49a7b"
 
 simulate-event@^1.4.0:
   version "1.4.0"
