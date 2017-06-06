@@ -1,5 +1,5 @@
 import * as Comms from "./Comms";
-import * as Utility from "../common/Utility";
+import { Utility } from "@hpcc-js/common";
 
 function nestedRowFix(row) {
     if (row.Row && row.Row instanceof Array) {

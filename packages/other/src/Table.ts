@@ -1,11 +1,8 @@
 import { event as d3Event, select as d3Select, selectAll as d3SelectAll } from "d3-selection";
-import { ISize, Widget } from "../common//Widget";
-import { HTMLWidget } from "../common/HTMLWidget";
-import * as platform from "../common/Platform";
-import * as Utility from "../common/Utility";
+import { Widget, HTMLWidget, Platform, Utility } from "@hpcc-js/common";
 import { Paginator } from "./Paginator";
 
-import "./Table.css";
+import "../src/Table.css";
 
 function replacer(key, value) {
     if (value instanceof Widget) {
@@ -51,9 +48,9 @@ export class Table extends HTMLWidget {
         this._paginatorTableSpacing = 4;
     }
 
-    size(): ISize;
+    size(): any;
     size(_): Widget;
-    size(_?): ISize | Widget {
+    size(_?): any | Widget {
         const retVal = super.size.apply(this, arguments);
         if (arguments.length) {
             if (this.tableDiv) {
@@ -642,8 +639,8 @@ export class Table extends HTMLWidget {
         this._paginator.render();
         setTimeout(function () {
             context._paginator
-                .right((context.hasVScroll(element) ? platform.getScrollbarWidth() : 0) + context._paginatorTableSpacing)
-                .bottom((context.hasHScroll(element) ? platform.getScrollbarWidth() : 0) + context._paginatorTableSpacing)
+                .right((context.hasVScroll(element) ? Platform.getScrollbarWidth() : 0) + context._paginatorTableSpacing)
+                .bottom((context.hasHScroll(element) ? Platform.getScrollbarWidth() : 0) + context._paginatorTableSpacing)
                 .render()
                 ;
         }, 0);
@@ -767,7 +764,7 @@ export class Table extends HTMLWidget {
         const tcellHeight = tmpRow.node().clientHeight;
         tmpRow.remove();
         const paginatorHeight = this.calcHeight(this._paginator.element());
-        let ipp = Math.floor((this.height() - thHeight - tfootHeight - paginatorHeight - (this.table.style("width") >= this.table.style("width") ? platform.getScrollbarWidth() : 0) - this._paginatorTableSpacing * 2) / tcellHeight) || 1;
+        let ipp = Math.floor((this.height() - thHeight - tfootHeight - paginatorHeight - (this.table.style("width") >= this.table.style("width") ? Platform.getScrollbarWidth() : 0) - this._paginatorTableSpacing * 2) / tcellHeight) || 1;
         if (this.totalledColumns().length !== 0) {
             ipp -= 1;
         }

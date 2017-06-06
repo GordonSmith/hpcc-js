@@ -1,6 +1,6 @@
 ﻿import { brush as d3Brush } from "d3-brush";
 import { event as d3Event, select as d3Select } from "d3-selection";
-import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity, zoomTransform as d3ZoomTransform } from "d3-zoom";
+import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from "d3-zoom";
 import { Icon } from "./Icon";
 import { SVGWidget } from "./SVGWidget";
 
