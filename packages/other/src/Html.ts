@@ -24,8 +24,7 @@ export class Html extends HTMLWidget {
         const html = element.selectAll(".htmlWrapper").data(this.data().length > 0 ? this.data() : [this.html()]);
         html.enter().append("div")
             .attr("class", "htmlWrapper")
-            ;
-        html
+            .merge(html)
             .html(function (d) { return d; })
             ;
         html.exit().remove();
