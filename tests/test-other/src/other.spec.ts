@@ -1,4 +1,4 @@
-import { CanvasWidget, Class, HTMLWidget, Palette, SVGWidget } from "@hpcc-js/common";
+import { CanvasWidget, Class, HTMLWidget, SVGWidget } from "@hpcc-js/common";
 import * as other from "@hpcc-js/other";
 import { AutoCompleteText, HeatMap, Html, Select, Table, WordCloud } from "@hpcc-js/other";
 import { data } from "@hpcc-js/sample-data";
