@@ -1,4 +1,4 @@
-import { Class, HTMLWidget, Icon, SVGWidget } from "@hpcc-js/common";
+import { Class, HTMLWidget, SVGWidget } from "@hpcc-js/common";
 import * as map from "@hpcc-js/map";
 import {
     ChoroplethContinents, ChoroplethCounties, ChoroplethCountries, ChoroplethStates, GeoHash, GMap, GMapGraph, GMapLayered, GMapPin, GMapPinLine, Graticule,
@@ -129,7 +129,7 @@ describe("@hpcc-js/layout", () => {
                                             .columns(geo.GMap.simple.columns)
                                             .data(geo.GMap.simple.data)
                                     ]);
-                                render(gmapLayered);
+                                render(layered);
                                 break;
                             default:
                                 it("Has render test", () => {

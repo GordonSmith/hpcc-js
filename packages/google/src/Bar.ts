@@ -1,9 +1,11 @@
 import { Column } from "./Column";
 
-export function Bar() {
-    Column.call(this);
+export class Bar extends Column {
+    constructor() {
+        super();
 
-    this._chartType = "BarChart";
+        this._chartType = "BarChart";
+    }
 }
 Bar.prototype = Object.create(Column.prototype);
 Bar.prototype.constructor = Bar;
