@@ -557,6 +557,12 @@ bytes@^2.4.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-2.5.0.tgz#4c9423ea2d252c270c41b2bdefeff9bb6b62c06a"
 
+c3@^0.4.12:
+  version "0.4.12"
+  resolved "https://registry.yarnpkg.com/c3/-/c3-0.4.12.tgz#58f6250c2b5925b61a930a7b7b383fb8f58f623f"
+  dependencies:
+    d3 "~3.5.0"
+
 callsite@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/callsite/-/callsite-1.0.0.tgz#280398e5d664bd74038b6f0905153e6e8af1bc20"
@@ -1449,17 +1455,13 @@ d3-time@1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/d3-time/-/d3-time-1.0.4.tgz#2ceba09a76b7450c992a1ded4e10fc6195e69649"
 
-d3-timer@1:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.5.tgz#b266d476c71b0d269e7ac5f352b410a3b6fe6ef0"
+d3-timer@1, d3-timer@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.6.tgz#4044bf15d7025c06ce7d1149f73cd07b54dbd784"
 
 d3-timer@1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.3.tgz#7a308a10c8524778e6b32d1d6c1c329209ae0ebf"
-
-d3-timer@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.6.tgz#4044bf15d7025c06ce7d1149f73cd07b54dbd784"
 
 d3-tip@GordonSmith/d3-tip#vJSNEXT:
   version "0.8.0-alpha.1"
@@ -1514,7 +1516,7 @@ d3-zoom@^1.3.0:
     d3-selection "1"
     d3-transition "1"
 
-d3@3:
+d3@3, d3@~3.5.0:
   version "3.5.17"
   resolved "https://registry.yarnpkg.com/d3/-/d3-3.5.17.tgz#bc46748004378b21a360c9fc7cf5231790762fb8"
 
