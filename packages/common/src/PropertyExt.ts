@@ -138,6 +138,7 @@ export interface IPublishExt {
     editor_input?: (context, widget, cell, param) => void;
     saveButton?: string;
     saveButtonID?: string;
+    number?: any;
     //  Amcharts - really needed?
     min?: number;
     max?: number;
