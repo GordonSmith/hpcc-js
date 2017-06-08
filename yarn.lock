@@ -47,6 +47,10 @@
   version "4.0.32"
   resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.32.tgz#637e8d945a9354aab47df7125005490fe9f8e592"
 
+"@types/handsontable@^0.31.1":
+  version "0.31.1"
+  resolved "https://registry.yarnpkg.com/@types/handsontable/-/handsontable-0.31.1.tgz#a73adb9afa4af4f7fb8f3906a9f2888ea3487dec"
+
 "@types/highlight.js@^9.1.8":
   version "9.1.9"
   resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.1.9.tgz#ed6336955eaf233b75eb7923b9b1f373d045ef01"
@@ -2309,6 +2313,15 @@ handlebars@^4.0.2, handlebars@^4.0.6:
   optionalDependencies:
     uglify-js "^2.6"
 
+handsontable@^0.32.0:
+  version "0.32.0"
+  resolved "https://registry.yarnpkg.com/handsontable/-/handsontable-0.32.0.tgz#f7b0d0cf07b8b4cdde1e4a99c0270212749dab89"
+  dependencies:
+    moment "2.13.0"
+    numbro "1.11.0"
+    pikaday "1.4.0"
+    zeroclipboard "2.3.0"
+
 har-schema@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/har-schema/-/har-schema-1.0.5.tgz#d263135f43307c02c602afc8fe95970c0151369e"
@@ -3196,9 +3209,9 @@ modify-values@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.0.tgz#e2b6cdeb9ce19f99317a53722f3dbf5df5eaaab2"
 
-moment@^2.6.0:
-  version "2.18.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
+moment@2.13.0, moment@2.x, moment@^2.6.0:
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.13.0.tgz#24162d99521e6d40f99ae6939e806d2139eaac52"
 
 ms@0.7.1:
   version "0.7.1"
@@ -3333,6 +3346,10 @@ num2fraction@^1.2.2:
 number-is-nan@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
+
+numbro@1.11.0:
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/numbro/-/numbro-1.11.0.tgz#39aa17b358b4682aec8ca0d5755f35c5d9ce8f9e"
 
 oauth-sign@~0.8.1:
   version "0.8.2"
@@ -3584,6 +3601,12 @@ performance-now@^0.2.0:
 pify@^2.0.0, pify@^2.2.0, pify@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
+
+pikaday@1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/pikaday/-/pikaday-1.4.0.tgz#dd96d4a3c5707289ef4dc7ddf3e0194d0c6ff2e2"
+  optionalDependencies:
+    moment "2.x"
 
 pinkie-promise@^2.0.0:
   version "2.0.1"
@@ -5202,3 +5225,7 @@ yarn@^0.24.5:
 yeast@0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/yeast/-/yeast-0.1.2.tgz#008e06d8094320c372dbc2f8ed76a0ca6c8ac419"
+
+zeroclipboard@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/zeroclipboard/-/zeroclipboard-2.3.0.tgz#592ebd833a4308688b0739697d3dbf989002c9af"
