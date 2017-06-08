@@ -329,7 +329,7 @@ export class Widget extends PropertyExt {
         return null;
     }
 
-    locateParentWidget(domNode) {
+    locateParentWidget(domNode?) {
         domNode = domNode || (this._target ? this._target.parentNode : null);
         if (domNode) {
             const widget = this.toWidget(domNode);

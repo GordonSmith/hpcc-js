@@ -139,6 +139,7 @@ export class Tabbed extends HTMLWidget {
 
     showTabs: { (): boolean; (_: boolean): Tabbed; };
     surfacePadding: { (): number; (_: number): Tabbed; };
+    surfacePadding_default: { (): number; (_: number): Tabbed; };
     surfacePadding_exists: () => boolean;
     activeTabIdx: { (): number; (_: number): Tabbed; };
 
