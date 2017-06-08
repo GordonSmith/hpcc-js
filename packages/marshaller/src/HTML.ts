@@ -1,4 +1,4 @@
-import { Grid } from "../layout/Grid";
+import { Grid } from "@hpcc-js/layout";
 import { HipieDDLMixin } from "./HipieDDLMixin";
 
 export class HTML extends Grid {

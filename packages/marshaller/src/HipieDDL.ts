@@ -1,11 +1,7 @@
+import { MultiChart } from "@hpcc-js/chart";
+import { Class, Database, Utility, Widget } from "@hpcc-js/common";
+import { Comms, Table } from "@hpcc-js/other";
 import { map as d3Map } from "d3-collection";
-import { MultiChart } from "../chart/MultiChart";
-import { Class } from "../common/Class";
-import * as Database from "../common/Database";
-import * as Utility from "../common/Utility";
-import { Widget } from "../common/Widget";
-import * as Comms from "../other/Comms";
-import { Table } from "../other/Table";
 
 const LOADING = "...loading...";
 const _CHANGED = "_changed";
