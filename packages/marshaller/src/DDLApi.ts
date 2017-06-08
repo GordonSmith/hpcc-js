@@ -1,4 +1,4 @@
-type StringStringDict = { [key: string]: string; };
+export type StringStringDict = { [key: string]: string; };
 
 //  Datasource  ===============================================================
 export interface IOutput {
@@ -36,7 +36,7 @@ export interface IEvent {
 export interface IPieMapping {
     label: string;
     weight: string;
-};
+}
 
 export interface ILineMapping {
     x: string[];
@@ -148,7 +148,7 @@ export interface IVisualization {
         [key: string]: string
     };
     events?: { [key: string]: IEvent };
-    onSelect?: any;  //legacy
+    onSelect?: any;  // legacy
 
     fields?: IVisualizationField[];
     color?: any; // legacy
@@ -216,15 +216,14 @@ export type DDLSchema = IDashboard[];
 //  Helpers  ==================================================================
 export type IAnyChoroMapping = IChoroUSStateMapping | IChoroUSCountyMapping | IChoroGeohashMapping;
 export function isUSStateMapping(mappings: IAnyChoroMapping) {
-    return (<IChoroUSStateMapping>mappings).state !== undefined;
+    return (mappings as IChoroUSStateMapping).state !== undefined;
 }
 export function isUSCountyMapping(mappings: IAnyChoroMapping) {
-    return (<IChoroUSCountyMapping>mappings).county !== undefined;
+    return (mappings as IChoroUSCountyMapping).county !== undefined;
 }
 export function isGeohashMapping(mappings: IAnyChoroMapping) {
-    return (<IChoroGeohashMapping>mappings).geohash !== undefined;
+    return (mappings as IChoroGeohashMapping).geohash !== undefined;
 }
 export type IAnyMapping = IPieMapping | ILineMapping | IGraphMapping | IAnyChoroMapping | ITableMapping | IHeatMapMapping;
 export type IAnySource = IPieSource | ILineSource | ITableSource | IChoroSource | IGraphSource | IHeatMapSource;
 export type IAnyVisualization = IPieVisualization | ILineVisualization | ITableVisualization | IChoroVisualization | IGraphVisualization | IHeatMapVisualization;
-
