@@ -1,5 +1,5 @@
 import { Palette, Utility } from "@hpcc-js/common";
-import * as d3 from "d3";
+import { select as d3Select } from "d3-selection";
 import * as topojson from "topojson";
 import { Layer } from "./Layer";
 
@@ -7,7 +7,7 @@ import "../src/Choropleth.css";
 
 export class Choropleth extends Layer {
     _dataMap = {};
-    _path = d3.select(null);
+    _path = d3Select(null);
     _palette;
     _dataMinWeight;
     _dataMaxWeight;

@@ -1,5 +1,5 @@
-import { select as d3Select } from "d3";
 import { json as d3Json } from "d3-request";
+import { select as d3Select } from "d3-selection";
 import * as topojson from "topojson";
 import { Choropleth } from "./Choropleth";
 

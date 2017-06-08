@@ -1,5 +1,4 @@
 import { Grid, Tabbed as TabbedLayout } from "@hpcc-js/layout";
-import { } from "d3";
 import { HipieDDLMixin } from "./HipieDDLMixin";
 
 export class Tabbed extends TabbedLayout {

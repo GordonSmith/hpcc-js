@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import { select as d3Select } from "d3-selection";
 import { Pins } from "./Pins";
 
 import "../src/Graph.css";
@@ -46,7 +46,7 @@ export class Graph extends Pins {
             .attr("points", "0,0 10,5 0,10 1,5")
             ;
         this._edgesTransform = svgElement.append("g");
-        this.edgesPaths = d3.select(null);
+        this.edgesPaths = d3Select(null);
     }
 
     layerUpdate(base) {

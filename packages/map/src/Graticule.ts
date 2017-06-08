@@ -1,11 +1,12 @@
-import * as d3 from "d3";
+import { geoGraticule as d3GeoGraticule } from "d3-geo";
+import { select as d3Select } from "d3-selection";
 import { Layer } from "./Layer";
 
 import "../src/Graticule.css";
 
 export class Graticule extends Layer {
     _dataMap = {};
-    _path = d3.select(null);
+    _path = d3Select(null);
     _graticule;
     _graticulePath;
     _graticuleOutlinePath;
@@ -18,7 +19,7 @@ export class Graticule extends Layer {
     layerEnter(base, svgElement, domElement) {
         Layer.prototype.layerEnter.apply(this, arguments);
 
-        this._graticule = d3.geo.graticule();
+        this._graticule = d3GeoGraticule();
         this._graticulePath = svgElement.append("path")
             .datum(this._graticule)
             .attr("class", "graticule")
