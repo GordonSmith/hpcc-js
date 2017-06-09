@@ -7,6 +7,4 @@ export class Bar extends Column {
         this._chartType = "BarChart";
     }
 }
-Bar.prototype = Object.create(Column.prototype);
-Bar.prototype.constructor = Bar;
 Bar.prototype._class += " google_Bar";

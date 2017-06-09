@@ -7,7 +7,9 @@ export class Axis extends PropertyExt {
         super();
     }
 
-    id(_) {
+    id(): string;
+    id(_: string): this;
+    id(_?): string | this {
         if (!arguments.length) return this._id;
         this._id = _;
         return this;
@@ -23,4 +25,3 @@ export class Axis extends PropertyExt {
 Axis.prototype._class += " amchart_Axis";
 
 Axis.prototype.publish("type", null, "set", "X/Y Axis Text Font Size", ["x", "y"], { tags: ["Basic", "Shared"] }); // just incase we need it
-

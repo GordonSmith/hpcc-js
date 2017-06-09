@@ -542,7 +542,9 @@ export class Widget extends PropertyExt {
     postUpdate(_domNode, _element) { }
     exit(_domNode, _element) { }
 
-    fields: { (): Field[]; (_: Field[]): Widget };
+    fields(): Field[];
+    fields(_: Field[]): this;
+    fields(_?: Field[]): Field[] | this { return this; }
     classed: (_?) => any | this;
 }
 Widget.prototype._class += " common_Widget";
