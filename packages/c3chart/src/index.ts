@@ -1,3 +1,5 @@
+import "d3";
+
 export * from "./Area";
 export * from "./Bar";
 export * from "./Column";

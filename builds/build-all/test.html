@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>HPCC Systems - Test</title>
+
+    <script src="../../node_modules/requirejs/require.js"></script>
+    <script src="./loader.js"></script>
+
+</head>
+
+<body>
+    <div id="placeholder" style="width:800px;height:600px">
+    </div>
+
+    <script>
+        require(["@hpcc-js/chart"], function (hpccChart) {
+            var chart = new hpccChart.Column()
+                .target("placeholder")
+                .render()
+                ;
+        });
+    </script>
+</body>
+
+</html>

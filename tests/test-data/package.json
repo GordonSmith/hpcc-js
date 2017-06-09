@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
-    "typescript": "^2.3.3"
+    "typescript": "^2.3.4"
   },
   "repository": {
     "type": "git",

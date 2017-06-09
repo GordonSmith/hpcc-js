@@ -13,21 +13,20 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib*",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/api": "^0.0.1",
     "@hpcc-js/common": "^0.0.1",
+    "d3-selection": "^1.1.0",
     "handsontable": "^0.32.0",
-    "c3": "^0.4.12",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
     "@types/handsontable": "^0.31.1",
     "rimraf": "^2.6.1",
     "typedoc": "^0.7.1",
-    "typescript": "^2.3.3"
+    "typescript": "^2.3.4"
   },
   "repository": {
     "type": "git",

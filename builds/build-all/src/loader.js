@@ -1,13 +1,24 @@
-declare const AmCharts: any;
-declare const simpleheat: any;
-declare const require: any;
+"use strict";
 (function (root) {
     root.hpccsystems = root.hpccsystems || {};
     root.hpccsystems.cache = root.hpccsystems.cache || {};
-    root.hpccsystems.es6Require = root.hpccsystems.es6Require || null;
 
     //  Keep at the top for the optimizer to find (optimizer requires 100% JSON in require.config call) ---
     function optimizerConfig(require) {
+        var load = requirejs.load;
+        require.load = function (context, moduleId, url) {
+            //  Temp hook for transition to ts /d3.v4 ---
+            if (moduleId.length >= 4 && moduleId.indexOf(".css") === moduleId.length - 4) {
+                var newUrl = url.substring(0, url.length - 3);
+                var link = document.createElement("link");
+                link.type = "text/css";
+                link.rel = "stylesheet";
+                link.href = newUrl;
+                document.getElementsByTagName("head")[0].appendChild(link);
+                url = "../rjs.noop.js";
+            }
+            return load(context, moduleId, url);
+        };
         return require.config({
             baseUrl: ".",
             paths: {
@@ -21,10 +32,6 @@ declare const require: any;
                 "text": "../node_modules/requirejs-text/text",
                 "json": "../node_modules/requirejs-plugins/src/json",
 
-                "d3": "../bower_components/d3/d3",
-                "c3": "../bower_components/c3/c3",
-                "dagre": "../bower_components/dagre/index",
-                "topojson": "../bower_components/topojson/topojson",
                 "colorbrewer": "../bower_components/colorbrewer/colorbrewer",
                 "d3-cloud": "../bower_components/d3-cloud/build/d3.layout.cloud",
                 "d3-sankey": "../bower_components/d3-plugins/sankey/sankey",
@@ -38,72 +45,146 @@ declare const require: any;
                 "orb-react": "../bower_components/orb/deps/react-0.12.2",
                 "orb": "../bower_components/orb/dist/orb",
 
-                "amcharts": "../bower_components/amcharts3/amcharts/amcharts",
-                "amcharts-funnel": "../bower_components/amcharts3/amcharts/funnel",
-                "amcharts-gauge": "../bower_components/amcharts3/amcharts/gauge",
-                "amcharts-pie": "../bower_components/amcharts3/amcharts/pie",
-                "amcharts-radar": "../bower_components/amcharts3/amcharts/radar",
-                "amcharts-serial": "../bower_components/amcharts3/amcharts/serial",
-                "amcharts-xy": "../bower_components/amcharts3/amcharts/xy",
-                "amcharts-gantt": "../bower_components/amcharts3/amcharts/gantt",
-                "amcharts-plugins-responsive": "../bower_components/amcharts3/amcharts/plugins/responsive/responsive",
-                "amcharts-images": "../bower_components/amcharts3/amcharts/images/",
-
                 "simpleheat": "../bower_components/simpleheat/index",
                 "autoComplete": "../bower_components/javascript-auto-complete/auto-complete",
 
-                "src": "../out"
+                "amcharts3": "../../../node_modules/amcharts3",
+                "colorbrewer": "../../../node_modules/colorbrewer/colorbrewer",
+                "c3": "../../../node_modules/c3",
+                "d3": "../../../node_modules/d3/d3",
+                "d3-array": "../../../node_modules/d3-array/build/d3-array",
+                "d3-axis": "../../../node_modules/d3-axis/build/d3-axis",
+                "@hpcc-js/d3-bullet": "../../../node_modules/@hpcc-js/d3-bullet/build/d3-bullet",
+                "d3-brush": "../../../node_modules/d3-brush/build/d3-brush",
+                "d3-cloud": "../../../node_modules/d3-cloud/build/d3.layout.cloud",
+                "d3-dsv": "../../../node_modules/d3-dsv/build/d3-dsv",
+                "d3-collection": "../../../node_modules/d3-collection/build/d3-collection",
+                "d3-color": "../../../node_modules/d3-color/build/d3-color",
+                "d3-dispatch": "../../../node_modules/d3-dispatch/build/d3-dispatch",
+                "d3-drag": "../../../node_modules/d3-drag/build/d3-drag",
+                "d3-ease": "../../../node_modules/d3-ease/build/d3-ease",
+                "d3-interpolate": "../../../node_modules/d3-interpolate/build/d3-interpolate",
+                "d3-force": "../../../node_modules/d3-force/build/d3-force",
+                "d3-format": "../../../node_modules/d3-format/build/d3-format",
+                "d3-geo": "../../../node_modules/d3-geo/build/d3-geo",
+                "d3-hexbin": "../../../node_modules/d3-hexbin/build/d3-hexbin",
+                "d3-hierarchy": "../../../node_modules/d3-hierarchy/build/d3-hierarchy",
+                "d3-path": "../../../node_modules/d3-path/build/d3-path",
+                "d3-quadtree": "../../../node_modules/d3-quadtree/build/d3-quadtree",
+                "d3-random": "../../../node_modules/d3-random/build/d3-random",
+                "d3-request": "../../../node_modules/d3-request/build/d3-request",
+                "d3-scale": "../../../node_modules/d3-scale/build/d3-scale",
+                "d3-shape": "../../../node_modules/d3-shape/build/d3-shape",
+                "d3-sankey": "../../../node_modules/d3-sankey/build/d3-sankey",
+                "d3-selection": "../../../node_modules/d3-selection/build/d3-selection",
+                "d3-time": "../../../node_modules/d3-time/build/d3-time",
+                "d3-timer": "../../../node_modules/d3-timer/build/d3-timer",
+                "d3-time-format": "../../../node_modules/d3-time-format/build/d3-time-format",
+                "d3-tip": "../../../node_modules/d3-tip/lib-browser/index",
+                "d3-transition": "../../../node_modules/d3-transition/build/d3-transition",
+                "d3-zoom": "../../../node_modules/d3-zoom/build/d3-zoom",
+                "dagre": "../../../node_modules/dagre/dist/dagre",
+                "es6-promise": "../../../node_modules/es6-promise/dist/es6-promise.auto",
+                "font-awesome": "../../../node_modules/font-awesome",
+                "google-maps": "../../../node_modules/google-maps/lib/Google",
+                "grid-list": "../../../node_modules/grid-list/src/gridList",
+                "handsontable": "../../../node_modules/handsontable/dist/handsontable.full",
+                "javascript-autocomplete": "../../../node_modules/javascript-autocomplete/auto-complete",
+                "orb": "../../../node_modules/orb",
+                "react": "../../../node_modules/react/dist/react",
+                "simpleheat": "../../../node_modules/simpleheat/simpleheat",
+                "topojson": "../../../node_modules/topojson/build/topojson",
+                "tslib": "../../../node_modules/tslib/tslib",
+
+                "@hpcc-js/amchart": "../node_modules/@hpcc-js/amchart",
+                "@hpcc-js/api": "../node_modules/@hpcc-js/api",
+                "@hpcc-js/c3chart": "../node_modules/@hpcc-js/c3chart",
+                "@hpcc-js/chart": "../node_modules/@hpcc-js/chart",
+                "@hpcc-js/common": "../node_modules/@hpcc-js/common",
+                "@hpcc-js/composite": "../node_modules/@hpcc-js/composite",
+                "@hpcc-js/form": "../node_modules/@hpcc-js/form",
+                "@hpcc-js/google": "../node_modules/@hpcc-js/google",
+                "@hpcc-js/graph": "../node_modules/@hpcc-js/graph",
+                "@hpcc-js/handson": "../node_modules/@hpcc-js/handson",
+                "@hpcc-js/layout": "../node_modules/@hpcc-js/layout",
+                "@hpcc-js/map": "../node_modules/@hpcc-js/map",
+                "@hpcc-js/marshaller": "../node_modules/@hpcc-js/marshaller",
+                "@hpcc-js/other": "../node_modules/@hpcc-js/other",
+                "@hpcc-js/react": "../node_modules/@hpcc-js/react",
+                "@hpcc-js/timeline": "../node_modules/@hpcc-js/timeline",
+                "@hpcc-js/tree": "../node_modules/@hpcc-js/tree"
             },
+            packages: [
+                {
+                    name: "@hpcc-js/amchart",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/api",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/c3chart",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/chart",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/common",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/composite",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/form",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/google",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/graph",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/handson",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/layout",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/map",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/marshaller",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/other",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/react",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/timeline",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/tree",
+                    main: "lib-amd/index"
+                }
+            ],
             shim: {
-                "amcharts-funnel": {
-                    deps: ["amcharts"],
-                    exports: "AmCharts",
-                    init: function () {
-                        AmCharts.isReady = true;
-                    }
-                },
-                "amcharts-gauge": {
-                    deps: ["amcharts"],
-                    exports: "AmCharts",
-                    init: function () {
-                        AmCharts.isReady = true;
-                    }
-                },
-                "amcharts-pie": {
-                    deps: ["amcharts"],
-                    exports: "AmCharts",
-                    init: function () {
-                        AmCharts.isReady = true;
-                    }
-                },
-                "amcharts-radar": {
-                    deps: ["amcharts"],
-                    exports: "AmCharts",
-                    init: function () {
-                        AmCharts.isReady = true;
-                    }
-                },
-                "amcharts-serial": {
-                    deps: ["amcharts"],
-                    exports: "AmCharts",
-                    init: function () {
-                        AmCharts.isReady = true;
-                    }
-                },
-                "amcharts-xy": {
-                    deps: ["amcharts"],
-                    exports: "AmCharts",
-                    init: function () {
-                        AmCharts.isReady = true;
-                    }
-                },
-                'amcharts-gantt': {
-                    deps: ['amcharts', 'amcharts-serial'],
-                    exports: 'AmCharts',
-                    init: function () {
-                        AmCharts.isReady = true;
-                    }
-                },
                 "simpleheat": {
                     exports: "simpleheat",
                     init: function () {
@@ -204,7 +285,7 @@ declare const require: any;
                 context: context,
                 paths: root.hpccsystems.cache[srcUrl].rawgitPaths
             }));
-        }, function (_err) {
+        }, function (err) {
             callback(root.hpccsystems.require.config({
                 waitSeconds: 30,
                 baseUrl: srcUrl,
@@ -234,16 +315,16 @@ declare const require: any;
     }
 
     (function () {
-        var myInfo: any = {
+        var myInfo = {
             url: "",
         };
         if (document && document.currentScript) {
-            myInfo.url = (document.currentScript as any).src;
+            myInfo.url = document.currentScript.src;
         } else {
             var scripts = document.getElementsByTagName('script');
             for (var i = scripts.length - 1; i >= 0; --i) {
                 var script = scripts[i];
-                var url = script.getAttribute.length !== undefined ? script.src : script.getAttribute('src');
+                var url = script.getAttribute.length !== undefined ? script.src : script.getAttribute('src', -1);
                 if (url.indexOf("loader.js") > 0 || url.indexOf("hpcc-viz.js") > 0) {
                     myInfo.url = url;
                     break;

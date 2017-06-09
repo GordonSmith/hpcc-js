@@ -78,11 +78,11 @@ export class ChoroplethCounties extends Choropleth {
 
     layerPreRender() {
         if (!this._topoJsonPromise) {
-            this._topoJsonPromise = new Promise(function (resolve, reject) {
+            this._topoJsonPromise = new Promise((resolve, reject) => {
                 if (usCounties) {
                     resolve();
                 }
-                d3Json("../../packages/map/src/TopoJSON/us-counties.json", function (_usCounties) {
+                d3Json(`${this._topoJsonFolder}/us-counties.json`, function (_usCounties) {
                     usCounties = _usCounties;
                     features = topojson.feature(usCounties.topology, usCounties.topology.objects.counties).features;
                     rFeatures = {};

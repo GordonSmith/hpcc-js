@@ -4,7 +4,7 @@ import * as React from "react";
 if (!(window as any).React) {
     (window as any).React = React;
 }
-import * as ReactOrb from "orb";
+import * as ReactOrb from "orb/dist/orb";
 
 import "orb/dist/orb.css";
 import "../src/Orb.css";

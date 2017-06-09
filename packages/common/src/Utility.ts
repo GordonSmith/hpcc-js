@@ -374,6 +374,7 @@ export function parseClassID(classID, prefix = "..") {
     const parts = classID.split(".");
     const classParts = parts[0].split("_");
     return {
+        package: `@hpcc-js/${classParts[0]}`,
         path: prefix + "/" + parts[0].split("_").join("/"),
         widgetID: classParts.length > 1 ? classParts[1] : null,
         memberWidgetID: parts.length > 1 ? parts[1] : null
@@ -383,9 +384,10 @@ declare var require: any;
 export function requireWidget(classID) {
     return new Promise(function (resolve, _reject) {
         const parsedClassID = parseClassID(classID);
-        require([parsedClassID.path], function (Widget) {
-            if (Widget && Widget[parsedClassID.widgetID]) {
-                Widget = Widget[parsedClassID.widgetID];
+        require([parsedClassID.package], function (Package) {
+            let Widget = null;
+            if (Package && Package[parsedClassID.widgetID]) {
+                Widget = Package[parsedClassID.widgetID];
             }
             resolve(parsedClassID.memberWidgetID ? (Widget.prototype ? Widget.prototype[parsedClassID.memberWidgetID] : Widget[parsedClassID.memberWidgetID]) : Widget);
         });

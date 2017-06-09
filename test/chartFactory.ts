@@ -1,6 +1,6 @@
-﻿import { range as d3Range } from "d3-array";
+﻿import { Column } from "@hpcc-js/chart";
+import { range as d3Range } from "d3-array";
 import { randomNormal as d3RandomNormal } from "d3-random";
-import { Column } from "../src/chart/Column";
 import { DataFactory } from "./DataFactory";
 import { es6Require } from "./es6Require";
 

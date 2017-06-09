@@ -1,6 +1,6 @@
 import { INDChart } from "@hpcc-js/api";
-import * as d3 from "d3";
 import { Common } from "./Common";
+import { d3v3 } from "./d3v3";
 
 export class CommonND extends Common {
     constructor() {
@@ -87,18 +87,16 @@ export class CommonND extends Common {
     }
 
     update(domNode, element) {
-        Common.prototype.update.apply(this, arguments);
-
         this._palette = this._palette.switch(this.paletteID());
         if (this.useClonedPalette()) {
             this._palette = this._palette.cloneNotExists(this.paletteID() + "_" + this.id());
         }
 
-        this.c3Chart.internal.config.axis_y_tick_format = this.yAxisTickFormat() ? d3.format(this.yAxisTickFormat()) : undefined;
+        this.c3Chart.internal.config.axis_y_tick_format = this.yAxisTickFormat() ? d3v3.format(this.yAxisTickFormat()) : undefined;
         if (this.xAxisType() === "time") {
-            this.c3Chart.internal.config.axis_x_tick_format = this.xAxisTickFormat() ? d3.time.format(this.xAxisTickFormat()) : "%Y-%m-%d %I:%M:%S %p";
+            this.c3Chart.internal.config.axis_x_tick_format = this.xAxisTickFormat() ? d3v3.time.format(this.xAxisTickFormat()) : "%Y-%m-%d %I:%M:%S %p";
         } else {
-            this.c3Chart.internal.config.axis_x_tick_format = this.xAxisTickFormat() ? d3.format(this.xAxisTickFormat()) : undefined;
+            this.c3Chart.internal.config.axis_x_tick_format = this.xAxisTickFormat() ? d3v3.format(this.xAxisTickFormat()) : undefined;
         }
 
         Common.prototype.update.apply(this, arguments);
