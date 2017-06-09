@@ -1,7 +1,7 @@
-import { select as d3Select, selectAll as d3SelectAll } from "d3-selection";
 import { HTMLWidget, Platform } from "@hpcc-js/common";
 import { Widget } from "@hpcc-js/common";
 import { Grid } from "@hpcc-js/layout";
+import { select as d3Select, selectAll as d3SelectAll } from "d3-selection";
 import * as Persist from "./Persist";
 
 import "../src/PropertyEditor.css";
@@ -33,13 +33,11 @@ export class PropertyEditor extends HTMLWidget {
         this._show_settings = false;
     }
 
-    parentPropertyEditor(): PropertyEditor;
-    parentPropertyEditor(_: PropertyEditor): PropertyEditor;
     parentPropertyEditor(_?: PropertyEditor): PropertyEditor {
         if (!arguments.length) return this._parentPropertyEditor;
         this._parentPropertyEditor = _;
         return this;
-    };
+    }
 
     show_settings(): boolean;
     show_settings(_: boolean): PropertyEditor;
@@ -49,14 +47,14 @@ export class PropertyEditor extends HTMLWidget {
         }
         this._show_settings = _;
         return this;
-    };
+    }
 
     rootWidgets() {
         if (this._selectedItems && this._selectedItems.length) {
             return this._selectedItems;
         }
         return this.show_settings() ? [this] : this.widget() ? [this.widget()] : [];
-    };
+    }
 
     update(domNode, element2) {
         super.update(domNode, element2);
@@ -117,12 +115,12 @@ export class PropertyEditor extends HTMLWidget {
             })
             .remove()
             ;
-    };
+    }
 
     exit(domNode, element) {
         super.exit(domNode, element);
         this.watchWidget(null);
-    };
+    }
 
     private watchDepth = 0;
     watchWidget(widget) {
@@ -146,7 +144,7 @@ export class PropertyEditor extends HTMLWidget {
                 console.log("watchDepth:  " + this.watchDepth);
             }
         }
-    };
+    }
 
     thButtons(th) {
         const context = this;
@@ -191,7 +189,7 @@ export class PropertyEditor extends HTMLWidget {
                 .classed("fa-eye-slash", context.hideNonWidgets())
                 ;
         }
-    };
+    }
 
     gatherDataTree(widget) {
         if (!widget) return null;
@@ -223,11 +221,11 @@ export class PropertyEditor extends HTMLWidget {
             retVal.children.push(node);
         }, this);
         return retVal;
-    };
+    }
 
     getDataTree() {
         return this.gatherDataTree(this.widget());
-    };
+    }
 
     _rowSorting(paramArr) {
         if (this.sorting() === "type") {
@@ -244,7 +242,7 @@ export class PropertyEditor extends HTMLWidget {
         } else if (this.sorting() === "Z-A") {
             paramArr.sort(function (a, b) { return a.id > b.id ? -1 : 1; });
         }
-    };
+    }
 
     filterInputs(d) {
         const discArr = Persist.discover(d);
@@ -281,7 +279,7 @@ export class PropertyEditor extends HTMLWidget {
             });
         }
         return discArr;
-    };
+    }
 
     renderInputs(element, d) {
         const context = this;
@@ -321,18 +319,17 @@ export class PropertyEditor extends HTMLWidget {
                         ;
                     context.enterInputs(d, inputCell, param);
                 }
-            })
-            ;
-        rows.each(function (param) {
-            const tr = d3Select(this);
-            tr.classed("disabled", d[param.id + "_disabled"] && d[param.id + "_disabled"]());
-            tr.attr("title", param.description);
-            if (hasProperties(param.type)) {
-                context.updateWidgetRow(d, tr.select("td"), param);
-            } else {
-                context.updateInputs(d, param);
-            }
-        });
+            }).merge(rows)
+            .each(function (param) {
+                const tr = d3Select(this);
+                tr.classed("disabled", d[param.id + "_disabled"] && d[param.id + "_disabled"]());
+                tr.attr("title", param.description);
+                if (hasProperties(param.type)) {
+                    context.updateWidgetRow(d, tr.select("td"), param);
+                } else {
+                    context.updateInputs(d, param);
+                }
+            });
         rows.exit().each(function (param) {
             const tr = d3Select(this);
             if (hasProperties(param.type)) {
@@ -340,7 +337,7 @@ export class PropertyEditor extends HTMLWidget {
             }
         }).remove();
         rows.order();
-    };
+    }
 
     updateWidgetRow(widget, element, param) {
         let tmpWidget = [];
@@ -376,9 +373,7 @@ export class PropertyEditor extends HTMLWidget {
                     .attr("data-widgetid", w.id())
                     .property("data-propEditor", new PropertyEditor().label(param.id).target(this))
                     ;
-            })
-            ;
-        widgetCell
+            }).merge(widgetCell)
             .each(function (w) {
                 d3Select(this).property("data-propEditor")
                     .parentPropertyEditor(context)
@@ -408,7 +403,7 @@ export class PropertyEditor extends HTMLWidget {
             })
             .remove()
             ;
-    };
+    }
 
     setProperty(widget, id, value) {
         //  With PropertyExt not all "widgets" have a render, if not use parents render...
@@ -429,7 +424,7 @@ export class PropertyEditor extends HTMLWidget {
                 widget = propEditor.widget();
             }
         }
-    };
+    }
 
     enterInputs(widget, cell, param) {
         cell.classed(param.type + "-cell", true);
@@ -495,7 +490,7 @@ export class PropertyEditor extends HTMLWidget {
                 }
                 break;
         }
-    };
+    }
 
     updateInputs(widget, param) {
         const element = d3SelectAll("#" + this.id() + "_" + param.id + ", #" + this.id() + "_" + param.id + "_2");
@@ -518,13 +513,13 @@ export class PropertyEditor extends HTMLWidget {
                 element.property("value", val);
                 break;
         }
-    };
+    }
 
     showFields: { (): boolean; (_: boolean): PropertyEditor; };
     showData: { (): boolean; (_: boolean): PropertyEditor; };
 
     sorting: { (): string; (_: string): PropertyEditor; };
-    sorting_options: { (): string[]; };
+    sorting_options: () => string[];
 
     hideNonWidgets: { (): boolean; (_: boolean): PropertyEditor; };
 
@@ -549,7 +544,7 @@ export class PropertyEditor extends HTMLWidget {
             }
         }
         return retVal;
-    };
+    }
 }
 PropertyEditor.prototype._class += " other_PropertyEditor";
 

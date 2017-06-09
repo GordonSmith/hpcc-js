@@ -172,7 +172,9 @@ export class PropertyExt extends Class {
         }, this);
     }
 
-    id(_?): string | PropertyExt {
+    id(): string;
+    id(_: string): this;
+    id(_?): string | this {
         if (!arguments.length) return this._id;
         this._id = _;
         return this;
@@ -221,7 +223,7 @@ export class PropertyExt extends Class {
         }, this);
     }
 
-    publishReset(privateArr, exceptionsArr) {
+    publishReset(privateArr?, exceptionsArr?) {
         privateArr = (privateArr || []).map(function (id) { return __meta_ + id; });
         exceptionsArr = (exceptionsArr || []).map(function (id) { return __meta_ + id; });
         for (const key in this) {

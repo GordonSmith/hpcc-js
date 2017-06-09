@@ -1,9 +1,9 @@
-import { Class, HTMLWidget, Icon, SVGWidget } from "@hpcc-js/common";
+import { Class, HTMLWidget, SVGWidget } from "@hpcc-js/common";
 import * as marshaller from "@hpcc-js/marshaller";
 import { } from "@hpcc-js/marshaller";
-import { data } from "@hpcc-js/sample-data";
+import { } from "@hpcc-js/sample-data";
 import { expect } from "chai";
-import { classDef, render } from "./coreTests";
+import { classDef } from "./coreTests";
 
 const urlSearch: string = window.location.href.split("?")[1];
 
