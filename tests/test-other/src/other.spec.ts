@@ -1,16 +1,18 @@
+import { Line } from "@hpcc-js/chart";
 import { CanvasWidget, Class, HTMLWidget, SVGWidget } from "@hpcc-js/common";
+import { Border } from "@hpcc-js/layout";
 import * as other from "@hpcc-js/other";
-import { AutoCompleteText, HeatMap, Html, Select, Table, WordCloud } from "@hpcc-js/other";
+import { AutoCompleteText, HeatMap, Html, Legend, Select, Table, WordCloud } from "@hpcc-js/other";
 import { data } from "@hpcc-js/sample-data";
 import { expect } from "chai";
 import { classDef, render } from "./coreTests";
 
 const urlSearch: string = window.location.href.split("?")[1];
 
-describe("@hpcc-js/common", () => {
+describe("@hpcc-js/other", () => {
     for (const key in other) {
         const item = (other as any)[key];
-        if (item) {
+        if (item && item.prototype) {
             if (!urlSearch || urlSearch === item.prototype.constructor.name) {
                 describe(`${item.prototype.constructor.name}`, () => {
                     if (item.prototype instanceof Class) {
@@ -92,6 +94,19 @@ describe("@hpcc-js/common", () => {
                                     .label("Label:  ")
                                     .valueColumn("Col Value")
                                     .textColumn("Col Label")
+                                );
+                                break;
+                            case Legend:
+                                const line = new Line()
+                                    .columns(data.ND.ampolar.columns)
+                                    .data(data.ND.ampolar.data)
+                                    ;
+                                const legend = new Legend()
+                                    .targetWidget(line)
+                                    ;
+                                render(new Border()
+                                    .setContent("center", line)
+                                    .setContent("right", legend)
                                 );
                                 break;
                             default:

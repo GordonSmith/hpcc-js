@@ -25,7 +25,9 @@ export class Legend extends Table {
         return widget && widget._palette && widget._palette.type() === "rainbow";
     }
 
-    targetWidget(_) {
+    targetWidget(): any;
+    targetWidget(_: any): this;
+    targetWidget(_?: any): any | this {
         if (!arguments.length) return this._targetWidget;
         this._targetWidget = _;
         if (this._targetWidgetMonitor) {
@@ -195,8 +197,6 @@ export class Legend extends Table {
     rainbowBins: { (): number; (_: number): Legend };
     rainbowBins_exists: () => boolean;
 }
-Legend.prototype = Object.create(Table.prototype);
-Legend.prototype.constructor = Legend;
 Legend.prototype._class += " other_Legend";
 
 Legend.prototype.publish("dataFamily", "ND", "set", "Type of data", ["1D", "2D", "ND", "map", "any"], { tags: ["Private"] });

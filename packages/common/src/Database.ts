@@ -160,7 +160,7 @@ export class Grid extends PropertyExt {
 
     //  Backward compatability  ---
     resetColumns() {
-        const fields = this.fields();
+        const fields = this.fields() as Field[];
         this.legacyColumns([]);
         this.legacyColumns(fields.map(function (field) {
             return field.label();
@@ -586,7 +586,9 @@ export class Grid extends PropertyExt {
         return this;
     }
 
-    fields: { (): Field[]; (_, clone?): Grid };
+    fields(): Field[];
+    fields(_, clone?): this;
+    fields(_?, clone?): Field[] | this { return this; }
 }
 Grid.prototype._class += " common_Database.Grid";
 
