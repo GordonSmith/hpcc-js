@@ -1,6 +1,6 @@
 import { ITooltip } from "@hpcc-js/api";
 import { HTMLWidget } from "@hpcc-js/common";
-import "amcharts3";
+import "amcharts3/amcharts/amcharts";
 import "amcharts3/amcharts/serial";
 import { format as d3Format } from "d3-format";
 import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";

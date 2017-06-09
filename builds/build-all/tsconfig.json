@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "outDir": "./lib-amd", /* Redirect output structure to the directory. */
+        "target": "es5",
+        "module": "amd",
+        "moduleResolution": "node", /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
+        "lib": [
+            "dom",
+            "es2015"
+        ],
+        "declaration": true, /* Generates corresponding '.d.ts' file. */
+        "sourceMap": true, /* Generates corresponding '.map' file. */
+        "importHelpers": true, /* Import emit helpers from 'tslib'. */
+        /* Strict Type-Checking Options */
+        "strict": true, /* Enable all strict type-checking options. */
+        "noImplicitAny": false, /* Raise error on expressions and declarations with an implied 'any' type. */
+        "strictNullChecks": false, /* Enable strict null checks. */
+        "noImplicitThis": false,
+        "noUnusedLocals": true,
+        "experimentalDecorators": true,
+        "jsx": "react",
+        "jsxFactory": "JSXWidget.createElement",
+        "types": [
+            "chai",
+            "mocha"
+        ]
+    },
+    "include": [
+        "src/*",
+        "../../packages/*/src/**/*"
+    ]
+}

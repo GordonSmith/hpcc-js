@@ -226,7 +226,6 @@ MultiChart.prototype.switchChart = function (callback) {
             context.chart(newContent);
             if (oldContent) {
                 oldContent
-                    .data([])
                     .size({ width: 1, height: 1 })
                     .render()
                     ;

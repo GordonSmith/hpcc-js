@@ -1,5 +1,6 @@
 import { Class } from "./Class";
 
+const GEN_PUB_STUBS: boolean = false;
 const __meta_ = "__meta_";
 const __private_ = "__private_";
 const __prop_ = "__prop_";
@@ -146,8 +147,6 @@ export interface IPublishExt {
     inputType?: string;
 }
 
-const _generatePublishStubs: boolean = true;
-
 let propExtID = 0;
 export class PropertyExt extends Class {
     protected _id: string;
@@ -238,7 +237,7 @@ export class PropertyExt extends Class {
     }
     static prevClassID: string = "";
     publish(id, defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}) {
-        if (_generatePublishStubs) {
+        if (GEN_PUB_STUBS) {
             if (PropertyExt.prevClassID !== (this as any).constructor.name) {
                 PropertyExt.prevClassID = (this as any).constructor.name;
                 console.log(`//  ${PropertyExt.prevClassID}  ---`);
