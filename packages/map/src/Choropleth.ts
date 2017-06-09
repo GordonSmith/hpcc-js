@@ -18,10 +18,15 @@ export class Choropleth extends Layer {
     _choroTopologyObjects;
     _prevProjection;
     _prevInternalOnly;
+    _topoJsonFolder: string;
 
     constructor() {
         super();
         Utility.SimpleSelectionMixin.call(this);
+        this._topoJsonFolder = "../TopoJSON";
+        if ((window as any).hpccsystems && (window as any).hpccsystems.require && (window as any).hpccsystems.require.toUrl) {
+            this._topoJsonFolder = (window as any).hpccsystems.require.toUrl("@hpcc-js/map/TopoJSON");
+        }
     }
 
     data(_?) {

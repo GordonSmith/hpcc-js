@@ -22,7 +22,7 @@ export class Common2D extends Common {
             this._palette = this._palette.cloneNotExists(this.paletteID() + "_" + this.id());
         }
 
-        Common.prototype.update.apply(this, arguments);
+        super.update(domNode, element);
     }
 
     paletteID: { (): string; (_: string): Common2D };

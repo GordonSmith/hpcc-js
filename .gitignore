@@ -5,6 +5,7 @@ node_modules
 bower_components
 tmp/
 lib/
+lib-amd/
 lib-umd/
 lib-es6/
 lib-test-*/

@@ -1,5 +1,8 @@
+//  Preload d3 v3  ---
+import "./d3v3";
+
 import { HTMLWidget } from "@hpcc-js/common";
-import * as c3 from "c3";
+import * as c3 from "c3/c3";
 
 import "c3/c3.css";
 
@@ -103,7 +106,7 @@ export class Common extends HTMLWidget {
     }
 
     update(domNode, element) {
-        HTMLWidget.prototype.update.apply(this, arguments);
+        super.update(domNode, element);
 
         if (this.showLegend()) {
             this.c3Chart.legend.show();

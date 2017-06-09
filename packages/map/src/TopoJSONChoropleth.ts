@@ -92,12 +92,12 @@ TopoJSONChoropleth.prototype.layerPreRender = function () {
     if (!this._topoJsonPromise) {
         const context = this;
         this._topoJsonPromise = new Promise(function (resolve, reject) {
-            d3Json("../src/map/TopoJSON/" + context.region() + ".json", function (region) {
+            d3Json(`${context._topoJsonFolder}/${context.region()}.json`, function (region) {
                 context._choroTopology = region;
                 context._choroTopologyObjects = region.objects.PolbndA;
                 context._choroTopologyFeatures = topojson.feature(context._choroTopology, context._choroTopologyObjects).features;
 
-                d3Json("src/map/TopoJSON/" + context.region() + "_idx.json", indexLoad)
+                d3Json(`${context._topoJsonFolder}/${context.region()}_idx.json`, indexLoad)
                     .on("error", function (err) {
                         indexLoad({});
                     })

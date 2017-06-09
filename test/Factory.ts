@@ -1,5 +1,5 @@
-﻿import { map as d3Map } from "d3-collection";
-import * as Persist from "../src/other/Persist";
+﻿import { Persist } from "@hpcc-js/other";
+import { map as d3Map } from "d3-collection";
 import { chartFactory } from "./chartFactory";
 
 const bundles = { chart: chartFactory };
