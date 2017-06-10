@@ -256,7 +256,7 @@
                     .name("radius")
                     .label("Location Radius")
                     .low(1)
-                    .high(20)
+                    .high(50)
                     .step(1)
                     .value(3),
                 new Slider()
@@ -281,7 +281,7 @@
                 context.mainRequest = {};
                 var locations = [];
                 function parseDate(address, date, _range, prefix) {
-                    var range = +_range;
+                    var range = +_range / 2;
                     if (address && address.zip && date && range) {
                         context.mainRequest[prefix] = address.zip;
                         var zipDate = new Date(date);
