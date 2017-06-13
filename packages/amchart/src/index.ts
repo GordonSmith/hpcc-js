@@ -1,3 +1,5 @@
+import "amcharts3/amcharts/amcharts";
+
 export * from "./Area";
 export * from "./Axis";
 export * from "./Bar";

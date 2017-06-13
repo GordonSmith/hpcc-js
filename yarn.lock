@@ -2,6 +2,51 @@
 # yarn lockfile v1
 
 
+"@hpcc-js/api@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@hpcc-js/api/-/api-0.0.5.tgz#89351b93731119f1b381e79b570f347ac647054d"
+  dependencies:
+    "@hpcc-js/common" "^0.0.5"
+    d3-format "^1.2.0"
+    d3-tip GordonSmith/d3-tip#vJSNEXT
+    tslib "^1.7.1"
+
+"@hpcc-js/chart@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@hpcc-js/chart/-/chart-0.0.5.tgz#075fee9c87b02a4aa7461e0124be112cedb247ae"
+  dependencies:
+    "@hpcc-js/api" "^0.0.5"
+    "@hpcc-js/common" "^0.0.5"
+    "@hpcc-js/d3-bullet" "^1.0.2"
+    d3-axis "^1.0.8"
+    d3-brush "^1.0.4"
+    d3-format "^1.2.0"
+    d3-hexbin "^0.2.2"
+    d3-hierarchy "^1.1.4"
+    d3-scale "^1.0.6"
+    d3-selection "^1.1.0"
+    d3-shape "^1.2.0"
+    d3-time-format "^2.0.5"
+    tslib "^1.7.1"
+
+"@hpcc-js/common@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@hpcc-js/common/-/common-0.0.5.tgz#f0f9047413cc0e8265441f174164de616ea3c4ca"
+  dependencies:
+    colorbrewer "^1.0.0"
+    d3-array "^1.2.0"
+    d3-brush "^1.0.4"
+    d3-collection "^1.0.3"
+    d3-drag "^1.1.0"
+    d3-dsv "^1.0.5"
+    d3-format "^1.2.0"
+    d3-interpolate "^1.1.5"
+    d3-scale "^1.0.6"
+    d3-selection "^1.1.0"
+    d3-zoom "^1.3.0"
+    font-awesome "^4.7.0"
+    tslib "^1.7.1"
+
 "@hpcc-js/d3-bullet@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@hpcc-js/d3-bullet/-/d3-bullet-1.0.2.tgz#bfb664c4ad9b26db0f1dd8e5d290d8758c5e459e"
@@ -12,6 +57,101 @@
     d3-selection "1"
     d3-timer "1"
     d3-transition "1"
+
+"@hpcc-js/layout@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@hpcc-js/layout/-/layout-0.0.5.tgz#03c02f23150d3bb98eab703161cb8b6dd8ef9ff4"
+  dependencies:
+    "@hpcc-js/common" "^0.0.5"
+    d3-drag "^1.1.0"
+    d3-selection "^1.1.0"
+    grid-list "^0.4.0"
+    tslib "^1.7.1"
+
+"@phosphor/algorithm@^1.1.0", "@phosphor/algorithm@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/algorithm/-/algorithm-1.1.1.tgz#e65743d367ddaf2ce042a2df35e9bd6ccf93e742"
+
+"@phosphor/collections@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/collections/-/collections-1.1.1.tgz#c984934e3be0a8a45cc301268102b23bba55a5fb"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+
+"@phosphor/commands@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/commands/-/commands-1.2.1.tgz#f1299afc46a962896b699c76b956b1eb7d0300f9"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+    "@phosphor/coreutils" "^1.1.1"
+    "@phosphor/disposable" "^1.1.1"
+    "@phosphor/domutils" "^1.1.1"
+    "@phosphor/keyboard" "^1.1.1"
+    "@phosphor/signaling" "^1.2.1"
+
+"@phosphor/coreutils@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/coreutils/-/coreutils-1.1.1.tgz#ab9731024052d1a44c239c6054465588e2b319f9"
+
+"@phosphor/disposable@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/disposable/-/disposable-1.1.1.tgz#5102c2e8610de3a8f74de6fb8d66d4675627e5bc"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+
+"@phosphor/domutils@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/domutils/-/domutils-1.1.1.tgz#a616d0d49cf24b93bc7a049c596346fb58660a40"
+
+"@phosphor/dragdrop@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/dragdrop/-/dragdrop-1.1.1.tgz#d57c3897e1252878c1a012198a8d7514496f5498"
+  dependencies:
+    "@phosphor/coreutils" "^1.1.1"
+    "@phosphor/disposable" "^1.1.1"
+
+"@phosphor/keyboard@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/keyboard/-/keyboard-1.1.1.tgz#f4abf5137232edb719d3aa8df1e440215f34ad4f"
+
+"@phosphor/messaging@^1.2.0", "@phosphor/messaging@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/messaging/-/messaging-1.2.1.tgz#11cc54c0d7239a3836db1a007f0ffaa2d9d10c2f"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+    "@phosphor/collections" "^1.1.1"
+
+"@phosphor/properties@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/properties/-/properties-1.1.1.tgz#0b597e413ca093a60b19497b8cf60930eac12195"
+
+"@phosphor/signaling@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/signaling/-/signaling-1.2.1.tgz#a36b0b417298ce4758ef1c67f6d6d7588e1081ba"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+
+"@phosphor/virtualdom@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/virtualdom/-/virtualdom-1.1.1.tgz#92ec4f34376376cdf338e143e0045b322d8bf2e4"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+
+"@phosphor/widgets@^1.2.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/widgets/-/widgets-1.3.0.tgz#596c6d04250c4b49baa7d487fc887733a91a08f1"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+    "@phosphor/commands" "^1.2.1"
+    "@phosphor/coreutils" "^1.1.1"
+    "@phosphor/disposable" "^1.1.1"
+    "@phosphor/domutils" "^1.1.1"
+    "@phosphor/dragdrop" "^1.1.1"
+    "@phosphor/keyboard" "^1.1.1"
+    "@phosphor/messaging" "^1.2.1"
+    "@phosphor/properties" "^1.1.1"
+    "@phosphor/signaling" "^1.2.1"
+    "@phosphor/virtualdom" "^1.1.1"
 
 "@types/chai@^3.5.2":
   version "3.5.2"
@@ -1358,7 +1498,7 @@ d3-timer@1, d3-timer@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.6.tgz#4044bf15d7025c06ce7d1149f73cd07b54dbd784"
 
-d3-tip@GordonSmith/d3-tip#vJSNEXT:
+d3-tip@GordonSmith/d3-tip#vJSNEXT, "d3-tip@github:GordonSmith/d3-tip#vJSNEXT":
   version "0.8.0-alpha.1"
   resolved "https://codeload.github.com/GordonSmith/d3-tip/tar.gz/ab6bb995e06a9e9c27e10d9a70458264c5cf939f"
   dependencies:
