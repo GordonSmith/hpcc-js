@@ -49,6 +49,7 @@
                 "autoComplete": "../bower_components/javascript-auto-complete/auto-complete",
 
                 "amcharts3": "../../../node_modules/amcharts3",
+                "amchartsImg": "../../../node_modules/amcharts3/amcharts/images/",
                 "colorbrewer": "../../../node_modules/colorbrewer/colorbrewer",
                 "c3": "../../../node_modules/c3",
                 "d3": "../../../node_modules/d3/d3",
@@ -91,6 +92,7 @@
                 "handsontable": "../../../node_modules/handsontable/dist/handsontable.full",
                 "javascript-autocomplete": "../../../node_modules/javascript-autocomplete/auto-complete",
                 "orb": "../../../node_modules/orb",
+                "orb": "../../../node_modules/orb",
                 "react": "../../../node_modules/react/dist/react",
                 "simpleheat": "../../../node_modules/simpleheat/simpleheat",
                 "topojson": "../../../node_modules/topojson/build/topojson",
@@ -110,11 +112,21 @@
                 "@hpcc-js/map": "../node_modules/@hpcc-js/map",
                 "@hpcc-js/marshaller": "../node_modules/@hpcc-js/marshaller",
                 "@hpcc-js/other": "../node_modules/@hpcc-js/other",
+                "@hpcc-js/phosphor-lib": "../node_modules/@hpcc-js/phosphor-lib",
+                "@hpcc-js/phosphor": "../node_modules/@hpcc-js/phosphor",
                 "@hpcc-js/react": "../node_modules/@hpcc-js/react",
                 "@hpcc-js/timeline": "../node_modules/@hpcc-js/timeline",
                 "@hpcc-js/tree": "../node_modules/@hpcc-js/tree"
             },
             packages: [
+                {
+                    name: "@phosphor/algorithm",
+                    main: "lib/index"
+                },
+                {
+                    name: "@phosphor/widgets",
+                    main: "lib/index"
+                },
                 {
                     name: "@hpcc-js/amchart",
                     main: "lib-amd/index"
@@ -169,6 +181,14 @@
                 },
                 {
                     name: "@hpcc-js/other",
+                    main: "lib-amd/index"
+                },
+                {
+                    name: "@hpcc-js/phosphor-lib",
+                    main: "build/phosphor-lib"
+                },
+                {
+                    name: "@hpcc-js/phosphor",
                     main: "lib-amd/index"
                 },
                 {

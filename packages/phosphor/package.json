@@ -1,8 +1,7 @@
 {
-  "private": true,
-  "name": "@hpcc-js/sample-data",
+  "name": "@hpcc-js/phosphor",
   "version": "0.0.1",
-  "description": "hpcc-js - Test Data",
+  "description": "hpcc-js - Viz Phosphor",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
@@ -14,13 +13,18 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib"
+    "clean": "rimraf lib*",
+    "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
+    "@hpcc-js/common": "^0.0.1",
+    "@hpcc-js/phosphor-lib": "^0.0.1",
+    "d3-selection": "^1.1.0",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
+    "typedoc": "^0.7.1",
     "typescript": "^2.3.4"
   },
   "repository": {

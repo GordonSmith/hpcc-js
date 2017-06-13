@@ -13,6 +13,91 @@
     d3-timer "1"
     d3-transition "1"
 
+"@phosphor/algorithm@^1.1.0", "@phosphor/algorithm@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/algorithm/-/algorithm-1.1.1.tgz#e65743d367ddaf2ce042a2df35e9bd6ccf93e742"
+
+"@phosphor/collections@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/collections/-/collections-1.1.1.tgz#c984934e3be0a8a45cc301268102b23bba55a5fb"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+
+"@phosphor/commands@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/commands/-/commands-1.2.1.tgz#f1299afc46a962896b699c76b956b1eb7d0300f9"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+    "@phosphor/coreutils" "^1.1.1"
+    "@phosphor/disposable" "^1.1.1"
+    "@phosphor/domutils" "^1.1.1"
+    "@phosphor/keyboard" "^1.1.1"
+    "@phosphor/signaling" "^1.2.1"
+
+"@phosphor/coreutils@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/coreutils/-/coreutils-1.1.1.tgz#ab9731024052d1a44c239c6054465588e2b319f9"
+
+"@phosphor/disposable@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/disposable/-/disposable-1.1.1.tgz#5102c2e8610de3a8f74de6fb8d66d4675627e5bc"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+
+"@phosphor/domutils@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/domutils/-/domutils-1.1.1.tgz#a616d0d49cf24b93bc7a049c596346fb58660a40"
+
+"@phosphor/dragdrop@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/dragdrop/-/dragdrop-1.1.1.tgz#d57c3897e1252878c1a012198a8d7514496f5498"
+  dependencies:
+    "@phosphor/coreutils" "^1.1.1"
+    "@phosphor/disposable" "^1.1.1"
+
+"@phosphor/keyboard@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/keyboard/-/keyboard-1.1.1.tgz#f4abf5137232edb719d3aa8df1e440215f34ad4f"
+
+"@phosphor/messaging@^1.2.0", "@phosphor/messaging@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/messaging/-/messaging-1.2.1.tgz#11cc54c0d7239a3836db1a007f0ffaa2d9d10c2f"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+    "@phosphor/collections" "^1.1.1"
+
+"@phosphor/properties@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/properties/-/properties-1.1.1.tgz#0b597e413ca093a60b19497b8cf60930eac12195"
+
+"@phosphor/signaling@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/signaling/-/signaling-1.2.1.tgz#a36b0b417298ce4758ef1c67f6d6d7588e1081ba"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+
+"@phosphor/virtualdom@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@phosphor/virtualdom/-/virtualdom-1.1.1.tgz#92ec4f34376376cdf338e143e0045b322d8bf2e4"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+
+"@phosphor/widgets@^1.2.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@phosphor/widgets/-/widgets-1.3.0.tgz#596c6d04250c4b49baa7d487fc887733a91a08f1"
+  dependencies:
+    "@phosphor/algorithm" "^1.1.1"
+    "@phosphor/commands" "^1.2.1"
+    "@phosphor/coreutils" "^1.1.1"
+    "@phosphor/disposable" "^1.1.1"
+    "@phosphor/domutils" "^1.1.1"
+    "@phosphor/dragdrop" "^1.1.1"
+    "@phosphor/keyboard" "^1.1.1"
+    "@phosphor/messaging" "^1.2.1"
+    "@phosphor/properties" "^1.1.1"
+    "@phosphor/signaling" "^1.2.1"
+    "@phosphor/virtualdom" "^1.1.1"
+
 "@types/chai@^3.5.2":
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-3.5.2.tgz#c11cd2817d3a401b7ba0f5a420f35c56139b1c1e"
@@ -471,6 +556,12 @@ brorand@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
 
+browser-resolve@^1.11.0:
+  version "1.11.2"
+  resolved "https://registry.yarnpkg.com/browser-resolve/-/browser-resolve-1.11.2.tgz#8ff09b0a2c421718a1051c260b32e48f442938ce"
+  dependencies:
+    resolve "1.1.7"
+
 browser-stdout@1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/browser-stdout/-/browser-stdout-1.3.0.tgz#f351d32969d32fa5d7a5567154263d928ae3bd1f"
@@ -549,7 +640,7 @@ buffer@^4.3.0:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
-builtin-modules@^1.0.0:
+builtin-modules@^1.0.0, builtin-modules@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-1.1.1.tgz#270f076c5a72c02f5b65a47df94c5fe3a278892f"
 
@@ -2467,6 +2558,10 @@ is-gzip@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-gzip/-/is-gzip-1.0.0.tgz#6ca8b07b99c77998025900e555ced8ed80879a83"
 
+is-module@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/is-module/-/is-module-1.0.0.tgz#3258fb69f78c14d5b815d664336b4cffb6441591"
+
 is-number@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/is-number/-/is-number-0.1.1.tgz#69a7af116963d47206ec9bd9b48a14216f1e3806"
@@ -4135,6 +4230,10 @@ requires-port@1.x.x:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
 
+resolve@1.1.7:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.1.7.tgz#203114d82ad2c5ed9e8e0411b3932875e889e97b"
+
 resolve@^1.1.5, resolve@^1.1.6:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.3.3.tgz#655907c3469a8680dc2de3a275a8fdd69691f0e5"
@@ -4170,6 +4269,21 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^2.0.0"
     inherits "^2.0.1"
+
+rollup-plugin-node-resolve@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-3.0.0.tgz#8b897c4c3030d5001277b0514b25d2ca09683ee0"
+  dependencies:
+    browser-resolve "^1.11.0"
+    builtin-modules "^1.1.0"
+    is-module "^1.0.0"
+    resolve "^1.1.6"
+
+rollup@^0.43.0:
+  version "0.43.0"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.43.0.tgz#b36bdb75fa5e0823b6de8aee18ff7b5655520543"
+  dependencies:
+    source-map-support "^0.4.0"
 
 run-async@^2.2.0:
   version "2.3.0"
@@ -4362,6 +4476,12 @@ source-map-loader@^0.2.1:
     async "^0.9.0"
     loader-utils "~0.2.2"
     source-map "~0.1.33"
+
+source-map-support@^0.4.0:
+  version "0.4.15"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.15.tgz#03202df65c06d2bd8c7ec2362a193056fef8d3b1"
+  dependencies:
+    source-map "^0.5.6"
 
 "source-map@>= 0.1.2", source-map@^0.5.3, source-map@^0.5.6, source-map@~0.5.0, source-map@~0.5.1, source-map@~0.5.3:
   version "0.5.6"

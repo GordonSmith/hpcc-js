@@ -1,17 +1,16 @@
-import { Message } from "@phosphor/messaging";
-import { Widget as PWidget } from "@phosphor/widgets";
+import { HTMLWidget, SVGWidget } from "@hpcc-js/common";
+import { messaging, widgets } from "@hpcc-js/phosphor-lib";
 import { select as d3Select } from "d3-selection";
-import { HTMLWidget } from "../common/HTMLWidget";
-import { SVGWidget } from "../common/SVGWidget";
 
-import "./WidgetAdapter.css";
+import "../src/WidgetAdapter.css";
 
-export class WidgetAdapter<T extends HTMLWidget | SVGWidget> extends PWidget {
-    _element;
-    _viz: T;
-    get viz() { return this._viz; }
+export class WidgetAdapter extends widgets.Widget {
+    protected _element;
+    _widget: HTMLWidget | SVGWidget;
+    get widget() { return this._widget; }
+    lparam: any = {};
 
-    constructor(name: string, VizWidget: { new (): T; }) {
+    constructor(name: string, widget: HTMLWidget | SVGWidget, lparam: any = {}) {
         super();
         this._element = d3Select(this.node);
         // this.setFlag(Widget.Flag.DisallowLayout);
@@ -21,28 +20,31 @@ export class WidgetAdapter<T extends HTMLWidget | SVGWidget> extends PWidget {
         this.title.closable = false;
         this.title.caption = `Long description for: ${name}`;
 
-        this._viz = new VizWidget()
+        this._widget = widget
             .target(this.node)
             ;
+        this.lparam = lparam;
     }
 
     get inputNode(): HTMLInputElement {
         return this.node.getElementsByTagName("input")[0] as HTMLInputElement;
     }
 
-    protected onActivateRequest(msg: Message): void {
+    protected onActivateRequest(msg: messaging.Message): void {
         if (this.isAttached) {
         }
     }
-    protected onResize(msg: PWidget.ResizeMessage): void {
+    protected onResize(msg: widgets.Widget.ResizeMessage): void {
+        super.onResize(msg);
         if (msg.width < 0 || msg.height < 0) {
             // this._colChart.refresh();
         } else {
+
             d3Select(this.node)
-                .style("width", msg.width - 4 + "px") //  adjust for padding
-                .style("height", msg.height - 4 + "px") //  adjust for padding
+                .style("width", msg.width + "px") //  adjust for padding
+                .style("height", msg.height + "px") //  adjust for padding
                 ;
-            this._viz
+            this._widget
                 .resize({ width: msg.width - 20, height: msg.height - 20 })
                 .render()
                 ;
