@@ -32,22 +32,6 @@
                 "text": "../node_modules/requirejs-text/text",
                 "json": "../node_modules/requirejs-plugins/src/json",
 
-                "colorbrewer": "../bower_components/colorbrewer/colorbrewer",
-                "d3-cloud": "../bower_components/d3-cloud/build/d3.layout.cloud",
-                "d3-sankey": "../bower_components/d3-plugins/sankey/sankey",
-                "font-awesome": "../bower_components/font-awesome/css/font-awesome",
-                "es6-promise": "../bower_components/es6-promise/promise",
-                "d3-hexbin": "../bower_components/d3-plugins/hexbin/hexbin",
-                "d3-tip": "../bower_components/d3-tip/index",
-                "d3-bullet": "../bower_components/d3-plugins/bullet/bullet",
-                "handsontable": "../bower_components/handsontable/dist/handsontable.full",
-                "grid-list": "../bower_components/grid-list/src/gridList",
-                "orb-react": "../bower_components/orb/deps/react-0.12.2",
-                "orb": "../bower_components/orb/dist/orb",
-
-                "simpleheat": "../bower_components/simpleheat/index",
-                "autoComplete": "../bower_components/javascript-auto-complete/auto-complete",
-
                 "amcharts3": "../../../node_modules/amcharts3",
                 "amchartsImg": "../../../node_modules/amcharts3/amcharts/images/",
                 "colorbrewer": "../../../node_modules/colorbrewer/colorbrewer",

@@ -5,6 +5,7 @@ import { WidgetAdapter } from "./WidgetAdapter";
 import "../src/DockPanel.css";
 
 /*
+
 interface Differences<T> {
     match: T[];
     removed: T[];
@@ -29,6 +30,7 @@ function diff<T>(source: algorithm.IterableOrArrayLike<T>, other: algorithm.Iter
     });
     return retVal;
 }
+
 */
 
 export class DockPanel extends HTMLWidget {
