@@ -1,7 +1,7 @@
 {
   "private": true,
-  "name": "@hpcc-js/test-chart",
-  "version": "0.0.9",
+  "name": "@hpcc-js/test-form",
+  "version": "0.0.10",
   "dependencies": {
     "@hpcc-js/common": "^0.0.10",
     "@hpcc-js/form": "^0.0.10",
