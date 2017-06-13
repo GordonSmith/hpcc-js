@@ -11,7 +11,7 @@
             single: function (callback) {
                 legacyRequire(["test/DataFactory", "src/phosphor/DockPanel", "src/chart/Pie", "src/chart/MultiChartSurface", "src/chart/Line", "src/chart/Column", "src/chart/Step"], function (DataFactory, DockPanel, Pie, MultiChartSurface, Line, Column, Step) {
                     callback(new DockPanel()
-                        .setContent("Pie 1", new Pie().columns(DataFactory.TwoD.subjects.columns).data(DataFactory.TwoD.subjects.data))
+                        .addWidget("Pie 1", new Pie().columns(DataFactory.TwoD.subjects.columns).data(DataFactory.TwoD.subjects.data))
                     );
                 });
             },
@@ -40,12 +40,12 @@
                         .data(DataFactory.ND.subjects.data);
 
                     callback(new DockPanel()
-                        .setContent("Pie 1", pie1)
-                        .setContent("Pie 2", pie2, "split-right", pie1)
-                        .setContent("Pie 3", pie3, "split-bottom", pie1)
-                        .setContent("Pie 4", pie4, "split-bottom", pie2)
-                        .setContent("Line", line1, "split-right")
-                        .setContent("Surface", surface1, "split-bottom")
+                        .addWidget("Pie 1", pie1)
+                        .addWidget("Pie 2", pie2, "split-right", pie1)
+                        .addWidget("Pie 3", pie3, "split-bottom", pie1)
+                        .addWidget("Pie 4", pie4, "split-bottom", pie2)
+                        .addWidget("Line", line1, "split-right")
+                        .addWidget("Surface", surface1, "split-bottom")
                     );
                 });
             }

@@ -113,59 +113,59 @@
                 },
                 {
                     name: "@hpcc-js/amchart",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/api",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/c3chart",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/chart",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/common",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/composite",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/form",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/google",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/graph",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/handson",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/layout",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/map",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/marshaller",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/other",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/phosphor-lib",
@@ -173,19 +173,19 @@
                 },
                 {
                     name: "@hpcc-js/phosphor",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/react",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/timeline",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/tree",
-                    main: "lib-amd/index"
+                    main: "lib/index"
                 }
             ],
             shim: {
