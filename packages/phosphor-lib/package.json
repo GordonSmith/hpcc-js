@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/phosphor-lib",
-  "version": "0.0.5",
+  "version": "0.0.9",
   "description": "hpcc-js - Viz Phosphor Library",
   "main": "build/phosphor-lib.js",
   "types": "lib/index.d.ts",
@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@phosphor/algorithm": "^1.1.0",
-    "@phosphor/widgets": "^1.2.0",
-    "@phosphor/messaging": "^1.2.0"
+    "@phosphor/messaging": "^1.2.0",
+    "@phosphor/widgets": "^1.2.0"
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
