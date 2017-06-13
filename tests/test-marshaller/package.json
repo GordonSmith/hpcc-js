@@ -3,8 +3,8 @@
   "name": "@hpcc-js/test-marshaller",
   "version": "0.0.4",
   "dependencies": {
-    "@hpcc-js/common": "^0.0.4",
-    "@hpcc-js/marshaller": "^0.0.4",
+    "@hpcc-js/common": "^0.0.5",
+    "@hpcc-js/marshaller": "^0.0.5",
     "chai": "^4.0.0",
     "es6-promise": "^4.1.0",
     "mocha": "^3.4.2",

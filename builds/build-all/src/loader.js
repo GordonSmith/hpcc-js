@@ -210,37 +210,55 @@
             "text": rawgitBaseUrl + "/requirejs/text/2.0.12/text",
             "json": rawgitBaseUrl + "/millermedeiros/requirejs-plugins/v1.0.3/src/json",
 
-            "d3": rawgitBaseUrl + "/mbostock/d3/v3.5.17/d3.min",
-            "c3": rawgitBaseUrl + "/masayuki0812/c3/0.4.11/c3.min",
-            "dagre": rawgitBaseUrl + "/cpettitt/dagre/v0.7.3/dist/dagre.min",
-            "topojson": rawgitBaseUrl + "/mbostock-bower/topojson-bower/v1.6.26/topojson.min",
-            "colorbrewer": rawgitBaseUrl + "/jeanlauliac/colorbrewer/v1.0.0/colorbrewer",
-            "d3-cloud": rawgitBaseUrl + "/jasondavies/d3-cloud/v1.2.2/build/d3.layout.cloud",
-            "d3-sankey": rawgitBaseUrl + "/d3/d3-plugins/master/sankey/sankey",
-            "font-awesome": rawgitBaseUrl + "/FortAwesome/Font-Awesome/v4.7.0/css/font-awesome.min",
-            "es6-promise": rawgitBaseUrl + "/jakearchibald/es6-promise/v3.2.2/dist/es6-promise.min",
-            "d3-hexbin": rawgitBaseUrl + "/d3/d3-plugins/master/hexbin/hexbin",
-            "d3-tip": rawgitBaseUrl + "/Caged/d3-tip/v0.6.7/index",
-            "d3-bullet": rawgitBaseUrl + "/d3/d3-plugins/master/bullet/bullet",
-            "handsontable": rawgitBaseUrl + "/handsontable/handsontable/0.24.3/dist/handsontable.full.min",
-            "grid-list": rawgitBaseUrl + "/hootsuite/grid/v0.3.4/src/gridList",
-            "orb-react": rawgitBaseUrl + "/nnajm/orb/v1.0.9/deps/react-0.12.2.min",
-            "orb": rawgitBaseUrl + "/nnajm/orb/v1.0.9/dist/orb.min",
-
-            "amcharts": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/amcharts",
-            "amcharts-funnel": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/funnel",
-            "amcharts-gauge": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/gauge",
-            "amcharts-pie": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/pie",
-            "amcharts-radar": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/radar",
-            "amcharts-serial": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/serial",
-            "amcharts-xy": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/xy",
-            "amcharts-gantt": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/gantt",
-            "amcharts-plugins-responsive": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/plugins/responsive/responsive",
-            "amcharts-plugins-dataloader": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/plugins/dataloader",
-            "amcharts-images": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/images/",
-
-            "simpleheat": rawgitBaseUrl + "/mourner/simpleheat/v0.3.0/simpleheat",
-            "autoComplete": rawgitBaseUrl + "/Pixabay/JavaScript-autoComplete/1.0.4/auto-complete",
+            "amcharts3": rawgitBaseUrl + "/amcharts3",
+            "amchartsImg": rawgitBaseUrl + "/amcharts3/amcharts/images/",
+            "colorbrewer": rawgitBaseUrl + "/colorbrewer/colorbrewer",
+            "c3": rawgitBaseUrl + "/c3",
+            "d3": rawgitBaseUrl + "/d3@3.5.17/d3",
+            "d3-array": rawgitBaseUrl + "/d3-array/build/d3-array",
+            "d3-axis": rawgitBaseUrl + "/d3-axis/build/d3-axis",
+            "@hpcc-js/d3-bullet": rawgitBaseUrl + "/@hpcc-js/d3-bullet/build/d3-bullet",
+            "d3-brush": rawgitBaseUrl + "/d3-brush/build/d3-brush",
+            "d3-cloud": rawgitBaseUrl + "/d3-cloud/build/d3.layout.cloud",
+            "d3-dsv": rawgitBaseUrl + "/d3-dsv/build/d3-dsv",
+            "d3-collection": rawgitBaseUrl + "/d3-collection/build/d3-collection",
+            "d3-color": rawgitBaseUrl + "/d3-color/build/d3-color",
+            "d3-dispatch": rawgitBaseUrl + "/d3-dispatch/build/d3-dispatch",
+            "d3-drag": rawgitBaseUrl + "/d3-drag/build/d3-drag",
+            "d3-ease": rawgitBaseUrl + "/d3-ease/build/d3-ease",
+            "d3-interpolate": rawgitBaseUrl + "/d3-interpolate/build/d3-interpolate",
+            "d3-force": rawgitBaseUrl + "/d3-force/build/d3-force",
+            "d3-format": rawgitBaseUrl + "/d3-format/build/d3-format",
+            "d3-geo": rawgitBaseUrl + "/d3-geo/build/d3-geo",
+            "d3-hexbin": rawgitBaseUrl + "/d3-hexbin/build/d3-hexbin",
+            "d3-hierarchy": rawgitBaseUrl + "/d3-hierarchy/build/d3-hierarchy",
+            "d3-path": rawgitBaseUrl + "/d3-path/build/d3-path",
+            "d3-quadtree": rawgitBaseUrl + "/d3-quadtree/build/d3-quadtree",
+            "d3-random": rawgitBaseUrl + "/d3-random/build/d3-random",
+            "d3-request": rawgitBaseUrl + "/d3-request/build/d3-request",
+            "d3-scale": rawgitBaseUrl + "/d3-scale/build/d3-scale",
+            "d3-shape": rawgitBaseUrl + "/d3-shape/build/d3-shape",
+            "d3-sankey": rawgitBaseUrl + "/d3-sankey/build/d3-sankey",
+            "d3-selection": rawgitBaseUrl + "/d3-selection/build/d3-selection",
+            "d3-time": rawgitBaseUrl + "/d3-time/build/d3-time",
+            "d3-timer": rawgitBaseUrl + "/d3-timer/build/d3-timer",
+            "d3-time-format": rawgitBaseUrl + "/d3-time-format/build/d3-time-format",
+            "d3-tip": rawgitBaseUrl + "/d3-tip@0.8.0-alpha.1/index",
+            "d3-transition": rawgitBaseUrl + "/d3-transition/build/d3-transition",
+            "d3-zoom": rawgitBaseUrl + "/d3-zoom/build/d3-zoom",
+            "dagre": rawgitBaseUrl + "/dagre/dist/dagre",
+            "es6-promise": rawgitBaseUrl + "/es6-promise/dist/es6-promise.auto",
+            "font-awesome": rawgitBaseUrl + "/font-awesome",
+            "google-maps": rawgitBaseUrl + "/google-maps/lib/Google",
+            "grid-list": rawgitBaseUrl + "/grid-list/src/gridList",
+            "handsontable": rawgitBaseUrl + "/handsontable/dist/handsontable.full",
+            "javascript-autocomplete": rawgitBaseUrl + "/javascript-autocomplete/auto-complete",
+            "orb": rawgitBaseUrl + "/orb",
+            "orb": rawgitBaseUrl + "/orb",
+            "react": rawgitBaseUrl + "/react/dist/react",
+            "simpleheat": rawgitBaseUrl + "/simpleheat/simpleheat",
+            "topojson": rawgitBaseUrl + "/topojson/build/topojson",
+            "tslib": rawgitBaseUrl + "/tslib/tslib",
 
             "src": srcUrl
         };
@@ -294,7 +312,7 @@
                 waitSeconds: 30,
                 baseUrl: srcUrl,
                 context: context,
-                paths: rawgitPaths(srcUrl, rawgitBaseUrl)
+                paths: rawgitPaths(srcUrl, "https://unpkg.com")
             }));
         });
     }
@@ -342,7 +360,7 @@
         if (!root.hpccsystems.cache[myInfo.srcUrl]) {
             var rawgitBaseUrl = root.location.protocol === "https:" ? "https://rawgit.com" : "http://rawgit.com";
             root.hpccsystems.cache[myInfo.srcUrl] = {
-                rawgitPaths: rawgitPaths(myInfo.srcUrl, rawgitBaseUrl)
+                rawgitPaths: rawgitPaths(myInfo.srcUrl, "https://unpkg.com")
             };
         }
 
@@ -356,7 +374,8 @@
                                 githubConfig(myInfo.srcUrl);
                                 break;
                             default:
-                                srcConfig(myInfo.srcUrl);
+                                githubConfig(myInfo.srcUrl);
+                            // srcConfig(myInfo.srcUrl);
                         }
                         break;
                     case "hpcc-viz.js":
