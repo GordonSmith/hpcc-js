@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/comms",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "hpcc-js - Communications",
   "browser": "lib/index-browser.js",
   "main": "lib/index-node.js",
@@ -18,7 +18,7 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/util": "^0.0.3",
+    "@hpcc-js/util": "^0.0.5",
     "d3-request": "^1.0.5",
     "safe-buffer": "^5.0.1",
     "tslib": "^1.7.1"
