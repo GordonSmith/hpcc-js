@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@hpcc-js/test-layout",
+  "name": "@hpcc-js/test-map",
   "version": "0.0.12",
   "dependencies": {
     "@hpcc-js/common": "^0.0.12",
