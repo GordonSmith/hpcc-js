@@ -1,32 +1,28 @@
 {
-  "name": "@hpcc-js/layout",
-  "version": "0.0.14",
-  "description": "hpcc-js - Viz Layout",
-  "main": "lib/index.js",
+  "name": "@hpcc-js/phosphor-lib",
+  "version": "0.0.13",
+  "description": "hpcc-js - Viz Phosphor Library",
+  "main": "build/phosphor-lib.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "dist/**/*.js"
   ],
   "directories": {
-    "lib": "lib/"
+    "dist": "dist/"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "rimraf lib*",
-    "docs": "typedoc --options tdoptions.json ."
+    "build": "tsc -p . && webpack",
+    "clean": "rimraf lib* && rimraf dist"
   },
   "dependencies": {
-    "@hpcc-js/common": "^0.0.14",
-    "d3-drag": "^1.1.0",
-    "d3-selection": "^1.1.0",
-    "grid-list": "^0.4.0",
-    "tslib": "^1.7.1"
+    "@phosphor/algorithm": "^1.1.0",
+    "@phosphor/messaging": "^1.2.0",
+    "@phosphor/widgets": "^1.2.0"
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
-    "typedoc": "^0.7.1",
-    "typescript": "^2.3.4"
+    "typescript": "^2.3.4",
+    "webpack": "^2.6.1"
   },
   "repository": {
     "type": "git",

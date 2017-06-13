@@ -1,6 +1,6 @@
 import { Widget } from "@hpcc-js/common";
 import { format as d3Format } from "d3-format";
-import { tip } from "d3-tip";
+import * as tip from "d3-tip";
 
 import "../src/ITooltip.css";
 

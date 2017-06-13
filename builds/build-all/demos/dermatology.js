@@ -117,10 +117,10 @@
             this._main.target(null);
         }
         d3.select("#cellSurface")
-            .classed("supress", widget.surfaceShadow !== undefined)
+            .classed("supress", widget.surfaceShadow !== undefined || widget.classID().indexOf("phosphor_") === 0)
             ;
         d3.select("#surface")
-            .classed("supress", widget.surfaceShadow !== undefined)
+            .classed("supress", widget.surfaceShadow !== undefined || widget.classID().indexOf("phosphor_") === 0)
             ;
         if (widget.surfaceShadow) {
             widget.surfaceBackgroundColor_default("white")

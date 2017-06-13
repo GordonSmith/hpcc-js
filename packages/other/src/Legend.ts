@@ -1,4 +1,4 @@
-import { Palette } from "@hpcc-js/common";
+import { Palette, Platform } from "@hpcc-js/common";
 import { format as d3Format } from "d3-format";
 import { select as d3Select } from "d3-selection";
 import { Table } from "./Table";
@@ -210,8 +210,8 @@ Legend.prototype.getBBox = function (refresh, round) {
     const table = this.element().select(".tableDiv > table");
     if (!table.empty()) {
         const tableRect = table.node().getBoundingClientRect();
-        const width = tableRect.width + 8 + (this.hasVScroll(this._parentElement) ? this.getScrollbarWidth() : 0);
-        const height = tableRect.height + 8 + (this.hasHScroll(this._parentElement) ? this.getScrollbarWidth() : 0);
+        const width = tableRect.width + 8 + (this.hasVScroll(this._parentElement) ? Platform.getScrollbarWidth() : 0);
+        const height = tableRect.height + 8 + (this.hasHScroll(this._parentElement) ? Platform.getScrollbarWidth() : 0);
         return {
             x: retVal.x,
             y: retVal.y,

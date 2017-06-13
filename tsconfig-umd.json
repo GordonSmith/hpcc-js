@@ -2,7 +2,7 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "outDir": "./lib-umd",
-        "module": "umd"
+        "module": "commonjs"
     },
     "include": [
         "./src/index-browser.ts"
