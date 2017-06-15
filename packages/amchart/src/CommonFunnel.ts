@@ -1,6 +1,5 @@
 import { ITooltip } from "@hpcc-js/api";
 import { HTMLWidget } from "@hpcc-js/common";
-import "amcharts3/amcharts/amcharts";
 import "amcharts3/amcharts/funnel";
 import { min as d3Min } from "d3-array";
 import { select as d3Select } from "d3-selection";

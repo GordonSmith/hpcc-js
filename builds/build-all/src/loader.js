@@ -100,7 +100,9 @@
                 "@hpcc-js/phosphor": "../node_modules/@hpcc-js/phosphor",
                 "@hpcc-js/react": "../node_modules/@hpcc-js/react",
                 "@hpcc-js/timeline": "../node_modules/@hpcc-js/timeline",
-                "@hpcc-js/tree": "../node_modules/@hpcc-js/tree"
+                "@hpcc-js/tree": "../node_modules/@hpcc-js/tree",
+
+                "src": "../src"
             },
             packages: [
                 {
@@ -169,7 +171,7 @@
                 },
                 {
                     name: "@hpcc-js/phosphor-lib",
-                    main: "build/phosphor-lib"
+                    main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/phosphor",
@@ -374,8 +376,7 @@
                                 githubConfig(myInfo.srcUrl);
                                 break;
                             default:
-                                githubConfig(myInfo.srcUrl);
-                            // srcConfig(myInfo.srcUrl);
+                                srcConfig(myInfo.srcUrl);
                         }
                         break;
                     case "hpcc-viz.js":

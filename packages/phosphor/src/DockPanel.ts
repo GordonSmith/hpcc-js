@@ -1,5 +1,6 @@
 import { HTMLWidget, SVGWidget, Widget } from "@hpcc-js/common";
-import { widgets } from "@hpcc-js/phosphor-lib";
+import { DockPanel as PDockPanel, Widget as PWidget } from "@hpcc-js/phosphor-lib";
+
 import { WidgetAdapter } from "./WidgetAdapter";
 
 import "../src/DockPanel.css";
@@ -34,7 +35,7 @@ function diff<T>(source: algorithm.IterableOrArrayLike<T>, other: algorithm.Iter
 */
 
 export class DockPanel extends HTMLWidget {
-    private _dock = new widgets.DockPanel({ mode: "multiple-document" });
+    private _dock = new PDockPanel({ mode: "multiple-document" });
     protected content: WidgetAdapter[] = [];
 
     constructor() {
@@ -55,8 +56,8 @@ export class DockPanel extends HTMLWidget {
         return retVal;
     }
 
-    addWidget(title: string, widget: SVGWidget | HTMLWidget, location: widgets.DockPanel.InsertMode = "split-right", refWidget?: Widget) {
-        const addMode: widgets.DockPanel.IAddOptions = { mode: location, ref: this.getWidgetAdapter(refWidget) };
+    addWidget(title: string, widget: SVGWidget | HTMLWidget, location: PDockPanel.InsertMode = "split-right", refWidget?: Widget) {
+        const addMode: PDockPanel.IAddOptions = { mode: location, ref: this.getWidgetAdapter(refWidget) };
         const wa = new WidgetAdapter(title, widget);
         this._dock.addWidget(wa, addMode);
         this.content.push(wa);
@@ -65,7 +66,7 @@ export class DockPanel extends HTMLWidget {
 
     enter(domNode, element) {
         super.enter(domNode, element);
-        widgets.Widget.attach(this._dock, domNode);
+        PWidget.attach(this._dock, domNode);
     }
 
     update(domNode, element) {

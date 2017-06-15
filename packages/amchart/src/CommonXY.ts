@@ -1,6 +1,5 @@
 import { ITooltip } from "@hpcc-js/api";
 import { HTMLWidget } from "@hpcc-js/common";
-import "amcharts3/amcharts/amcharts";
 import "amcharts3/amcharts/xy";
 import { format as d3Format } from "d3-format";
 import { XYAxis as Axis } from "./XYAxis";

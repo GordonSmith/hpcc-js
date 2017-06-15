@@ -1,7 +1,9 @@
 import { HTMLWidget } from "@hpcc-js/common";
 import { AbsoluteSurface } from "@hpcc-js/layout";
 import { map as d3Map } from "d3-collection";
-import * as GoogleMapsLoader from "google-maps";
+import * as _GoogleMapsLoader from "google-maps";
+
+const GoogleMapsLoader = _GoogleMapsLoader.GoogleMapsLoader || _GoogleMapsLoader.default || _GoogleMapsLoader;
 
 import "../src/GMap.css";
 
