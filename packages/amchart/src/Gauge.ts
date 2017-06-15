@@ -1,6 +1,5 @@
 import { I1DChart } from "@hpcc-js/api";
 import { HTMLWidget } from "@hpcc-js/common";
-import "amcharts3/amcharts/amcharts";
 import "amcharts3/amcharts/gauge";
 import { scaleLinear as d3ScaleLinear } from "d3-scale";
 

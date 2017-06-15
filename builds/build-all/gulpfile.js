@@ -1,6 +1,7 @@
 "use strict";
 
 const gulp = require('gulp');
+const fs = require('fs');
 const argv = require('yargs').argv;
 const shell = require('gulp-shell')
 const runSequence = require('run-sequence');
@@ -8,9 +9,9 @@ const rimraf = require('rimraf'); // rimraf directly
 const cpx = require('cpx');
 
 const rollup = require('rollup');
-const nodeResolve = require('rollup-plugin-node-resolve');
+const resolve = require('rollup-plugin-node-resolve');
+const postcss = require('rollup-plugin-postcss');
 const commonjs = require("rollup-plugin-commonjs");
-const css = require('rollup-plugin-css-only');
 const alias = require('rollup-plugin-alias');
 const uglify = require('rollup-plugin-uglify');
 const sourcemaps = require('rollup-plugin-sourcemaps');
@@ -93,11 +94,28 @@ gulp.task("docs", shell.task([
 
 //  Bundle  ---
 var cache;
-function doRollup(entry, dest, format, min, external) {
+function doRollup(entry, dest, format, min, external, _alias) {
+    console.log(dest);
     external = external || [];
+    _alias = _alias || {};
     const plugins = [
-        alias({}),
-        nodeResolve({
+        alias(_alias),
+        resolve({
+            jsnext: true,
+            main: true
+        }),
+        postcss({
+            plugins: [],
+            extensions: ['.css']  // default value
+        }),
+        commonjs({
+            namedExports: {}
+        }),
+        sourcemaps()
+    ];
+    const pluginsxxx = [
+        alias(_alias),
+        resolve({
             jsnext: true,
             main: true
         }),
@@ -109,7 +127,6 @@ function doRollup(entry, dest, format, min, external) {
                 "..\\dgrid\\dist\\dgrid.js": ["Memory", "PagingGrid"]
             }
         }),
-        css({}),
         sourcemaps()
     ];
     if (min) {
@@ -131,6 +148,78 @@ function doRollup(entry, dest, format, min, external) {
         });
     });
 }
+
+const deps = require("./package.json").dependencies;
+const packages = ["@hpcc-js/common", "@hpcc-js/layout", "@hpcc-js/phosphor", "@hpcc-js/api", "@hpcc-js/other", "@hpcc-js/chart", "@hpcc-js/form", "@hpcc-js/c3chart", "@hpcc-js/google", "@hpcc-js/amchart", "@hpcc-js/tree", "@hpcc-js/graph", "@hpcc-js/map", "@hpcc-js/handson", "@hpcc-js/react", "@hpcc-js/composite", "@hpcc-js/marshaller"];  //  Order is important ---
+const exclusions = ["amcharts3", "handsontable", "c3", "d3", "dagre", "colorbrewer", "font-awesome", "simpleheat", "d3-cloud",
+    "@hpcc-js/phosphor-lib"];
+
+gulp.task("build-amd-src", function () {
+    const libLocations = {};
+    const libPackages = {};
+    packages.forEach(function (pckg) {
+        libLocations[pckg] = pckg;
+    });
+    packages.forEach(function (pckg) {
+        const dependencies = require("./node_modules/" + pckg + "/package.json").dependencies;
+        libPackages[pckg] = {
+            entries: [],
+            aliases: {}
+        }
+        libPackages[pckg + "-vendor"] = {
+            isVendor: true,
+            entries: [],
+            aliases: {}
+        }
+        for (var key in dependencies) {
+            if (exclusions.indexOf(key) < 0) {
+                if (libLocations[key]) {
+                    libPackages[pckg].aliases[key] = libLocations[key];
+                } else {
+                    libLocations[key] = pckg + "-vendor";
+                    libPackages[pckg + "-vendor"].entries.push(key);
+                    libPackages[pckg].aliases[key] = pckg + "-vendor";
+                }
+            }
+        }
+    });
+    return new Promise(function (resolve, reject) {
+        rimraf("tmp", function () {
+            resolve();
+        });
+    }).then(function () {
+        fs.mkdirSync("tmp");
+        return Promise.all(
+            Object.keys(libPackages).map(function (pckg) {
+                const libName = pckg.split("/")[1];
+                const libPackage = libPackages[pckg];
+                var externals = {};
+                for (var key in libPackage.aliases) {
+                    externals[libLocations[key]] = true;
+                }
+                if (libPackage.isVendor) {
+                    var indexTs = "";
+                    libPackage.entries.forEach(function (entry) {
+                        indexTs += "export * from \"" + entry + "\";\n";
+                    });
+                    if (indexTs) {
+                        fs.writeFileSync("tmp/" + libName + ".js", indexTs);
+                        return doRollup("tmp/" + libName, "dist/" + libName, "amd", false, Object.keys(externals), libPackage.aliases);
+                    } else {
+                        return Promise.resolve();
+                    }
+                } else {
+                    return doRollup("node_modules/" + pckg + "/lib-es6/index", "dist/" + libName, "amd", false, Object.keys(externals), libPackage.aliases);
+                }
+            }))
+            .then(function (tmp) {
+            })
+            .catch(function (e) {
+                console.log(e.message);
+            });
+    });
+});
+
 
 gulp.task("bundle-browser", function () {
     return Promise.all([

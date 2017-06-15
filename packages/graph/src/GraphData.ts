@@ -1,4 +1,6 @@
-import * as dagre from "dagre";
+import * as _dagre from "dagre";
+
+export const dagre: _dagre = _dagre.dagre || _dagre.default || _dagre;
 
 export class GraphData extends dagre.graphlib.Graph {
     superGraphData: any;  //  Shut the compiler up  ---

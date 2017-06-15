@@ -1,9 +1,9 @@
 import { ITooltip } from "@hpcc-js/api";
 import { INDChart } from "@hpcc-js/api";
 import { HTMLWidget } from "@hpcc-js/common";
-import "amcharts3/amcharts/amcharts";
 import "amcharts3/amcharts/gantt";
 import { timeParse as d3TimeParse } from "d3-time-format";
+import "./CommonSerial";  //  Need to load amcharts/serial
 
 const AmCharts = (window as any).AmCharts;
 

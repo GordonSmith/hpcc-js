@@ -6,7 +6,13 @@
     <title>HPCC Systems - Test</title>
 
     <script src="../../node_modules/requirejs/require.js"></script>
-    <script src="./loader.js"></script>
+    <script>
+        require.config({
+            paths: {
+                "@hpcc-js": "./dist"
+            }
+        });
+    </script>
 
 </head>
 
@@ -15,8 +21,8 @@
     </div>
 
     <script>
-        require(["@hpcc-js/chart"], function (hpccChart) {
-            var chart = new hpccChart.Column()
+        require(["@hpcc-js/tree"], function (hpccChart) {
+            var chart = new hpccChart.Dendrogram()
                 .target("placeholder")
                 .render()
                 ;

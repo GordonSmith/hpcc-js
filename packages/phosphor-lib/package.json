@@ -2,17 +2,17 @@
   "name": "@hpcc-js/phosphor-lib",
   "version": "0.0.13",
   "description": "hpcc-js - Viz Phosphor Library",
-  "main": "build/phosphor-lib.js",
+  "main": "lib/index.js",
+  "module": "lib-es6/index.js",
   "types": "lib/index.d.ts",
   "files": [
     "dist/**/*.js"
   ],
-  "directories": {
-    "dist": "dist/"
-  },
   "scripts": {
-    "build": "tsc -p . && webpack",
-    "clean": "rimraf lib* && rimraf dist"
+    "build": "npm run build-umd && npm run build-es6",
+    "build-umd": "rollup -c -f umd -o lib/index.js",
+    "build-es6": "rollup -c -f es -o lib-es6/index.js",
+    "clean": "rimraf lib* && rimraf dist && rimraf build"
   },
   "dependencies": {
     "@phosphor/algorithm": "^1.1.0",
@@ -22,7 +22,8 @@
   "devDependencies": {
     "rimraf": "^2.6.1",
     "typescript": "^2.3.4",
-    "webpack": "^2.6.1"
+    "cross-env": "^5.0.1",
+    "rollup": "^0.43.0"
   },
   "repository": {
     "type": "git",

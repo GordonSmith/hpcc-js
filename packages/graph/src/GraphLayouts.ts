@@ -1,5 +1,7 @@
 import { forceCenter as d3ForceCenter, forceLink as d3ForceLink, forceManyBody as d3ForceManyBody, forceSimulation as d3ForceSimulation, } from "d3-force";
-import * as dagre from "dagre";
+import * as _dagre from "dagre";
+
+const dagre: _dagre = _dagre.dagre || _dagre.default || _dagre;
 
 export function Circle(graphData?, width?, height?, radius?) {
     const context = this;

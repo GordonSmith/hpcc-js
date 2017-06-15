@@ -1,6 +1,9 @@
 import { range as d3Range } from "d3-array";
-import * as d3Geo from "d3-geo";
+import * as _d3Geo from "d3-geo";
 import { geoAlbers, geoConicEqualArea, } from "d3-geo";
+// import { albersUsaPr } from "./Utility";
+
+const d3Geo = _d3Geo.geo || _d3Geo.default || _d3Geo;
 
 // Origonally ased on geohash.js
 // Geohash library for Javascript
