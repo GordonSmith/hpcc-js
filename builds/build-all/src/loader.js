@@ -66,6 +66,7 @@
                 "d3-timer": "../../../node_modules/d3-timer/build/d3-timer",
                 "d3-time-format": "../../../node_modules/d3-time-format/build/d3-time-format",
                 "d3-tip": "../../../node_modules/d3-tip/lib-browser/index",
+                "d3-tile": "../../../node_modules/d3-tile/build/d3-tile",
                 "d3-transition": "../../../node_modules/d3-transition/build/d3-transition",
                 "d3-zoom": "../../../node_modules/d3-zoom/build/d3-zoom",
                 "dagre": "../../../node_modules/dagre/dist/dagre",

@@ -13,7 +13,7 @@ export * from "./GMapPin";
 export * from "./GMapPinLine";
 export * from "./Graph";
 export * from "./Graticule";
-// export * from "./Heat";
+export * from "./Heat";
 export * from "./IChoropleth";
 export * from "./Layer";
 export * from "./Layered";

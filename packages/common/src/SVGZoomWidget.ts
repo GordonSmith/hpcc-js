@@ -47,6 +47,10 @@ export class SVGZoomWidget extends SVGWidget {
         return this._zoomTranslate;
     }
 
+    zoomExtent(range): void {
+        this._zoom.scaleExtent(range);
+    }
+
     zoomTo(translate, scale, transitionDuration = 250) {
         translate = translate || this._zoom.translate();
         scale = scale || this._zoom.scale();

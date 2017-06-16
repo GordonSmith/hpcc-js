@@ -128,7 +128,6 @@ export class Pins extends Layer {
 
     layerZoomed(base) {
         Layer.prototype.layerZoomed.apply(this, arguments);
-        console.log(base.zoomScale());
         this.pinsPaths
             .attr("transform", function (d) {
                 let pos = base.project(d.lat, d.long);

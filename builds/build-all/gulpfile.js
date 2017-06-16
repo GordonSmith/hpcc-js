@@ -66,6 +66,10 @@ gulp.task("copy-css", shell.task([
     cpx.copySync("test/**/*.css", "lib-test-es6/test/")
 ]));
 
+gulp.task("copy-json", shell.task([
+    cpx.copySync("node_modules/@hpcc-js/map/TopoJSON/*.*", "dist/map/TopoJSON/")
+]));
+
 //  Compile  ---
 gulp.task("compile-src", ["copy-css"], shell.task([
     "tsc -p ./tsconfig.json"
