@@ -21,7 +21,8 @@
     "@hpcc-js/util": "^0.0.14",
     "d3-request": "^1.0.5",
     "safe-buffer": "^5.0.1",
-    "tslib": "^1.7.1"
+    "tslib": "^1.7.1",
+    "xmldom": "^0.1.27"
   },
   "devDependencies": {
     "@types/d3-request": "^1.0.2",
