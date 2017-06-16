@@ -289,60 +289,6 @@ export class Geohash {
 
 }
 
-export function Tile() {
-    let size = [960, 500];
-    let scale = 256;
-    let translate = [size[0] / 2, size[1] / 2];
-    let zoomDelta = 0;
-
-    const tile: any = function () {
-        const z = Math.max(Math.log(scale) / Math.LN2 - 8, 0);
-        const z0 = Math.round(z + zoomDelta);
-        const k = Math.pow(2, z - z0 + 8);
-        const origin = [(translate[0] - scale / 2) / k, (translate[1] - scale / 2) / k];
-        const tiles: any = [];
-        const cols = d3Range(Math.max(0, Math.floor(-origin[0])), Math.max(0, Math.ceil(size[0] / k - origin[0])));
-        const rows = d3Range(Math.max(0, Math.floor(-origin[1])), Math.max(0, Math.ceil(size[1] / k - origin[1])));
-
-        rows.forEach(function (y) {
-            cols.forEach(function (x) {
-                tiles.push([x, y, z0]);
-            });
-        });
-
-        tiles.translate = origin;
-        tiles.scale = k;
-
-        return tiles;
-    };
-
-    tile.size = function (_) {
-        if (!arguments.length) return size;
-        size = _;
-        return tile;
-    };
-
-    tile.scale = function (_) {
-        if (!arguments.length) return scale;
-        scale = _;
-        return tile;
-    };
-
-    tile.translate = function (_) {
-        if (!arguments.length) return translate;
-        translate = _;
-        return tile;
-    };
-
-    tile.zoomDelta = function (_) {
-        if (!arguments.length) return zoomDelta;
-        zoomDelta = +_;
-        return tile;
-    };
-
-    return tile;
-}
-
 // A modified d3.geo.albersUsa to include Puerto Rico.
 export function albersUsaPr() {
     const ε = 1e-6;

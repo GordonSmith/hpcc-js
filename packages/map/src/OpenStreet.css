@@ -2,8 +2,10 @@
     fill: white;
 }
 
-.map_OpenStreet .raster image {
-}
+.map_Layered rect {
+  stroke: red;
+  fill:skyblue;
+  }
 
 .map_OpenStreet .graticule {
   fill: none;

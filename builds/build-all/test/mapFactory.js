@@ -19,7 +19,7 @@
             graticule: true,
             heat: true
         };
-        require(["test/DataFactory", gmapFlag ? "src/map/GMapLayered" : "src/map/Layered", "src/map/OpenStreet", "src/map/ChoroplethContinents", "src/map/ChoroplethCountries", "src/map/ChoroplethStates", "src/map/TopoJSONChoropleth", "src/map/ChoroplethCounties", "src/map/Graticule", "src/map/GeoHash", "src/map/Graph", "src/map/Heat"], function (DataFactory, Base, OpenStreet, ChoroplethContinents, ChoroplethCountries, ChoroplethStates, TopoJSONChoropleth, ChoroplethCounties, Graticule, GeoHash, Pins, Heat) {
+        legacyRequire(["test/DataFactory", gmapFlag ? "src/map/GMapLayered" : "src/map/Layered", "src/map/OpenStreet", "src/map/ChoroplethContinents", "src/map/ChoroplethCountries", "src/map/ChoroplethStates", "src/map/TopoJSONChoropleth", "src/map/ChoroplethCounties", "src/map/Graticule", "src/map/GeoHash", "src/map/Graph", "src/map/Heat"], function (DataFactory, Base, OpenStreet, ChoroplethContinents, ChoroplethCountries, ChoroplethStates, TopoJSONChoropleth, ChoroplethCounties, Graticule, GeoHash, Pins, Heat) {
             function Sample() {
                 Base.call(this);
 

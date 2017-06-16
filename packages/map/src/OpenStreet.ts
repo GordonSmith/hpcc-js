@@ -1,5 +1,11 @@
-﻿import { Layer } from "./Layer";
-import * as Utility from "./Utility";
+﻿import { select as d3Select } from "d3-selection";
+import { tile as d3Tile } from "d3-tile";
+import { Layer } from "./Layer";
+
+// import * as Utility from "./Utility";
+
+// tslint:disable-next-line:no-bitwise
+const constScale = 1 << 12;
 
 import "../src/OpenStreet.css";
 
@@ -7,11 +13,12 @@ export class OpenStreet extends Layer {
     static _copyrightText = "© OpenStreetMap contributors";
 
     _tile;
-    _openStreetTransform;
     _openStreet;
     _copyright;
     _copyrightBBox;
     _prevTileProvider;
+    _zoomLayerID: number = 0;
+    _prevZoomLevel;
 
     constructor() {
         super();
@@ -20,10 +27,9 @@ export class OpenStreet extends Layer {
 
     layerEnter(base, svgElement, domElement) {
         Layer.prototype.layerEnter.apply(this, arguments);
+        base.zoomExtent([0.1, constScale * 4]);
 
-        this._tile = Utility.Tile();
-        this._openStreetTransform = svgElement.append("g");
-        this._openStreet = this._openStreetTransform.append("g");
+        this._openStreet = svgElement.append("g");
         this._copyright = svgElement.append("text")
             .attr("x", -100)
             .attr("y", -100)
@@ -34,6 +40,9 @@ export class OpenStreet extends Layer {
     }
 
     layerUpdate(base) {
+        this._tile = d3Tile()
+            .size([base.width(), base.height()])
+            .wrap(false);
         if (!this.visible()) {
             this._copyright.text("");
         } else {
@@ -47,70 +56,64 @@ export class OpenStreet extends Layer {
     }
 
     layerZoomed(base) {
-        let tiles: any = {};
-        if (this.visible()) {
-            let maxSize = base.project(-85, 180);
-            if (!maxSize || maxSize[0] <= 0 || maxSize[1] <= 0) {
-                maxSize = [base.width(), base.height()];
-            }
-            const translate = base.zoomTranslate();
-            //            translate[0] -= base.width() / 2;
-            //            translate[1] -= base.height() / 2;
-            const scale = base.zoomScale();
-            this._tile
-                .size([Math.min(base.width(), maxSize[0]), Math.min(base.height(), maxSize[1])])
-                .translate(translate)
-                // tslint:disable-next-line:no-bitwise
-                .scale(scale * (1 << 12))
-                ;
-            tiles = this._tile();
-            tiles.translate[0] /= scale;
-            tiles.translate[1] /= scale;
-            tiles.scale /= scale;
-            this._openStreetTransform
-                .attr("transform", "scale(" + tiles.scale + ")translate(" + tiles.translate + ")")
-                ;
+        const scale = base.zoomScale();
+        const transform = base.zoomTranslate();
+        const tiles = this._tile
+            .scale(scale * constScale)
+            .translate(transform)
+            ();
+
+        const tilesScale = tiles.scale / scale;
+        const tilesTranslate = [
+            tiles.translate[0] / tiles.scale,
+            tiles.translate[1] / tiles.scale
+        ];
+
+        const zoomLevel = Math.round(tilesScale * 1000);
+        if (this._prevZoomLevel !== zoomLevel) {
+            this._prevZoomLevel = zoomLevel;
+            this._zoomLayerID++;
         }
-        if (this._prevTileProvider !== this.tileProvider()) {
-            this._openStreet.selectAll("image").remove();
-            this._prevTileProvider = this.tileProvider();
-        }
-        const context = this;
-        const protocol = window.location.protocol === "https:" ? "https:" : "http:";
-        const image = this._openStreet.selectAll("image").data(tiles, function (d) { return d[2] + "/" + d[0] + "/" + d[1]; });
-        image.enter().append("image")
-            .attr("xlink:href", function (d) {
-                switch (context.tileProvider()) {
-                    case "OpenStreetMap Hot":
-                        // tslint:disable-next-line:no-bitwise
-                        return protocol + "//" + ["a", "b", "c"][Math.random() * 3 | 0] + ".tile.openstreetmap.fr/hot/" + d[2] + "/" + d[0] + "/" + d[1] + ".png";
-                    case "MapQuest":
-                        // tslint:disable-next-line:no-bitwise
-                        return protocol + "//otile" + ["1", "2", "3", "4"][Math.random() * 4 | 0] + ".mqcdn.com/tiles/1.0.0/osm/" + d[2] + "/" + d[0] + "/" + d[1] + ".png";
-                    case "MapQuest Sat":
-                        // tslint:disable-next-line:no-bitwise
-                        return protocol + "//otile" + ["1", "2", "3", "4"][Math.random() * 4 | 0] + ".mqcdn.com/tiles/1.0.0/sat/" + d[2] + "/" + d[0] + "/" + d[1] + ".png";
-                    case "Stamen Watercolor":
-                        // tslint:disable-next-line:no-bitwise
-                        return protocol + "//" + ["a", "b", "c"][Math.random() * 3 | 0] + ".tile.stamen.com/watercolor/" + d[2] + "/" + d[0] + "/" + d[1] + ".png";
-                    case "OpenCycleMap":
-                        // tslint:disable-next-line:no-bitwise
-                        return protocol + "//" + ["a", "b"][Math.random() * 2 | 0] + ".tile.opencyclemap.org/cycle/" + d[2] + "/" + d[0] + "/" + d[1] + ".png";
-                    default:
-                        // tslint:disable-next-line:no-bitwise
-                        return protocol + "//" + ["a", "b", "c"][Math.random() * 3 | 0] + ".tile.openstreetmap.org/" + d[2] + "/" + d[0] + "/" + d[1] + ".png";
-                }
+        const scaleG = this._openStreet.selectAll(".scaleG").data([this._zoomLayerID], d => d);
+        const scaleGUpdate = scaleG.enter().append("g")
+            .attr("class", "scaleG")
+            .attr("transform", stringify(tilesScale, tilesTranslate))
+            .each(function (d) {
+                console.log(d);
             })
-            .attr("width", 1)
-            .attr("height", 1)
-            .attr("x", function (d) { return d[0]; })
-            .attr("y", function (d) { return d[1]; })
-            .style("opacity", 0.0)
+            .merge(scaleG)
+            ;
+        scaleG.exit()
+            .style("opacity", 1)
+            .transition().duration(1000)
+            .style("opacity", 0)
+            .on("end", function (d) {
+                d3Select(this).selectAll(".image")
+                    .attr("xlink:href", null)
+                    ;
+            })
+            .remove();
+
+        const image = scaleGUpdate
+            .selectAll(".image")
+            .data(tiles, function (d) {
+                return "" + d.x + "," + d.y;
+            })
+            ;
+
+        image.enter().append("image")
+            .attr("class", "image")
+            .style("opacity", 0)
+            .attr("x", function (d) { return d.tx; })
+            .attr("y", function (d) { return d.ty; })
+            .attr("width", 256)
+            .attr("height", 256)
+            .attr("xlink:href", function (d) { return "http://" + "abc"[d.y % 3] + ".tile.openstreetmap.org/" + d.z + "/" + d.x + "/" + d.y + ".png"; })
+            .each(function (d) {
+                console.log("http://" + "abc"[d.y % 3] + ".tile.openstreetmap.org/" + d.z + "/" + d.x + "/" + d.y + ".png");
+            })
             .transition().duration(500)
             .style("opacity", 1)
-            ;
-        image.exit()
-            .remove()
             ;
     }
 
@@ -120,3 +123,8 @@ export class OpenStreet extends Layer {
 OpenStreet.prototype._class += " map_OpenStreet";
 
 OpenStreet.prototype.publish("tileProvider", "OpenStreetMap", "set", "Tile Provider", ["OpenStreetMap", "OpenStreetMap Hot", "MapQuest", "MapQuest Sat", "Stamen Watercolor", "OpenCycleMap"], { tags: ["Basic", "Shared"] });
+
+function stringify(scale, translate) {
+    const k = scale / 256;
+    return "translate(" + -constScale / 2 + "," + -constScale / 2 + ") scale(" + k + ")";
+}

@@ -1,4 +1,3 @@
-import { select as d3Select } from "d3-selection";
 import { Pins } from "./Pins";
 
 import "../src/Graph.css";
@@ -6,11 +5,11 @@ import "../src/Graph.css";
 export class Graph extends Pins {
     dataEdges;
     _edgesTransform;
-    edgesPaths;
 
     constructor() {
         super();
     }
+
     data(_) {
         const retVal = Pins.prototype.data.apply(this, arguments);
         if (arguments.length) {
@@ -46,9 +45,9 @@ export class Graph extends Pins {
             .attr("points", "0,0 10,5 0,10 1,5")
             ;
         this._edgesTransform = svgElement.append("g");
-        this.edgesPaths = d3Select(null);
     }
 
+    _edgesPaths;
     layerUpdate(base) {
         Pins.prototype.layerUpdate.apply(this, arguments);
 
@@ -56,22 +55,20 @@ export class Graph extends Pins {
             .style("opacity", this.opacity())
             ;
 
-        this.edgesPaths = this._edgesTransform.selectAll(".dataEdge").data(this.visible() ? this.dataEdges : []);
-        this.edgesPaths.enter().append("path")
+        const edgesPaths = this._edgesTransform.selectAll(".dataEdge").data(this.visible() ? this.dataEdges : []);
+        this._edgesPaths = edgesPaths.enter().append("path")
             .attr("class", "dataEdge")
             .attr("marker-end", "url(#" + this._id + "_arrowHead)")
-            ;
-        this.edgesPaths
+            .merge(edgesPaths)
             .attr("d", base._d3GeoPath)
             ;
-        this.edgesPaths.exit().remove();
+        edgesPaths.exit().remove();
     }
 
     layerZoomed(base) {
         Pins.prototype.layerZoomed.apply(this, arguments);
-        this._edgesTransform
-            .attr("transform", "translate(" + base._zoom.translate() + ")scale(" + base._zoom.scale() + ")")
-            .style("stroke-width", 0.5 / base._zoom.scale() + "px")
+        this._edgesPaths
+            .attr("stroke-width", `${0.5 / base.zoomScale()}px`)
             ;
     }
 
