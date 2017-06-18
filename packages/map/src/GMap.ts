@@ -3,7 +3,7 @@ import { AbsoluteSurface } from "@hpcc-js/layout";
 import { map as d3Map } from "d3-collection";
 import * as _GoogleMapsLoader from "google-maps";
 
-const GoogleMapsLoader = _GoogleMapsLoader.GoogleMapsLoader || _GoogleMapsLoader.default || _GoogleMapsLoader;
+const GoogleMapsLoader = _GoogleMapsLoader.default || _GoogleMapsLoader;
 
 import "../src/GMap.css";
 

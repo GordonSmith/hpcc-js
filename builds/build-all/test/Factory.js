@@ -22,14 +22,22 @@
         })
     };
     if (typeof define === "function" && define.amd) {
-        define(["d3-collection", "require", "@hpcc-js/other", "./amchartFactory", "./c3chartFactory", "./chartFactory", "./compositeFactory", "./commonFactory", "./formFactory", "./googleFactory", "./graphFactory", "./layoutFactory", "./phosphorFactory", "./mapFactory", "./marshallerFactory", "./otherFactory", "./treeFactory", "./templatesFactory", "./handsonFactory", "./reactFactory"], factory);
+        define(["d3-collection", "require", "@hpcc-js/other", "./amchartFactory", "./c3chartFactory", "./chartFactory", "./compositeFactory", "./commonFactory",
+            "./formFactory", "./googleFactory", "./graphFactory", "./layoutFactory", "./phosphorFactory", "./mapFactory", "./marshallerFactory", "./otherFactory",
+            "./treeFactory", "./templatesFactory", "./dgridFactory", "./handsonFactory", "./reactFactory"], factory);
     }
-}(this, function (d3Collection, require, hpccOther, amchartFactory, c3chartFactory, chartFactory, compositeFactory, commonFactory, formFactory, googleFactory, graphFactory, layoutFactory, phosphorFactory, mapFactory, marshallerFactory, otherFactory, treeFactory, templatesFactory, handsonFactory, reactFactory) {
+}(this, function (d3Collection, require, hpccOther, amchartFactory, c3chartFactory, chartFactory, compositeFactory, commonFactory,
+    formFactory, googleFactory, graphFactory, layoutFactory, phosphorFactory, mapFactory, marshallerFactory, otherFactory,
+    treeFactory, templatesFactory, dgridFactory, handsonFactory, reactFactory) {
     var d3 = {
         map: d3Collection.map
     };
     var Persist = hpccOther.Persist;
-    var bundles = { common: commonFactory, chart: chartFactory, amchart: amchartFactory, google: googleFactory, c3chart: c3chartFactory, composite: compositeFactory, map: mapFactory, tree: treeFactory, graph: graphFactory, other: otherFactory, form: formFactory, layout: layoutFactory, phosphor: phosphorFactory, marshaller: marshallerFactory, templates: templatesFactory, handson: handsonFactory, react: reactFactory };
+    var bundles = {
+        common: commonFactory, chart: chartFactory, amchart: amchartFactory, google: googleFactory, c3chart: c3chartFactory, composite: compositeFactory,
+        map: mapFactory, tree: treeFactory, graph: graphFactory, other: otherFactory, form: formFactory, layout: layoutFactory, phosphor: phosphorFactory,
+        marshaller: marshallerFactory, templates: templatesFactory, dgrid: dgridFactory, handson: handsonFactory, react: reactFactory
+    };
     var bundlesCatMap = {};
     var bundlesWidgetMap = {};
     d3.map(bundles).entries().forEach(function (bundle) {

@@ -66,10 +66,6 @@ gulp.task("copy-css", shell.task([
     cpx.copySync("test/**/*.css", "lib-test-es6/test/")
 ]));
 
-gulp.task("copy-json", shell.task([
-    cpx.copySync("node_modules/@hpcc-js/map/TopoJSON/*.*", "dist/map/TopoJSON/")
-]));
-
 //  Compile  ---
 gulp.task("compile-src", ["copy-css"], shell.task([
     "tsc -p ./tsconfig.json"
@@ -97,38 +93,43 @@ gulp.task("docs", shell.task([
 ]));
 
 //  Bundle  ---
+gulp.task("copy-json", shell.task([
+    cpx.copySync("node_modules/@hpcc-js/map/TopoJSON/*.*", "dist/map/TopoJSON/"),
+    cpx.copySync("node_modules/@hpcc-js/dgrid-lib/dist/dgrid-lib.js", "dist"),
+]));
+
+const deps = require("./package.json").dependencies;
+const packagesxxx = [
+    "@hpcc-js/common", "@hpcc-js/dgrid"
+];  //  Order is important ---
+const packages = [
+    "@hpcc-js/common", "@hpcc-js/layout", "@hpcc-js/phosphor", "@hpcc-js/api", "@hpcc-js/dgrid", "@hpcc-js/other", "@hpcc-js/chart", "@hpcc-js/form",
+    "@hpcc-js/c3chart", "@hpcc-js/google", "@hpcc-js/amchart", "@hpcc-js/tree", "@hpcc-js/graph", "@hpcc-js/map",
+    "@hpcc-js/handson", "@hpcc-js/react", "@hpcc-js/composite", "@hpcc-js/marshaller", "@hpcc-js/ddl", "@hpcc-js/html", "@hpcc-js/codemirror"
+];  //  Order is important ---
+const exclusions = ["amcharts3", "handsontable", "c3", "d3", "dagre", "colorbrewer", "font-awesome", "simpleheat", "d3-cloud",
+    "google-maps", "@hpcc-js/codemirror-shim", "@hpcc-js/dgrid-shim", "@hpcc-js/phosphor-shim", "@hpcc-js/preact-shim"];
+
 var cache;
 function doRollup(entry, dest, format, min, external, _alias) {
     console.log(dest);
     external = external || [];
     _alias = _alias || {};
+    _alias.ajv = "../../node_modules/ajv/dist/ajv.bundle.js";
     const plugins = [
         alias(_alias),
         resolve({
             jsnext: true,
-            main: true
+            main: true,
+            preferBuiltins: true
         }),
         postcss({
             plugins: [],
             extensions: ['.css']  // default value
         }),
         commonjs({
-            namedExports: {}
-        }),
-        sourcemaps()
-    ];
-    const pluginsxxx = [
-        alias(_alias),
-        resolve({
-            jsnext: true,
-            main: true
-        }),
-        commonjs({
             namedExports: {
-                "dagre": ["graphlib", "layout"],
-                "react": ["Component", "createElement"],
-                "react-dom": ["render"],
-                "..\\dgrid\\dist\\dgrid.js": ["Memory", "PagingGrid"]
+                "..\\..\\shims\\dgrid-shim\\dist\\dgrid-shim.js": ["Memory", "PagingGrid"]
             }
         }),
         sourcemaps()
@@ -139,7 +140,7 @@ function doRollup(entry, dest, format, min, external, _alias) {
 
     return rollup.rollup({
         entry: entry + ".js",
-        external: external,
+        external: ["@hpcc-js/dgrid-lib"].concat(external),
         cache: cache,
         plugins: plugins
     }).then(function (bundle) {
@@ -149,16 +150,15 @@ function doRollup(entry, dest, format, min, external, _alias) {
             moduleName: "HPCCViz",
             dest: dest + (min ? ".min" : "") + ".js",
             sourceMap: true
+        }).catch((e) => {
+            console.log(e.message);
         });
+    }).catch((e) => {
+        console.log(e.message);
     });
 }
 
-const deps = require("./package.json").dependencies;
-const packages = ["@hpcc-js/common", "@hpcc-js/layout", "@hpcc-js/phosphor", "@hpcc-js/api", "@hpcc-js/other", "@hpcc-js/chart", "@hpcc-js/form", "@hpcc-js/c3chart", "@hpcc-js/google", "@hpcc-js/amchart", "@hpcc-js/tree", "@hpcc-js/graph", "@hpcc-js/map", "@hpcc-js/handson", "@hpcc-js/react", "@hpcc-js/composite", "@hpcc-js/marshaller"];  //  Order is important ---
-const exclusions = ["amcharts3", "handsontable", "c3", "d3", "dagre", "colorbrewer", "font-awesome", "simpleheat", "d3-cloud",
-    "@hpcc-js/phosphor-lib"];
-
-gulp.task("build-amd-src", function () {
+gulp.task("build-amd-src", ["copy-json"], function () {
     const libLocations = {};
     const libPackages = {};
     packages.forEach(function (pckg) {

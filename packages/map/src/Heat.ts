@@ -36,15 +36,7 @@ export class Heat extends Layer {
             .style("height", base.height() + "px")
             ;
         this.heat.resize(base.size());
-
-        this.heat
-            .columns(this.columns())
-            .data(this.data().map(function (row) {
-                const pos = base.project(row[0], row[1]);
-                return [pos[0], pos[1], row[4]];
-            }))
-            .render()
-            ;
+        this.layerZoomed(base);
     }
 
     layerExit(base) {
@@ -58,8 +50,12 @@ export class Heat extends Layer {
         this.heat
             .columns(this.columns())
             .data(this.visible() ? this.data().map(function (row) {
+                const transform = base.zoomTranslate();
                 const pos = base.project(row[0], row[1]);
-                return [pos[0], pos[1], row[4]];
+                const scale = base.zoomScale();
+                pos[0] *= scale;
+                pos[1] *= scale;
+                return [transform[0] + pos[0], transform[1] + pos[1], row[4]];
             }) : [])
             .render()
             ;

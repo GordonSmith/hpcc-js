@@ -1,5 +1,5 @@
 import { HTMLWidget, SVGWidget, Widget } from "@hpcc-js/common";
-import { DockPanel as PDockPanel, Widget as PWidget } from "@hpcc-js/phosphor-lib";
+import { DockPanel as PDockPanel, Widget as PWidget } from "@hpcc-js/phosphor-shim";
 
 import { WidgetAdapter } from "./WidgetAdapter";
 

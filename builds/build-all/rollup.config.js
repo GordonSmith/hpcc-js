@@ -8,28 +8,32 @@ const uglify = require('rollup-plugin-uglify');
 const sourcemaps = require('rollup-plugin-sourcemaps');
 
 export default {
-    entry: 'node_modules/@hpcc-js/api/lib-es6/index.js',
-    format: 'umd',
-    moduleName: "hpcc-viz-api",
-    dest: 'dist/api.js',
+    entry: 'node_modules/@hpcc-js/dgrid/lib-es6/index.js',
+    format: 'amd',
+    moduleName: "HPCCViz",
+    external: [
+        "@hpcc-js/common",
+        "@hpcc-js/common-vendor"
+    ],
+    dest: 'dist/dgrid.js',
     plugins: [
-        resolve({
-            jsnext: false,
-            main: true
+        alias({
+            "@hpcc-js/common": "@hpcc-js/common",
+            "d3-selection": "@hpcc-js/common-vendor",
+            "tslib": "@hpcc-js/common-vendor"
         }),
-        postcss({
-            plugins: [
-                // cssnext(),
-                // yourPostcssPlugin()
-            ],
-            //sourceMap: false, // default value
-            //extract: false, // default value
-            extensions: ['.css']  // default value
-            // parser: sugarss
+        resolve({
+            jsnext: true,
+            main: true
         }),
         commonjs({
             namedExports: {
+                "..\\..\\packages\\dgrid-lib\\dist\\dgrid-lib.js": ["Memory", "PagingGrid"]
             }
-        })
+        }),
+        postcss({
+            extensions: ['.css']  // default value
+        }),
+        sourcemaps()
     ]
 };

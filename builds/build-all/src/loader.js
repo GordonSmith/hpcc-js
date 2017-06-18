@@ -32,10 +32,12 @@
                 "text": "../node_modules/requirejs-text/text",
                 "json": "../node_modules/requirejs-plugins/src/json",
 
+                "ajv": "../../../node_modules/ajv/dist/ajv.bundle",
                 "amcharts3": "../../../node_modules/amcharts3",
                 "amchartsImg": "../../../node_modules/amcharts3/amcharts/images/",
                 "colorbrewer": "../../../node_modules/colorbrewer/colorbrewer",
                 "c3": "../../../node_modules/c3",
+                "codemirror": "../../../node_modules/codemirror",
                 "d3": "../../../node_modules/d3/d3",
                 "d3-array": "../../../node_modules/d3-array/build/d3-array",
                 "d3-axis": "../../../node_modules/d3-axis/build/d3-axis",
@@ -83,21 +85,29 @@
                 "topojson": "../../../node_modules/topojson/build/topojson",
                 "tslib": "../../../node_modules/tslib/tslib",
 
+                "@hpcc-js/codemirror-shim": "../node_modules/@hpcc-js/codemirror-shim",
+                "@hpcc-js/dgrid-shim": "../node_modules/@hpcc-js/dgrid-shim",
+                "@hpcc-js/phosphor-shim": "../node_modules/@hpcc-js/phosphor-shim",
+                "@hpcc-js/preact-shim": "../node_modules/@hpcc-js/preact-shim",
+
                 "@hpcc-js/amchart": "../node_modules/@hpcc-js/amchart",
                 "@hpcc-js/api": "../node_modules/@hpcc-js/api",
                 "@hpcc-js/c3chart": "../node_modules/@hpcc-js/c3chart",
                 "@hpcc-js/chart": "../node_modules/@hpcc-js/chart",
+                "@hpcc-js/codemirror": "../node_modules/@hpcc-js/codemirror",
                 "@hpcc-js/common": "../node_modules/@hpcc-js/common",
                 "@hpcc-js/composite": "../node_modules/@hpcc-js/composite",
+                "@hpcc-js/ddl": "../node_modules/@hpcc-js/ddl",
+                "@hpcc-js/dgrid": "../node_modules/@hpcc-js/dgrid",
                 "@hpcc-js/form": "../node_modules/@hpcc-js/form",
                 "@hpcc-js/google": "../node_modules/@hpcc-js/google",
                 "@hpcc-js/graph": "../node_modules/@hpcc-js/graph",
                 "@hpcc-js/handson": "../node_modules/@hpcc-js/handson",
+                "@hpcc-js/html": "../node_modules/@hpcc-js/html",
                 "@hpcc-js/layout": "../node_modules/@hpcc-js/layout",
                 "@hpcc-js/map": "../node_modules/@hpcc-js/map",
                 "@hpcc-js/marshaller": "../node_modules/@hpcc-js/marshaller",
                 "@hpcc-js/other": "../node_modules/@hpcc-js/other",
-                "@hpcc-js/phosphor-lib": "../node_modules/@hpcc-js/phosphor-lib",
                 "@hpcc-js/phosphor": "../node_modules/@hpcc-js/phosphor",
                 "@hpcc-js/react": "../node_modules/@hpcc-js/react",
                 "@hpcc-js/timeline": "../node_modules/@hpcc-js/timeline",
@@ -106,6 +116,10 @@
                 "src": "../src"
             },
             packages: [
+                { name: "@hpcc-js/codemirror-shim", main: "dist/codemirror-shim" },
+                { name: "@hpcc-js/dgrid-shim", main: "dist/dgrid-shim" },
+                { name: "@hpcc-js/phosphor-shim", main: "dist/phosphor-shim" },
+                { name: "@hpcc-js/preact-shim", main: "dist/preact-shim" },
                 {
                     name: "@phosphor/algorithm",
                     main: "lib/index"
@@ -131,11 +145,23 @@
                     main: "lib/index"
                 },
                 {
+                    name: "@hpcc-js/codemirror",
+                    main: "lib/index"
+                },
+                {
                     name: "@hpcc-js/common",
                     main: "lib/index"
                 },
                 {
                     name: "@hpcc-js/composite",
+                    main: "lib/index"
+                },
+                {
+                    name: "@hpcc-js/ddl",
+                    main: "lib/index"
+                },
+                {
+                    name: "@hpcc-js/dgrid",
                     main: "lib/index"
                 },
                 {
@@ -155,6 +181,10 @@
                     main: "lib/index"
                 },
                 {
+                    name: "@hpcc-js/html",
+                    main: "lib/index"
+                },
+                {
                     name: "@hpcc-js/layout",
                     main: "lib/index"
                 },
@@ -168,10 +198,6 @@
                 },
                 {
                     name: "@hpcc-js/other",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/phosphor-lib",
                     main: "lib/index"
                 },
                 {
