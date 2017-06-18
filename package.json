@@ -3,7 +3,7 @@
   "version": "2.0.0-dev",
   "description": "HPCC Visualization Framework",
   "scripts": {
-    "uninstall": "lerna clean && rimraf ./node_modules",
+    "uninstall": "lerna clean",
     "install": "lerna bootstrap --hoist",
     "install2": "lerna bootstrap",
     "clean": "lerna run clean && rimraf ./lib*",
@@ -11,7 +11,7 @@
     "build:src": "lerna run build --ignore \"@hpcc-js/test-*\" --ignore \"@hpcc-js/build-*\" --ignore \"@hpcc-js/sample-*\"",
     "watch:src": "lerna exec --parallel --ignore \"@hpcc-js/*-lib\" --ignore \"@hpcc-js/test-*\" --ignore \"@hpcc-js/build-*\" --ignore \"@hpcc-js/sample-*\" -- tsc -w ",
     "build:src-es6": "lerna exec --ignore \"@hpcc-js/*-lib\" --ignore \"@hpcc-js/test-*\" --ignore \"@hpcc-js/build-*\" --ignore \"@hpcc-js/sample-*\" -- tsc --module es6 --outDir ./lib-es6",
-    "watch:src-es6": "lerna exec --parallel --ignore \"@hpcc-js/*-lib\" --ignore \"@hpcc-js/test-*\" --ignore \"@hpcc-js/build-*\" --ignore \"@hpcc-js/sample-*\" -- tsc -w --module es6 --outDir ./lib-es6",
+    "watch:src-es6": "lerna exec --parallel --ignore \"@hpcc-js/*-shim\" --ignore \"@hpcc-js/test-*\" --ignore \"@hpcc-js/build-*\" --ignore \"@hpcc-js/sample-*\" -- tsc -w --module es6 --outDir ./lib-es6",
     "test": "lerna run test --scope \"@hpcc-js/test-*\"",
     "test:chrome": "lerna run test:chrome --scope \"@hpcc-js/test-*\"",
     "test:firefox": "lerna run test:firefox --scope \"@hpcc-js/test-*\"",

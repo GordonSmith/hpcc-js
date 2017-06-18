@@ -1,5 +1,5 @@
 import { HTMLWidget, SVGWidget } from "@hpcc-js/common";
-import { Message, Widget } from "@hpcc-js/phosphor-lib";
+import { Message, Widget } from "@hpcc-js/phosphor-shim";
 import { select as d3Select } from "d3-selection";
 
 import "../src/WidgetAdapter.css";

@@ -1,0 +1,37 @@
+{
+  "name": "@hpcc-js/codemirror-shim",
+  "version": "0.0.1",
+  "description": "hpcc-js - codemirror shim",
+  "main": "dist/codemirror-shim.js",
+  "module": "dist/codemirror-shim.es6.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*.js"
+  ],
+  "scripts": {
+    "build": "npm run build-umd && npm run build-es6",
+    "build-umd": "rollup -c -f umd -o dist/codemirror-shim.js",
+    "build-es6": "rollup -c -f es -o dist/codemirror-shim.es6.js",
+    "clean": "rimraf dist* && rimraf dist && rimraf build"
+  },
+  "dependencies": {
+    "codemirror": "^5.26.0"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.1",
+    "typescript": "^2.3.4",
+    "cross-env": "^5.0.1",
+    "rollup": "^0.43.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hpcc-systems/Visualization.git"
+  },
+  "author": "Gordon Smith <gordonjsmith@gmail.com>",
+  "contributors": [],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hpcc-systems/Visualization/issues"
+  },
+  "homepage": "https://github.com/hpcc-systems/Visualization"
+}

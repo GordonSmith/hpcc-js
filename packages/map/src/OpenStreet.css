@@ -2,18 +2,12 @@
     fill: white;
 }
 
-.map_Layered rect {
-  stroke: red;
-  fill:skyblue;
-  }
-
 .map_OpenStreet .graticule {
   fill: none;
   stroke: #777;
   stroke-width: .5px;
   stroke-opacity: .5;
 }
-
 
 .map_Layered .vector {
   fill: none;

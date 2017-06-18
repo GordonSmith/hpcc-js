@@ -9,8 +9,8 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 export default {
     entry: 'src/index.js',
     format: 'umd',
-    moduleName: "phosphor-lib",
-    dest: 'lib/index.js',
+    moduleName: "hpcc-js-codemirror-shim",
+    dest: 'dist/codemirror-shim.js',
     plugins: [
         resolve({
             jsnext: true,
@@ -22,7 +22,6 @@ export default {
         }),
         commonjs({
             namedExports: {
-                "@phosphor/widgets": ["Widget", "DockPanel"]
             }
         }),
         sourcemaps()

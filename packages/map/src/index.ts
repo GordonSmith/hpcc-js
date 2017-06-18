@@ -7,7 +7,7 @@ export * from "./ChoroplethStatesHeat";
 export * from "./GeoHash";
 export * from "./GMap";
 export * from "./GMapGraph";
-// export * from "./GMapHeat";
+export * from "./GMapHeat";
 export * from "./GMapLayered";
 export * from "./GMapPin";
 export * from "./GMapPinLine";
