@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
     <link rel="stylesheet" href="https://rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
-    <script src="https://rawgit.com/jrburke/requirejs/2.2.0/require.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
     <!--
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
@@ -35,43 +35,38 @@
     <link href="./dermatology.css" rel="stylesheet">
 
     <script>
-        require.config({
+        var config = {
             paths: {
-                "@hpcc-js": "../dist",
-                "d3-array": "../../../node_modules/d3-array/build/d3-array",
-                "d3-axis": "../../../node_modules/d3-axis/build/d3-axis",
-                "@hpcc-js/d3-bullet": "../../../node_modules/@hpcc-js/d3-bullet/build/d3-bullet",
-                "d3-brush": "../../../node_modules/d3-brush/build/d3-brush",
-                "d3-cloud": "../../../node_modules/d3-cloud/build/d3.layout.cloud",
-                "d3-dsv": "../../../node_modules/d3-dsv/build/d3-dsv",
-                "d3-collection": "../../../node_modules/d3-collection/build/d3-collection",
-                "d3-color": "../../../node_modules/d3-color/build/d3-color",
-                "d3-dispatch": "../../../node_modules/d3-dispatch/build/d3-dispatch",
-                "d3-drag": "../../../node_modules/d3-drag/build/d3-drag",
-                "d3-ease": "../../../node_modules/d3-ease/build/d3-ease",
-                "d3-interpolate": "../../../node_modules/d3-interpolate/build/d3-interpolate",
-                "d3-force": "../../../node_modules/d3-force/build/d3-force",
-                "d3-format": "../../../node_modules/d3-format/build/d3-format",
-                "d3-geo": "../../../node_modules/d3-geo/build/d3-geo",
-                "d3-hexbin": "../../../node_modules/d3-hexbin/build/d3-hexbin",
-                "d3-hierarchy": "../../../node_modules/d3-hierarchy/build/d3-hierarchy",
-                "d3-path": "../../../node_modules/d3-path/build/d3-path",
-                "d3-quadtree": "../../../node_modules/d3-quadtree/build/d3-quadtree",
-                "d3-random": "../../../node_modules/d3-random/build/d3-random",
-                "d3-request": "../../../node_modules/d3-request/build/d3-request",
-                "d3-scale": "../../../node_modules/d3-scale/build/d3-scale",
-                "d3-shape": "../../../node_modules/d3-shape/build/d3-shape",
-                "d3-sankey": "../../../node_modules/d3-sankey/build/d3-sankey",
-                "d3-selection": "../../../node_modules/d3-selection/build/d3-selection",
-                "d3-time": "../../../node_modules/d3-time/build/d3-time",
-                "d3-timer": "../../../node_modules/d3-timer/build/d3-timer",
-                "d3-time-format": "../../../node_modules/d3-time-format/build/d3-time-format",
-                "d3-tip": "../../../node_modules/d3-tip/lib-browser/index",
-                "d3-transition": "../../../node_modules/d3-transition/build/d3-transition",
-                "d3-zoom": "../../../node_modules/d3-zoom/build/d3-zoom",
+                "@hpcc-js/TopoJSON": "../node_modules/@hpcc-js/map/TopoJSON",
                 "test": "../test"
             }
+        };
+        [
+            // Only needed by dermatology.js  ---
+            "d3-array",
+            "d3-collection",
+            "d3-color",
+            "d3-dispatch",
+            "d3-ease",
+            "d3-interpolate",
+            "d3-random",
+            "d3-selection",
+            "d3-timer",
+            "d3-transition"
+        ].forEach(function (item) {
+            config.paths[item] = "../../../node_modules/" + item + "/build/" + item;
         });
+        ["@hpcc-js/codemirror-shim", "@hpcc-js/c3-shim", "@hpcc-js/dgrid-shim", "@hpcc-js/phosphor-shim", "@hpcc-js/preact-shim",
+            "@hpcc-js/common", "@hpcc-js/layout", "@hpcc-js/phosphor", "@hpcc-js/api", "@hpcc-js/dgrid", "@hpcc-js/other", "@hpcc-js/chart", "@hpcc-js/form",
+            "@hpcc-js/c3chart", "@hpcc-js/google", "@hpcc-js/amchart", "@hpcc-js/tree", "@hpcc-js/graph", "@hpcc-js/map", "@hpcc-js/handson", "@hpcc-js/react",
+            "@hpcc-js/composite", "@hpcc-js/marshaller", "@hpcc-js/ddl", "@hpcc-js/html", "@hpcc-js/codemirror"
+        ].forEach(function (item) {
+            var parts = item.split("/");
+            config.paths[item] = "../node_modules/" + item + "/dist/" + parts[1];
+            config.paths[item + "-vendor"] = "../node_modules/" + item + "/dist/" + parts[1] + "-vendor";
+        });
+
+        require.config(config);
         hpccsystems = {
             require: require
         };

@@ -6,12 +6,10 @@
   "module": "dist/phosphor-shim.es6.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/**/*.js"
+    "dist/*"
   ],
   "scripts": {
-    "build": "npm run build-umd && npm run build-es6",
-    "build-umd": "rollup -c -f umd -o dist/phosphor-shim.js",
-    "build-es6": "rollup -c -f es -o dist/phosphor-shim.es6.js",
+    "build": "rollup -c",
     "clean": "rimraf dist* && rimraf dist && rimraf build"
   },
   "dependencies": {

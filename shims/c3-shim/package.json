@@ -6,12 +6,10 @@
   "module": "dist/c3-shim.es6.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/**/*.js"
+    "dist/**/*"
   ],
   "scripts": {
-    "build": "npm run build-umd && npm run build-es6",
-    "build-umd": "rollup -c -f umd -o dist/c3-shim.js",
-    "build-es6": "rollup -c -f es -o dist/c3-shim.es6.js",
+    "build": "webpack",
     "clean": "rimraf dist* && rimraf tmp"
   },
   "dependencies": {
@@ -20,7 +18,7 @@
   "devDependencies": {
     "rimraf": "^2.6.1",
     "typescript": "^2.3.4",
-    "rollup": "^0.43.0"
+    "webpack": "^2.6.1"
   },
   "repository": {
     "type": "git",

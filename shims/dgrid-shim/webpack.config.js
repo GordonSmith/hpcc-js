@@ -21,7 +21,7 @@ module.exports = {
         publicPath: "dist/",
         filename: "dgrid-shim.js",
         libraryTarget: "umd",
-        library: "hpcc-js-dgrid-shim"
+        library: "@hpcc-js/dgrid-shim"
     },
     resolve: {
         alias: {
@@ -50,7 +50,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new ExtractTextPlugin('dgrid-lib.css'),
+        new ExtractTextPlugin('dgrid-shim.css'),
         new webpack.optimize.UglifyJsPlugin({
             sourceMap: "source-map"
         })

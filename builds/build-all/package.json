@@ -83,7 +83,7 @@
     "yargs": "~4.3.2"
   },
   "scripts": {
-    "buildXXX": "tsc && webpack",
+    "build": "gulp build-amd-src",
     "clean": "rimraf build/ && rimraf 0/ && rimraf dist && rimraf lib*"
   }
 }

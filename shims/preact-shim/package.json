@@ -5,8 +5,7 @@
   "main": "dist/preact-shim.js",
   "types": "dist/preact-shim.d.ts",
   "files": [
-    "dist/**/*.d.ts",
-    "dist/**/*.js"
+    "dist/*"
   ],
   "directories": {
     "lib": "dist/"
