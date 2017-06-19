@@ -1,10 +1,7 @@
-//  Preload d3 v3  ---
-import "./d3v3";
-
+import { generate as c3Generate } from "@hpcc-js/c3-shim";
 import { HTMLWidget } from "@hpcc-js/common";
-import * as c3 from "c3/c3";
 
-import "c3/c3.css";
+import "./Common.css";
 
 export class Common extends HTMLWidget {
     _type;
@@ -102,7 +99,7 @@ export class Common extends HTMLWidget {
 
         this._config.data.columns = [];
 
-        this.c3Chart = c3.generate(this._config);
+        this.c3Chart = c3Generate(this._config);
     }
 
     update(domNode, element) {

@@ -13,14 +13,6 @@
     d3-timer "1"
     d3-transition "1"
 
-"@hpcc-js/phosphor-lib@^0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@hpcc-js/phosphor-lib/-/phosphor-lib-0.0.13.tgz#1ebe0e89c9473ae1c9d959eb77f31aa67c9114c1"
-  dependencies:
-    "@phosphor/algorithm" "^1.1.0"
-    "@phosphor/messaging" "^1.2.0"
-    "@phosphor/widgets" "^1.2.0"
-
 "@phosphor/algorithm@^1.1.0", "@phosphor/algorithm@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@phosphor/algorithm/-/algorithm-1.1.1.tgz#e65743d367ddaf2ce042a2df35e9bd6ccf93e742"
@@ -915,7 +907,7 @@ bytes@^2.4.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-2.5.0.tgz#4c9423ea2d252c270c41b2bdefeff9bb6b62c06a"
 
-c3@^0.4.12:
+c3@^0.4.13:
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/c3/-/c3-0.4.13.tgz#d671aea5a048cc137c3d745a0fc5e3c648ce5f1e"
   dependencies:

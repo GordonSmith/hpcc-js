@@ -3,6 +3,7 @@
   "name": "@hpcc-js/build-all",
   "version": "0.0.14",
   "dependencies": {
+    "@hpcc-js/c3-shim": "^0.0.1",
     "@hpcc-js/codemirror-shim": "^0.0.1",
     "@hpcc-js/dgrid-shim": "^0.0.1",
     "@hpcc-js/phosphor-shim": "^0.0.13",
