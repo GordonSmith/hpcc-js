@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/codemirror-shim",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "hpcc-js - codemirror shim",
   "main": "dist/codemirror-shim.js",
   "module": "dist/codemirror-shim.es6.js",

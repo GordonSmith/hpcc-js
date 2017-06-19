@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/ddl",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "hpcc-js DDL parser",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
