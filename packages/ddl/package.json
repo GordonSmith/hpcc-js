@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "build": "npm run create-schema && tsc",
-    "clean": "rimraf ./src/ddl.json && rimraf ./lib && rimraf ./dist*",
+    "clean": "rimraf ./src/ddl.json && rimraf ./lib* && rimraf ./dist*",
     "create-schema": "echo export const ddlSchema = > ./src/ddlSchema.ts && typescript-json-schema --noExtraProps --required ./src/ddl.ts DDLSchema >> ./src/ddlSchema.ts && echo ; >> ./src/ddlSchema.ts"
   },
   "dependencies": {
