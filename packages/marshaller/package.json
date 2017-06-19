@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/marshaller",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "hpcc-js - Viz Marshaller",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -16,12 +16,12 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/chart": "^0.0.14",
-    "@hpcc-js/common": "^0.0.14",
-    "@hpcc-js/form": "^0.0.14",
-    "@hpcc-js/graph": "^0.0.14",
-    "@hpcc-js/layout": "^0.0.14",
-    "@hpcc-js/other": "^0.0.14",
+    "@hpcc-js/chart": "^0.0.15",
+    "@hpcc-js/common": "^0.0.15",
+    "@hpcc-js/form": "^0.0.15",
+    "@hpcc-js/graph": "^0.0.15",
+    "@hpcc-js/layout": "^0.0.15",
+    "@hpcc-js/other": "^0.0.15",
     "d3-collection": "^1.0.3",
     "tslib": "^1.7.1"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/dgrid-shim",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "dgrid shim",
   "main": "dist/dgrid-shim.js",
   "scripts": {
@@ -13,18 +13,18 @@
   ],
   "dependencies": {
     "dgrid": "^1.1.0",
-    "dojo": "^1.12.2",
     "dijit": "^1.12.2",
+    "dojo": "^1.12.2",
     "dojo-dstore": "^1.1.1"
   },
   "devDependencies": {
-    "rimraf": "^2.6.1",
-    "webpack": "^2.6.1",
     "css-loader": "^0.26.1",
     "dojo-webpack-loader": "^0.9.2",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "rimraf": "^2.6.1",
     "style-loader": "^0.18.1",
     "url-loader": "^0.5.9",
-    "extract-text-webpack-plugin": "^2.1.0"
+    "webpack": "^2.6.1"
   },
   "repository": {
     "type": "git",
