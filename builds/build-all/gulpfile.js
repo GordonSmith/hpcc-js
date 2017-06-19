@@ -114,7 +114,14 @@ gulp.task("copy-json", shell.task([
 ]));
 
 var cache;
-function doRollup(entry, dest, format, min, external, _alias) {
+function doRollup(entry, dest, format, external, _alias) {
+    return Promise.all([
+        _doRollup(entry, dest, format, false, external, _alias),
+        _doRollup(entry, dest, format, true, external, _alias)
+    ]);
+}
+
+function _doRollup(entry, dest, format, min, external, _alias) {
     console.log(dest);
     external = shims.concat(external || []);
     _alias = _alias || {};
@@ -160,7 +167,7 @@ function doRollup(entry, dest, format, min, external, _alias) {
     });
 }
 
-gulp.task("build-amd-src", ["copy-json"], function () {
+gulp.task("build-amd-src", function () {
     const libLocations = {};
     const libPackages = {};
     packages.forEach(function (pckg) {
@@ -174,6 +181,7 @@ gulp.task("build-amd-src", ["copy-json"], function () {
         }
         libPackages[pckg + "-vendor"] = {
             isVendor: true,
+            mainPckg: pckg,
             entries: [],
             aliases: {}
         }
@@ -210,12 +218,12 @@ gulp.task("build-amd-src", ["copy-json"], function () {
                     });
                     if (indexTs) {
                         fs.writeFileSync("tmp/" + libName + ".js", indexTs);
-                        return doRollup("tmp/" + libName, "dist/" + libName, "amd", false, Object.keys(externals), libPackage.aliases);
+                        return doRollup("tmp/" + libName, "node_modules/" + libPackage.mainPckg + "/dist/" + libName, "amd", Object.keys(externals), libPackage.aliases);
                     } else {
                         return Promise.resolve();
                     }
                 } else {
-                    return doRollup("node_modules/" + pckg + "/lib-es6/index", "dist/" + libName, "amd", false, Object.keys(externals), libPackage.aliases);
+                    return doRollup("node_modules/" + pckg + "/lib-es6/index", "node_modules/" + pckg + "/dist/" + libName, "amd", Object.keys(externals), libPackage.aliases);
                 }
             }))
             .then(function (tmp) {

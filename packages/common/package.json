@@ -6,15 +6,13 @@
   "module": "lib-es6/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/*",
+    "lib-es6/*",
+    "dist/*"
   ],
-  "directories": {
-    "lib": "lib/"
-  },
   "scripts": {
+    "clean": "rimraf lib* && rimraf dist*",
     "build": "tsc",
-    "clean": "rimraf lib*",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {

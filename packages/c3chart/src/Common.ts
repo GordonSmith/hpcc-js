@@ -1,7 +1,7 @@
 import { generate as c3Generate } from "@hpcc-js/c3-shim";
 import { HTMLWidget } from "@hpcc-js/common";
 
-import "./Common.css";
+import "../src/Common.css";
 
 export class Common extends HTMLWidget {
     _type;

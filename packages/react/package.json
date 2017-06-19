@@ -3,10 +3,12 @@
   "version": "0.0.14",
   "description": "hpcc-js - Viz React",
   "main": "lib/index.js",
+  "module": "lib-es6/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/*",
+    "lib-es6/*",
+    "dist/*"
   ],
   "directories": {
     "lib": "lib/"

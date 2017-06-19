@@ -2,6 +2,7 @@ const alias = require('rollup-plugin-alias');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require("rollup-plugin-commonjs");
 const css = require('rollup-plugin-css-only');
+const uglify = require('rollup-plugin-uglify');
 
 export default {
     entry: 'src/index.js',
@@ -19,6 +20,7 @@ export default {
             namedExports: {
                 "..\\..\\node_modules\\preact\\dist\\preact.js": ["Component", "cloneElement", "h", "options", "render"]
             }
-        })
+        }),
+        uglify()
     ]
 };

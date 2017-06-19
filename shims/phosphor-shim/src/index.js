@@ -1,4 +1,3 @@
-export { } from "@phosphor/algorithm";
 export { Message } from "@phosphor/messaging";
 export { DockPanel, Widget } from "@phosphor/widgets";
 

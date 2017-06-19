@@ -6,12 +6,10 @@
   "module": "lib-es6/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/*",
+    "lib-es6/*",
+    "dist/*"
   ],
-  "directories": {
-    "lib": "lib/"
-  },
   "scripts": {
     "build": "npm run create-schema && tsc",
     "clean": "rimraf ./src/ddl.json && rimraf ./lib && rimraf ./dist*",
