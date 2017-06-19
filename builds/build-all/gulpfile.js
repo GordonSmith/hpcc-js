@@ -149,7 +149,7 @@ function _doRollup(entry, dest, format, min, external, _alias) {
 
     return rollup.rollup({
         entry: entry + ".js",
-        external: ["@hpcc-js/dgrid-lib"].concat(external),
+        external: external,
         cache: cache,
         plugins: plugins
     }).then(function (bundle) {
@@ -218,12 +218,12 @@ gulp.task("build-amd-src", function () {
                     });
                     if (indexTs) {
                         fs.writeFileSync("tmp/" + libName + ".js", indexTs);
-                        return doRollup("tmp/" + libName, "node_modules/" + libPackage.mainPckg + "/dist/" + libName, "amd", Object.keys(externals), libPackage.aliases);
+                        return doRollup("tmp/" + libName, "node_modules/" + libPackage.mainPckg + "/dist/" + libName, "umd", Object.keys(externals), libPackage.aliases);
                     } else {
                         return Promise.resolve();
                     }
                 } else {
-                    return doRollup("node_modules/" + pckg + "/lib-es6/index", "node_modules/" + pckg + "/dist/" + libName, "amd", Object.keys(externals), libPackage.aliases);
+                    return doRollup("node_modules/" + pckg + "/lib-es6/index", "node_modules/" + pckg + "/dist/" + libName, "umd", Object.keys(externals), libPackage.aliases);
                 }
             }))
             .then(function (tmp) {
@@ -237,7 +237,7 @@ gulp.task("build-amd-src", function () {
 
 gulp.task("bundle-browser", function () {
     return Promise.all([
-        //doRollup("lib/index-browser", "dist/viz-browser", "umd", true),
+        doRollup("lib/index-browser", "dist/viz-browser", "umd", true),
         doRollup("lib/index-browser", "dist/viz-browser", "umd", false)
     ]);
 });

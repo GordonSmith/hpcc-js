@@ -48,7 +48,7 @@ export class WidgetAdapter extends Widget {
                 ;
             this._widget
                 .resize({ width: msg.width - 20, height: msg.height - 20 })
-                .render()
+                .lazyRender()
                 ;
         }
     }
