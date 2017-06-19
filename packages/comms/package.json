@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib*",
+    "clean": "rimraf lib* && rimraf dist*",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
