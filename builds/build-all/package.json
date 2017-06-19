@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@hpcc-js/build-all",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "dependencies": {
     "@hpcc-js/amchart": "^0.0.18",
     "@hpcc-js/api": "^0.0.18",
@@ -24,7 +24,7 @@
     "@hpcc-js/map": "^0.0.18",
     "@hpcc-js/marshaller": "^0.0.18",
     "@hpcc-js/other": "^0.0.18",
-    "@hpcc-js/phosphor": "^0.0.18",
+    "@hpcc-js/phosphor": "^0.0.19",
     "@hpcc-js/phosphor-shim": "^0.0.17",
     "@hpcc-js/preact-shim": "^0.0.5",
     "@hpcc-js/react": "^0.0.18",
