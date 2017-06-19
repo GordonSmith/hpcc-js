@@ -1,11 +1,11 @@
 {
   "private": true,
   "name": "@hpcc-js/test-c3chart",
-  "version": "0.0.15",
+  "version": "0.0.18",
   "dependencies": {
-    "@hpcc-js/c3chart": "^0.0.15",
-    "@hpcc-js/common": "^0.0.15",
-    "@hpcc-js/sample-data": "^0.0.14",
+    "@hpcc-js/c3chart": "^0.0.18",
+    "@hpcc-js/common": "^0.0.18",
+    "@hpcc-js/sample-data": "^0.0.17",
     "chai": "^4.0.0",
     "es6-promise": "^4.1.0",
     "mocha": "^3.4.2",

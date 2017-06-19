@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@hpcc-js/sample-data",
-  "version": "0.0.14",
+  "version": "0.0.17",
   "description": "hpcc-js - Test Data",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
