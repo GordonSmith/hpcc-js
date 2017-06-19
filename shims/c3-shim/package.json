@@ -1,0 +1,36 @@
+{
+  "name": "@hpcc-js/c3-shim",
+  "version": "0.0.1",
+  "description": "hpcc-js - c3 shim",
+  "main": "dist/c3-shim.js",
+  "module": "dist/c3-shim.es6.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*.js"
+  ],
+  "scripts": {
+    "build": "npm run build-umd && npm run build-es6",
+    "build-umd": "rollup -c -f umd -o dist/c3-shim.js",
+    "build-es6": "rollup -c -f es -o dist/c3-shim.es6.js",
+    "clean": "rimraf dist* && rimraf tmp"
+  },
+  "dependencies": {
+    "c3": "^0.4.13"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.1",
+    "typescript": "^2.3.4",
+    "rollup": "^0.43.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hpcc-systems/Visualization.git"
+  },
+  "author": "Gordon Smith <gordonjsmith@gmail.com>",
+  "contributors": [],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hpcc-systems/Visualization/issues"
+  },
+  "homepage": "https://github.com/hpcc-systems/Visualization"
+}

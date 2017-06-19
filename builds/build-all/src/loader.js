@@ -36,9 +36,6 @@
                 "amcharts3": "../../../node_modules/amcharts3",
                 "amchartsImg": "../../../node_modules/amcharts3/amcharts/images/",
                 "colorbrewer": "../../../node_modules/colorbrewer/colorbrewer",
-                "c3": "../../../node_modules/c3",
-                "codemirror": "../../../node_modules/codemirror",
-                "d3": "../../../node_modules/d3/d3",
                 "d3-array": "../../../node_modules/d3-array/build/d3-array",
                 "d3-axis": "../../../node_modules/d3-axis/build/d3-axis",
                 "@hpcc-js/d3-bullet": "../../../node_modules/@hpcc-js/d3-bullet/build/d3-bullet",
@@ -85,6 +82,7 @@
                 "topojson": "../../../node_modules/topojson/build/topojson",
                 "tslib": "../../../node_modules/tslib/tslib",
 
+                "@hpcc-js/c3-shim": "../node_modules/@hpcc-js/c3-shim",
                 "@hpcc-js/codemirror-shim": "../node_modules/@hpcc-js/codemirror-shim",
                 "@hpcc-js/dgrid-shim": "../node_modules/@hpcc-js/dgrid-shim",
                 "@hpcc-js/phosphor-shim": "../node_modules/@hpcc-js/phosphor-shim",
@@ -116,106 +114,35 @@
                 "src": "../src"
             },
             packages: [
+                { name: "@hpcc-js/c3-shim", main: "dist/c3-shim" },
                 { name: "@hpcc-js/codemirror-shim", main: "dist/codemirror-shim" },
                 { name: "@hpcc-js/dgrid-shim", main: "dist/dgrid-shim" },
                 { name: "@hpcc-js/phosphor-shim", main: "dist/phosphor-shim" },
                 { name: "@hpcc-js/preact-shim", main: "dist/preact-shim" },
-                {
-                    name: "@phosphor/algorithm",
-                    main: "lib/index"
-                },
-                {
-                    name: "@phosphor/widgets",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/amchart",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/api",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/c3chart",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/chart",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/codemirror",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/common",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/composite",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/ddl",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/dgrid",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/form",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/google",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/graph",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/handson",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/html",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/layout",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/map",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/marshaller",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/other",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/phosphor",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/react",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/timeline",
-                    main: "lib/index"
-                },
-                {
-                    name: "@hpcc-js/tree",
-                    main: "lib/index"
-                }
+                { name: "@phosphor/algorithm", main: "lib/index" },
+                { name: "@phosphor/widgets", main: "lib/index" },
+                { name: "@hpcc-js/amchart", main: "lib/index" },
+                { name: "@hpcc-js/api", main: "lib/index" },
+                { name: "@hpcc-js/c3chart", main: "lib/index" },
+                { name: "@hpcc-js/chart", main: "lib/index" },
+                { name: "@hpcc-js/codemirror", main: "lib/index" },
+                { name: "@hpcc-js/common", main: "lib/index" },
+                { name: "@hpcc-js/composite", main: "lib/index" },
+                { name: "@hpcc-js/ddl", main: "lib/index" },
+                { name: "@hpcc-js/dgrid", main: "lib/index" },
+                { name: "@hpcc-js/form", main: "lib/index" },
+                { name: "@hpcc-js/google", main: "lib/index" },
+                { name: "@hpcc-js/graph", main: "lib/index" },
+                { name: "@hpcc-js/handson", main: "lib/index" },
+                { name: "@hpcc-js/html", main: "lib/index" },
+                { name: "@hpcc-js/layout", main: "lib/index" },
+                { name: "@hpcc-js/map", main: "lib/index" },
+                { name: "@hpcc-js/marshaller", main: "lib/index" },
+                { name: "@hpcc-js/other", main: "lib/index" },
+                { name: "@hpcc-js/phosphor", main: "lib/index" },
+                { name: "@hpcc-js/react", main: "lib/index" },
+                { name: "@hpcc-js/timeline", main: "lib/index" },
+                { name: "@hpcc-js/tree", main: "lib/index" }
             ],
             shim: {
                 "simpleheat": {

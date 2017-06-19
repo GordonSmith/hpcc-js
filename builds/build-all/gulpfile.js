@@ -93,27 +93,30 @@ gulp.task("docs", shell.task([
 ]));
 
 //  Bundle  ---
-gulp.task("copy-json", shell.task([
-    cpx.copySync("node_modules/@hpcc-js/map/TopoJSON/*.*", "dist/map/TopoJSON/"),
-    cpx.copySync("node_modules/@hpcc-js/dgrid-lib/dist/dgrid-lib.js", "dist"),
-]));
-
 const deps = require("./package.json").dependencies;
-const packagesxxx = [
-    "@hpcc-js/common", "@hpcc-js/dgrid"
-];  //  Order is important ---
+
+const shims = ["@hpcc-js/codemirror-shim", "@hpcc-js/c3-shim", "@hpcc-js/dgrid-shim", "@hpcc-js/phosphor-shim", "@hpcc-js/preact-shim"];
+//  Order is important ---
 const packages = [
     "@hpcc-js/common", "@hpcc-js/layout", "@hpcc-js/phosphor", "@hpcc-js/api", "@hpcc-js/dgrid", "@hpcc-js/other", "@hpcc-js/chart", "@hpcc-js/form",
     "@hpcc-js/c3chart", "@hpcc-js/google", "@hpcc-js/amchart", "@hpcc-js/tree", "@hpcc-js/graph", "@hpcc-js/map",
     "@hpcc-js/handson", "@hpcc-js/react", "@hpcc-js/composite", "@hpcc-js/marshaller", "@hpcc-js/ddl", "@hpcc-js/html", "@hpcc-js/codemirror"
-];  //  Order is important ---
-const exclusions = ["amcharts3", "handsontable", "c3", "d3", "dagre", "colorbrewer", "font-awesome", "simpleheat", "d3-cloud",
-    "google-maps", "@hpcc-js/codemirror-shim", "@hpcc-js/dgrid-shim", "@hpcc-js/phosphor-shim", "@hpcc-js/preact-shim"];
+];
+const exclusions = ["amcharts3", "handsontable", "dagre", "colorbrewer", "font-awesome", "simpleheat", "d3-cloud", "google-maps"];
+
+gulp.task("copy-json", shell.task([
+    cpx.copySync("node_modules/@hpcc-js/map/TopoJSON/*.*", "dist/map/TopoJSON/"),
+    cpx.copySync("node_modules/@hpcc-js/c3-shim/dist/*", "dist"),
+    cpx.copySync("node_modules/@hpcc-js/codemirror-shim/dist/*", "dist"),
+    cpx.copySync("node_modules/@hpcc-js/dgrid-shim/dist/*", "dist"),
+    cpx.copySync("node_modules/@hpcc-js/phosphor-shim/dist/*", "dist"),
+    cpx.copySync("node_modules/@hpcc-js/preact-shim/dist/*", "dist"),
+]));
 
 var cache;
 function doRollup(entry, dest, format, min, external, _alias) {
     console.log(dest);
-    external = external || [];
+    external = shims.concat(external || []);
     _alias = _alias || {};
     _alias.ajv = "../../node_modules/ajv/dist/ajv.bundle.js";
     const plugins = [
@@ -129,7 +132,6 @@ function doRollup(entry, dest, format, min, external, _alias) {
         }),
         commonjs({
             namedExports: {
-                "..\\..\\shims\\dgrid-shim\\dist\\dgrid-shim.js": ["Memory", "PagingGrid"]
             }
         }),
         sourcemaps()
@@ -176,7 +178,7 @@ gulp.task("build-amd-src", ["copy-json"], function () {
             aliases: {}
         }
         for (var key in dependencies) {
-            if (exclusions.indexOf(key) < 0) {
+            if (shims.concat(exclusions).indexOf(key) < 0) {
                 if (libLocations[key]) {
                     libPackages[pckg].aliases[key] = libLocations[key];
                 } else {
