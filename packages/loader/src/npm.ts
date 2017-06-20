@@ -114,3 +114,10 @@ export function additionalPaths(paths: { [key: string]: string }) {
         }
     }
 }
+
+export function toUrl(packageID: string): string {
+    const requirejs = hpcc_js.require.config({
+        paths: { ..._additionalPaths, ...npmResolver.cachedPaths }
+    });
+    return requirejs.toUrl(packageID);
+}
