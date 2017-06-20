@@ -1,26 +1,25 @@
 {
-  "name": "@hpcc-js/util",
-  "version": "0.0.18",
-  "description": "hpcc-js - Utilities",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "name": "@hpcc-js/requirejs-shim",
+  "version": "0.0.1",
+  "description": "hpcc-js - requirejs shim",
+  "main": "dist/requirejs-shim.js",
+  "types": "types/requirejs-shim.d.ts",
   "files": [
-    "lib/*",
-    "lib-es6/*",
     "dist/*"
   ],
+  "directories": {
+    "lib": "dist/"
+  },
   "scripts": {
-    "build": "tsc",
-    "clean": "rimraf lib* && rimraf dist*",
-    "docs": "typedoc --options tdoptions.json ."
+    "build": "r_js -o ./requirejs.config.js",
+    "clean": "rimraf dist* && rimraf tmp"
   },
   "dependencies": {
-    "tslib": "^1.7.1"
+    "requirejs": "^2.3.3",
+    "rollup": "^0.43.0"
   },
   "devDependencies": {
-    "rimraf": "^2.6.1",
-    "typedoc": "^0.7.1",
-    "typescript": "^2.3.4"
+    "rimraf": "^2.6.1"
   },
   "repository": {
     "type": "git",
