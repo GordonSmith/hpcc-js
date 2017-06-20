@@ -1,20 +1,26 @@
 {
-  "name": "@hpcc-js/util",
-  "version": "0.0.18",
-  "description": "hpcc-js - Utilities",
+  "name": "@hpcc-js/loader",
+  "version": "0.0.1",
+  "description": "hpcc-js - Loader",
   "main": "lib/index.js",
+  "module": "lib-es6/index.js",
   "types": "lib/index.d.ts",
   "files": [
     "lib/*",
     "lib-es6/*",
     "dist/*"
   ],
+  "directories": {
+    "lib": "lib/"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib* && rimraf dist*",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
+    "@hpcc-js/requirejs-shim": "^0.0.1",
+    "d3-request": "^1.0.5",
     "tslib": "^1.7.1"
   },
   "devDependencies": {

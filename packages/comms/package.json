@@ -6,12 +6,10 @@
   "main": "lib/index-node.js",
   "types": "lib/index-node.d.ts",
   "files": [
-    "lib/**/*.d.ts",
-    "lib/**/*.js"
+    "lib/*",
+    "lib-es6/*",
+    "dist/*"
   ],
-  "directories": {
-    "lib": "lib/"
-  },
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib* && rimraf dist*",

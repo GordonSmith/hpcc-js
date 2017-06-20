@@ -21,6 +21,7 @@
     "@hpcc-js/handson": "^0.0.18",
     "@hpcc-js/html": "^0.0.5",
     "@hpcc-js/layout": "^0.0.18",
+    "@hpcc-js/loader": "^0.0.1",
     "@hpcc-js/map": "^0.0.18",
     "@hpcc-js/marshaller": "^0.0.18",
     "@hpcc-js/other": "^0.0.18",
@@ -28,6 +29,7 @@
     "@hpcc-js/phosphor-shim": "^0.0.17",
     "@hpcc-js/preact-shim": "^0.0.5",
     "@hpcc-js/react": "^0.0.18",
+    "@hpcc-js/requirejs-shim": "^0.0.1",
     "@hpcc-js/timeline": "^0.0.18",
     "@hpcc-js/tree": "^0.0.18",
     "d3-random": "^1.1.0",
@@ -84,6 +86,6 @@
   },
   "scripts": {
     "build": "gulp build-amd-src",
-    "clean": "rimraf build/ && rimraf 0/ && rimraf dist && rimraf lib*"
+    "clean": "rimraf build/ && rimraf 0/ && rimraf dist && rimraf lib* && rimraf tmp"
   }
 }
