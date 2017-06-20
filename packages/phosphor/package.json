@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/phosphor",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "hpcc-js - Viz Phosphor",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",

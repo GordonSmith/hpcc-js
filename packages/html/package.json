@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/html",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "hpcc-js - Viz HTML",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
