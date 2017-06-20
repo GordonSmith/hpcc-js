@@ -28,7 +28,7 @@ const dependencies = require("./package.json").dependencies;
 //  Util  ---
 function sequentialPromise(/*...*/) {
     return new Promise((resolve, reject) => {
-        [].push.call(arguments, function(err, data) {
+        [].push.call(arguments, function (err, data) {
             resolve();
         });
         runSequence.apply(this, arguments);
@@ -37,14 +37,14 @@ function sequentialPromise(/*...*/) {
 
 //  Clean  ---
 function rmdir(dir) {
-    return new Promise(function(resolve, reject) {
-        rimraf(dir, function() {
+    return new Promise(function (resolve, reject) {
+        rimraf(dir, function () {
             resolve();
         })
     });
 }
 
-gulp.task("clean", [], function() {
+gulp.task("clean", [], function () {
     return Promise.all([
         rmdir("dist"),
         rmdir("dist-test"),
@@ -95,10 +95,10 @@ gulp.task("docs", shell.task([
 //  Bundle  ---
 const deps = require("./package.json").dependencies;
 
-const shims = ["@hpcc-js/codemirror-shim", "@hpcc-js/c3-shim", "@hpcc-js/dgrid-shim", "@hpcc-js/phosphor-shim", "@hpcc-js/preact-shim", "@hpcc-js/requirejs-shim"];
+const shims = ["@hpcc-js/codemirror-shim", "@hpcc-js/c3-shim", "@hpcc-js/dgrid-shim", "@hpcc-js/phosphor-shim", "@hpcc-js/preact-shim"];
 //  Order is important ---
 const packages = [
-    "@hpcc-js/loader", "@hpcc-js/common", "@hpcc-js/layout", "@hpcc-js/phosphor", "@hpcc-js/api", "@hpcc-js/dgrid", "@hpcc-js/chart", "@hpcc-js/other", "@hpcc-js/form",
+    "@hpcc-js/common", "@hpcc-js/layout", "@hpcc-js/phosphor", "@hpcc-js/api", "@hpcc-js/dgrid", "@hpcc-js/chart", "@hpcc-js/other", "@hpcc-js/form",
     "@hpcc-js/c3chart", "@hpcc-js/google", "@hpcc-js/amchart", "@hpcc-js/tree", "@hpcc-js/graph", "@hpcc-js/map",
     "@hpcc-js/handson", "@hpcc-js/react", "@hpcc-js/composite", "@hpcc-js/marshaller", "@hpcc-js/ddl", "@hpcc-js/html", "@hpcc-js/codemirror"
 ];
@@ -153,7 +153,7 @@ function _doRollup(libName, entry, dest, format, min, external, _alias) {
         external: external,
         cache: cache,
         plugins: plugins
-    }).then(function(bundle) {
+    }).then(function (bundle) {
         cache = bundle;
         return bundle.write({
             format: format,
@@ -168,13 +168,13 @@ function _doRollup(libName, entry, dest, format, min, external, _alias) {
     });
 }
 
-gulp.task("build-amd-src", function() {
+gulp.task("build-amd-src", function () {
     const libLocations = {};
     const libPackages = {};
-    packages.forEach(function(pckg) {
+    packages.forEach(function (pckg) {
         libLocations[pckg] = pckg;
     });
-    packages.forEach(function(pckg) {
+    packages.forEach(function (pckg) {
         const dependencies = require("./node_modules/" + pckg + "/package.json").dependencies;
         libPackages[pckg] = {
             entries: [],
@@ -198,14 +198,14 @@ gulp.task("build-amd-src", function() {
             }
         }
     });
-    return new Promise(function(resolve, reject) {
-        rimraf("tmp", function() {
+    return new Promise(function (resolve, reject) {
+        rimraf("tmp", function () {
             resolve();
         });
-    }).then(function() {
+    }).then(function () {
         fs.mkdirSync("tmp");
         return Promise.all(
-            Object.keys(libPackages).map(function(pckg) {
+            Object.keys(libPackages).map(function (pckg) {
                 const libName = pckg.split("/")[1];
                 const libPackage = libPackages[pckg];
                 var externals = {};
@@ -214,36 +214,36 @@ gulp.task("build-amd-src", function() {
                 }
                 if (libPackage.isVendor) {
                     var indexTs = "";
-                    libPackage.entries.forEach(function(entry) {
+                    libPackage.entries.forEach(function (entry) {
                         indexTs += "export * from \"" + entry + "\";\n";
                     });
                     if (indexTs) {
                         fs.writeFileSync("tmp/" + libName + ".js", indexTs);
-                        return doRollup(libName, "tmp/" + libName, "node_modules/" + libPackage.mainPckg + "/dist/" + libName, "umd", Object.keys(externals), libPackage.aliases);
+                        return doRollup(libName, "tmp/" + libName, "node_modules/" + libPackage.mainPckg + "/dist/" + libName, "amd", Object.keys(externals), libPackage.aliases);
                     } else {
                         return Promise.resolve();
                     }
                 } else {
-                    return doRollup(libName, "node_modules/" + pckg + "/lib-es6/index", "node_modules/" + pckg + "/dist/" + libName, "umd", Object.keys(externals), libPackage.aliases);
+                    return doRollup(libName, "node_modules/" + pckg + "/lib-es6/index", "node_modules/" + pckg + "/dist/" + libName, "amd", Object.keys(externals), libPackage.aliases);
                 }
             }))
-            .then(function(tmp) {
+            .then(function (tmp) {
             })
-            .catch(function(e) {
+            .catch(function (e) {
                 console.log(e.message);
             });
     });
 });
 
 
-gulp.task("bundle-browser", function() {
+gulp.task("bundle-browser", function () {
     return Promise.all([
         doRollup("lib/index-browser", "dist/viz-browser", "umd", true),
         doRollup("lib/index-browser", "dist/viz-browser", "umd", false)
     ]);
 });
 
-gulp.task("bundle-test-browser", function() {
+gulp.task("bundle-test-browser", function () {
     return Promise.all([
         doRollup("lib-test-es6/test/index", "dist-test/viz-browser", "iife", false, ["chai"])
     ]);
@@ -253,7 +253,7 @@ gulp.task("bundle-test", ["bundle-test-browser"]);
 
 gulp.task("bundle-all", ["bundle-browser"]);
 
-gulp.task("build", function(cb) {
+gulp.task("build", function (cb) {
     return sequentialPromise("clean").then(() => {
         return Promise.all([
             sequentialPromise("compile-src", "bundle-all")//,
@@ -263,14 +263,14 @@ gulp.task("build", function(cb) {
 });
 
 //  Watch for browser ---
-gulp.task('watch-browser', function() {
+gulp.task('watch-browser', function () {
     gulp.start("compile-src");
-    return watch('lib/**/*.js', function() {
+    return watch('lib/**/*.js', function () {
         gulp.start("bundle-browser");
     });
 });
 
-gulp.task('watch-test-browser', function() {
+gulp.task('watch-test-browser', function () {
     return Promise.all([
         sequentialPromise("compile-src", "bundle-all")//,
         //sequentialPromise("docs")
@@ -278,7 +278,7 @@ gulp.task('watch-test-browser', function() {
 
     gulp.start("copy-css");
     gulp.start("compile-test-browser");
-    return watch('lib-test-es6/**/*.js', function() {
+    return watch('lib-test-es6/**/*.js', function () {
         console.log("xxx");
         gulp.start("bundle-test-browser");
         console.log("yyy");
@@ -286,7 +286,7 @@ gulp.task('watch-test-browser', function() {
 });
 
 //  Version Bumping  ---
-gulp.task("bump-package", [], function() {
+gulp.task("bump-package", [], function () {
     var args = {};
     if (argv.version) {
         args.version = argv.version;
@@ -305,7 +305,7 @@ gulp.task("bump-package", [], function() {
         ;
 });
 
-gulp.task("bump", ["bump-package"], function() {
+gulp.task("bump", ["bump-package"], function () {
     const npmPackage = require('./package.json');
     return gulp.src(["./src/index-common.ts"])
         .pipe(replace(/export const version = "(.*?)";/, "export const version = \"" + npmPackage.version + "\";"))
@@ -315,18 +315,18 @@ gulp.task("bump", ["bump-package"], function() {
 
 //  GIT Tagging  ---
 const TAG_FILES = ["./package.json", "./src/index-common.ts", "./dist", "./lib", "./docx"];
-gulp.task("git-create-branch", function(cb) {
+gulp.task("git-create-branch", function (cb) {
     var version = require("./package.json").version;
     git.checkout("b" + version, { args: "-b" }, cb);
 });
 
-gulp.task("git-add-dist", ["git-create-branch"], function(cb) {
+gulp.task("git-add-dist", ["git-create-branch"], function (cb) {
     return gulp.src(TAG_FILES)
         .pipe(git.add({ args: "-f" }))
         ;
 });
 
-gulp.task("tag", ["git-add-dist"], function() {
+gulp.task("tag", ["git-add-dist"], function () {
     var version = require("./package.json").version;
     return gulp.src(TAG_FILES)
         .pipe(git.commit("Release " + version + "\n\nTag for release.\nAdd dist files.\n", { args: "-s" }))
@@ -335,14 +335,14 @@ gulp.task("tag", ["git-add-dist"], function() {
         ;
 });
 
-gulp.task("tag-release", ["tag"], function(cb) {
+gulp.task("tag-release", ["tag"], function (cb) {
     var version = require("./package.json").version;
     var target = argv.upstream ? "upstream" : "origin"
-    git.push(target, 'b' + version, function(err) {
+    git.push(target, 'b' + version, function (err) {
         if (err) {
             cb(err);
         } else {
-            git.push(target, 'v' + version, function(err) {
+            git.push(target, 'v' + version, function (err) {
                 cb(err);
             });
         }

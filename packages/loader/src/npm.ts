@@ -5,9 +5,11 @@ if (!(window as any).define) {
     (window as any).define = hpcc_js.define;
 }
 
+const _additionalPaths: { [key: string]: string } = {};
+
 class HTTPResolver {
     _basePath: string;
-    cachedPaths: { [key: string]: any } = {};
+    cachedPaths: { [key: string]: string } = {};
 
     constructor(basePath: string) {
         this._basePath = basePath;
@@ -80,7 +82,7 @@ function load(resolver: HTTPResolver, ...packages: string[]): Promise<any[]> {
             return resolver.fetchDeps(pckg, "", true);
         })).then(() => {
             const requirejs = hpcc_js.require.config({
-                paths: resolver.cachedPaths
+                paths: { ..._additionalPaths, ...resolver.cachedPaths }
             });
             requirejs(packages, (...response: any[]) => {
                 resolve(response);
@@ -100,4 +102,15 @@ export function httpLoad(basePath: string, ...packages: string[]): Promise<any[]
 
 export function npmLoad(...packages: string[]): Promise<any[]> {
     return load(npmResolver, ...packages);
+}
+
+export function additionalPaths(paths: { [key: string]: string }) {
+    for (const key in paths) {
+        const targetPath = paths[key];
+        if (!targetPath) {
+            delete _additionalPaths[key];
+        } else {
+            _additionalPaths[key] = targetPath;
+        }
+    }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/util",
-  "version": "0.0.19",
+  "version": "0.0.25",
   "description": "hpcc-js - Utilities",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
