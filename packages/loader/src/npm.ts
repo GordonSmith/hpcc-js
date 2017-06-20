@@ -1,123 +1,30 @@
-import { hpcc_js } from "@hpcc-js/requirejs-shim";
-import { json as d3Json } from "d3-request";
+import { define, requirejs } from "@hpcc-js/requirejs-shim";
 
 if (!(window as any).define) {
-    (window as any).define = hpcc_js.define;
+    (window as any).define = define;
 }
 
-const _additionalPaths: { [key: string]: string } = {};
+const shims = ["codemirror-shim", "c3-shim", "dgrid-shim", "phosphor-shim", "preact-shim"];
+const packages = [
+    "common", "layout", "phosphor", "api", "dgrid", "chart", "other", "form",
+    "c3chart", "google", "amchart", "tree", "graph", "map",
+    "handson", "react", "composite", "marshaller", "ddl", "html", "codemirror"
+];
 
-class HTTPResolver {
-    _basePath: string;
-    cachedPaths: { [key: string]: string } = {};
-
-    constructor(basePath: string) {
-        this._basePath = basePath;
-    }
-
-    fetchDeps(pckg: string, version: string = "", recursive: boolean = false): Promise<{ [key: string]: any }> {
-        if (this.cachedPaths[pckg]) {
-            return Promise.resolve(this.cachedPaths);
-        } else if (pckg.indexOf("@hpcc-js/") !== 0 || pckg === "@hpcc-js/d3-bullet") {
-            return Promise.resolve(this.cachedPaths);
-        }
-        this.cachedPaths[pckg] = this.formatPath(pckg, version);
-        this.cachedPaths[pckg + "-vendor"] = this.formatVendorPath(pckg, version);
-        return new Promise<{ [key: string]: any }>((resolve, reject) => {
-            d3Json(this.formatPackagePath(pckg), (response) => {
-                if (!recursive) {
-                    resolve(this.cachedPaths);
-                }
-                const deps = response.dependencies || {};
-                const promises = [];
-                for (const key in deps) {
-                    promises.push(this.fetchDeps(key, deps[key], recursive));
-                }
-                Promise.all(promises).then(() => {
-                    resolve(this.cachedPaths);
-                });
-            });
-        });
-    }
-
-    formatPath(pckg: string, version: string = "") {
-        return this._basePath + pckg + "/dist/" + pckg.split("/")[1];
-    }
-
-    formatVendorPath(pckg: string, version: string = "") {
-        return this._basePath + pckg + "/dist/" + pckg.split("/")[1] + "-vendor";
-    }
-
-    formatPackagePath(pckg: string) {
-        return this._basePath + pckg + "/package.json";
-    }
-}
-
-class NPMResolver extends HTTPResolver {
-    constructor() {
-        super("https://unpkg.com/");
-    }
-
-    formatPath(pckg: string, version: string = "") {
-        if (version) {
-            version = "@" + version;
-        }
-        return this._basePath + pckg + version + "/dist/" + pckg.split("/")[1];
-    }
-
-    formatVendorPath(pckg: string, version: string = "") {
-        if (version) {
-            version = "@" + version;
-        }
-        return this._basePath + pckg + version + "/dist/" + pckg.split("/")[1] + "-vendor";
-    }
-}
-
-const httpResolver: { [key: string]: HTTPResolver } = {};
-const npmResolver: NPMResolver = new NPMResolver();
-
-function load(resolver: HTTPResolver, ...packages: string[]): Promise<any[]> {
-    return new Promise<any>((resolve, reject) => {
-        Promise.all(packages.map((pckg) => {
-            return resolver.fetchDeps(pckg, "", true);
-        })).then(() => {
-            const requirejs = hpcc_js.require.config({
-                paths: { ..._additionalPaths, ...resolver.cachedPaths }
-            });
-            requirejs(packages, (...response: any[]) => {
-                resolve(response);
-            }, (err: any) => {
-                reject(err);
-            });
-        });
+let rjs: any = npm();
+export function source(url: string, additionalPaths: { [key: string]: string } = {}): any {
+    const paths: { [key: string]: string } = additionalPaths;
+    shims.forEach(shim => { paths[`@hpcc-js/${shim}`] = `${url}/@hpcc-js/${shim}/dist/${shim}`; });
+    packages.forEach(pckg => {
+        paths[`@hpcc-js/${pckg}`] = `${url}/@hpcc-js/${pckg}/dist/${pckg}.min`;
+        paths[`@hpcc-js/${pckg}-vendor`] = `${url}/@hpcc-js/${pckg}/dist/${pckg}-vendor.min`;
     });
+    rjs = requirejs.config({ paths });
+    return rjs;
 }
 
-export function httpLoad(basePath: string, ...packages: string[]): Promise<any[]> {
-    if (!httpResolver[basePath]) {
-        httpResolver[basePath] = new HTTPResolver(basePath);
-    }
-    return load(httpResolver[basePath], ...packages);
+export function npm(additionalPaths: { [key: string]: string } = {}): any {
+    return source("https://unpkg.com", additionalPaths);
 }
 
-export function npmLoad(...packages: string[]): Promise<any[]> {
-    return load(npmResolver, ...packages);
-}
-
-export function additionalPaths(paths: { [key: string]: string }) {
-    for (const key in paths) {
-        const targetPath = paths[key];
-        if (!targetPath) {
-            delete _additionalPaths[key];
-        } else {
-            _additionalPaths[key] = targetPath;
-        }
-    }
-}
-
-export function toUrl(packageID: string): string {
-    const requirejs = hpcc_js.require.config({
-        paths: { ..._additionalPaths, ...npmResolver.cachedPaths }
-    });
-    return requirejs.toUrl(packageID);
-}
+export { rjs as require };
