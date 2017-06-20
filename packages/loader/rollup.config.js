@@ -9,7 +9,7 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 export default {
     entry: 'lib-es6/index.js',
     format: 'iife',
-    moduleName: "hppc_js_loader",
+    moduleName: "@hpcc-js/loader",
     external: [
     ],
     dest: 'dist/loader.js',
@@ -22,12 +22,13 @@ export default {
         }),
         commonjs({
             namedExports: {
+                "..\..\shims\requirejs-shim\dist\requirejs-shim.js": ["hpcc_js_requirejs"]
             }
         }),
         postcss({
             extensions: ['.css']  // default value
         }),
         sourcemaps(),
-        uglify()
+        //uglify()
     ]
 };
