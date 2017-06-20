@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/preact-shim",
-  "version": "0.0.5",
+  "version": "0.0.25",
   "description": "hpcc-js - preact shim",
   "main": "dist/preact-shim.js",
   "types": "dist/preact-shim.d.ts",
