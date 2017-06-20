@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/tree",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "hpcc-js - Viz Tree",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -16,7 +16,7 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/api": "^0.0.18",
+    "@hpcc-js/api": "^0.0.19",
     "@hpcc-js/common": "^0.0.18",
     "d3-hierarchy": "^1.1.4",
     "d3-interpolate": "^1.1.5",

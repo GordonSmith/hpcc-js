@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/handson",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "hpcc-js - Viz Handson Grid",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
