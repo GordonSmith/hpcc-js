@@ -775,12 +775,12 @@ Field.prototype.hasDefault = function () {
 };
 
 Field.prototype.default = function () {
-        if (this.type() === "range") {
-            return this._properties.default || ["", ""];
-        }
-        if (this._properties.default instanceof Array && this._properties.default.length) {
-            return this._properties.default[0];
-        }
+    if (this.type() === "range") {
+        return this._properties.default || ["", ""];
+    }
+    if (this._properties.default instanceof Array && this._properties.default.length) {
+        return this._properties.default[0];
+    }
     return this._properties.default || "";
 };
 
@@ -1423,9 +1423,9 @@ Visualization.prototype.deserializeState = function (state) {
     return this;
 };
 
-    //  Output  ---
-    function Filter(datasource, ddlFilter) {
-        this.datasource = datasource;
+//  Output  ---
+function Filter(datasource, ddlFilter) {
+    this.datasource = datasource;
     if (typeof ddlFilter === "string") {
         ddlFilter = {
             fieldid: ddlFilter,
@@ -1438,91 +1438,91 @@ Visualization.prototype.deserializeState = function (state) {
     this.rule = ddlFilter.rule || "==";
     this.minid = ddlFilter.minid;
     this.maxid = ddlFilter.maxid;
-        this.calcRequestFieldID();
-    }
+    this.calcRequestFieldID();
+}
 
-    Filter.prototype.calcRequestFieldID = function () {
-        this._requestFieldID = this.fieldid;
-        this._requestMinID = this.minid;
-        this._requestMaxID = this.maxid;
+Filter.prototype.calcRequestFieldID = function () {
+    this._requestFieldID = this.fieldid;
+    this._requestMinID = this.minid;
+    this._requestMaxID = this.maxid;
     switch (this.rule) {
         case "<":
         case "<=":
-                if (Utility.endsWith(this.fieldid, "-max")) {
-                    this._requestFieldID = this.fieldid.substring(0, this.fieldid.length - 4) + (this.datasource.isRoxie() ? "_max": "");
-                }
-                break;
+            if (Utility.endsWith(this.fieldid, "-max")) {
+                this._requestFieldID = this.fieldid.substring(0, this.fieldid.length - 4) + (this.datasource.isRoxie() ? "_max" : "");
+            }
+            break;
         case ">":
         case ">=":
-                if (Utility.endsWith(this.fieldid, "-min")) {
-                    this._requestFieldID = this.fieldid.substring(0, this.fieldid.length - 4) + (this.datasource.isRoxie() ? "_min": "");
+            if (Utility.endsWith(this.fieldid, "-min")) {
+                this._requestFieldID = this.fieldid.substring(0, this.fieldid.length - 4) + (this.datasource.isRoxie() ? "_min" : "");
+            }
+            break;
+        case "set":
+            if (Utility.endsWith(this.fieldid, "-set")) {
+                this._requestFieldID = this.fieldid.substring(0, this.fieldid.length - 4) + (this.datasource.isRoxie() ? "_set" : "");
+            }
+            break;
+        case "range":
+            if (Utility.endsWith(this.minid, "-min")) {
+                this._requestMinID = this.minid.substring(0, this.minid.length - 4) + (this.datasource.isRoxie() ? "_min" : "");
+            }
+            if (Utility.endsWith(this.maxid, "-max")) {
+                this._requestMaxID = this.maxid.substring(0, this.maxid.length - 4) + (this.datasource.isRoxie() ? "_max" : "");
+            }
+            break;
     }
-                break;
-            case "set":
-                if (Utility.endsWith(this.fieldid, "-set")) {
-                    this._requestFieldID = this.fieldid.substring(0, this.fieldid.length - 4) + (this.datasource.isRoxie() ? "_set": "");
-                }
-                break;
-            case "range":
-                if (Utility.endsWith(this.minid, "-min")) {
-                    this._requestMinID = this.minid.substring(0, this.minid.length - 4) + (this.datasource.isRoxie() ? "_min": "");
-                }
-                if (Utility.endsWith(this.maxid, "-max")) {
-                    this._requestMaxID = this.maxid.substring(0, this.maxid.length - 4) + (this.datasource.isRoxie() ? "_max" : "");
-                }
-                break;
-        }
 };
 
 Filter.prototype.isRange = function () {
     return this.rule === "range";
 };
 
-    Filter.prototype.isSet = function () {
-        return this.rule === "set";
-    };
+Filter.prototype.isSet = function () {
+    return this.rule === "set";
+};
 
-    Filter.prototype._calcRequest = function (filteredRequest, request, fieldid, requestFieldID, value) {
-        if (!this.datasource.isRoxie()) {
-            //  Ignore requestFieldID, until filtering WU results
-            //  Otherwise there are many fieldID collisions
-            requestFieldID = fieldid;
+Filter.prototype._calcRequest = function (filteredRequest, request, fieldid, requestFieldID, value) {
+    if (!this.datasource.isRoxie()) {
+        //  Ignore requestFieldID, until filtering WU results
+        //  Otherwise there are many fieldID collisions
+        requestFieldID = fieldid;
     }
-        filteredRequest[requestFieldID + _CHANGED] = request[fieldid + _CHANGED] || false;
-        if (filteredRequest[requestFieldID] !== value) {
-            filteredRequest[requestFieldID] = value;
-        }
-    };
+    filteredRequest[requestFieldID + _CHANGED] = request[fieldid + _CHANGED] || false;
+    if (filteredRequest[requestFieldID] !== value) {
+        filteredRequest[requestFieldID] = value;
+    }
+};
 
 Filter.prototype.calcRequest = function (filteredRequest, request) {
     const value = request[this.fieldid] === undefined ? null : request[this.fieldid];
     if (this.isRange()) {
         if (value instanceof Array && value.length === 2) {
-                this._calcRequest(filteredRequest, request, this.minid, this._requestMinID, value[0]);
-                this._calcRequest(filteredRequest, request, this.maxid, this._requestMaxID, value[1]);
+            this._calcRequest(filteredRequest, request, this.minid, this._requestMinID, value[0]);
+            this._calcRequest(filteredRequest, request, this.maxid, this._requestMaxID, value[1]);
         }
     } else {
-            this._calcRequest(filteredRequest, request, this.fieldid, this._requestFieldID, value);
-            if (this.isSet() && this.datasource.isRoxie()) {
-                //  TODO in the future the value should be an array  ---
-                filteredRequest[this._requestFieldID + ".Item$"] = filteredRequest[this._requestFieldID];
-                delete filteredRequest[this._requestFieldID];
-    }
+        this._calcRequest(filteredRequest, request, this.fieldid, this._requestFieldID, value);
+        if (this.isSet() && this.datasource.isRoxie()) {
+            //  TODO in the future the value should be an array  ---
+            filteredRequest[this._requestFieldID + ".Item$"] = filteredRequest[this._requestFieldID];
+            delete filteredRequest[this._requestFieldID];
         }
-    };
+    }
+};
 
-Filter.prototype.matches = function (row, value) {
+Filter.prototype.matches = function (row, value): boolean {
     if (value === undefined || value === null || value === "") {
         return this.nullable;
     }
-        var rowValue = row[this._requestFieldID];
+    let rowValue = row[this._requestFieldID];
     if (rowValue === undefined) {
-            rowValue = row[this._requestFieldID.toLowerCase()];
+        rowValue = row[this._requestFieldID.toLowerCase()];
     }
-        if (rowValue === undefined) {
-            console.log("Empty cell value:  '" + this._requestFieldID + "'");
-            return false;
-        }
+    if (rowValue === undefined) {
+        console.log("Empty cell value:  '" + this._requestFieldID + "'");
+        return false;
+    }
     switch (this.rule) {
         case "<":
             if (rowValue.localeCompare) {
@@ -1544,31 +1544,34 @@ Filter.prototype.matches = function (row, value) {
                 return rowValue.localeCompare(value) >= 0;
             }
             return rowValue >= value;
-            case "!=":
-            case "notequals":
-                return rowValue != value;    // jshint ignore:line
-            case "set":
-                if (value instanceof Array) {
-                    return value.indexOf(rowValue) >= 0;
-                }
-                return value == rowValue;    // jshint ignore:line
+        case "!=":
+        case "notequals":
+            // tslint:disable-next-line:triple-equals
+            return rowValue != value;    // jshint ignore:line
+        case "set":
+            if (value instanceof Array) {
+                return value.indexOf(rowValue) >= 0;
+            }
+            // tslint:disable-next-line:triple-equals
+            return value == rowValue;    // jshint ignore:line
         case "==":
-                return value == rowValue;    // jshint ignore:line
+            // tslint:disable-next-line:triple-equals
+            return value == rowValue;    // jshint ignore:line
         default:
-                console.log("Unknown filter rule:  '" + this.rule + "'");
-                return value == rowValue;    // jshint ignore:line
+            console.log("Unknown filter rule:  '" + this.rule + "'");
+            // tslint:disable-next-line:triple-equals
+            return value == rowValue;    // jshint ignore:line
     }
-        return false;
-    };
-    
-    function Output(datasource, output) {
+};
+
+export function Output(datasource, output) {
     this.datasource = datasource;
     this.id = output.id;
     this.from = output.from;
     this.notify = output.notify || [];
     this.filters = (output.filter || []).map(function (filter) {
-            return new Filter(this.datasource, filter);
-        }, this);
+        return new Filter(this.datasource, filter);
+    }, this);
 }
 
 Output.prototype.getQualifiedID = function () {
@@ -1678,9 +1681,9 @@ export function Datasource(marshaller, datasource, proxyMappings, timeout) {
     this.WUID = datasource.WUID;
     this.URL = (marshaller.espUrl && marshaller.espUrl.url()) ? marshaller.espUrl.url() : datasource.URL;
     this.databomb = datasource.databomb;
-        this.filters = (datasource.filter || []).map(function (filter) {
-            return new Filter(this, filter);
-        }, this);
+    this.filters = (datasource.filter || []).map(function (filter) {
+        return new Filter(this, filter);
+    }, this);
     this._loadedCount = 0;
 
     const context = this;
@@ -1718,19 +1721,19 @@ export function Datasource(marshaller, datasource, proxyMappings, timeout) {
     }
 }
 
-    Datasource.prototype.isRoxie = function () {
-        return !(this.isWU() || this.isDatabomb());
-    };
+Datasource.prototype.isRoxie = function () {
+    return !(this.isWU() || this.isDatabomb());
+};
 
-    Datasource.prototype.isWU = function () {
-        return !!this.WUID;
-    };
+Datasource.prototype.isWU = function () {
+    return !!this.WUID;
+};
 
-    Datasource.prototype.isDatabomb = function () {
-        return !!this.databomb;
-    };
+Datasource.prototype.isDatabomb = function () {
+    return !!this.databomb;
+};
 
-    Datasource.prototype.getQualifiedID = function () {
+Datasource.prototype.getQualifiedID = function () {
     return this.id;
 };
 
@@ -1755,27 +1758,27 @@ Datasource.prototype.accept = function (visitor) {
     }
 };
 
-    Datasource.prototype.calcRequest = function (request) {
-        var retVal = {};
-        this.filters.forEach(function (item) {
+Datasource.prototype.calcRequest = function (request) {
+    const retVal = {};
+    this.filters.forEach(function (item) {
+        item.calcRequest(retVal, request);
+    });
+    //  TODO - Workaround HIPIE issue where it omits filters at datasoure level  ---
+    this._outputArray.forEach(function (output) {
+        output.filters.forEach(function (item) {
             item.calcRequest(retVal, request);
         });
-        //  TODO - Workaround HIPIE issue where it omits filters at datasoure level  ---
-        this._outputArray.forEach(function (output) {
-            output.filters.forEach(function (item) {
-                item.calcRequest(retVal, request);
-            });
-        });
-        return retVal;
-    };
+    });
+    return retVal;
+};
 
-    var transactionID = 0;
-    var transactionQueue = [];
-    Datasource.prototype.fetchData = function (request, updates) {
-    var myTransactionID = ++transactionID;
+let transactionID = 0;
+const transactionQueue = [];
+Datasource.prototype.fetchData = function (request, updates) {
+    const myTransactionID = ++transactionID;
     transactionQueue.push(myTransactionID);
 
-        var dsRequest = this.calcRequest(request);
+    const dsRequest = this.calcRequest(request);
     dsRequest.refresh = request.refresh || false;
     if ((window as any).__hpcc_debug) {
         console.log("fetchData:  " + JSON.stringify(updates) + "(" + JSON.stringify(request) + ")");
@@ -2226,7 +2229,7 @@ Marshaller.prototype.getVisualizationArray = function () {
 };
 
 Marshaller.prototype.getWidget = function (id) {
-        return this._widgetMappings.get(id);
+    return this._widgetMappings.get(id);
 };
 
 Marshaller.prototype.on = function (eventID, func) {

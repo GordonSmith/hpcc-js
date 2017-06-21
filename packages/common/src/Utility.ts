@@ -258,7 +258,7 @@ export function urlParams() {
     return retVal;
 }
 
-export function endsWith(str, searchStr, pos) {
+export function endsWith(str: string, searchStr: string, pos?: number) {
     const subjectString = str.toString();
     if (typeof pos !== "number" || !isFinite(pos) || Math.floor(pos) !== pos || pos > subjectString.length) {
         pos = subjectString.length;
