@@ -11,8 +11,7 @@
     <link rel="stylesheet" href="../../../node_modules/material-design-lite/material.min.css">
     <script src="../../../node_modules/material-design-lite/material.min.js"></script>
     <link rel="stylesheet" href="../../../node_modules/pure-css/lib/menus.css">
-    <script src="../../../node_modules/requirejs/require.js"></script>
-    <script src="../src/loader.js"></script>
+    <script src="../../../packages/loader/dist/loader.js"></script>
     <!--
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
@@ -36,9 +35,10 @@
     <link href="./dermatology.css" rel="stylesheet">
 
     <script>
-        require.config({
+        var hpccLoader = window["@hpcc-js/loader"];
+        hpccLoader.additionalPaths({
             paths: {
-                "@hpcc-js": "../dist",
+                // "@hpcc-js": "../dist",
                 "d3-array": "../../../node_modules/d3-array/build/d3-array",
                 "d3-axis": "../../../node_modules/d3-axis/build/d3-axis",
                 "@hpcc-js/d3-bullet": "../../../node_modules/@hpcc-js/d3-bullet/build/d3-bullet",
@@ -73,9 +73,10 @@
                 "test": "../test"
             }
         });
-        hpccsystems = {
-            require: require
-        };
+        var hpccsystems:{
+            require: hpccjsLoader.require
+
+        }
     </script>
     <script src="pureMenu.js"></script>
 </head>
@@ -156,6 +157,7 @@
         </main>
     </div>
     <script>
+        alert(hpccLoader.toUrl(""));
         var app = null;
         hpccsystems.require(["d3-selection", "d3-collection", "d3-transition", "./dermatology"], function (d3Selection, d3Collection, d3Transition, App) {
             var d3 = {

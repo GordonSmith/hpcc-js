@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@hpcc-js/requirejs-shim": "^0.0.26",
+    "d3-request": "^1.0.5",
+    "toposort": "^1.0.3",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
