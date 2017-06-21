@@ -1,15 +1,9 @@
 import { define, requirejs } from "@hpcc-js/requirejs-shim";
+import { packages, shims } from "./meta";
 
 if (!(window as any).define) {
     (window as any).define = define;
 }
-
-const shims = ["codemirror-shim", "c3-shim", "dgrid-shim", "phosphor-shim", "preact-shim"];
-const packages = [
-    "common", "layout", "phosphor", "api", "dgrid", "chart", "other", "form",
-    "c3chart", "google", "amchart", "tree", "graph", "map",
-    "handson", "react", "composite", "marshaller", "ddl", "html", "codemirror"
-];
 
 let rjs: any = npm();
 export function source(url: string, additionalPaths: { [key: string]: string } = {}): any {
@@ -28,3 +22,8 @@ export function npm(additionalPaths: { [key: string]: string } = {}): any {
 }
 
 export { rjs as require };
+
+export function locate(packageID: string) {
+    const url = rjs.toUrl(packageID);
+    return url.split(packageID)[0];
+}

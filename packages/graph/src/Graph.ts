@@ -743,8 +743,7 @@ Graph.prototype.layout = function (_?, transitionDuration?) {
                 });
 
                 if (context.applyScaleOnLayout()) {
-                    const vBounds = context.getVertexBounds(layoutEngine);
-                    context.shrinkToFit(vBounds, transitionDuration);
+                    context.zoomToFit(transitionDuration);
                 }
                 this._fixIEMarkers();
                 setTimeout(function () {
