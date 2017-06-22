@@ -3,26 +3,16 @@
 
 <head>
     <meta charset="utf-8">
-    <title>HPCC Systems - Test</title>
-
-    <script src="../../node_modules/requirejs/require.js"></script>
-    <script>
-        require.config({
-            paths: {
-                "@hpcc-js": "./dist"
-            }
-        });
-    </script>
-
+    <script src="file:///C:/Users/gordon/git/hpcc-js/packages/loader/dist/loader.js"></script>
 </head>
 
 <body>
-    <div id="placeholder" style="width:800px;height:600px">
+    <div id="placeholder" style="width:100%; height:100vh">
     </div>
-
     <script>
-        require(["@hpcc-js/tree"], function (hpccChart) {
-            var chart = new hpccChart.Dendrogram()
+        var require = window["@hpcc-js/loader"].amd();
+        hpccLoader.require(["@hpcc-js/chart"], function (hpccChart) {
+            new hpccChart.Bar()
                 .target("placeholder")
                 .render()
                 ;

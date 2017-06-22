@@ -2,6 +2,8 @@ import { ascending as d3Ascending, descending as d3Descending } from "d3-array";
 import { select as d3Select } from "d3-selection";
 import { timeFormat as d3TimeFormat } from "d3-time-format";
 
+declare const require: any;
+
 function _naturalSort(a, b, order, idx, sortCaseSensitive) {
     const re = /(^([+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)?$|^0x[0-9a-f]+$|\d+)/gi;
     const sre = /(^[ ]*|[ ]*$)/g;
@@ -380,17 +382,19 @@ export function parseClassID(classID, prefix = "..") {
         memberWidgetID: parts.length > 1 ? parts[1] : null
     };
 }
-declare var require: any;
+
 export function requireWidget(classID) {
     return new Promise(function (resolve, _reject) {
         const parsedClassID = parseClassID(classID);
-        require([parsedClassID.package], function (Package) {
-            let Widget = null;
-            if (Package && Package[parsedClassID.widgetID]) {
-                Widget = Package[parsedClassID.widgetID];
-            }
-            resolve(parsedClassID.memberWidgetID ? (Widget.prototype ? Widget.prototype[parsedClassID.memberWidgetID] : Widget[parsedClassID.memberWidgetID]) : Widget);
-        });
+        if (require) {
+            require([parsedClassID.package], function (Package) {
+                let Widget = null;
+                if (Package && Package[parsedClassID.widgetID]) {
+                    Widget = Package[parsedClassID.widgetID];
+                }
+                resolve(parsedClassID.memberWidgetID ? (Widget.prototype ? Widget.prototype[parsedClassID.memberWidgetID] : Widget[parsedClassID.memberWidgetID]) : Widget);
+            });
+        }
     });
 }
 export function requireWidgets(classIDs) {

@@ -1,6 +1,8 @@
 import { json as d3Json } from "d3-request";
 import * as toposort from "toposort";
 
+const UNPKG_SOURCE = "https://unpkg.com";
+
 export interface IPackage {
     json: object;
     deps: IPackage[];
@@ -56,7 +58,7 @@ export class PackageInfo {
     }
 
     static npmAttach(packageID: string, version: string = "", cache = cachedPackages): PackageInfo {
-        return PackageInfo.attach("https://unpkg.com", packageID, version, cache);
+        return PackageInfo.attach(UNPKG_SOURCE, packageID, version, cache);
     }
 
     packageID() {
@@ -194,10 +196,10 @@ function cache2Graph(cache: { [path: string]: PackageInfo }): IGraph {
     return packages2Graph(packages);
 }
 
-export function dependencyGraph(packages: string[]): Promise<IGraph> {
+export function dependencyGraph(packages: string[], source: string = UNPKG_SOURCE): Promise<IGraph> {
     const cache: { [path: string]: PackageInfo } = {};
     return Promise.all(packages.map((packageID) => {
-        return PackageInfo.npmAttach(packageID, "", cache).fetchDependencies(true);
+        return PackageInfo.attach(source, packageID, "", cache).fetchDependencies(true);
     })).then(() => {
         return cache2Graph(cache);
     });

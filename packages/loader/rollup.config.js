@@ -29,6 +29,6 @@ export default {
             extensions: ['.css']  // default value
         }),
         sourcemaps(),
-        uglify()
+        // uglify()
     ]
 };

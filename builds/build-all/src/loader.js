@@ -76,7 +76,6 @@
                 "handsontable": "../../../node_modules/handsontable/dist/handsontable.full",
                 "javascript-autocomplete": "../../../node_modules/javascript-autocomplete/auto-complete",
                 "orb": "../../../node_modules/orb",
-                "orb": "../../../node_modules/orb",
                 "react": "../../../node_modules/react/dist/react",
                 "simpleheat": "../../../node_modules/simpleheat/simpleheat",
                 "topojson": "../../../node_modules/topojson/build/topojson",
