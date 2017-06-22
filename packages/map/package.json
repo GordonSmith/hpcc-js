@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "build-es6": "tsc --module es6 --outDir ./lib-es6",
     "clean": "rimraf lib* && rimraf dist*",
     "docs": "typedoc --options tdoptions.json ."
   },

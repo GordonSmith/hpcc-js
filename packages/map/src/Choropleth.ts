@@ -5,6 +5,8 @@ import { Layer } from "./Layer";
 
 import "../src/Choropleth.css";
 
+declare const require: any;
+
 export class Choropleth extends Layer {
     _dataMap = {};
     _path = d3Select(null);
@@ -23,8 +25,7 @@ export class Choropleth extends Layer {
     constructor() {
         super();
         Utility.SimpleSelectionMixin.call(this);
-        const hpccLoader = window["@hpcc-js/loader"];
-        this._topoJsonFolder = hpccLoader ? hpccLoader.require.toUrl("@hpcc-js/map/TopoJSON") : "../TopoJSON";
+        this._topoJsonFolder = require && require.toUrl ? require.toUrl("@hpcc-js/map/TopoJSON") : "../TopoJSON";
     }
 
     data(_?) {

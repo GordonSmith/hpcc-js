@@ -44,7 +44,10 @@ if (!(window as any).define) {
 }
 
 export function bundle(url: string, additionalPaths: { [key: string]: string } = {}, min: boolean = true): any {
-    const paths: { [key: string]: string } = additionalPaths;
+    const paths: { [key: string]: string } = {
+        "@hpcc-js/map/TopoJSON": `${url}/map/TopoJSON`,
+        ...additionalPaths
+    };
     const minStr = min ? ".min" : "";
     shims.forEach(shim => { paths[`@hpcc-js/${shim}`] = `${url}/${shim}/dist/${shim}`; });
     packages.forEach(pckg => {

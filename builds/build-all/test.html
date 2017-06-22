@@ -10,10 +10,13 @@
     <div id="placeholder" style="width:100%; height:100vh">
     </div>
     <script>
-        var require = window["@hpcc-js/loader"].amd();
-        hpccLoader.require(["@hpcc-js/chart"], function (hpccChart) {
-            new hpccChart.Bar()
+        var require = window["@hpcc-js/loader"].bundle("./node_modules/@hpcc-js");
+        require(["@hpcc-js/map", "@hpcc-js/chart"], function (hpccMap, hpccChart) {
+            //new hpccMap.ChoroplethStates()
+            new hpccChart.MultiChart()
                 .target("placeholder")
+                .columns(["subject", "grade"])
+                .data([["math", 67]])
                 .render()
                 ;
         });
