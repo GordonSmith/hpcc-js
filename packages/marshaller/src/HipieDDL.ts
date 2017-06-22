@@ -3,6 +3,8 @@ import { Class, Database, Utility, Widget } from "@hpcc-js/common";
 import { Comms, Table } from "@hpcc-js/other";
 import { map as d3Map } from "d3-collection";
 
+declare const require: any;
+
 const LOADING = "...loading...";
 const _CHANGED = "_changed";
 
@@ -52,6 +54,7 @@ function hipieType2DBType(hipieType) {
 
 //  Mappings ---
 function SourceMappings(visualization, mappings) {
+    this.visualization = visualization;
     const newMappings = {};
     for (const key in mappings) {
         if (mappings[key] instanceof Array) {
@@ -856,7 +859,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
             if (parentVisualization) {
                 switch (chartType) {
                     case "MAP_PINS":
-                        this.loadWidget("src/map/Pins", function (widget) {
+                        this.loadWidget("../map/Pins", function (widget) {
                             try {
                                 widget
                                     .id(visualization.id)
@@ -884,7 +887,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
                     }
                 }
                 Promise.all(context.layers.map(function (layer) { return layer.loadedPromise(); })).then(function () {
-                    context.loadWidget("src/composite/MegaChart", function (widget) {
+                    context.loadWidget("../composite/MegaChart", function (widget) {
                         const layers = context.layers.map(function (layer) { return layer.widget; });
                         try {
                             switch (widget.classID()) {
@@ -921,7 +924,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
         case "BUBBLE":
         case "BAR":
         case "WORD_CLOUD":
-            this.loadWidget("src/composite/MegaChart", function (widget) {
+            this.loadWidget("../composite/MegaChart", function (widget) {
                 try {
                     widget
                         .id(visualization.id)
@@ -933,7 +936,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
             });
             break;
         case "LINE":
-            this.loadWidget("src/composite/MegaChart", function (widget) {
+            this.loadWidget("../composite/MegaChart", function (widget) {
                 try {
                     widget
                         .id(visualization.id)
@@ -945,7 +948,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
             });
             break;
         case "TABLE":
-            this.loadWidget("src/composite/MegaChart", function (widget) {
+            this.loadWidget("../composite/MegaChart", function (widget) {
                 try {
                     widget
                         .id(visualization.id)
@@ -958,7 +961,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
             });
             break;
         case "SLIDER":
-            this.loadWidget("src/form/Slider", function (widget) {
+            this.loadWidget("../form/Slider", function (widget) {
                 try {
                     widget
                         .id(visualization.id)
@@ -1079,7 +1082,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
             });
             break;
         case "HEAT_MAP":
-            this.loadWidgets(["src/other/HeatMap"], function (widget) {
+            this.loadWidgets(["../other/HeatMap"], function (widget) {
                 try {
                     widget
                         .id(visualization.id)
@@ -1091,7 +1094,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
             });
             break;
         default:
-            this.loadWidget("src/common/TextBox", function (widget) {
+            this.loadWidget("../common/TextBox", function (widget) {
                 try {
                     widget
                         .id(visualization.id)
@@ -1144,7 +1147,7 @@ Visualization.prototype.isLoaded = function () {
 };
 
 Visualization.prototype.loadMegaChartWidget = function (widgetPath, callback) {
-    this.loadWidgets(["src/composite/MegaChart", widgetPath], function (megaChart, widgets) {
+    this.loadWidgets(["../composite/MegaChart", widgetPath], function (megaChart, widgets) {
         const chart = new widgets[1]();
         megaChart
             .chartType_default(MultiChart.prototype._allChartTypesByClass[chart.classID()].id)
@@ -1161,7 +1164,6 @@ Visualization.prototype.loadWidget = function (widgetPath, callback) {
 };
 
 function es6Require(deps, callback, errback?, _require?) {
-    const require = _require || (window as any).require;
     require(deps, function (objs) {
         for (let i = 0; i < arguments.length; ++i) {
             const depParts = deps[i].split("/");
@@ -1173,11 +1175,38 @@ function es6Require(deps, callback, errback?, _require?) {
     }, errback);
 }
 
+function requirePromise(packageID) {
+    return new Promise(function (resolve, reject) {
+        if (require) {
+            require([packageID], function (Package) {
+                resolve.call(this, Package);
+            });
+        } else {
+            reject("No require.");
+        }
+    });
+}
+
+function legacyRequire(packageArr, callback) {
+    const promises = packageArr.map(function (packageID) {
+        if (packageID.indexOf("../") === 0) {
+            const parts = packageID.split("/");
+            return requirePromise("@hpcc-js/" + parts[1]).then(function (Package) {
+                return Package[parts[2]];
+            });
+        }
+        return requirePromise(packageID);
+    });
+    Promise.all(promises).then(function (packages) {
+        callback.apply(this, packages);
+    });
+}
+
 Visualization.prototype.loadWidgets = function (widgetPaths, callback) {
     this.widget = null;
 
     const context = this;
-    es6Require(widgetPaths, function (Widget) {
+    legacyRequire(widgetPaths, function (Widget) {
         const existingWidget = context.dashboard.marshaller.getWidget(context.id);
         if (existingWidget) {
             if (Widget.prototype._class !== existingWidget.classID()) {
@@ -2054,10 +2083,6 @@ Marshaller.prototype.commsDataLoaded = function () {
         }
     }
     return true;
-};
-
-Marshaller.prototype.getVisualization = function (id) {
-    return this._visualizations[id];
 };
 
 Marshaller.prototype.accept = function (visitor) {

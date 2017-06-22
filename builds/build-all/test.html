@@ -3,24 +3,14 @@
 
 <head>
     <meta charset="utf-8">
-    <script src="file:///C:/Users/gordon/git/hpcc-js/packages/loader/dist/loader.js"></script>
+    <link rel="stylesheet" href="test.css">
+    <script src="../../packages/loader/dist/loader.js"></script>
 </head>
 
 <body>
-    <div id="placeholder" style="width:100%; height:100vh">
+    <div id="placeholder">
     </div>
-    <script>
-        var require = window["@hpcc-js/loader"].bundle("./node_modules/@hpcc-js");
-        require(["@hpcc-js/map", "@hpcc-js/chart"], function (hpccMap, hpccChart) {
-            //new hpccMap.ChoroplethStates()
-            new hpccChart.MultiChart()
-                .target("placeholder")
-                .columns(["subject", "grade"])
-                .data([["math", 67]])
-                .render()
-                ;
-        });
-    </script>
+    <script src="./test.js"></script>
 </body>
 
 </html>
