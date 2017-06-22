@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@hpcc-js/build-all",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "dependencies": {
     "@hpcc-js/amchart": "^0.0.27",
     "@hpcc-js/api": "^0.0.27",
@@ -21,8 +21,8 @@
     "@hpcc-js/handson": "^0.0.27",
     "@hpcc-js/html": "^0.0.27",
     "@hpcc-js/layout": "^0.0.27",
-    "@hpcc-js/loader": "^0.0.30",
-    "@hpcc-js/map": "^0.0.30",
+    "@hpcc-js/loader": "^0.0.31",
+    "@hpcc-js/map": "^0.0.31",
     "@hpcc-js/marshaller": "^0.0.28",
     "@hpcc-js/other": "^0.0.27",
     "@hpcc-js/phosphor": "^0.0.27",
