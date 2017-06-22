@@ -1,11 +1,11 @@
 {
   "private": true,
   "name": "@hpcc-js/test-layout",
-  "version": "0.0.25",
+  "version": "0.0.27",
   "dependencies": {
-    "@hpcc-js/chart": "^0.0.25",
-    "@hpcc-js/common": "^0.0.25",
-    "@hpcc-js/layout": "^0.0.25",
+    "@hpcc-js/chart": "^0.0.27",
+    "@hpcc-js/common": "^0.0.27",
+    "@hpcc-js/layout": "^0.0.27",
     "@hpcc-js/sample-data": "^0.0.25",
     "chai": "^4.0.0",
     "es6-promise": "^4.1.0",
