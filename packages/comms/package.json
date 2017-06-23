@@ -4,6 +4,7 @@
   "description": "hpcc-js - Communications",
   "browser": "lib/index-browser.js",
   "main": "lib/index-node.js",
+  "module": "lib-es6/index-node.js",
   "types": "lib/index-node.d.ts",
   "files": [
     "lib/*",
@@ -11,8 +12,10 @@
     "dist/*"
   ],
   "scripts": {
-    "build": "tsc",
     "clean": "rimraf lib* && rimraf dist*",
+    "build": "tsc",
+    "build-es6": "tsc --module es6 --outDir ./lib-es6",
+    "bundle": "node ./node_modules/@hpcc-js/bundle/lib/rollup",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
@@ -23,6 +26,7 @@
     "xmldom": "^0.1.27"
   },
   "devDependencies": {
+    "@hpcc-js/bundle": "^0.0.1",
     "@types/d3-request": "^1.0.2",
     "@types/request": "^0.0.41",
     "@types/xmldom": "^0.1.29",

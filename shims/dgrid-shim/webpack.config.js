@@ -51,8 +51,8 @@ module.exports = {
     },
     plugins: [
         new ExtractTextPlugin('dgrid-shim.css'),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: "source-map"
-        })
+        //new webpack.optimize.UglifyJsPlugin({
+        //sourceMap: "source-map"
+        //})
     ]
 };

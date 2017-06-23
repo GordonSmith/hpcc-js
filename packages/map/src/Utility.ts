@@ -1,7 +1,6 @@
-import * as _d3Geo from "d3-geo";
 import { geoAlbers, geoConicEqualArea, } from "d3-geo";
 
-const d3Geo = _d3Geo.geo || _d3Geo.default || _d3Geo;
+// const d3Geo = _d3Geo.geo || _d3Geo.default || _d3Geo;
 
 // Origonally ased on geohash.js
 // Geohash library for Javascript
@@ -436,8 +435,4 @@ export function albersUsaPr() {
     };
 
     return albersUsa.scale(1070);
-}
-
-if (!d3Geo.albersUsaPr) {
-    d3Geo.albersUsaPr = albersUsaPr;
 }

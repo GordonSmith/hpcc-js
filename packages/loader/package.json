@@ -10,26 +10,20 @@
     "lib-es6/*",
     "dist/*"
   ],
-  "directories": {
-    "lib": "lib/"
-  },
   "scripts": {
+    "clean": "rimraf lib* && rimraf dist*",
     "build": "tsc",
     "build-es6": "tsc --module es6 --outDir ./lib-es6",
-    "bundle": "rollup -c",
-    "clean": "rimraf lib* && rimraf dist*",
+    "bundle": "node ./node_modules/@hpcc-js/bundle/lib/rollup",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
     "@hpcc-js/requirejs-shim": "^0.0.26",
-    "d3-request": "^1.0.5",
-    "toposort": "^1.0.3",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
+    "@hpcc-js/bundle": "^0.0.1",
     "rimraf": "^2.6.1",
-    "rollup": "^0.43.0",
-    "rollup-watch": "^4.0.0",
     "typedoc": "^0.7.1",
     "typescript": "^2.3.4"
   },

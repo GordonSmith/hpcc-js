@@ -952,7 +952,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
                 try {
                     widget
                         .id(visualization.id)
-                        .showChartSelect_default(false)
+                        //.showChartSelect_default(false)
                         .chartType_default("TABLE")
                         ;
                 } catch (e) {
@@ -1162,18 +1162,6 @@ Visualization.prototype.loadMegaChartWidget = function (widgetPath, callback) {
 Visualization.prototype.loadWidget = function (widgetPath, callback) {
     this.loadWidgets([widgetPath], callback);
 };
-
-function es6Require(deps, callback, errback?, _require?) {
-    require(deps, function (objs) {
-        for (let i = 0; i < arguments.length; ++i) {
-            const depParts = deps[i].split("/");
-            if (depParts.length && arguments[i][depParts[depParts.length - 1]]) {
-                arguments[i] = arguments[i][depParts[depParts.length - 1]];
-            }
-        }
-        callback.apply(this, arguments);
-    }, errback);
-}
 
 function requirePromise(packageID) {
     return new Promise(function (resolve, reject) {

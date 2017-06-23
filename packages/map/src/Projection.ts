@@ -1,8 +1,8 @@
-import * as _d3Geo from "d3-geo";
+import * as d3Geo from "d3-geo";
 import { geoMercator } from "d3-geo";
 import { albersUsaPr } from "./Utility";
 
-const d3Geo = _d3Geo.geo || _d3Geo.default || _d3Geo;
+// const d3Geo = _d3Geo.geo || _d3Geo.default || _d3Geo;
 
 enum Type {
     AzimuthalEqualArea,

@@ -11,8 +11,10 @@
     "dist/*"
   ],
   "scripts": {
-    "build": "tsc",
     "clean": "rimraf lib* && rimraf dist*",
+    "build": "tsc",
+    "build-es6": "tsc --module es6 --outDir ./lib-es6",
+    "bundle": "node ./node_modules/@hpcc-js/bundle/lib/rollup",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
@@ -23,6 +25,7 @@
   },
   "devDependencies": {
     "@types/d3-time-format": "^2.0.5",
+    "@hpcc-js/bundle": "^0.0.1",
     "rimraf": "^2.6.1",
     "typedoc": "^0.7.1",
     "typescript": "^2.3.4"

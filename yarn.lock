@@ -160,6 +160,10 @@
   version "7.0.29"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.29.tgz#ccfcec5b7135c7caf6c4ffb8c7f33102340d99df"
 
+"@types/node@^8.0.1":
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.1.tgz#89c271e0c3b9ebb6a3756dd601336970b6228b77"
+
 "@types/request@^0.0.41":
   version "0.0.41"
   resolved "https://registry.yarnpkg.com/@types/request/-/request-0.0.41.tgz#fbbb068e28f0bc3d0703c47c2a72c0a5efba0a50"

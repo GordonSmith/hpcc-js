@@ -52,7 +52,6 @@ export function bundle(url: string, additionalPaths: { [key: string]: string } =
     shims.forEach(shim => { paths[`@hpcc-js/${shim}`] = `${url}/${shim}/dist/${shim}`; });
     packages.forEach(pckg => {
         paths[`@hpcc-js/${pckg}`] = `${url}/${pckg}/dist/${pckg}${minStr}`;
-        paths[`@hpcc-js/${pckg}-vendor`] = `${url}/${pckg}/dist/${pckg}-vendor${minStr}`;
     });
     return requirejs.config({
         context: url,

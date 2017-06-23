@@ -78,7 +78,8 @@ MultiChart.prototype._mapChartTypes = [
     { id: "OPENSTREET", display: "Open Street Map", widgetClass: "map_OpenStreet" }
 ].map(function (item: any) { item.family = "map"; return item; });
 MultiChart.prototype._anyChartTypes = [
-    { id: "TABLE", display: "Table", widgetClass: "other_Table" },
+    { id: "TABLE", display: "Table", widgetClass: "dgrid_Table" },
+    { id: "TABLE_LEGACY", display: "Table (legacy)", widgetClass: "other_Table" },
     { id: "TABLE_NESTED", display: "Nested Table", widgetClass: "other_NestedTable" },
     { id: "TABLE_CALENDAR", display: "Table driven Calendar Heat Map", widgetClass: "other_CalendarHeatMap" },
     { id: "TABLE_BULLET", display: "Table driven bullet chart", widgetClass: "chart_Bullet" },

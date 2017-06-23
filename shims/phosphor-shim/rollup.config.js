@@ -25,7 +25,6 @@ export default {
                 "@phosphor/widgets": ["Widget", "DockPanel"]
             }
         }),
-        sourcemaps(),
-        uglify()
+        sourcemaps()
     ]
 };
