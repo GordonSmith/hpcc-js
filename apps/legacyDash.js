@@ -1,6 +1,6 @@
 var hpccLoader = window["@hpcc-js/loader"];
 //var require = hpccLoader.amd("./node_modules/@hpcc-js", { "test": "../test" }, "../../node_modules");
-var require = window["@hpcc-js/loader"].bundle("..");
+var require = window["@hpcc-js/loader"].bundle("../packages");
 require(["@hpcc-js/other", "@hpcc-js/marshaller"], function (hpccOther, hpccMarshaller) {
     var Comms = hpccOther.Comms;
     var Marshaller = hpccMarshaller.HTML;

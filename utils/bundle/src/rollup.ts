@@ -19,12 +19,6 @@ program
     .option("-m, --min", "Minimize")
     .parse(process.argv);
 
-const myPackage = require(path.join(process.cwd(), "package.json"));
-if (!myPackage) {
-    throw new Error("Unable to locate package.json");
-}
-const leafID = myPackage.name.split("/")[1];
-
 const aliases: { [key: string]: string } = {};
 const externals: string[] = [];
 const globals: { [key: string]: string } = {};
@@ -32,11 +26,10 @@ const deps: { [key: string]: any } = {};
 
 function walkDependencies(folder: string, depth: number = 0) {
     const pkg = require(path.join(folder, "package.json"));
+    pkg.__folder = folder;
     for (const key in pkg.dependencies) {
         if (key === "@hpcc-js/dgrid-shim" || (key !== "@hpcc-js/d3-bullet" && key.indexOf("@hpcc-js") === 0 && key.indexOf("-shim") < 0)) {
-            const depFolder = path.join(folder, "node_modules", key);
-            const depPkg = walkDependencies(depFolder, depth + 1);
-            depPkg.__folder = depFolder;
+            const depPkg = walkDependencies(path.join(folder, "node_modules", key), depth + 1);
             deps[key] = depPkg;
             if (depth === 0) {
                 console.log("Excluding:  " + key);
@@ -47,7 +40,8 @@ function walkDependencies(folder: string, depth: number = 0) {
     }
     return pkg;
 }
-walkDependencies(process.cwd());
+const myPackage = walkDependencies(process.cwd());
+const leafID = myPackage.name.split("/")[1];
 
 for (const key in myPackage.dependencies) {
     if (key.indexOf("@hpcc-js") !== 0) {
@@ -58,7 +52,11 @@ for (const key in myPackage.dependencies) {
                 aliases[key] = depKey;
                 const indexSrc = fs.readFileSync(path.join(depPckg.__folder, "src", "index.ts"), "utf8");
                 if (indexSrc.indexOf(key) < 0) {
-                    console.log(`Error:  ${key} not exported by ${deps[depKey].name}`);
+                    console.log(`Error:  ${key} not exported by ${depPckg.name}`);
+                }
+                const mySrc = fs.readFileSync(path.join(myPackage.__folder, "src", "index.ts"), "utf8");
+                if (mySrc.indexOf(key) >= 0) {
+                    console.log(`Error:  ${key} shoud not be exported by ${myPackage.name}`);
                 }
                 break;
             }
