@@ -4,6 +4,8 @@ import "amcharts3/amcharts/funnel";
 import { min as d3Min } from "d3-array";
 import { select as d3Select } from "d3-selection";
 
+declare const require: any;
+
 const AmCharts = (window as any).AmCharts;
 
 export class CommonFunnel extends HTMLWidget {
@@ -101,7 +103,7 @@ export class CommonFunnel extends HTMLWidget {
             chartScrollbar: {}
         };
         if (typeof (window as any).define === "function" && (window as any).define.amd) {
-            initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
+            initObj.pathToImages = require && require.toUrl ? require.toUrl("amchartsImg") : ".";
         }
         this._chart = AmCharts.makeChart(domNode, initObj);
         this._chart.addListener("clickSlice", function (e) {

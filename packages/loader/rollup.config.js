@@ -1,7 +1,6 @@
 import resolve from 'rollup-plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import commonjs from "rollup-plugin-commonjs";
-const css = require('rollup-plugin-css-only');
 const alias = require('rollup-plugin-alias');
 const uglify = require('rollup-plugin-uglify');
 const sourcemaps = require('rollup-plugin-sourcemaps');

@@ -4,6 +4,8 @@ import "amcharts3/amcharts/xy";
 import { format as d3Format } from "d3-format";
 import { XYAxis as Axis } from "./XYAxis";
 
+declare const require: any;
+
 const AmCharts = (window as any).AmCharts;
 
 export class CommonXY extends HTMLWidget {
@@ -257,7 +259,7 @@ export class CommonXY extends HTMLWidget {
             }
         };
         if (typeof (window as any).define === "function" && (window as any).define.amd) {
-            initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
+            initObj.pathToImages = require && require.toUrl ? require.toUrl("amchartsImg") : ".";
         }
         this._chart = AmCharts.makeChart(domNode, initObj);
         this._chart.addListener("clickGraphItem", function (e) {

@@ -3,6 +3,8 @@ import { HTMLWidget } from "@hpcc-js/common";
 import "amcharts3/amcharts/gauge";
 import { scaleLinear as d3ScaleLinear } from "d3-scale";
 
+declare const require: any;
+
 const AmCharts = (window as any).AmCharts;
 
 export class Gauge extends HTMLWidget {
@@ -113,7 +115,7 @@ export class Gauge extends HTMLWidget {
             arrows: [{}],
         };
         if (typeof (window as any).define === "function" && (window as any).define.amd) {
-            initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
+            initObj.pathToImages = require && require.toUrl ? require.toUrl("amchartsImg") : ".";
         }
         this._chart = AmCharts.makeChart(domNode, initObj);
     }

@@ -5,7 +5,8 @@ import { format as d3Format } from "d3-format";
 import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";
 import { SerialAxis as Axis } from "./SerialAxis";
 
-// import "amcharts3/amcharts/serial.css";
+declare const require: any;
+
 const AmCharts = (window as any).AmCharts;
 
 export class CommonSerial extends HTMLWidget {
@@ -509,7 +510,7 @@ export class CommonSerial extends HTMLWidget {
             }
         };
         if (typeof (window as any).define === "function" && (window as any).define.amd) {
-            initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
+            initObj.pathToImages = require && require.toUrl ? require.toUrl("amchartsImg") : ".";
         }
         this._chart = AmCharts.makeChart(domNode, initObj);
         this._chart.addListener("clickGraphItem", function (e) {

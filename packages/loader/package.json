@@ -19,11 +19,14 @@
   },
   "dependencies": {
     "@hpcc-js/requirejs-shim": "^0.0.26",
+    "es6-promise": "^4.1.0",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
     "@hpcc-js/bundle": "^0.0.3",
     "rimraf": "^2.6.1",
+    "rollup": "^0.43.0",
+    "rollup-watch": "^4.0.0",
     "typedoc": "^0.7.1",
     "typescript": "^2.3.4"
   },

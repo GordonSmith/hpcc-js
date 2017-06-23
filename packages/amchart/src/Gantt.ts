@@ -5,6 +5,8 @@ import "amcharts3/amcharts/gantt";
 import { timeParse as d3TimeParse } from "d3-time-format";
 import "./CommonSerial";  //  Need to load amcharts/serial
 
+declare const require: any;
+
 const AmCharts = (window as any).AmCharts;
 
 export class Gantt extends HTMLWidget {
@@ -112,7 +114,7 @@ export class Gantt extends HTMLWidget {
         };
 
         if (typeof (window as any).define === "function" && (window as any).define.amd) {
-            initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
+            initObj.pathToImages = require && require.toUrl ? require.toUrl("amchartsImg") : ".";
         }
         this._chart = AmCharts.makeChart(domNode, initObj);
 

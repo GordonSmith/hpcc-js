@@ -6,6 +6,8 @@ import { min as d3Min } from "d3-array";
 import { format as d3Format } from "d3-format";
 import { select as d3Select } from "d3-selection";
 
+declare const require: any;
+
 const AmCharts = (window as any).AmCharts;
 
 export class Pie extends HTMLWidget {
@@ -135,7 +137,7 @@ export class Pie extends HTMLWidget {
             theme: "none"
         };
         if (typeof (window as any).define === "function" && (window as any).define.amd) {
-            initObj.pathToImages = (window as any).require.toUrl("amchartsImg");
+            initObj.pathToImages = require && require.toUrl ? require.toUrl("amchartsImg") : ".";
         }
         this._chart = AmCharts.makeChart(domNode, initObj);
         this._chart.addListener("clickSlice", function (e) {

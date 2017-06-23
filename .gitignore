@@ -12,6 +12,8 @@ lib-test-*/
 dist/
 lib*
 build
+packages/amchart/images
+packages/common/font-awesome
 packages/**/yarn.lock
 test/**/yarn.lock
 *.log

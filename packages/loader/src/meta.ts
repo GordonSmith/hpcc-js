@@ -36,7 +36,7 @@ export const thirdParty = {
     "d3-transition": "d3-transition/build/d3-transition",
     "d3-zoom": "d3-zoom/build/d3-zoom",
     "dagre": "dagre/dist/dagre",
-    "es6-promise": "es6-promise/dist/es6-promise.auto",
+    "es6-promise/auto": "es6-promise/dist/es6-promise.auto",
     "font-awesome": "font-awesome",
     "google-maps": "google-maps/lib/Google",
     "grid-list": "grid-list/src/gridList",

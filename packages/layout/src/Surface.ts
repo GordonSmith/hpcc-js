@@ -1,7 +1,6 @@
 import { HTMLWidget, Widget } from "@hpcc-js/common";
 import { select as d3Select } from "d3-selection";
 
-// import "font-awesome/css/font-awesome.css";
 import "../src/Surface.css";
 
 export class Surface extends HTMLWidget {
