@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/common",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "hpcc-js - Viz Common",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -9,7 +9,7 @@
     "lib/*",
     "lib-es6/*",
     "dist/*",
-    "fonts/*"
+    "font-awesome/**/*"
   ],
   "scripts": {
     "clean": "rimraf lib* && rimraf dist* && rimraf fonts",

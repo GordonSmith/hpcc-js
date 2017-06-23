@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/codemirror",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "hpcc-js - Viz Code Mirror",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -19,10 +19,10 @@
   },
   "dependencies": {
     "@hpcc-js/codemirror-shim": "^0.0.26",
-    "@hpcc-js/common": "^0.0.30",
+    "@hpcc-js/common": "^0.0.31",
     "@hpcc-js/ddl": "^0.0.25",
-    "@hpcc-js/dgrid": "^0.0.30",
-    "@hpcc-js/html": "^0.0.30",
+    "@hpcc-js/dgrid": "^0.0.31",
+    "@hpcc-js/html": "^0.0.31",
     "tslib": "^1.7.1"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/loader",
-  "version": "0.0.35",
+  "version": "0.0.36",
   "description": "hpcc-js - Loader",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
