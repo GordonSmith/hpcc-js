@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/composite",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "description": "hpcc-js - Viz Composite",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -18,16 +18,16 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/chart": "^0.0.28",
-    "@hpcc-js/common": "^0.0.28",
-    "@hpcc-js/form": "^0.0.28",
-    "@hpcc-js/layout": "^0.0.28",
-    "@hpcc-js/other": "^0.0.28",
+    "@hpcc-js/chart": "^0.0.29",
+    "@hpcc-js/common": "^0.0.29",
+    "@hpcc-js/form": "^0.0.29",
+    "@hpcc-js/layout": "^0.0.29",
+    "@hpcc-js/other": "^0.0.29",
     "d3-selection": "^1.1.0",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.2",
+    "@hpcc-js/bundle": "^0.0.3",
     "rimraf": "^2.6.1",
     "typedoc": "^0.7.1",
     "typescript": "^2.3.4"
