@@ -521,7 +521,7 @@ export class GMap extends HTMLWidget {
         return this._googleMapPromise;
     }
 
-    render(callback) {
+    render(callback?) {
         const context = this;
         const args = arguments;
         this.requireGoogleMap().then(function () {
