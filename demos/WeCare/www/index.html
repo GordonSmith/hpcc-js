@@ -10,10 +10,10 @@
 
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic"
         rel="stylesheet" />
-    <link href="../thirdparty/impress.js/css/impress-demo.css" rel="stylesheet" />
+    <link href="../../../node_modules/impress.js/css/impress-demo.css" rel="stylesheet" />
 
-    <link rel="shortcut icon" href="../thirdparty/impress.js/favicon.png" />
-    <link rel="apple-touch-icon" href="../thirdparty/impress.js/apple-touch-icon.png" />
+    <link rel="shortcut icon" href="../../../node_modules/impress.js/favicon.png" />
+    <link rel="apple-touch-icon" href="../../../node_modules/impress.js/apple-touch-icon.png" />
 
     <link href="../style/index.css" rel="stylesheet" />
     <script src="../thirdparty/hpcc-platform-comms.min.js"></script>
@@ -72,8 +72,8 @@
 
         <div id="mapPage" class="step slide noClick" data-x="0" data-y="525" data-rotate-y="0">
             <q style="text-align:center"><strong>Address History</strong></q>
-            <div id="addressChart" onclick="noclick(event);" class="widget" style="height:20%"></div>
-            <div id="addressMap" onclick="noclick(event);" class="widget" style="height:80%"></div>
+            <div id="addressChart" onclick="noclick(event);" class="widget" style="height:130px"></div>
+            <div id="addressMap" onclick="noclick(event);" class="widget" style="height:525px"></div>
         </div>
 
         <div id="addressPage" class="step slide" data-x="885" data-y="525" data-z="115" data-rotate-y="-15">
@@ -106,7 +106,7 @@
                 document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
             }
     </script>
-    <script src="../thirdparty/impress.js/js/impress.js"></script>
+    <script src="../../../node_modules/impress.js/js/impress.js"></script>
     <script>
         document.addEventListener("click", function (event) {
             var target = event.target;

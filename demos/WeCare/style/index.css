@@ -29,6 +29,7 @@
     border-color: lightgray;
     background-color: white;
     border-radius: 8px;
+    line-height:normal;
 }
         
 .widget table {
