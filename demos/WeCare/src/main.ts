@@ -265,16 +265,16 @@ export class Main {
                                         context.refreshLocations(w);
                                     })
                             ]),
-                new Slider()
-                    // .name("radius")
-                    // .label("Location Radius")
+                (new Slider()
+                    .name("radius") as Slider)
+                    .label("Location Radius")
                     .low(1)
                     .high(50)
                     .step(1)
                     .value(3),
-                new Slider()
-                    // .name("age")
-                    // .label("Age (18-100)")
+                (new Slider()
+                    .name("age") as Slider)
+                    .label("Age (18-100)")
                     .low(18)
                     .high(100)
                     .step(1)
@@ -294,12 +294,14 @@ export class Main {
                 context.mainRequest = {};
                 const locations = [];
                 function parseDate(address, date, _range, prefix) {
-                    const range = +_range / 2;
+                    const range = +_range;
                     if (address && address.zip && date && range) {
                         context.mainRequest[prefix] = address.zip;
                         const zipDate = new Date(date);
-                        const from = new Date(zipDate.setMonth(zipDate.getMonth() - range));
-                        const to = new Date(zipDate.setMonth(zipDate.getMonth() + range));
+                        const from = new Date(date);
+                        const to = new Date(date);
+                        from.setMonth(zipDate.getMonth() - range);
+                        to.setMonth(zipDate.getMonth() + range);
                         context.mainRequest[prefix + "lowyyyymm"] = context.dateFormatter(from);
                         context.mainRequest[prefix + "highyyyymm"] = context.dateFormatter(to);
                         locations.push("" + address.lat + " " + address.lng + "," + context.dateFormatter2(zipDate));
@@ -309,9 +311,8 @@ export class Main {
                 parseDate(context.formZip2.__hpcc_address, request.zip2Date, request.zip2DateRange, "zip2");
                 parseDate(context.formZip3.__hpcc_address, request.zip3Date, request.zip3DateRange, "zip3");
                 context.mainRequest.radius = request.radius;
-                const ages = request.age.split(",");
-                context.mainRequest.agelow = ages[0];
-                context.mainRequest.agehigh = ages[1];
+                context.mainRequest.agelow = request.age[0];
+                context.mainRequest.agehigh = request.age[1];
                 context.mainRequest.demomode = demomode;
                 context.mainRequest.bestfitmax = 10;
                 const tmp = JSON.stringify(context.mainRequest);

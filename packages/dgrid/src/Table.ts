@@ -59,7 +59,7 @@ export class Table extends HTMLWidget {
         }, this._dgridDiv.node());
         this._dgrid.on("dgrid-select", (evt) => {
             if (evt.rows && evt.rows.length) {
-                this.click(this.data()[evt.rows[0].id], "", true);
+                this.click(this.rowToObj(this.data()[evt.rows[0].id]), "", true);
             }
         });
         this._dgrid.refresh();
@@ -111,6 +111,7 @@ export class Table extends HTMLWidget {
     }
 
     click(row, col, sel) {
+        console.log(row, col, sel);
     }
 
     pagination: { (): boolean; (_: boolean): Table; };
