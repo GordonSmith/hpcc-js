@@ -541,12 +541,11 @@ Source.prototype.getColumns = function () {
 };
 
 Source.prototype.getData = function () {
-    var db = this.getOutput().db;
-        var retVal = this.mappings.doMapAll(db);
-        if (retVal.length && this.sort) {
+    const db = this.getOutput().db;
+    const retVal = this.mappings.doMapAll(db);
+    if (retVal.length && this.sort) {
             Utility.multiSort(retVal, this.mappings.hipieMapSortArray(this.sort));
     }
-    const retVal = this.mappings.doMapAll(db);
     if (this.reverse) {
         retVal.reverse();
     }
@@ -971,7 +970,7 @@ export function Visualization(dashboard, visualization, parentVisualization) {
                 try {
                     widget
                         .id(visualization.id)
-                        //.showChartSelect_default(false)
+                        .showChartSelect_default(false)
                         .chartType_default("TABLE")
                         ;
                 } catch (e) {
