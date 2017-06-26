@@ -180,7 +180,7 @@ export abstract class XYAxis extends SVGWidget {
         if (currSel) {
             selected = this.data().filter(function (d) {
                 let pos = d[0];
-                pos = this.domainAxis.d3Scale(pos) + (this.domainAxis.d3Scale.bandwidth ? this.domainAxis.d3Scale.bandwidth() / 2 : 0);
+                pos = this.dataPos(pos) + (this.domainAxis.d3Scale.bandwidth ? this.domainAxis.d3Scale.bandwidth() / 2 : 0);
                 return pos >= currSel[0] && pos <= currSel[1];
             }, this);
         }

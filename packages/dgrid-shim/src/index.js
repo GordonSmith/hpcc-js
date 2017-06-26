@@ -6,21 +6,12 @@ import * as Selection from "dgrid/Selection";
 import * as ColumnResizer from "dgrid/extensions/ColumnResizer";
 import * as Pagination from "dgrid/extensions/Pagination";
 
-
-import "dgrid/extensions/nls/pagination";
+import * as nlsPagination from "dgrid/extensions/nls/pagination";
 import "dgrid/css/dgrid.css";
 
 export const Memory = _Memory;
-export const Grid = declare([OnDemandGrid, Keyboard, Selection]);
+export const Grid = declare([OnDemandGrid, Keyboard, Selection, ColumnResizer]);
+Grid.prototype.i18nPagination = nlsPagination.root;
 
 export const PagingGrid = declare([OnDemandGrid, Keyboard, Selection, ColumnResizer, Pagination]);
-PagingGrid.prototype.i18nPagination = {
-    status: '${start} - ${end} of ${total} results',
-    gotoFirst: 'Go to first page',
-    gotoNext: 'Go to next page',
-    gotoPrev: 'Go to previous page',
-    gotoLast: 'Go to last page',
-    gotoPage: 'Go to page',
-    jumpPage: 'Jump to page',
-    rowsPerPage: 'Number of rows per page'
-};
+PagingGrid.prototype.i18nPagination = nlsPagination.root;

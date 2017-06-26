@@ -61,12 +61,12 @@ export class CalendarHeatMap extends HTMLWidget {
         const height = cellSize * 8;
 
         const data = this.calendarData();
-        const mappedData = d3Map(data, function (d) { return d.dateKey; });
-        const dateExtent = d3Extent(data, function (d) {
+        const mappedData = d3Map(data, function (d: any) { return d.dateKey; });
+        const dateExtent = d3Extent(data, function (d: any) {
             return d.dateKey.getFullYear();
         });
         const context = this;
-        const svg = element.selectAll("svg").data(d3Range(dateExtent[0], dateExtent[1] + 1));
+        const svg = element.selectAll("svg").data(d3Range(+dateExtent[0], +dateExtent[1] + 1));
         svg.enter().append("svg")
             .each(function (d) {
                 const svg2 = d3Select(this);
@@ -96,11 +96,11 @@ export class CalendarHeatMap extends HTMLWidget {
             ;
         svg.exit().remove();
 
-        let dataExtent = d3Extent(data, function (d) {
+        let dataExtent: [any, any] = d3Extent<number>(data, function (d: any) {
             return d.values.aggregate;
         });
         if (this.aggrDeltaColumn()) {
-            const max = Math.max(Math.abs(dataExtent[0]), Math.abs(dataExtent[1]));
+            const max = Math.max(Math.abs(+dataExtent[0]), Math.abs(+dataExtent[1]));
             dataExtent = [-max, max];
         }
         const dayRect = svg.select(".days").selectAll(".day").data(function (d) { return d3TimeDays(new Date(d, 0, 1), new Date(d + 1, 0, 1)); });
@@ -122,7 +122,7 @@ export class CalendarHeatMap extends HTMLWidget {
             .append("title")
             ;
         dayRect
-            .attr("x", function (d) { return d3TimeWeek.count(d) * cellSize; })
+            .attr("x", function (d) { return d3TimeWeek.count(d[0], d[1]) * cellSize; })
             .attr("y", function (d) { return d.getDay() * cellSize; })
             .attr("width", cellSize)
             .attr("height", cellSize)
@@ -158,9 +158,9 @@ export class CalendarHeatMap extends HTMLWidget {
         function calcMonthPath(t0) {
             const t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0);
             const d0 = t0.getDay();
-            const w0 = d3TimeWeek.count(t0);
+            const w0 = d3TimeWeek.count(t0[0], t0[1]);
             const d1 = t1.getDay();
-            const w1 = d3TimeWeek.count(t1);
+            const w1 = d3TimeWeek.count(t1[0], t1[1]);
             return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize +
                 "H" + w0 * cellSize + "V" + 7 * cellSize +
                 "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize +

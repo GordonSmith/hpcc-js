@@ -10,6 +10,7 @@
     "watch": "lerna exec --parallel --ignore \"@hpcc-js/*-shim\" --ignore \"@hpcc-js/demo-*\" -- tsc -w ",
     "build-es6": "lerna run build-es6",
     "bundle": "lerna run bundle",
+    "build-all": "npm run build && npm run build-es6 && npm run bundle",
     "test": "lerna run test --scope \"@hpcc-js/test-*\"",
     "test:chrome": "lerna run test:chrome --scope \"@hpcc-js/test-*\"",
     "test:firefox": "lerna run test:firefox --scope \"@hpcc-js/test-*\"",
