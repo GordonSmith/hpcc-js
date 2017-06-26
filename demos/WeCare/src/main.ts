@@ -1,5 +1,5 @@
 ﻿import { Scatter } from "@hpcc-js/chart";
-import { Utility, WidgetArray } from "@hpcc-js/common";
+import { Utility, WidgetArray, } from "@hpcc-js/common";
 import { Connection, RequestType } from "@hpcc-js/comms";
 import { Table } from "@hpcc-js/dgrid";
 import { Form, Input, Slider } from "@hpcc-js/form";
@@ -389,9 +389,10 @@ export class Main {
         this.addressMap
             .data(_addresses.map(function (row) {
                 const d = row;
-                return [row.geo_lat, row.geo_long];
-            }));
-        // .zoomToFit();
+                return [+row.geo_lat, +row.geo_long];
+            }))
+            .zoomToFit()
+            ;
     }
 
     initAddressTable(id) {
@@ -425,7 +426,7 @@ export class Main {
         this.addressChart = new Scatter()
             .target(id)
             .paletteID("Set1")
-            .interpolate("cardinal")
+            .interpolate("catmullRom")
             .xAxisType("time")
             .xAxisTypeTimePattern("%Y%m%d")
             .xAxisDomainLow("19700101")
