@@ -204,7 +204,7 @@ Edge.prototype.publish("arcDepth", 16, "number", "Arc Depth", null, { tags: ["Ba
 Edge.prototype.publish("showArc", true, "boolean", "Show/Hide Arc", null, { tags: ["Basic"] });
 Edge.prototype.publish("tooltip", "", "string", "Tooltip", null, { tags: ["Private"] });
 
-Edge.prototype.publish("sourceMarker", "circle", "set", "Source Marker", ["circle"], { optional: true });
-Edge.prototype.publish("targetMarker", "arrow", "set", "Source Marker", ["arrow", "circle"], { optional: true });
+Edge.prototype.publish("sourceMarker", "circle", "set", "Source Marker", ["none", "circle"], { optional: true });
+Edge.prototype.publish("targetMarker", "arrow", "set", "Source Marker", ["none", "arrow", "circle"], { optional: true });
 Edge.prototype.publish("strokeDasharray", null, "string", "Stroke Dash Array", null, { optional: true });
 Edge.prototype.publish("strokeColor", null, "html-color", "Stroke Color", null, { optional: true });

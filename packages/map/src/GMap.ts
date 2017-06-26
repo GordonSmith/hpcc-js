@@ -537,7 +537,7 @@ export class GMap extends HTMLWidget {
 
         const circle_enter = [];
         const circle_update = [];
-        const circle_exit = d3Map(this._circleMap.keys(), function (d) { return d; });
+        const circle_exit = d3Map(this._circleMap.keys(), function (d: any) { return d; });
         this.data().forEach(function (row) {
             circle_exit.remove(rowID(row));
             if (row[3] && !this._circleMap.has(rowID(row))) {
@@ -572,7 +572,7 @@ export class GMap extends HTMLWidget {
 
         const pin_enter = [];
         const pin_update = [];
-        const pin_exit = d3Map(this._pinMap.keys(), function (d) { return d; });
+        const pin_exit = d3Map(this._pinMap.keys(), function (d: any) { return d; });
         this.data().forEach(function (row) {
             pin_exit.remove(rowID(row));
             if (row[2] && !this._pinMap.has(rowID(row))) {
@@ -634,6 +634,7 @@ export class GMap extends HTMLWidget {
     }
 
     zoomTo(selection) {
+        if (!this._renderCount) return this;
         let foundCount = 0;
         const latlngbounds = new google.maps.LatLngBounds();
         selection.forEach(function (item) {

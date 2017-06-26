@@ -1,9 +1,10 @@
 import { MultiChart } from "@hpcc-js/chart";
 import { Database, Text, Utility } from "@hpcc-js/common";
 import { Button, Input, Select } from "@hpcc-js/form";
-import { Border, Toolbar } from "@hpcc-js/layout";
+import { Border, Grid, Toolbar } from "@hpcc-js/layout";
 import { Legend } from "@hpcc-js/other";
 import { select as d3Select } from "d3-selection";
+import "d3-transition";
 
 import "../src/MegaChart.css";
 
@@ -123,7 +124,7 @@ export class MegaChart extends Border {
                 node = document.body;
             }
 
-            const targetElement = d3Select(context.target());
+            const targetElement = d3Select(context.target()) as any;
             if (isMaximized) {
                 // Restore from maximized to natural size/position
                 const targetParentBox = target.parentElement.getBoundingClientRect();
@@ -138,13 +139,10 @@ export class MegaChart extends Border {
                     .style("width", (targetParentBox.width - targetPaddingLeft - targetPaddingRight) + "px")
                     .style("height", (targetParentBox.height - targetPaddingTop - targetPaddingBottom) + "px")
                     .each("end", function () {
-                        targetElement.style({
-                            "position": target.__old_position,
-                            "z-index": target.__old_zindex,
-                            "background-color": target.__old_backgroundColor,
-                            "box-shadow": target.__old_boxshadow
-                        })
-                            ;
+                        targetElement.style("position", target.__old_position);
+                        targetElement.style("z-index", target.__old_zindex);
+                        targetElement.style("background-color", target.__old_backgroundColor);
+                        targetElement.style("box-shadow", target.__old_boxshadow);
                         context
                             .resize({
                                 width: targetParentBox.width - targetPaddingLeft - targetPaddingRight,
@@ -162,7 +160,7 @@ export class MegaChart extends Border {
                 target.__old_zindex = target.style.zIndex;
                 target.__old_boxshadow = target.style.boxShadow;
                 target.__old_backgroundColor = context.element().style("background-color");
-                const grid = d3Select(node).datum();
+                const grid = d3Select(node).datum() as Grid;
                 const gridTarget = grid.target();
                 const gridBox = grid ? gridTarget.getBoundingClientRect() : node.getBoundingClientRect();
                 const gridPaddingTop = parseInt(getComputedStyle(gridTarget, null).getPropertyValue("padding-top").replace("px", ""));
@@ -171,22 +169,17 @@ export class MegaChart extends Border {
                 const gridPaddingBottom = parseInt(getComputedStyle(gridTarget, null).getPropertyValue("padding-bottom").replace("px", ""));
                 context.contentDiv.style("opacity", 0).transition(100);
                 targetElement
-                    .style({
-                        "position": "fixed",
-                        "z-index": 999999,
-                        "box-shadow": "0 8px 8px 0 rgba(0,0,0,.14),0 12px 4px -8px rgba(0,0,0,.2),0 4px 20px 0 rgba(0,0,0,.12)",
-                        "background-color": target.__old_backgroundColor
-                    })
+                    .style("position", "fixed")
+                    .style("z-index", 999999)
+                    .style("box-shadow", "0 8px 8px 0 rgba(0,0,0,.14),0 12px 4px -8px rgba(0,0,0,.2),0 4px 20px 0 rgba(0,0,0,.12)")
+                    .style("background-color", target.__old_backgroundColor)
                     .transition()// .duration(3000)
-                    .style({
-                        top: (gridBox.top + gridPaddingTop) + "px",
-                        left: (gridBox.left + gridPaddingLeft) + "px",
-                        width: (gridBox.width - gridPaddingLeft - gridPaddingRight) + "px",
-                        height: (gridBox.height - gridPaddingTop - gridPaddingBottom) + "px"
-                    }).each("end", function () {
-                        targetElement.style({
-                            "background-color": context.maximizedBackgroundColor()
-                        });
+                    .style("top", (gridBox.top + gridPaddingTop) + "px")
+                    .style("left", (gridBox.left + gridPaddingLeft) + "px")
+                    .style("width", (gridBox.width - gridPaddingLeft - gridPaddingRight) + "px")
+                    .style("height", (gridBox.height - gridPaddingTop - gridPaddingBottom) + "px")
+                    .each("end", function () {
+                        targetElement.style("background-color", context.maximizedBackgroundColor());
                         context
                             .resize({
                                 width: (gridBox.width - gridPaddingLeft - gridPaddingRight),
