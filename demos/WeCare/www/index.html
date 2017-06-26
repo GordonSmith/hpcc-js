@@ -16,11 +16,15 @@
     <link rel="apple-touch-icon" href="../../../node_modules/impress.js/apple-touch-icon.png" />
 
     <link href="../style/index.css" rel="stylesheet" />
-    <script src="../thirdparty/hpcc-platform-comms.min.js"></script>
     <script src="../../../packages/loader/dist/loader.js"></script>
     <script>
         var hpccLoader = window["@hpcc-js/loader"];
-        var require = hpccLoader.amd("../node_modules/@hpcc-js", { "test": "../tests" }, "../../../node_modules");
+        var require = hpccLoader.bundle("../node_modules/@hpcc-js", {
+            "d3-selection": "../../../node_modules/d3-selection/build/d3-selection",
+            "d3-time-format": "../../../node_modules/d3-time-format/build/d3-time-format",
+            "d3-time": "../../../node_modules/d3-time/build/d3-time",
+            "test": "../tests"
+        }, true);
         var hpccsystems = {
             require: require
         };
@@ -30,8 +34,14 @@
     <script src="../thirdparty/hpcc-viz.js"></script>
     -->
     <!--  Uncomment to develop
-    <script src="../thirdparty/hpcc-platform-comms.js"></script>
-    <script src="../../out/loader.js"></script>
+    <script src="../../../packages/loader/dist/loader.js"></script>
+    <script>
+        var hpccLoader = window["@hpcc-js/loader"];
+        var require = hpccLoader.amd("../node_modules/@hpcc-js", { "test": "../tests" }, "../../../node_modules");
+        var hpccsystems = {
+            require: require
+        };
+    </script>
     -->
     <!--  Uncomment to test build
     <script src="../dist-amd/hpcc-viz.js"></script>
