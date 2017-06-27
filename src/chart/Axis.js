@@ -399,6 +399,10 @@
         }
         tmpSvg.remove();
 
+        if (this.type() === "none") {
+            retVal.depth = 0;
+        }
+
         return retVal;
     };
 

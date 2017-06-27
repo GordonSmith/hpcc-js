@@ -83,7 +83,6 @@
     XYAxis.prototype.publishProxy("yAxisDomainPadding", "valueAxis", "extend");
     XYAxis.prototype.publish("yAxisGuideLines", true, "boolean", "Y-Axis Guide Lines");
 
-    XYAxis.prototype.publish("yAxis2CanShow", true, "boolean", "YAxis2Enabled", null);
     XYAxis.prototype.publishProxy("yAxis2Title", "valueAxis2", "title");
     XYAxis.prototype.publishProxy("yAxis2TickCount", "valueAxis2", "tickCount");
     XYAxis.prototype.publishProxy("yAxis2TickFormat", "valueAxis2", "tickFormat");
@@ -95,7 +94,7 @@
     XYAxis.prototype.publish("yAxis2DomainLow", null, "string", "Y-Axis Low", null, { optional: true, disable: function (w) { return w.yAxisType() === "ordinal"; } });
     XYAxis.prototype.publish("yAxis2DomainHigh", null, "string", "Y-Axis High", null, { optional: true, disable: function (w) { return w.yAxisType() === "ordinal"; } });
     XYAxis.prototype.publishProxy("yAxis2DomainPadding", "valueAxis2", "extend");
-    XYAxis.prototype.publish("yAxis2GuideLines", true, "boolean", "Y-Axis Guide Lines");
+    XYAxis.prototype.publish("yAxis2GuideLines", false, "boolean", "Y-Axis Guide Lines");
     XYAxis.prototype.publish("regions", [], "array", "Regions");
     XYAxis.prototype.publish("sampleData", "", "set", "Display Sample Data", ["", "ordinal", "ordinalRange", "linear", "time-x", "time-y"]);
 
@@ -147,6 +146,7 @@
         this.svgRegions = element.append("g");
         this.svgDomainGuide = this.svg.append("g");
         this.svgValueGuide = this.svg.append("g");
+        this.svgValueGuide2 = this.svg.append("g");
         this.svgData = this.svg.append("g");
 
         this.svgDataClipRect = this.svg.append("clipPath")
@@ -170,12 +170,10 @@
             .target(this.svg.node())
             .guideTarget(this.svgValueGuide.node())
         ;
-        if(this.yAxis2CanShow()){
-           this.valueAxis2
-               .target(this.svg.node())
-               .guideTarget(this.svgValueGuide.node())
-            ;    
-        }
+        this.valueAxis2
+            .target(this.svg.node())
+            .guideTarget(this.svgValueGuide2.node())
+        ;    
 
         //  Brush  ---
         this.svgBrush = element.append("g")
@@ -244,7 +242,7 @@
     XYAxis.prototype.calcMargin = function (domNode, element, isHorizontal) {
         var margin = {
             top: !isHorizontal && this.selectionMode() ? 10 : 2,
-            right: isHorizontal && (this.selectionMode() || this.xAxisFocus()) ? 10 : 2,
+            right: isHorizontal && (this.selectionMode() || this.xAxisFocus()) ? 10 : 2,  //  Why do we have "2" here ---
             bottom: (this.xAxisFocus() ? this.xAxisFocusHeight() : 0) + 2,
             left: 2
         };
@@ -252,61 +250,73 @@
         var height = this.height() - margin.top - margin.bottom;
 
         var xHeight = 30;
+        var x2Height = 30;
         var yWidth = 30;
+        var y2Width = 30;
         for (var i = 0; i < 10; ++i) {
             this.xAxis.width(width - yWidth).height(0);
             var xAxisOverlap = this.xAxis.calcOverflow(element);
+            var xAxis2Overlap = { depth: 0 };
+            if (!isHorizontal) {
+                this.xAxis2.width(width - yWidth).height(0);
+                xAxis2Overlap = this.xAxis2.calcOverflow(element);
+            }
 
             this.yAxis.width(0).height(height - xHeight);
             var yAxisOverlap = this.yAxis.calcOverflow(element);
 
-            if(this.yAxis2CanShow()){
-                if(isHorizontal){
-                    this.yAxis2.width(0).height(height - xHeight);
-                    yAxisOverlap  = this.yAxis2.calcOverflow(element);
-                } else{
-                   this.xAxis.width(width - yWidth).height(0);
-                   xAxisOverlap = this.yAxis2.calcOverflow(element);    
-                }
+            var yAxis2Overlap = { depth: 0 };
+            if (isHorizontal) {
+                this.yAxis2.width(0).height(height - xHeight);
+                yAxis2Overlap = this.yAxis2.calcOverflow(element);
             }
 
             var newXHeight = xAxisOverlap.depth;
+            var newX2Height = xAxis2Overlap.depth;
             var newYWidth = yAxisOverlap.depth;
+            var newY2Width = yAxis2Overlap.depth;
 
-            if (newXHeight === xHeight && newYWidth === yWidth) {
+            if (newXHeight === xHeight && newX2Height === x2Height && newYWidth === yWidth && newY2Width === y2Width) {
                 xHeight = newXHeight;
+                x2Height = newX2Height;
                 yWidth = newYWidth;
+                y2Width = newY2Width;
                 break;
             }
             xHeight = newXHeight;
+            x2Height = newX2Height;
             yWidth = newYWidth;
+            y2Width = newY2Width;
         }
         this.xAxis
-            .x(width / 2 + yWidth / 2 + margin.left)
+            .x(width / 2 + (yWidth - y2Width) / 2 + margin.left)
             .y(height + margin.top)
-            .width(width - yWidth)
+            .width(width - yWidth - y2Width)
         ;
+        if (!isHorizontal) {
+            this.xAxis2
+                .x(width / 2 + (yWidth - y2Width) / 2 + margin.left)
+                .y(0 + margin.top)
+                .width(width - yWidth - y2Width)
+            ;
+            margin.top += x2Height;
+        }
+
         this.yAxis
             .x(margin.left)
-            .y(height / 2 - xHeight / 2 + margin.top)
-            .height(height - xHeight)
+            .y((height - xHeight - x2Height )/ 2 + margin.top)
+            .height(height - xHeight - x2Height)
         ;
-        if(this.yAxis2CanShow()){
-            if(isHorizontal){
-                this.yAxis2
-                    .x(width + margin.left)
-                    .y(height / 2 - xHeight / 2 + margin.top)
-                    .height(height - xHeight)
-                ;
-            }else{
-                this.yAxis2
-                    .x(width / 2 + yWidth / 2 + margin.left)
-                    .y(margin.top)
-                    .width(width - yWidth)
-                ;
-            }
+        if (isHorizontal) {
+            this.yAxis2
+                .x(margin.left + width)
+                .y(height / 2 - xHeight / 2 + margin.top)
+                .height(height - xHeight)
+            ;
         }
         margin.left += yWidth;
+        // margin.top += x2Height;
+        margin.right += y2Width;
         margin.bottom += xHeight;
         return margin;
     };
@@ -353,15 +363,15 @@
         this.valueAxis
             .orientation(isHorizontal ? "left" : "bottom")
         ;
+        this.valueAxis2
+            .orientation(isHorizontal ? "right" : "top")
+          ;
 
         this.xAxis = isHorizontal ? this.domainAxis : this.valueAxis;
+        this.xAxis2 = isHorizontal ? null : this.valueAxis2;
         this.yAxis = isHorizontal ? this.valueAxis : this.domainAxis;
-        if(this.yAxis2CanShow()){
-            this.valueAxis2
-                .orientation(isHorizontal ? "right" : "top")
-            ;
-            this.yAxis2 = this.valueAxis2;
-        }
+        this.yAxis2 = isHorizontal ? this.valueAxis2 : null;
+
         var xBrush = isHorizontal ? this.xBrush : this.yBrush;
         var yBrush = isHorizontal ? this.yBrush : this.xBrush;
         var xBrushExtent = xBrush.extent();
@@ -405,12 +415,10 @@
             .low(min)
             .high(max)
         ;
-        if(this.yAxis2CanShow()){
-            this.valueAxis2
-                .low(min2)
-                .high(max2)
-            ;
-        }
+        this.valueAxis2
+            .low(min2)
+            .high(max2)
+        ;
 
         //  Calculate Margins  ---
         this.margin = this.calcMargin(domNode, element, isHorizontal);
@@ -432,12 +440,10 @@
             .tickLength(this.yAxisGuideLines() ? maxCurrExtent : 0)
             .render()
         ;
-        if(this.yAxis2CanShow()){
-            this.valueAxis2
-                .tickLength(this.yAxis2GuideLines() ? maxCurrExtent : 0)
-                .render()
-            ;
-        }
+        this.valueAxis2
+            .tickLength(this.yAxis2GuideLines() ? maxCurrExtent : 0)
+            .render()
+        ;
         this.svgDataClipRect
             .attr("width", width)
             .attr("height", height)
@@ -452,7 +458,7 @@
         this.yBrush
             .y(this.domainAxis.d3Scale)
         ;
-        this.yBrush2 .y(this.domainAxis.d3Scale)
+        this.yBrush2.y(this.domainAxis.d3Scale)
         ;
         if (this.selectionMode()) {
             if (this._prevXAxisType !== this.xAxisType()) {
