@@ -1,4 +1,4 @@
-import { max as d3Max, mean as d3Mean, min as d3Min, sum as d3Sum } from "d3-array";
+import { deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "d3-array";
 import { map as d3Map, nest as d3Nest } from "d3-collection";
 import { csvFormatRows as d3CsvFormatRows, csvParse as d3CsvParse, tsvFormatRows as d3TsvFormatRows, tsvParse as d3TsvParse } from "d3-dsv";
 import { format as d3Format } from "d3-format";
@@ -10,6 +10,9 @@ const d3Aggr = {
     min: d3Min,
     max: d3Max,
     mean: d3Mean,
+    median: d3Median,
+    variance: d3Variance,
+    deviation: d3Deviation,
     sum: d3Sum
 };
 
