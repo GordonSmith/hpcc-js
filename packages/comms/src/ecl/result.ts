@@ -90,6 +90,11 @@ export class Result extends StateObject<ECLResultEx & DFUQuery.DFULogicalFile, E
         });
     }
 
+    rootField(): XSDXMLNode | null {
+        if (!this.xsdSchema) return null;
+        return this.xsdSchema.root;
+    }
+
     fields(): XSDXMLNode[] {
         if (!this.xsdSchema) return [];
         return this.xsdSchema.root.children();
