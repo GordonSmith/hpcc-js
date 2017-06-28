@@ -186,7 +186,9 @@ export const ddlSchema =
                 "onSelect": {
                 },
                 "properties": {
-                    "additionalProperties": false,
+                    "additionalProperties": {
+                        "type": "string"
+                    },
                     "properties": {
                         "charttype": {
                             "type": "string"
@@ -498,7 +500,9 @@ export const ddlSchema =
                 "onSelect": {
                 },
                 "properties": {
-                    "additionalProperties": false,
+                    "additionalProperties": {
+                        "type": "string"
+                    },
                     "properties": {
                         "charttype": {
                             "type": "string"
@@ -611,7 +615,9 @@ export const ddlSchema =
                 "onSelect": {
                 },
                 "properties": {
-                    "additionalProperties": false,
+                    "additionalProperties": {
+                        "type": "string"
+                    },
                     "properties": {
                         "charttype": {
                             "type": "string"
@@ -723,7 +729,9 @@ export const ddlSchema =
                 "onSelect": {
                 },
                 "properties": {
-                    "additionalProperties": false,
+                    "additionalProperties": {
+                        "type": "string"
+                    },
                     "properties": {
                         "charttype": {
                             "type": "string"
@@ -857,7 +865,9 @@ export const ddlSchema =
                 "onSelect": {
                 },
                 "properties": {
-                    "additionalProperties": false,
+                    "additionalProperties": {
+                        "type": "string"
+                    },
                     "properties": {
                         "charttype": {
                             "type": "string"
@@ -971,7 +981,9 @@ export const ddlSchema =
                 "onSelect": {
                 },
                 "properties": {
-                    "additionalProperties": false,
+                    "additionalProperties": {
+                        "type": "string"
+                    },
                     "properties": {
                         "charttype": {
                             "type": "string"

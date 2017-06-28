@@ -11,10 +11,19 @@
     <link rel="stylesheet" href="../../../node_modules/material-design-lite/material.min.css">
     <script src="../../../node_modules/material-design-lite/material.min.js"></script>
     <link rel="stylesheet" href="../../../node_modules/pure-css/lib/menus.css">
-    <script src="../../../packages/loader/dist/loader.js"></script>
+    <script src="../../../packages/loader/dist/loader.min.js"></script>
     <script>
         var hpccLoader = window["@hpcc-js/loader"];
-        var require = hpccLoader.amd("../node_modules/@hpcc-js", { "test": "../tests" }, "../../../node_modules");
+        var paths = {
+            "@hpcc-js/map/TopoJSON": "https://unpkg.com/@hpcc-js/map/TopoJSON",
+            "test": "../tests"
+        }
+
+        var dermatologyDeps = ["d3-array", "d3-collection", "d3-color", "d3-dispatch", "d3-ease", "d3-interpolate", "d3-random", "d3-selection", "d3-timer", "d3-transition"];
+        dermatologyDeps.forEach(function (item) {
+            paths[item] = "https://unpkg.com/" + item + "/build/" + item; // http://../../../node_modules/" + item + "/build/" + item";
+        });
+        var require = hpccLoader.bundle("../../../packages", paths, true);
     </script>
     <!--  Local Dev  
     <link rel="stylesheet" href="../../../node_modules/material-design-lite/material.min.css">

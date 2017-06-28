@@ -149,10 +149,7 @@ export class HTMLWidget extends Widget {
                     height
                 });
             }
-            this._parentElement = d3Select(this._target).append("div")
-                .style("width", this._size.width + "px")
-                .style("height", this._size.height + "px")
-                ;
+            this._parentElement = d3Select(this._target).append("div");
         } else {
             this.exit();
         }
