@@ -104,7 +104,7 @@ export function amd(url: string = hostUrl, additionalPaths: { [key: string]: str
         paths[`@hpcc-js/${pckg}`] = `${url}/${pckg}`;
         rjsPackages.push({
             name: `@hpcc-js/${pckg}`,
-            main: pckg === "comms" ? "lib/index-browser" : "lib/index"
+            main: "lib/index"
         });
         paths[`@hpcc-js/${pckg}`] = `${url}/${pckg}`;
     });

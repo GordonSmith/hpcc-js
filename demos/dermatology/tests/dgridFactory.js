@@ -38,6 +38,14 @@
                     );
                 });
             }
+        },
+        WUResult: {
+            simple: function (callback) {
+                legacyRequire(["test/DataFactory", "src/dgrid/WUResult"], function (DataFactory, Table) {
+                    callback(new Table()
+                    );
+                });
+            }
         }
     };
 }));

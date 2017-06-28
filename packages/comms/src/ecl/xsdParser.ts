@@ -1,4 +1,4 @@
-import { Stack, SAXStackParser, XMLNode } from "@hpcc-js/util";
+import { SAXStackParser, Stack, XMLNode } from "@hpcc-js/util";
 
 export class XSDNode {
     protected e?: XMLNode;
@@ -14,27 +14,31 @@ export class XSDNode {
 export class XSDXMLNode extends XSDNode {
     name: string;
     type: string;
-    private children: XSDXMLNode[] = [];
+    private _children: XSDXMLNode[] = [];
 
     constructor(e: XMLNode) {
         super(e);
     }
 
     append(child: XSDXMLNode) {
-        this.children.push(child);
+        this._children.push(child);
     }
 
     fix() {
         this.name = this.e!.$["name"];
         this.type = this.e!.$["type"];
-        for (let i = this.children.length - 1; i >= 0; --i) {
-            const row = this.children[i];
+        for (let i = this._children.length - 1; i >= 0; --i) {
+            const row = this._children[i];
             if (row.name === "Row" && row.type === undefined) {
-                this.children.push(...row.children);
-                this.children.splice(i, 1);
+                this._children.push(...row._children);
+                this._children.splice(i, 1);
             }
         }
         super.fix();
+    }
+
+    children(): XSDXMLNode[] {
+        return this._children;
     }
 }
 
@@ -75,6 +79,11 @@ export class XSDSimpleType extends XSDNode {
 export class XSDSchema {
     root: XSDXMLNode;
     simpleTypes: { [name: string]: XSDSimpleType } = {};
+
+    fields(): XSDXMLNode[] {
+        return this.root.children();
+
+    }
 
     calcWidth(type: string, name: string) {
         let retVal: number = -1;

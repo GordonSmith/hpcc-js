@@ -1,8 +1,8 @@
-import { utcFormat, utcParse } from "d3-time-format";
 import {
-    Cache, Graph, IECLDefintion, IEvent, StateCallback, StateEvents, StateObject,
-    StatePropCallback, scopedLogger, deepMixinT, IObserverHandle, StringAnyMap, XMLNode
+    Cache, deepMixinT, Graph, IECLDefintion, IEvent, IObserverHandle, scopedLogger,
+    StateCallback, StateEvents, StateObject, StatePropCallback, StringAnyMap, XMLNode
 } from "@hpcc-js/util";
+import { utcFormat, utcParse } from "d3-time-format";
 import { IConnection, IOptions } from "../connection";
 import { ESPExceptions } from "../espConnection";
 import { Activity } from "../services/wsSMC";

@@ -93,7 +93,7 @@ export class Table extends HTMLWidget {
         this._dgrid.resize();
         if (this._prevChecksum !== this._db.checksum()) {
             this._prevChecksum = this._db.checksum();
-            this._store.setData(this.dgridData());
+            //       this._store.setData(this.dgridData());
         }
         // const visibleRows = this.calcVisibleRows();
         // if (this._prevPagination !== this.pagination() || this._prevVisibleRows !== visibleRows) {

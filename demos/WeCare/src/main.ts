@@ -17,8 +17,8 @@ export class Main {
     // this.connPersonAddresses = Comms.createESPConnection(baseUrl + "/personaddresses");
     // this.connPersonToLocations = Comms.createESPConnection(baseUrl + "/personstolocations")
     googleMaps = new Connection({ baseUrl: "https://maps.googleapis.com/maps/api", type: RequestType.GET });
-    dateFormatter = d3TimeFormat("%Y%m");
-    dateFormatter2 = d3TimeFormat("%Y%m%d");
+    dateFormatterYm = d3TimeFormat("%Y%m");
+    dateFormatterYmd = d3TimeFormat("%Y%m%d");
     dateParser = d3TimeParse("%Y-%m-%d");
 
     formZip1;
@@ -121,8 +121,8 @@ export class Main {
                 zipX2.setMonth(zipX2.getMonth() + range);
                 return {
                     colorID: id,
-                    x0: context.dateFormatter2(zipX1),
-                    x1: context.dateFormatter2(zipX2)
+                    x0: context.dateFormatterYmd(zipX1),
+                    x1: context.dateFormatterYmd(zipX2)
                 };
             }
             return null;
@@ -293,23 +293,24 @@ export class Main {
 
                 context.mainRequest = {};
                 const locations = [];
-                function parseDate(address, date, _range, prefix) {
+                function parseDate(address, date, _range, prefix, dateId) {
                     const range = +_range;
                     if (address && address.zip && date && range) {
                         context.mainRequest[prefix] = address.zip;
                         const zipDate = new Date(date);
+                        context.mainRequest[dateId] = context.dateFormatterYmd(zipDate);
                         const from = new Date(date);
                         const to = new Date(date);
                         from.setMonth(zipDate.getMonth() - range);
                         to.setMonth(zipDate.getMonth() + range);
-                        context.mainRequest[prefix + "lowyyyymm"] = context.dateFormatter(from);
-                        context.mainRequest[prefix + "highyyyymm"] = context.dateFormatter(to);
-                        locations.push("" + address.lat + " " + address.lng + "," + context.dateFormatter2(zipDate));
+                        context.mainRequest[prefix + "lowyyyymm"] = context.dateFormatterYm(from);
+                        context.mainRequest[prefix + "highyyyymm"] = context.dateFormatterYm(to);
+                        locations.push("" + address.lat + " " + address.lng + "," + context.dateFormatterYmd(zipDate));
                     }
                 }
-                parseDate(context.formZip1.__hpcc_address, request.zip1Date, request.zip1DateRange, "zip1");
-                parseDate(context.formZip2.__hpcc_address, request.zip2Date, request.zip2DateRange, "zip2");
-                parseDate(context.formZip3.__hpcc_address, request.zip3Date, request.zip3DateRange, "zip3");
+                parseDate(context.formZip1.__hpcc_address, request.zip1Date, request.zip1DateRange, "zip1", "date1");
+                parseDate(context.formZip2.__hpcc_address, request.zip2Date, request.zip2DateRange, "zip2", "date2");
+                parseDate(context.formZip3.__hpcc_address, request.zip3Date, request.zip3DateRange, "zip3", "date3");
                 context.mainRequest.radius = request.radius;
                 context.mainRequest.agelow = request.age[0];
                 context.mainRequest.agehigh = request.age[1];

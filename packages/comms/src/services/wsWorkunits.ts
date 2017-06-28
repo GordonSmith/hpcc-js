@@ -1,7 +1,7 @@
-import { IConnection, IOptions, ResponseType } from "../connection";
-import { ESPConnection } from "../espConnection";
 import { deepMixin } from "@hpcc-js/util";
 import { xml2json, XMLNode } from "@hpcc-js/util";
+import { IConnection, IOptions, ResponseType } from "../connection";
+import { ESPConnection } from "../espConnection";
 
 /*
     Response structures generated via:

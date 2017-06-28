@@ -16,7 +16,24 @@
     <link rel="apple-touch-icon" href="../../../node_modules/impress.js/apple-touch-icon.png" />
 
     <link href="../style/index.css" rel="stylesheet" />
-    <script src="../../../packages/loader/dist/loader.js"></script>
+    <script src="../../../packages/loader/dist/loader.min.js"></script>
+    <script>
+        var hpccLoader = window["@hpcc-js/loader"];
+        var require = hpccLoader.amd("../../../packages", { "test": "../tests" }, "../../../node_modules");
+        var hpccsystems = {
+            require: require
+        };
+    </script>
+    <!--  Uncomment to develop
+    <script>
+        var hpccLoader = window["@hpcc-js/loader"];
+        var require = hpccLoader.amd("../node_modules/@hpcc-js", { "test": "../tests" }, "../../../node_modules");
+        var hpccsystems = {
+            require: require
+        };
+    </script>
+    -->
+    <!--  Uncomment to test build
     <script>
         var hpccLoader = window["@hpcc-js/loader"];
         var require = hpccLoader.bundle("../../../packages", {
@@ -28,31 +45,6 @@
         var hpccsystems = {
             require: require
         };
-    </script>
-    <!--  Uncomment for rawgit
-    <script src="../thirdparty/hpcc-platform-comms.min.js"></script>
-    <script src="../thirdparty/hpcc-viz.js"></script>
-    -->
-    <!--  Uncomment to develop
-    <script src="../../../packages/loader/dist/loader.js"></script>
-    <script>
-        var hpccLoader = window["@hpcc-js/loader"];
-        var require = hpccLoader.amd("../node_modules/@hpcc-js", { "test": "../tests" }, "../../../node_modules");
-        var hpccsystems = {
-            require: require
-        };
-    </script>
-    -->
-    <!--  Uncomment to test build
-    <script src="../dist-amd/hpcc-viz.js"></script>
-    <script src="../dist-amd/hpcc-bundles.js"></script>
-    <script>
-        require.config({
-            paths: {
-                "src": "../dist-amd",
-                "font-awesome": "../dist-amd/font-awesome/css/font-awesome.min"
-            }
-        });
     </script>
     -->
 </head>
