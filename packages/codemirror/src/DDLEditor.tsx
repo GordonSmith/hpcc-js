@@ -1,4 +1,4 @@
-import { Response, validate } from "@hpcc-js/ddl";
+import { Response, validate2 } from "@hpcc-js/ddl-shim";
 import { Table } from "@hpcc-js/dgrid";
 import { JSXWidget, VizInstance } from "@hpcc-js/html";
 import { JSONEditor } from "./JSONEditor";
@@ -31,7 +31,7 @@ export class DDLEditor extends JSXWidget {
         try {
             const json = this.ddl();
             try {
-                const d: Response = validate(json);
+                const d: Response = validate2(json);
                 if (d.success) {
                     this._errorTable.data([]);
                 } else {

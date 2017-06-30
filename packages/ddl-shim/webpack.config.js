@@ -13,9 +13,9 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist/'),
         publicPath: "dist/",
-        filename: "ddl.js",
+        filename: "ddl-shim.js",
         libraryTarget: "umd",
-        library: "hpcc-ddl"
+        library: "@hpcc-js/ddl-shim"
     },
     resolve: {
         alias: {
@@ -37,7 +37,6 @@ module.exports = {
         ]
     },
     plugins: [
-        new ExtractTextPlugin('dgrid.css'),
         new webpack.optimize.UglifyJsPlugin({
             sourceMap: "source-map"
         })
