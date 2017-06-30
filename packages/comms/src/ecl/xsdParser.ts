@@ -14,6 +14,7 @@ export class XSDNode {
 export class XSDXMLNode extends XSDNode {
     name: string;
     type: string;
+    attrs: { [key: string]: string } = {};
     private _children: XSDXMLNode[] = [];
 
     constructor(e: XMLNode) {
@@ -90,7 +91,7 @@ export class XSDXMLNode extends XSDNode {
 export class XSDSimpleType extends XSDNode {
     name: string;
     type: string;
-    maxLength: number;
+    maxLength: number | undefined;
 
     protected _restricition?: XMLNode;
     protected _maxLength?: XMLNode;
@@ -114,7 +115,7 @@ export class XSDSimpleType extends XSDNode {
     fix() {
         this.name = this.e!.$["name"];
         this.type = this._restricition!.$["base"];
-        this.maxLength = +this._maxLength!.$["value"];
+        this.maxLength = this._maxLength ? +this._maxLength!.$["value"] : undefined;
         delete this._restricition;
         delete this._maxLength;
         super.fix();
@@ -127,7 +128,6 @@ export class XSDSchema {
 
     fields(): XSDXMLNode[] {
         return this.root.children();
-
     }
 }
 
@@ -170,6 +170,12 @@ class XSDParser extends SAXStackParser {
                 this.simpleType.fix();
                 this.simpleTypes[this.simpleType.name] = this.simpleType;
                 delete this.simpleType;
+                break;
+            case "xs:appinfo":
+                const xsdXMLNode2 = this.xsdStack.top();
+                for (const key in e!.$) {
+                    xsdXMLNode2!.attrs[key] = e!.$[key];
+                }
                 break;
             default:
                 if (this.simpleType) {

@@ -7,6 +7,8 @@ import { parseXSD, XSDSchema, XSDXMLNode } from "./xsdParser";
 export interface ECLResultEx extends WUInfo.ECLResult {
     Wuid: string;
     ResultName?: string;
+    ResultSequence?: number;
+    LogicalFileName?: string;
     ResultViews: any[];
 }
 
@@ -16,9 +18,11 @@ export class Result extends StateObject<ECLResultEx & DFUQuery.DFULogicalFile, E
 
     get properties(): WUInfo.ECLResult { return this.get(); }
     get Wuid(): string { return this.get("Wuid"); }
+    get ResultName(): string | undefined { return this.get("ResultName"); }
+    get ResultSequence(): number | undefined { return this.get("ResultSequence"); }
+    get LogicalFileName(): string | undefined { return this.get("LogicalFileName"); }
     get Name(): string { return this.get("Name"); }
     get Sequence(): number { return this.get("Sequence"); }
-    get ResultName(): string | undefined { return this.get("ResultName"); }
     get Value(): string { return this.get("Value"); }
     get Link(): string { return this.get("Link"); }
     get FileName(): string { return this.get("FileName"); }
@@ -30,24 +34,36 @@ export class Result extends StateObject<ECLResultEx & DFUQuery.DFULogicalFile, E
     get ResultViews(): any[] { return this.get("ResultViews"); }
     get XmlSchema(): string { return this.get("XmlSchema"); }
 
-    constructor(optsConnection: IOptions | IConnection | WorkunitsService, wuid: string, eclResult: WUInfo.ECLResult | string, resultViews: any[] = []) {
+    constructor(optsConnection: IOptions | IConnection | WorkunitsService, wuidOrLogicalFile: string, resultName?: string | number);
+    constructor(optsConnection: IOptions | IConnection | WorkunitsService, wuid: string, eclResult: WUInfo.ECLResult, resultViews: any[]);
+    constructor(optsConnection: IOptions | IConnection | WorkunitsService, wuidOrLogicalFile: string, eclResultOrResultName?: WUInfo.ECLResult | string | number, resultViews: any[] = []) {
         super();
         if (optsConnection instanceof WorkunitsService) {
             this.connection = optsConnection;
         } else {
             this.connection = new WorkunitsService(optsConnection);
         }
-        if (typeof eclResult === "string") {
+        if (typeof eclResultOrResultName === "undefined") {
             this.set({
-                Wuid: wuid,
-                ResultName: eclResult,
+                LogicalFileName: wuidOrLogicalFile
+            } as ECLResultEx);
+        } else if (typeof eclResultOrResultName === "string") {
+            this.set({
+                Wuid: wuidOrLogicalFile,
+                ResultName: eclResultOrResultName,
+                ResultViews: resultViews
+            } as ECLResultEx);
+        } else if (typeof eclResultOrResultName === "number") {
+            this.set({
+                Wuid: wuidOrLogicalFile,
+                ResultSequence: eclResultOrResultName,
                 ResultViews: resultViews
             } as ECLResultEx);
         } else {
             this.set({
-                Wuid: wuid,
+                Wuid: wuidOrLogicalFile,
                 ResultViews: resultViews,
-                ...eclResult
+                ...eclResultOrResultName
             });
         }
     }
@@ -102,17 +118,17 @@ export class Result extends StateObject<ECLResultEx & DFUQuery.DFULogicalFile, E
 
     protected WUResult(start: number = 0, count: number = 1, suppressXmlSchema: boolean = false): Promise<WUResult.Response> {
         const request: WUResult.Request = {} as WUResult.Request;
-        if (this.Wuid && this.Sequence !== undefined) {
-            request.Wuid = this.Wuid;
-            request.Sequence = this.Sequence;
-        } else if (this.Wuid && this.ResultName !== undefined) {
+        if (this.Wuid && this.ResultName !== undefined) {
             request.Wuid = this.Wuid;
             request.ResultName = this.ResultName;
-        } else if (this.Name && this.NodeGroup) {
-            request.LogicalName = this.Name;
+        } else if (this.Wuid && this.ResultSequence !== undefined) {
+            request.Wuid = this.Wuid;
+            request.Sequence = this.ResultSequence;
+        } else if (this.LogicalFileName && this.NodeGroup) {
+            request.LogicalName = this.LogicalFileName;
             request.Cluster = this.NodeGroup;
-        } else if (this.Name) {
-            request.LogicalName = this.Name;
+        } else if (this.LogicalFileName) {
+            request.LogicalName = this.LogicalFileName;
         }
         request.Start = start;
         request.Count = count;
