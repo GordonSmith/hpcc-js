@@ -475,8 +475,8 @@ export class PropertyExt extends Class {
 }
 PropertyExt.prototype._class += " common_PropertyExt";
 
-export function publish(defaultValue, description?, set?, ext: any = {}) {
+export function publish(defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}) {
     return function (target: any, key: string) {
-        target.publish(key, defaultValue, "any", description, set, ext);
+        target.publish(key, defaultValue, type, description, set, ext);
     };
 }
