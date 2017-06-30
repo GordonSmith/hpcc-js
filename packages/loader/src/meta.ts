@@ -3,6 +3,7 @@ export const thirdParty = {
     "amcharts3": "amcharts3",
     "amchartsImg": "amcharts3/amcharts/images/",
     "colorbrewer": "colorbrewer/colorbrewer",
+    "codemirror": "codemirror/",
     "d3-array": "d3-array/build/d3-array",
     "d3-axis": "d3-axis/build/d3-axis",
     "@hpcc-js/d3-bullet": "@hpcc-js/d3-bullet/build/d3-bullet",
@@ -48,9 +49,9 @@ export const thirdParty = {
     "topojson": "topojson/build/topojson",
     "tslib": "tslib/tslib"
 };
-export const shims = ["loader", "codemirror-shim", "c3-shim", "dgrid-shim", "phosphor-shim", "preact-shim"];
+export const shims = ["loader", "codemirror-shim", "c3-shim", "ddl-shim", "dgrid-shim", "phosphor-shim", "preact-shim"];
 export const packages = [
     "comms", "util", "common", "layout", "phosphor", "api", "dgrid", "chart", "other", "form",
     "c3chart", "google", "amchart", "tree", "graph", "map",
-    "handson", "react", "composite", "marshaller", "ddl", "html", "codemirror"
+    "handson", "react", "composite", "marshaller", "html", "codemirror"
 ];

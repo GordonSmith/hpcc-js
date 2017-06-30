@@ -1,3 +1,4 @@
+/* tslint:disable */  
 export const ddlSchema =  
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
