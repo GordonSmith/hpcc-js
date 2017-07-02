@@ -86,11 +86,11 @@ export class Result extends StateObject<ECLResultEx & DFUQuery.DFULogicalFile, E
     }
 
     refresh(): Promise<Result> {
-        return this.fetchRows(0, 1).then(response => this);
+        return this.fetchRows(0, 1, true).then(response => this);
     }
 
-    fetchRows(from: number = 0, to: number = -1): Promise<any[]> {
-        return this.WUResult(from, to, true).then((response) => {
+    fetchRows(from: number = 0, count: number = -1, includeSchema: boolean = false): Promise<any[]> {
+        return this.WUResult(from, count, !includeSchema).then((response) => {
             this.set({
                 ...response
             } as any);

@@ -2,14 +2,8 @@ var webpack = require("webpack");
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var path = require("path");
 
-var entry_list = [
-    "index"
-];
-var entry = {};
-entry_list.forEach(function (e) { entry[e] = path.resolve(__dirname, "./lib/" + e) });
-
 module.exports = {
-    entry: entry,
+    entry: "./lib/index.js",
     output: {
         path: path.resolve(__dirname, 'dist/'),
         publicPath: "dist/",

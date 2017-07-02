@@ -18,6 +18,7 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
+    "@hpcc-js/api": "^0.0.31",
     "@hpcc-js/common": "^0.0.31",
     "@hpcc-js/comms": "^0.0.28",
     "@hpcc-js/dgrid-shim": "^0.0.28",

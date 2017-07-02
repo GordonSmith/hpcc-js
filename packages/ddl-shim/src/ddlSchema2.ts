@@ -2,23 +2,55 @@
 export const ddlSchema2 =  
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
+    "additionalProperties": false,
     "definitions": {
         "IDatabomb": {
             "additionalProperties": false,
             "properties": {
                 "data": {
+                    "additionalItems": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                },
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "items": [
+                        {
+                            "additionalProperties": {
+                            },
+                            "type": "object"
+                        }
+                    ],
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             },
             "required": [
-                "data"
+                "data",
+                "id",
+                "type"
             ],
             "type": "object"
         },
         "ILogicalFile": {
             "additionalProperties": false,
             "properties": {
+                "id": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 },
                 "url": {
@@ -26,7 +58,9 @@ export const ddlSchema2 =
                 }
             },
             "required": [
+                "id",
                 "name",
+                "type",
                 "url"
             ],
             "type": "object"
@@ -34,7 +68,13 @@ export const ddlSchema2 =
         "IWUResult": {
             "additionalProperties": false,
             "properties": {
+                "id": {
+                    "type": "string"
+                },
                 "resultName": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 },
                 "url": {
@@ -45,27 +85,45 @@ export const ddlSchema2 =
                 }
             },
             "required": [
+                "id",
                 "resultName",
+                "type",
                 "url",
                 "wuid"
             ],
             "type": "object"
         }
     },
-    "items": {
-        "anyOf": [
-            {
-                "$ref": "#/definitions/IWUResult"
+    "properties": {
+        "datasources": {
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/IWUResult"
+                    },
+                    {
+                        "$ref": "#/definitions/ILogicalFile"
+                    },
+                    {
+                        "$ref": "#/definitions/IDatabomb"
+                    }
+                ]
             },
-            {
-                "$ref": "#/definitions/ILogicalFile"
-            },
-            {
-                "$ref": "#/definitions/IDatabomb"
-            }
-        ]
+            "type": "array"
+        },
+        "id": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string"
+        }
     },
-    "type": "array"
+    "required": [
+        "datasources",
+        "id",
+        "type"
+    ],
+    "type": "object"
 }
 
 ; 

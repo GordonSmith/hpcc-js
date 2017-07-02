@@ -1,5 +1,5 @@
 export { Message } from "@phosphor/messaging";
-export { DockPanel, Widget } from "@phosphor/widgets";
+export { DockPanel, SplitPanel, Widget } from "@phosphor/widgets";
 
 import "@phosphor/widgets/style/widget.css";
 import "@phosphor/widgets/style/commandpalette.css";

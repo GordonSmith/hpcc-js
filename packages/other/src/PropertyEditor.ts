@@ -421,7 +421,7 @@ export class PropertyEditor extends HTMLWidget {
                 propEditor = null;
             } else {
                 propEditor = propEditor.parentPropertyEditor();
-                widget = propEditor.widget();
+                widget = propEditor ? propEditor.widget() : null;
             }
         }
     }
