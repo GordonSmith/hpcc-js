@@ -64,19 +64,22 @@ class RowFormatter {
             if (!column.children && this._formattedRow[column.field] !== undefined) {
                 colLenBefore[column.field] = ("" + this._formattedRow[column.field]).split(LINE_SPLITTER).length;
             }
-            maxChildLen = Math.max(maxChildLen, this.formatCell(column, column.isRawHTML ? row[column.field] : safeEncode(row[column.field]), rowIdx));
+            const rowArr = row instanceof Array ? row : [row];
+            for (const r of rowArr) {
+                maxChildLen = Math.max(maxChildLen, this.formatCell(column, column.isRawHTML ? r[column.leafID] : safeEncode(r[column.leafID]), rowIdx));
+            }
         }
         for (const column of columns) {
-            if (!column.children) {
-                const cellLength = ("" + this._formattedRow[column.field]).split(LINE_SPLITTER).length - (colLenBefore[column.field] || 0);
-                const delta = maxChildLen - cellLength;
-                if (delta > 0) {
-                    const paddingArr = [];
-                    paddingArr.length = delta + 1;
-                    const padding = paddingArr.join(LINE_SPLITTER2);
-                    this._formattedRow[column.field] += padding;
-                }
+            // if (!column.children) {
+            const cellLength = ("" + this._formattedRow[column.field]).split(LINE_SPLITTER).length - (colLenBefore[column.field] || 0);
+            const delta = maxChildLen - cellLength;
+            if (delta > 0) {
+                const paddingArr = [];
+                paddingArr.length = delta + 1;
+                const padding = paddingArr.join(LINE_SPLITTER);
+                this._formattedRow[column.field] += padding;
             }
+            // }
         }
         return maxChildLen;
     }
@@ -95,7 +98,7 @@ class RowFormatter {
             return children.length;
         }
         if (this._formattedRow[column.field] === undefined) {
-            this._formattedRow[column.field] = cell === undefined ? "" : cell;
+            this._formattedRow[column.field] = (cell === undefined ? "" : cell);
             ++internalRows;
         } else {
             this._formattedRow[column.field] += LINE_SPLITTER + (cell === undefined ? "" : cell);

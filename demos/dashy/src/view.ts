@@ -1,5 +1,5 @@
 import { IDatasource, IField } from "@hpcc-js/api";
-import { max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum } from "@hpcc-js/common";
+import { max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, nest as d3Nest, sum as d3Sum } from "@hpcc-js/common";
 import { PropertyExt, publish } from "@hpcc-js/common";
 import { Databomb, LogicalFile, WUResult } from "./datasource";
 
@@ -20,7 +20,7 @@ export class GroupByColumn extends PropertyExt {
     }
 
     columns() {
-        return this._owner.fields().map(field => field.label);
+        return this._owner.datasource().fields().map(field => field.label);
     }
 
     aggregate(values) {
@@ -63,7 +63,27 @@ export class View extends PropertyExt implements IDatasource {
     }
 
     fields(): IField[] {
-        return this.datasource().fields();
+        const retVal: IField[] = [];
+        let currField: IField[] = retVal;
+        for (const groupBy of this.groupBy()) {
+            if (groupBy.column()) {
+                const field: IField = {
+                    label: "key",
+                    type: "array",
+                    children: null
+                };
+                currField.push(field);
+                const values: IField = {
+                    label: "values",
+                    type: "array",
+                    children: []
+                };
+                currField.push(values);
+                currField = values.children;
+            }
+        }
+        currField.push(...this.datasource().fields());
+        return retVal;
     }
 
     sample(samples: number, sampleSize: number): Promise<{ total: number, data: any[] }> {
@@ -71,7 +91,19 @@ export class View extends PropertyExt implements IDatasource {
     }
 
     fetch(from: number, count: number): Promise<{ total: number, data: any[] }> {
-        return this.datasource().fetch(from, count);
+        return this.datasource().sample(10, 100).then(response => {
+            const nest = d3Nest();
+            for (const groupBy of this.groupBy()) {
+                if (groupBy.column()) {
+                    nest.key(d => d[groupBy.column()]);
+                }
+            }
+            const data = nest.entries(response.data);
+            return {
+                total: data.length,
+                data
+            };
+        });
     }
 
     total(): number {
