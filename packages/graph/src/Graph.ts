@@ -436,7 +436,6 @@ export class Graph extends SVGZoomWidget {
 
         if (!this._renderCount) {
             this._renderCount++;
-            // this.setZoom([0, 0], 1);
             this.layout(this.layout());
         }
     }
@@ -795,7 +794,7 @@ Graph.prototype.layout = function (_?, transitionDuration?) {
                 });
 
                 if (context.applyScaleOnLayout()) {
-                    context.zoomToFit(transitionDuration);
+                    context.zoomToFit();
                 }
                 this._fixIEMarkers();
                 setTimeout(function () {

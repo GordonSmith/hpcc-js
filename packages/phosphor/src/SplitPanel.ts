@@ -1,18 +1,18 @@
 import { HTMLWidget, SVGWidget, Widget } from "@hpcc-js/common";
-import { DockPanel as PDockPanel, Widget as PWidget } from "@hpcc-js/phosphor-shim";
+import { SplitPanel as PSplitPanel, Widget as PWidget } from "@hpcc-js/phosphor-shim";
 
 import { WidgetAdapter } from "./WidgetAdapter";
 
 import "../src/DockPanel.css";
 
-export class DockPanel extends HTMLWidget {
-    private _dock = new PDockPanel({ mode: "multiple-document" });
+export class SplitPanel extends HTMLWidget {
+    private _split = new PSplitPanel({ orientation: "vertical" });
     protected content: WidgetAdapter[] = [];
 
     constructor() {
         super();
         this._tag = "div";
-        this._dock.id = "p" + this.id();
+        this._split.id = "p" + this.id();
     }
 
     protected getWidgetAdapter(widget: Widget): WidgetAdapter | null {
@@ -27,18 +27,16 @@ export class DockPanel extends HTMLWidget {
         return retVal;
     }
 
-    addWidget(title: string, widget: SVGWidget | HTMLWidget, location: PDockPanel.InsertMode = "split-right", refWidget?: Widget) {
-        const addMode: PDockPanel.IAddOptions = { mode: location, ref: this.getWidgetAdapter(refWidget) };
-        const wa = new WidgetAdapter(widget, title);
-        wa.padding = 8;
-        this._dock.addWidget(wa, addMode);
+    addWidget(widget: SVGWidget | HTMLWidget) {
+        const wa = new WidgetAdapter(widget);
+        this._split.addWidget(wa);
         this.content.push(wa);
         return this;
     }
 
     enter(domNode, element) {
         super.enter(domNode, element);
-        PWidget.attach(this._dock, domNode);
+        PWidget.attach(this._split, domNode);
     }
 
     update(domNode, element) {
@@ -47,11 +45,11 @@ export class DockPanel extends HTMLWidget {
             .style("width", this.width() + "px")
             .style("height", this.height() + "px")
             ;
-        this._dock.update();
+        this._split.update();
     }
 
     exit(domNode, element) {
         super.exit(domNode, element);
     }
 }
-DockPanel.prototype._class += " phosphor_DockPanel";
+SplitPanel.prototype._class += " phosphor_SplitPanel";

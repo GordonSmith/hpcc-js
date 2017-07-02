@@ -10,9 +10,9 @@ export class WidgetAdapter extends Widget {
     _widget: HTMLWidget | SVGWidget;
     get widget() { return this._widget; }
     lparam: any = {};
+    padding: number = 0;
 
-    constructor(name: string, widget: HTMLWidget | SVGWidget, lparam: any = {}) {
-
+    constructor(widget: HTMLWidget | SVGWidget, name?: string, lparam: any = {}) {
         super();
         this._element = d3Select(this.base.node);
         // this.setFlag(Widget.Flag.DisallowLayout);
@@ -38,16 +38,14 @@ export class WidgetAdapter extends Widget {
     }
     protected onResize(msg: Widget.ResizeMessage): void {
         super.onResize(msg);
-        if (msg.width < 0 || msg.height < 0) {
-            // this._colChart.refresh();
-        } else {
-
+        if (msg.width >= 0 && msg.height >= 0) {
             d3Select(this.base.node)
-                .style("width", msg.width + "px") //  adjust for padding
-                .style("height", msg.height + "px") //  adjust for padding
+                .style("padding", this.padding + "px")
+                .style("width", msg.width + "px")
+                .style("height", msg.height + "px")
                 ;
             this._widget
-                .resize({ width: msg.width - 20, height: msg.height - 20 })
+                .resize({ width: msg.width - this.padding * 2 - 2, height: msg.height - this.padding * 2 - 2 })
                 .lazyRender()
                 ;
         }

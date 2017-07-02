@@ -14,7 +14,7 @@ export class Common extends HTMLWidget {
         this._tag = "div";
     }
 
-    @publish(false, "boolean", "Enable paging")
+    @publish(true, "boolean", "Enable paging")
     paging: { (): boolean, (_: boolean): Common };
 
     enter(domNode, element) {

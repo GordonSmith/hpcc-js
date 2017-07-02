@@ -45,6 +45,7 @@ export const thirdParty = {
     "javascript-autocomplete": "javascript-autocomplete/auto-complete",
     "orb": "orb",
     "react": "react/dist/react",
+    "reflect-metadata": "reflect-metadata/Reflect",
     "simpleheat": "simpleheat/simpleheat",
     "topojson": "topojson/build/topojson",
     "tslib": "tslib/tslib"

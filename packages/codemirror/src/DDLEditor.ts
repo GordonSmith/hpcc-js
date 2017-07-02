@@ -1,11 +1,11 @@
 import { Response, validate2 } from "@hpcc-js/ddl-shim";
 import { Table } from "@hpcc-js/dgrid";
-import { JSXWidget, VizInstance } from "@hpcc-js/html";
+import { SplitPanel } from "@hpcc-js/phosphor";
 import { JSONEditor } from "./JSONEditor";
 
 import "../src/DDLEditor.css";
 
-export class DDLEditor extends JSXWidget {
+export class DDLEditor extends SplitPanel {
     summary: string = "0 Errors";
     _ddlEditor = new JSONEditor().on("changes", (changes) => {
         this.checkSyntax();
@@ -13,10 +13,6 @@ export class DDLEditor extends JSXWidget {
     _errorTable = new Table()
         .columns(["dataPath", "keyword", "message", "params"])
     ;
-    private jsx = <div>
-        <VizInstance instance={this._ddlEditor} />
-        <VizInstance instance={this._errorTable} />
-    </div >;
 
     ddl(): object;
     ddl(_: object): this;
@@ -50,13 +46,14 @@ export class DDLEditor extends JSXWidget {
 
     enter(domNode, element) {
         super.enter(domNode, element);
+        this
+            .addWidget(this._ddlEditor)
+            .addWidget(this._errorTable)
+            ;
     }
 
     update(domNode, _element) {
         super.update(domNode, _element);
-        this._ddlEditor.size({ width: this.width(), height: this.height() * 6 / 9 });
-        this._errorTable.size({ width: this.width(), height: this.height() * 3 / 9 });
-        this.jsxRender(this.jsx, domNode);
     }
 
 }

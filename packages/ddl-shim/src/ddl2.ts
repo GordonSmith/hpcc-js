@@ -1,5 +1,10 @@
 //  Datasources  ================================================================
-export interface IWsWorkunit {
+export interface IImplementation {
+    type: string;
+    id: string;
+}
+
+export interface IWsWorkunit extends IImplementation {
     url: string;
 }
 
@@ -12,11 +17,13 @@ export interface ILogicalFile extends IWsWorkunit {
     name: string;
 }
 
-export interface IDatabomb {
-    data: string;
+export interface IDatabomb extends IImplementation {
+    data: [{ [key: string]: any }];
 }
 
 export type datasource = IWUResult | ILogicalFile | IDatabomb;
 
 //  DDL  ======================================================================
-export type DDLSchema2 = datasource[];
+export interface DDLSchema2 extends IImplementation {
+    datasources: datasource[];
+}

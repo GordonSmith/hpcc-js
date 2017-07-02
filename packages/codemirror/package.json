@@ -23,6 +23,7 @@
     "@hpcc-js/ddl-shim": "^0.0.1",
     "@hpcc-js/dgrid": "^0.0.31",
     "@hpcc-js/html": "^0.0.31",
+    "@hpcc-js/phosphor": "^0.0.31",
     "tslib": "^1.7.1"
   },
   "devDependencies": {

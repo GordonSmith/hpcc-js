@@ -19,7 +19,9 @@ program
     .option("-m, --min", "Minimize")
     .parse(process.argv);
 
-const aliases: { [key: string]: string } = {};
+const aliases: { [key: string]: string } = {
+    // ajv: "../../node_modules/ajv/dist/ajv.bundle.js"
+};
 const externals: string[] = [];
 const globals: { [key: string]: string } = {};
 const deps: { [key: string]: any } = {};
@@ -68,6 +70,7 @@ export default function bundle(min: boolean = false) {
     const plugins = [
         alias(aliases),
         resolve({
+            preferBuiltins: true,
             jsnext: true,
             main: true
         }),

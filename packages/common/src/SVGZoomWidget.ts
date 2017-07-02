@@ -52,8 +52,8 @@ export class SVGZoomWidget extends SVGWidget {
     }
 
     zoomTo(translate, scale, transitionDuration = 250) {
-        translate = translate || this._zoom.translate();
-        scale = scale || this._zoom.scale();
+        translate = translate || this._zoomTranslate;
+        scale = scale || this._zoomScale;
         transitionDuration = transitionDuration === undefined ? this.zoomDuration() : transitionDuration;
 
         this.element().transition().duration(transitionDuration)

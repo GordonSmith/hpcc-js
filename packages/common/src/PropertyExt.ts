@@ -386,7 +386,7 @@ export class PropertyExt extends Class {
         };
     }
 
-    monitorProperty(propID, func) {
+    monitorProperty(propID: string, func: (id: string, newVal: any, oldVal: any) => void) {
         const meta = this.publishedProperty(propID);
         switch (meta.type) {
             case "proxy":
@@ -411,7 +411,7 @@ export class PropertyExt extends Class {
         }
     }
 
-    monitor(func) {
+    monitor(func: (id: string, newVal: any, oldVal: any) => void) {
         return {
             _watches: this.publishedProperties().map(function (meta) {
                 return this.monitorProperty(meta.id, func);
