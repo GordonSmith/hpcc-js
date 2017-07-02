@@ -3,8 +3,9 @@ import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Edge, Graph, Vertex } from "@hpcc-js/graph";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
-import { Databomb, deserialize, LogicalFile, Model, View, WUResult } from "./model";
-import { serialize } from "./serialization";
+import { Databomb, LogicalFile, WUResult } from "./datasource";
+import { Model } from "./model";
+import { View } from "./view";
 
 export class App {
     _dockPanel = new DockPanel();

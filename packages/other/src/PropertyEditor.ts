@@ -1,4 +1,4 @@
-import { HTMLWidget, Platform } from "@hpcc-js/common";
+import { HTMLWidget, Platform, PropertyExt } from "@hpcc-js/common";
 import { Widget } from "@hpcc-js/common";
 import { Grid } from "@hpcc-js/layout";
 import { select as d3Select, selectAll as d3SelectAll } from "d3-selection";
@@ -136,7 +136,8 @@ export class PropertyEditor extends HTMLWidget {
             const context = this;
             this._watch = widget.monitor(function (_paramId, newVal, oldVal) {
                 if (oldVal !== newVal) {
-                    context.lazyRender();
+                    const propEditor = context.parentPropertyEditor() || context;
+                    propEditor.lazyRender();
                 }
             });
             if ((window as any).__hpcc_debug) {
@@ -528,23 +529,7 @@ export class PropertyEditor extends HTMLWidget {
     excludeTags: { (): string[]; (_: string[]): PropertyEditor; };
     excludeParams: { (): string[]; (_: string[]): PropertyEditor; };
 
-    widget(): Widget;
-    widget(_: Widget): PropertyEditor;
-    widget(_?: Widget): Widget | PropertyEditor {
-        if (arguments.length && this._widgetOrig() === _) return this;
-        const retVal = PropertyEditor.prototype._widgetOrig.apply(this, arguments);
-        if (arguments.length) {
-            this.watchWidget(_);
-            if (_ instanceof Grid) {
-                const context = this;
-                _.postSelectionChange = function () {
-                    context._selectedItems = _._selectionBag.get().map(function (item) { return item.widget; });
-                    context.lazyRender();
-                };
-            }
-        }
-        return retVal;
-    }
+    widget: { (): PropertyExt; (_: PropertyExt): PropertyEditor };
 }
 PropertyEditor.prototype._class += " other_PropertyEditor";
 
@@ -562,4 +547,19 @@ PropertyEditor.prototype.publish("excludeParams", [], "array", "Exclude this arr
 
 PropertyEditor.prototype.publish("widget", null, "widget", "Widget", null, { tags: ["Basic"], render: false });
 
-PropertyEditor.prototype._widgetOrig = PropertyEditor.prototype.widget;
+const _widgetOrig = PropertyEditor.prototype.widget;
+(PropertyEditor.prototype as any).widget = function (_?: Widget): Widget | PropertyEditor {
+    if (arguments.length && _widgetOrig.call(this) === _) return this;
+    const retVal = _widgetOrig.apply(this, arguments);
+    if (arguments.length) {
+        this.watchWidget(_);
+        if (_ instanceof Grid) {
+            const context = this;
+            _.postSelectionChange = function () {
+                context._selectedItems = _._selectionBag.get().map(function (item) { return item.widget; });
+                context.lazyRender();
+            };
+        }
+    }
+    return retVal;
+};
