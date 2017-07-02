@@ -28,7 +28,25 @@ export class ResultSource extends PropertyExt implements IDatasource {
     }
 
     sample(samples: number, sampleSize: number): Promise<{ total: number, data: any[] }> {
-        return Promise.resolve({ total: 0, data: [] });
+        if (samples * sampleSize >= this._total) {
+            return this.fetch(0, this.total());
+        }
+
+        const pages: Array<Promise<{ total: number, data: any[] }>> = [];
+        const lastPage = this.total() - sampleSize;
+        for (let i = 0; i < samples; ++i) {
+            pages.push(this.fetch(i * lastPage / sampleSize, sampleSize));
+        }
+        return Promise.all(pages).then(responses => {
+            const retVal = {
+                total: samples * sampleSize,
+                data: []
+            };
+            for (const response of responses) {
+                retVal.data.push(...response.data);
+            }
+            return retVal;
+        });
     }
 
     fetch(from: number, count: number): Promise<{ total: number, data: any[] }> {
