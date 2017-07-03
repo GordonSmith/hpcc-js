@@ -1,6 +1,6 @@
-import { IDatasource, IField } from "@hpcc-js/api";
 import { max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, nest as d3Nest, sum as d3Sum } from "@hpcc-js/common";
 import { PropertyExt, publish } from "@hpcc-js/common";
+import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { Databomb, LogicalFile, WUResult } from "./datasource";
 
 const d3Aggr = {
@@ -11,7 +11,7 @@ const d3Aggr = {
     sum: d3Sum
 };
 
-export class GroupByColumn extends PropertyExt {
+export class CalcField extends PropertyExt {
     _owner;
 
     constructor(owner?) {
@@ -38,6 +38,34 @@ export class GroupByColumn extends PropertyExt {
         }
     }
 
+    aggrType: { (): string; (_: string): GroupByColumn; };
+    aggrColumn: { (): string; (_: string): GroupByColumn; };
+}
+CalcField.prototype._class += " CalcField";
+
+export class GroupByColumn extends PropertyExt {
+    _owner;
+
+    constructor(owner?) {
+        super();
+        this._owner = owner;
+    }
+
+    aggregate(values) {
+        switch (this.aggrType()) {
+            case null:
+            case undefined:
+            case "":
+                return values.length;
+            default:
+                const columns = this._owner.fields();
+                const colIdx = columns.indexOf(this.aggrColumn());
+                return d3Aggr[this.aggrType()](values, function (value) {
+                    return +value[colIdx];
+                });
+        }
+    }
+
     column: { (): string; (_: string): GroupByColumn; };
     aggrType: { (): string; (_: string): GroupByColumn; };
     aggrColumn: { (): string; (_: string): GroupByColumn; };
@@ -45,7 +73,7 @@ export class GroupByColumn extends PropertyExt {
 }
 GroupByColumn.prototype._class += " GroupByColumn";
 
-GroupByColumn.prototype.publish("column", null, "set", "Field", function () { return this.columns(); }, { optional: true });
+GroupByColumn.prototype.publish("column", null, "set", "Field", function () { return this._owner.columns(); }, { optional: true });
 
 export class View extends PropertyExt implements IDatasource {
     @publish(null, "widget", "View")
@@ -53,6 +81,23 @@ export class View extends PropertyExt implements IDatasource {
 
     @publish([], "propertyArray", "Source Columns", null, { autoExpand: GroupByColumn })
     groupBy: { (): GroupByColumn[]; (_: GroupByColumn[]): View; };
+
+    _samples = 3;
+    _sampleSize = 10;
+
+    _fieldIdx: { [key: string]: IField } = {};
+
+    columns() {
+        this._fieldIdx = {};
+        return (this.datasource().fields() as IField[]).map(field => {
+            this._fieldIdx[field.id] = field;
+            return field.id;
+        });
+    }
+
+    field(fieldID: string) {
+        return this._fieldIdx[fieldID];
+    }
 
     refresh(): Promise<void> {
         return this.datasource().refresh();
@@ -65,49 +110,49 @@ export class View extends PropertyExt implements IDatasource {
     fields(): IField[] {
         const retVal: IField[] = [];
         let currField: IField[] = retVal;
-        for (const groupBy of this.groupBy()) {
-            if (groupBy.column()) {
-                const field: IField = {
-                    label: "key",
-                    type: "array",
-                    children: null
-                };
-                currField.push(field);
-                const values: IField = {
-                    label: "values",
-                    type: "array",
-                    children: []
-                };
-                currField.push(values);
-                currField = values.children;
-            }
+        const columns: string[] = this.groupBy().map(groupBy => groupBy.column()).filter(column => column);
+        for (const column of columns) {
+            const colField = this.field(column);
+            const field: IField = {
+                id: "key",
+                label: column,
+                type: colField.type,
+                children: null
+            };
+            currField.push(field);
+            const values: IField = {
+                id: "values",
+                label: "values",
+                type: "object",
+                children: []
+            };
+            currField.push(values);
+            currField = values.children;
         }
-        currField.push(...this.datasource().fields());
+        currField.push(...this.datasource().fields().filter(field => {
+            return columns.indexOf(field.id) < 0;
+        }));
         return retVal;
     }
 
-    sample(samples: number, sampleSize: number): Promise<{ total: number, data: any[] }> {
-        return this.datasource().sample(samples, sampleSize);
+    sample(samples: number, sampleSize: number): Promise<any[]> {
+        return this.datasource().sample(this._samples, this._sampleSize);
     }
 
-    fetch(from: number, count: number): Promise<{ total: number, data: any[] }> {
-        return this.datasource().sample(10, 100).then(response => {
+    fetch(from: number, count: number): Promise<any[]> {
+        return this.datasource().sample(3, 10).then(response => {
             const nest = d3Nest();
             for (const groupBy of this.groupBy()) {
                 if (groupBy.column()) {
                     nest.key(d => d[groupBy.column()]);
                 }
             }
-            const data = nest.entries(response.data);
-            return {
-                total: data.length,
-                data
-            };
+            return nest.entries(response);
         });
     }
 
     total(): number {
-        return this.datasource().total();
+        return Math.min(this.datasource().total(), this._samples * this._sampleSize);
     }
 }
 View.prototype._class += " View";

@@ -7,3 +7,8 @@
     margin-right:-3px;
     margin-bottom:2px;
 }
+
+.dgrid-cell { 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+}

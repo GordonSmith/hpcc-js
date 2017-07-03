@@ -1,7 +1,20 @@
-import { IDatasource, IField } from "@hpcc-js/api";
 import { Deferred, QueryResults } from "@hpcc-js/dgrid-shim";
 
 import "../src/WUResultStore.css";
+
+export interface IField {
+    id: string;
+    label: string;
+    type: "string" | "number" | "boolean" | "symbol" | "undefined" | "object" | "function";
+    children: IField[] | null;
+}
+
+export interface IDatasource {
+    fields: () => IField[];
+    sample: (samples: number, sampleSize: number) => Promise<any[]>;
+    fetch: (from: number, count: number) => Promise<any[]>;
+    total: () => number;
+}
 
 function entitiesEncode(str) {
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -37,8 +50,9 @@ class RowFormatter {
     }
 
     flattenColumns(columns) {
-        for (const column of columns) this.flattenColumn(column);
-
+        for (const column of columns) {
+            this.flattenColumn(column);
+        }
     }
 
     flattenColumn(column) {
@@ -57,58 +71,55 @@ class RowFormatter {
         return this.row();
     }
 
-    formatRow(columns, row: { [key: string]: any } = [], rowIdx: number = 0) {
-        let maxChildLen = 0;
-        const colLenBefore = {};
+    calcDepth(columns, row) {
+        let maxChildDepth = 1;
         for (const column of columns) {
-            if (!column.children && this._formattedRow[column.field] !== undefined) {
-                colLenBefore[column.field] = ("" + this._formattedRow[column.field]).split(LINE_SPLITTER).length;
-            }
-            const rowArr = row instanceof Array ? row : [row];
-            for (const r of rowArr) {
-                maxChildLen = Math.max(maxChildLen, this.formatCell(column, column.isRawHTML ? r[column.leafID] : safeEncode(r[column.leafID]), rowIdx));
+            if (column.children) {
+                let childDepth = 0;
+                for (const childRow of row[column.leafID]) {
+                    childDepth += this.calcDepth(column.children, childRow);
+                }
+                maxChildDepth = Math.max(maxChildDepth, childDepth);
             }
         }
-        for (const column of columns) {
-            // if (!column.children) {
-            const cellLength = ("" + this._formattedRow[column.field]).split(LINE_SPLITTER).length - (colLenBefore[column.field] || 0);
-            const delta = maxChildLen - cellLength;
-            if (delta > 0) {
-                const paddingArr = [];
-                paddingArr.length = delta + 1;
-                const padding = paddingArr.join(LINE_SPLITTER);
-                this._formattedRow[column.field] += padding;
-            }
-            // }
-        }
-        return maxChildLen;
+        return maxChildDepth;
     }
 
-    formatCell(column, cell, rowIdx) {
-        let internalRows = 0;
+    formatCell(column, cell, maxChildDepth) {
         if (column.children) {
-            const children = cell;
-            if (children.length === 0) {
-                children.push({});
+            let childDepth = 0;
+            if (!(cell instanceof Array)) {
+                if (cell instanceof Object && cell.Row instanceof Array) {  //  Push fix in comms?
+                    cell = cell.Row;
+                } else {
+                    cell = [cell];
+                }
             }
-            for (let idx = 0, _children = children; idx < _children.length; ++idx) {
-                const row = _children[idx];
-                internalRows += this.formatRow(column.children, row, rowIdx + idx) + 1;
+            for (const row of cell) {
+                childDepth = Math.max(childDepth, this.formatRow(column.children, row));
             }
-            return children.length;
-        }
-        if (this._formattedRow[column.field] === undefined) {
-            this._formattedRow[column.field] = (cell === undefined ? "" : cell);
-            ++internalRows;
         } else {
-            this._formattedRow[column.field] += LINE_SPLITTER + (cell === undefined ? "" : cell);
-            ++internalRows;
+            if (this._formattedRow[column.field] === undefined) {
+                this._formattedRow[column.field] = "" + cell;
+            } else {
+                this._formattedRow[column.field] += LINE_SPLITTER;
+                this._formattedRow[column.field] += "" + cell;
+            }
+            if (maxChildDepth > 1) {
+                const paddingArr = [];
+                paddingArr.length = maxChildDepth;
+                const padding = paddingArr.join(LINE_SPLITTER2);
+                this._formattedRow[column.field] += padding;
+            }
         }
-        if (!this._grid[rowIdx]) {
-            this._grid[rowIdx] = {};
+    }
+
+    formatRow(columns, row: { [key: string]: any } = [], rowIdx: number = 0) {
+        const maxChildDepth = this.calcDepth(columns, row);
+        for (const column of columns) {
+            this.formatCell(column, row[column.leafID], maxChildDepth);
         }
-        this._grid[rowIdx][column.field] = cell;
-        return internalRows;
+        return maxChildDepth;
     }
 
     row() {
@@ -124,7 +135,6 @@ export class DatasourceStore {
     _datasource: IDatasource;
     _columnsIdx: { [key: string]: number } = {};
     _columns;
-    protected _cache: { [key: string]: Promise<{ totalLength: number, data: any[] }> } = {};
 
     private rowFormatter: RowFormatter;
 
@@ -146,18 +156,16 @@ export class DatasourceStore {
     db2Columns(fields: IField[], prefix = ""): any[] {
         if (!fields) return [];
         return fields.map((field, idx) => {
-            const label = field.label;
             const column: any = {
-                label,
-                leafID: label,
-                field: prefix + label,
+                label: field.label,
+                leafID: field.id,
+                field: prefix + field.id,
                 idx,
                 className: "resultGridCell",
                 sortable: true
             };
-            console.log(field.type);
             if (field.children) {
-                column.children = this.db2Columns(field.children, prefix + label + "_");
+                column.children = this.db2Columns(field.children, prefix + field.id + "_");
             } else {
                 column.formatter = (cell, row) => {
                     switch (typeof cell) {
@@ -177,12 +185,10 @@ export class DatasourceStore {
 
     _request(start, end): Promise<{ totalLength: number, data: any[] }> {
         if (!this._datasource) return Promise.resolve({ totalLength: 0, data: [] });
-        const cacheKey = `${start}->${end}`;
-        if (this._cache[cacheKey]) return this._cache[cacheKey];
-        const retVal = this._datasource.fetch(start, end - start).then((response: { total: number, data: any[] }) => {
+        const retVal = this._datasource.fetch(start, end - start).then(response => {
             return {
-                totalLength: response.total,
-                data: response.data.map((row, idx) => {
+                totalLength: this._datasource.total(),
+                data: response.map((row, idx) => {
                     const formattedRow: any = this.rowFormatter.format(row);
                     formattedRow.__hpcc_id = start + idx;
                     formattedRow.__hpcc_orig = row;
@@ -190,7 +196,6 @@ export class DatasourceStore {
                 })
             };
         });
-        this._cache[cacheKey] = retVal;
         return retVal;
     }
 

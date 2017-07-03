@@ -340,7 +340,7 @@ export class PropertyEditor extends HTMLWidget {
         rows.order();
     }
 
-    updateWidgetRow(widget, element, param) {
+    updateWidgetRow(widget: PropertyExt, element, param) {
         let tmpWidget = [];
         if (widget && param) {
             tmpWidget = widget[param.id]() || [];
@@ -357,7 +357,11 @@ export class PropertyEditor extends HTMLWidget {
             let changed = !!(widgetArr.length - noEmpties.length);
             if (lastModified) {
                 changed = true;
-                noEmpties.push(new param.ext.autoExpand(widget));
+                const autoExpandWidget = new param.ext.autoExpand(widget);
+                autoExpandWidget.monitor((id, newVal, oldVal, source) => {
+                    widget.broadcast(param.id, newVal, oldVal, source);
+                });
+                noEmpties.push(autoExpandWidget);
             }
             if (changed) {
                 widget[param.id](noEmpties);

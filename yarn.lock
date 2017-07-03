@@ -2338,6 +2338,10 @@ ieee754@^1.1.4:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
 
+immutable@4.0.0-rc.2:
+  version "4.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.0.0-rc.2.tgz#fdd0948aae728fda2306a02f72bb73e1773432d1"
+
 impress.js@GordonSmith/impressjs.git#MILEHIGH_UI:
   version "0.5.3"
   resolved "https://codeload.github.com/GordonSmith/impressjs/tar.gz/d7cc8e52b2fcd32d8c4166cb7dbef1727998f67b"
