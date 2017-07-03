@@ -20,6 +20,7 @@ export class App {
                     ;
                 this._preview
                     .datasource(row.__lparam[0])
+                    // .paging(row.__lparam[0] instanceof View ? false : true)
                     .render()
                     ;
             });
@@ -94,8 +95,6 @@ export class App {
                     ;
                 vertexMap[ds.id()] = retVal;
                 ds.monitor((id, newValue) => {
-                    //Utility.debounce(() => {
-                    console.log(id + ":" + newValue);
                     ds.refresh().then(() => {
                         retVal.text(ds.label()).render();
                         this._preview
@@ -103,7 +102,6 @@ export class App {
                             .lazyRender()
                             ;
                     });
-                    //}).call(this);
                 });
             }
             return retVal;
