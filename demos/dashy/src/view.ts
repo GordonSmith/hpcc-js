@@ -66,14 +66,13 @@ export class GroupByColumn extends PropertyExt {
         }
     }
 
+    @publish(null, "set", "Field", function () { return this._owner.columns(); }, { optional: true })
     column: { (): string; (_: string): GroupByColumn; };
     aggrType: { (): string; (_: string): GroupByColumn; };
     aggrColumn: { (): string; (_: string): GroupByColumn; };
 
 }
 GroupByColumn.prototype._class += " GroupByColumn";
-
-GroupByColumn.prototype.publish("column", null, "set", "Field", function () { return this._owner.columns(); }, { optional: true });
 
 export class View extends PropertyExt implements IDatasource {
     @publish(null, "widget", "View")
@@ -82,8 +81,9 @@ export class View extends PropertyExt implements IDatasource {
     @publish([], "propertyArray", "Source Columns", null, { autoExpand: GroupByColumn })
     groupBy: { (): GroupByColumn[]; (_: GroupByColumn[]): View; };
 
-    _samples = 3;
-    _sampleSize = 10;
+    _samples = 10;
+    _sampleSize = 100;
+    _total = 0;
 
     _fieldIdx: { [key: string]: IField } = {};
 
@@ -147,12 +147,14 @@ export class View extends PropertyExt implements IDatasource {
                     nest.key(d => d[groupBy.column()]);
                 }
             }
-            return nest.entries(response);
+            const retVal = nest.entries(response);
+            this._total = retVal.length;
+            return retVal;
         });
     }
 
     total(): number {
-        return Math.min(this.datasource().total(), this._samples * this._sampleSize);
+        return this._total;
     }
 }
 View.prototype._class += " View";

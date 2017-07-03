@@ -1,4 +1,4 @@
-import { PropertyExt, publish } from "@hpcc-js/common";
+import { PropertyExt } from "@hpcc-js/common";
 import { Databomb, LogicalFile, WUResult } from "./datasource";
 import { deserialize as d2 } from "./serialization";
 import { View } from "./view";
