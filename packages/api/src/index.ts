@@ -1,4 +1,3 @@
-export * from "./Data";
 export * from "./I1DChart";
 export * from "./I2DChart";
 export * from "./IGraph";

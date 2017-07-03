@@ -51,6 +51,13 @@ export class App {
             ;
         this._model.datasources.push(wuResult);
 
+        const nestedResult = new WUResult()
+            .url("http://192.168.3.22:8010")
+            .wuid("W20170630-090707")
+            .resultName("All")
+            ;
+        this._model.datasources.push(nestedResult);
+
         const databomb = new Databomb()
             .payload([{ subject: "maths", year1: 67 }, { subject: "english", year1: 55 }])
             ;
@@ -86,14 +93,17 @@ export class App {
                     .text(ds.label())
                     ;
                 vertexMap[ds.id()] = retVal;
-                ds.monitor((id) => {
+                ds.monitor((id, newValue) => {
+                    //Utility.debounce(() => {
+                    console.log(id + ":" + newValue);
                     ds.refresh().then(() => {
                         retVal.text(ds.label()).render();
                         this._preview
                             .invalidate()
-                            .render()
+                            .lazyRender()
                             ;
                     });
+                    //}).call(this);
                 });
             }
             return retVal;

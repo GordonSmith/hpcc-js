@@ -1,7 +1,6 @@
-﻿import { IDatasource } from "@hpcc-js/api";
-import { publish } from "@hpcc-js/common";
+﻿import { publish } from "@hpcc-js/common";
 import { Common } from "./Common";
-import { DatasourceStore } from "./DatasourceStore";
+import { DatasourceStore, IDatasource } from "./DatasourceStore";
 
 export class DatasourceTable extends Common {
     _prevDatasource;

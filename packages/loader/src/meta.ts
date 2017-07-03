@@ -42,6 +42,7 @@ export const thirdParty = {
     "google-maps": "google-maps/lib/Google",
     "grid-list": "grid-list/src/gridList",
     "handsontable": "handsontable/dist/handsontable.full",
+    "immutable": "immutable/dist/immutable.min",
     "javascript-autocomplete": "javascript-autocomplete/auto-complete",
     "orb": "orb",
     "react": "react/dist/react",
