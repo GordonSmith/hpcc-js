@@ -1,6 +1,6 @@
 import { publish } from "@hpcc-js/common";
 import { HTMLWidget } from "@hpcc-js/common";
-import { Grid, PagingGrid } from "@hpcc-js/dgrid-shim";
+import { Grid, Memory, PagingGrid } from "@hpcc-js/dgrid-shim";
 
 import "../src/Common.css";
 
@@ -36,7 +36,7 @@ export class Common extends HTMLWidget {
             }
             this._dgrid = new (this._prevPaging ? PagingGrid : Grid)({
                 columns: columns || [],
-                collection,
+                collection: collection || new Memory(),
                 selectionMode: "single",
                 cellNavigation: false,
                 pagingLinks: 1,

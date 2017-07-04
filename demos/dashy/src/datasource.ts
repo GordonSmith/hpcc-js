@@ -1,6 +1,7 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
 import { Result, XSDXMLNode } from "@hpcc-js/comms";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
+import { hashSum } from "@hpcc-js/util";
 
 function schemaRow2IField(row): IField {
     return {
@@ -19,6 +20,10 @@ export class ResultSource extends PropertyExt implements IDatasource {
 
     @publish("", "string", "ESP Url (http://x.x.x.x:8010)")
     url: { (): string; (_: string): ResultSource };
+
+    hash(): string {
+        return hashSum(this.url());
+    }
 
     refresh(): Promise<void> {
         return this._result.refresh().then((result) => {
@@ -74,23 +79,24 @@ export class WUResult extends ResultSource {
     @publish("", "string", "Result Name")
     resultName: { (): string; (_: string): WUResult };
 
-    _prevUrl: string;
-    _prevWuid: string;
-    _prevResultName: string;
+    _prevHash: string;
 
     label(): string {
         return `${this.wuid()}[${this.resultName()}]`;
     }
 
+    hash(): string {
+        return hashSum({ url: this.url(), wuid: this.wuid(), resultName: this.resultName() });
+    }
+
+    refreshPromise: Promise<void>;
     refresh(): Promise<void> {
-        if (this._prevUrl !== this.url() || this._prevWuid !== this.wuid() || this._prevResultName !== this.resultName()) {
-            this._prevUrl = this.url();
-            this._prevWuid = this.wuid();
-            this._prevResultName = this.resultName();
+        if (this._prevHash !== this.hash()) {
+            this._prevHash = this.hash();
             this._result = new Result({ baseUrl: this.url() }, this.wuid(), this.resultName());
-            return super.refresh();
+            this.refreshPromise = super.refresh();
         }
-        return Promise.resolve();
+        return this.refreshPromise;
     }
 }
 WUResult.prototype._class += " WUResult";
@@ -100,13 +106,24 @@ export class LogicalFile extends ResultSource {
     @publish("", "string", "Logical File Name")
     fileName: { (): string; (_: string): LogicalFile };
 
+    _prevHash;
+
     label(): string {
         return this.fileName();
     }
 
+    hash(): string {
+        return hashSum({ url: this.url(), fileName: this.fileName() });
+    }
+
+    refreshPromise: Promise<void>;
     refresh(): Promise<void> {
-        this._result = new Result({ baseUrl: this.url() }, this.fileName());
-        return super.refresh();
+        if (this._prevHash !== this.hash()) {
+            this._prevHash = this.hash();
+            this._result = new Result({ baseUrl: this.url() }, this.fileName());
+            this.refreshPromise = super.refresh();
+        }
+        return this.refreshPromise;
     }
 }
 LogicalFile.prototype._class += " LogicalFile";
@@ -117,6 +134,10 @@ export class Databomb extends PropertyExt implements IDatasource {
 
     label(): string {
         return "Databomb";
+    }
+
+    hash(): string {
+        return hashSum({ label: this.label() });
     }
 
     refresh(): Promise<void> {

@@ -1,3 +1,4 @@
+import { hashSum } from "@hpcc-js/util";
 import { Class } from "./Class";
 
 const GEN_PUB_STUBS: boolean = false;
@@ -287,6 +288,9 @@ export class PropertyExt extends Class {
             return ext && ext.disable ? !!ext.disable(this) : false;
         };
         this[id + "_modified"] = function () {
+            if (type === "propertyArray") {
+                return this[__prop_ + id].length > (ext.autoExpand ? 1 : 0);
+            }
             return this[__prop_ + id] !== undefined;
         };
         this[id + "_exists"] = function () {
@@ -427,10 +431,11 @@ export class PropertyExt extends Class {
 
     broadcast(key, newVal, oldVal, source) {
         source = source || this;
-        if (newVal !== oldVal) {
+        if (hashSum(newVal) !== hashSum(oldVal)) {
             for (const idx in this._watchArr) {
                 const monitor = this._watchArr[idx];
                 if ((monitor.propertyID === undefined || monitor.propertyID === key) && monitor.callback) {
+                    console.log(`broadcast(${key}, ${newVal}, ${oldVal}`);
                     setTimeout(function (monitor2) {
                         monitor2.callback(key, newVal, oldVal, source);
                     }, 0, monitor);
