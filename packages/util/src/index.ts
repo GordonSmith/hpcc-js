@@ -2,6 +2,7 @@ export * from "./cache";
 export * from "./dictionary";
 export * from "./esp";
 export * from "./graph";
+export * from "./hashSum";
 export * from "./logging";
 export * from "./object";
 export * from "./observer";

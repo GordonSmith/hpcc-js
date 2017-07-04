@@ -77,6 +77,8 @@ class RowFormatter {
             if (column.children) {
                 let childDepth = 0;
                 for (const childRow of row[column.leafID]) {
+                    if (childRow instanceof Array) {
+                    }
                     childDepth += this.calcDepth(column.children, childRow);
                 }
                 maxChildDepth = Math.max(maxChildDepth, childDepth);
@@ -197,13 +199,6 @@ export class DatasourceStore {
             };
         });
         return retVal;
-    }
-
-    _formatRows(rows) {
-        return rows.map((row) => {
-            const rowFormatter = new RowFormatter(this._columns);
-            return rowFormatter.row();
-        });
     }
 
     fetchRange(options): Promise<any[]> {

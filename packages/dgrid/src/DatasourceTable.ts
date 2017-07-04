@@ -1,4 +1,5 @@
 ﻿import { publish } from "@hpcc-js/common";
+import { Memory } from "@hpcc-js/dgrid-shim";
 import { Common } from "./Common";
 import { DatasourceStore, IDatasource } from "./DatasourceStore";
 
@@ -26,6 +27,8 @@ export class DatasourceTable extends Common {
         if (this._prevDatasource !== this.datasource()) {
             this._prevDatasource = this.datasource();
             if (this._prevDatasource) {
+                this._dgrid.set("columns", []);
+                this._dgrid.set("collection", new Memory());
                 const store = new DatasourceStore(this._prevDatasource);
                 this._dgrid.set("columns", store.columns());
                 this._dgrid.set("collection", store);

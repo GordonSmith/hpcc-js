@@ -94,7 +94,8 @@ export class App {
                     .text(ds.label())
                     ;
                 vertexMap[ds.id()] = retVal;
-                ds.monitor((id, newValue) => {
+                ds.monitor((id, newValue, oldValue) => {
+                    console.log(id, newValue, oldValue);
                     ds.refresh().then(() => {
                         retVal.text(ds.label()).render();
                         this._preview
