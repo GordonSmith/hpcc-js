@@ -27,8 +27,8 @@ export class DatasourceTable extends Common {
         if (this._prevDatasource !== this.datasource()) {
             this._prevDatasource = this.datasource();
             if (this._prevDatasource) {
-                this._dgrid.set("columns", []);
                 this._dgrid.set("collection", new Memory());
+                this._dgrid.set("columns", []);
                 const store = new DatasourceStore(this._prevDatasource);
                 this._dgrid.set("columns", store.columns());
                 this._dgrid.set("collection", store);

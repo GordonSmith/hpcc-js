@@ -5,7 +5,7 @@ import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { Databomb, LogicalFile, WUResult } from "./datasource";
 import { Model } from "./model";
-import { View } from "./view";
+import { NestedView, View } from "./view";
 
 export class App {
     _dockPanel = new DockPanel();
@@ -14,13 +14,13 @@ export class App {
         .applyScaleOnLayout(true)
         .on("vertex_click", (row, col, sel) => {
             row.__lparam[0].refresh().then(() => {
-                this._propertyEditor
-                    .widget(row.__lparam[0])
-                    .render()
-                    ;
                 this._preview
                     .datasource(row.__lparam[0])
-                    // .paging(row.__lparam[0] instanceof View ? false : true)
+                    .paging(row.__lparam[0] instanceof View ? false : true)
+                    .render()
+                    ;
+                this._propertyEditor
+                    .widget(row.__lparam[0])
                     .render()
                     ;
             });
@@ -50,31 +50,30 @@ export class App {
             .wuid("W20170424-070701")
             .resultName("Result 1")
             ;
-        this._model.datasources.push(wuResult);
+        this._model._datasources.push(wuResult);
 
         const nestedResult = new WUResult()
             .url("http://192.168.3.22:8010")
             .wuid("W20170630-090707")
             .resultName("All")
             ;
-        this._model.datasources.push(nestedResult);
+        this._model._datasources.push(nestedResult);
 
         const databomb = new Databomb()
             .payload([{ subject: "maths", year1: 67 }, { subject: "english", year1: 55 }])
             ;
-        this._model.datasources.push(databomb);
+        this._model._datasources.push(databomb);
 
         const logicalFile = new LogicalFile()
             .url("http://192.168.3.22:8010")
             .fileName("progguide::exampledata::keys::accounts.personid.payload")
             ;
-        this._model.datasources.push(logicalFile);
+        this._model._datasources.push(logicalFile);
 
-        const view = new View()
-            .datasource(wuResult)
-            ;
-        this._model.views.push(view);
-
+        this._model.views.push(new View(this._model).source(wuResult.label()));
+        this._model.views.push(new View(this._model).source(wuResult.label()));
+        this._model.views.push(new NestedView().datasource(wuResult));
+        this._model.views.push(new NestedView().datasource(wuResult));
         this.loadEditor();
         this.loadGraph();
     }
@@ -85,7 +84,7 @@ export class App {
 
     loadGraph() {
         const vertexMap: { [key: string]: Vertex } = {};
-        const vertices: Vertex[] = this._model.datasources.concat(this._model.views as any).map(ds => {
+        const vertices: Vertex[] = this._model._datasources.concat(this._model.views as any).map(ds => {
             let retVal: Vertex = vertexMap[ds.id()];
             if (!retVal) {
                 retVal = new Vertex()
