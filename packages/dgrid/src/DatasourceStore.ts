@@ -10,10 +10,14 @@ export interface IField {
 }
 
 export interface IDatasource {
+    id: () => string;
+    label: () => string;
     fields: () => IField[];
-    sample: (samples: number, sampleSize: number) => Promise<any[]>;
-    fetch: (from: number, count: number) => Promise<any[]>;
     total: () => number;
+    fetch: (from: number, count: number) => Promise<any[]>;
+    sample: (samples: number, sampleSize: number) => Promise<any[]>;
+    hash: () => string;
+    refresh: () => Promise<void>;
 }
 
 function entitiesEncode(str) {

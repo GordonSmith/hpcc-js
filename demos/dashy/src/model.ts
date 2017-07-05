@@ -1,11 +1,19 @@
 import { PropertyExt } from "@hpcc-js/common";
 import { Databomb, LogicalFile, WUResult } from "./datasource";
 import { deserialize as d2 } from "./serialization";
-import { View } from "./view";
+import { NestedView, View } from "./view";
 
 export class Model extends PropertyExt {
-    datasources: Array<WUResult | LogicalFile | Databomb> = [];
-    views: View[] = [];
+    _datasources: Array<WUResult | LogicalFile | Databomb> = [];
+    views: Array<View | NestedView> = [];
+
+    datasourceLabels() {
+        return this._datasources.map(ds => ds.label());
+    }
+
+    datasource(label) {
+        return this._datasources.filter(ds => ds.label() === label)[0];
+    }
 }
 Model.prototype._class += " Model";
 
