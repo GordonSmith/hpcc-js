@@ -5,6 +5,8 @@ import { hashSum } from "@hpcc-js/util";
 import { Databomb, LogicalFile, WUResult } from "./datasource";
 import { Model } from "./model";
 
+export type ViewDatasource = WUResult | LogicalFile | Databomb;
+
 function count(leaves: any[], callback: any): number {
     return leaves.length;
 }
@@ -108,7 +110,7 @@ export class NestedView extends PropertyExt implements IDatasource {
     rows: { (): boolean; (_: boolean): NestedView; };
 
     @publish(null, "widget", "View")
-    datasource: { (): WUResult | LogicalFile | Databomb; (_: WUResult | LogicalFile | Databomb): NestedView };
+    datasource: { (): ViewDatasource; (_: ViewDatasource): NestedView };
 
     @publish([], "propertyArray", "Source Columns", null, { autoExpand: NestedGroupByColumn })
     groupBy: { (): NestedGroupByColumn[]; (_: NestedGroupByColumn[]): NestedView; };
@@ -283,8 +285,8 @@ export class View extends PropertyExt implements IDatasource {
         this._model = model;
     }
 
-    datasource(): IDatasource {
-        return this._model.datasource(this.source());
+    datasource(): ViewDatasource {
+        return this._model.datasource(this.source()) as ViewDatasource;
     }
 
     columns() {
