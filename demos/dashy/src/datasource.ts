@@ -16,8 +16,6 @@ export abstract class ResultSource extends PropertyExt implements IDatasource {
     _result: Result;
     _schema: XSDXMLNode[] = [];
     _total: number;
-    _sampleCache: { [key: string]: Promise<any[]> } = {};
-    _cache: { [key: string]: Promise<any[]> } = {};
 
     @publish("", "string", "ESP Url (http://x.x.x.x:8010)")
     url: { (): string; (_: string): ResultSource };
@@ -32,7 +30,6 @@ export abstract class ResultSource extends PropertyExt implements IDatasource {
         return this._result.refresh().then((result) => {
             this._total = result.Total;
             this._schema = result.fields();
-            this._cache = {};
         });
     }
 
@@ -41,38 +38,26 @@ export abstract class ResultSource extends PropertyExt implements IDatasource {
     }
 
     sample(samples: number, sampleSize: number): Promise<any[]> {
-        const cacheID = `${samples}->${sampleSize}`;
-        let retVal = this._sampleCache[cacheID];
-        if (!retVal) {
-            if (samples * sampleSize >= this.total()) {
-                retVal = this.fetch(0, this.total());
-            } else {
-                const pages: Array<Promise<any[]>> = [];
-                const lastPage = this.total() - sampleSize;
-                for (let i = 0; i < samples; ++i) {
-                    pages.push(this.fetch(Math.floor(i * lastPage / sampleSize), sampleSize));
-                }
-                retVal = Promise.all(pages).then(responses => {
-                    let retVal2 = [];
-                    for (const response of responses) {
-                        retVal2 = retVal2.concat(response);
-                    }
-                    return retVal2;
-                });
+        if (samples * sampleSize >= this.total()) {
+            return this.fetch(0, this.total());
+        } else {
+            const pages: Array<Promise<any[]>> = [];
+            const lastPage = this.total() - sampleSize;
+            for (let i = 0; i < samples; ++i) {
+                pages.push(this.fetch(Math.floor(i * lastPage / sampleSize), sampleSize));
             }
-            this._cache[cacheID] = retVal;
+            return Promise.all(pages).then(responses => {
+                let retVal2 = [];
+                for (const response of responses) {
+                    retVal2 = retVal2.concat(response);
+                }
+                return retVal2;
+            });
         }
-        return retVal;
     }
 
     fetch(from: number, count: number): Promise<any[]> {
-        const cacheID = `${from}->${count}`;
-        let retVal = this._cache[cacheID];
-        if (!retVal) {
-            retVal = this._result.fetchRows(from, count);
-            this._cache[cacheID] = retVal;
-        }
-        return retVal;
+        return this._result.fetchRows(from, count);
     }
 
     total(): number {

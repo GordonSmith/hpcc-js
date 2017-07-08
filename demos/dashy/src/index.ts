@@ -1,5 +1,5 @@
 ﻿import { DDLEditor } from "@hpcc-js/codemirror";
-import { DatasourceTable } from "@hpcc-js/dgrid";
+import { DatasourceTable, IDatasource } from "@hpcc-js/dgrid";
 import { Edge, Graph, Vertex } from "@hpcc-js/graph";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
@@ -9,20 +9,42 @@ import { NestedView, View } from "./view";
 
 export class App {
     _dockPanel = new DockPanel();
+    _monitorHandle: { remove: () => void };
     _graph: Graph = new Graph()
         .allowDragging(false)
         .applyScaleOnLayout(true)
         .on("vertex_click", (row, col, sel) => {
-            row.__lparam[0].refresh().then(() => {
-                this._preview
-                    .datasource(row.__lparam[0])
-                    .paging(row.__lparam[0] instanceof View ? false : true)
-                    .render()
-                    ;
+            const datasource = row.__lparam[0] as any;
+            datasource.refresh().then(() => {
                 this._propertyEditor
-                    .widget(row.__lparam[0])
-                    .render()
+                    .widget(datasource)
+                    .lazyRender()
                     ;
+                this._preview
+                    .datasource(datasource)
+                    .paging(datasource instanceof View ? false : true)
+                    .lazyRender()
+                    ;
+                if (this._monitorHandle) {
+                    this._monitorHandle.remove();
+                }
+                this._monitorHandle = datasource.monitor((id, newValue, oldValue) => {
+                    console.log(id, newValue, oldValue);
+                    switch (id) {
+                        case "groupBy":
+                            if (newValue instanceof Array) {
+                                break;
+                            }
+                        default:
+                            datasource.refresh().then(() => {
+                                // retVal.text(datasource.label()).render();
+                                this._preview
+                                    .invalidate()
+                                    .lazyRender()
+                                    ;
+                            });
+                    }
+                });
             });
         })
     ;
@@ -42,7 +64,7 @@ export class App {
             .addWidget("Preview", this._preview, "split-bottom", this._graph as any)
             .addWidget("Properties", this._propertyEditor, "split-right", this._graph as any)
             .addWidget("Debug", this._editor, "tab-after", this._propertyEditor)
-            .render()
+            .lazyRender()
             ;
 
         const wuResult = new WUResult()
@@ -50,25 +72,25 @@ export class App {
             .wuid("W20170424-070701")
             .resultName("Result 1")
             ;
-        this._model._datasources.push(wuResult);
+        this._model.addDatasource(wuResult);
 
         const nestedResult = new WUResult()
             .url("http://192.168.3.22:8010")
             .wuid("W20170630-090707")
             .resultName("All")
             ;
-        this._model._datasources.push(nestedResult);
+        this._model.addDatasource(nestedResult);
 
         const databomb = new Databomb()
             .payload([{ subject: "maths", year1: 67 }, { subject: "english", year1: 55 }])
             ;
-        this._model._datasources.push(databomb);
+        this._model.addDatasource(databomb);
 
         const logicalFile = new LogicalFile()
             .url("http://192.168.3.22:8010")
             .fileName("progguide::exampledata::keys::accounts.personid.payload")
             ;
-        this._model._datasources.push(logicalFile);
+        this._model.addDatasource(logicalFile);
 
         this._model.views.push(new View(this._model).source(wuResult.label()));
         this._model.views.push(new View(this._model).source(wuResult.label()));
@@ -84,7 +106,7 @@ export class App {
 
     loadGraph() {
         const vertexMap: { [key: string]: Vertex } = {};
-        const vertices: Vertex[] = this._model._datasources.concat(this._model.views as any).map(ds => {
+        const vertices: Vertex[] = this._model.datasources().concat(this._model.views as any).map(ds => {
             let retVal: Vertex = vertexMap[ds.id()];
             if (!retVal) {
                 retVal = new Vertex()
@@ -93,16 +115,6 @@ export class App {
                     .text(ds.label())
                     ;
                 vertexMap[ds.id()] = retVal;
-                ds.monitor((id, newValue, oldValue) => {
-                    console.log(id, newValue, oldValue);
-                    ds.refresh().then(() => {
-                        retVal.text(ds.label()).render();
-                        this._preview
-                            .invalidate()
-                            .lazyRender()
-                            ;
-                    });
-                });
             }
             return retVal;
         });

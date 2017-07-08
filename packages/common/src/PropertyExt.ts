@@ -415,7 +415,7 @@ export class PropertyExt extends Class {
         }
     }
 
-    monitor(func: (id: string, newVal: any, oldVal: any) => void) {
+    monitor(func: (id: string, newVal: any, oldVal: any) => void): { remove: () => void } {
         return {
             _watches: this.publishedProperties().map(function (meta) {
                 return this.monitorProperty(meta.id, func);
