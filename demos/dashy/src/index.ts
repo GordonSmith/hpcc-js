@@ -1,6 +1,6 @@
 ﻿import { DDLEditor } from "@hpcc-js/codemirror";
-import { DatasourceTable, IDatasource } from "@hpcc-js/dgrid";
-import { Edge, Graph, Vertex } from "@hpcc-js/graph";
+import { DatasourceTable } from "@hpcc-js/dgrid";
+import { Graph } from "@hpcc-js/graph";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { Databomb, LogicalFile, WUResult } from "./datasource";
@@ -13,36 +13,38 @@ export class App {
     _graph: Graph = new Graph()
         .allowDragging(false)
         .applyScaleOnLayout(true)
-        .on("vertex_click", (row, col, sel) => {
+        .on("vertex_click", (row, col, sel, ext) => {
+            // const source: Vertex = ext.vertex;
             const datasource = row.__lparam[0] as any;
             datasource.refresh().then(() => {
+                if (this._monitorHandle) {
+                    this._monitorHandle.remove();
+                }
                 this._propertyEditor
                     .widget(datasource)
-                    .lazyRender()
+                    .render()
                     ;
                 this._preview
                     .datasource(datasource)
                     .paging(datasource instanceof View ? false : true)
                     .lazyRender()
                     ;
-                if (this._monitorHandle) {
-                    this._monitorHandle.remove();
-                }
                 this._monitorHandle = datasource.monitor((id, newValue, oldValue) => {
                     console.log(id, newValue, oldValue);
                     switch (id) {
+                        case "source":
+                            this.loadGraph();
+                            this._graph.lazyRender();
+                            this.refreshPreview(datasource);
+                            break;
                         case "groupBy":
                             if (newValue instanceof Array) {
-                                break;
+                            } else {
+                                this.refreshPreview(datasource);
                             }
+                            break;
                         default:
-                            datasource.refresh().then(() => {
-                                // retVal.text(datasource.label()).render();
-                                this._preview
-                                    .invalidate()
-                                    .lazyRender()
-                                    ;
-                            });
+                            this.refreshPreview(datasource);
                     }
                 });
             });
@@ -94,10 +96,19 @@ export class App {
 
         this._model.views.push(new View(this._model).source(wuResult.label()));
         this._model.views.push(new View(this._model).source(wuResult.label()));
-        this._model.views.push(new NestedView().datasource(wuResult));
-        this._model.views.push(new NestedView().datasource(wuResult));
+        this._model.views.push(new NestedView(this._model).source(wuResult.label()));
+        this._model.views.push(new NestedView(this._model).source(wuResult.label()));
         this.loadEditor();
         this.loadGraph();
+    }
+
+    refreshPreview(datasource) {
+        datasource.refresh().then(() => {
+            this._preview
+                .invalidate()
+                .lazyRender()
+                ;
+        });
     }
 
     loadEditor() {
@@ -105,35 +116,10 @@ export class App {
     }
 
     loadGraph() {
-        const vertexMap: { [key: string]: Vertex } = {};
-        const vertices: Vertex[] = this._model.datasources().concat(this._model.views as any).map(ds => {
-            let retVal: Vertex = vertexMap[ds.id()];
-            if (!retVal) {
-                retVal = new Vertex()
-                    .columns(["DS"])
-                    .data([[ds]])
-                    .text(ds.label())
-                    ;
-                vertexMap[ds.id()] = retVal;
-            }
-            return retVal;
-        });
-        const edgeMap: { [key: string]: Edge } = {};
-        const edges: Edge[] = this._model.views.map(view => {
-            let retVal: Edge = edgeMap[view.id()];
-            if (!retVal) {
-                retVal = new Edge()
-                    .sourceVertex(vertexMap[view.datasource().id()])
-                    .targetVertex(vertexMap[view.id()])
-                    ;
-                edgeMap[view.id()] = retVal;
-            }
-            return retVal;
-        });
         this._graph
             .layout("Hierarchy")
             // .applyScaleOnLayout(true)
-            .data({ vertices, edges })
+            .data({ ...this._model.createGraph(), merge: false })
             ;
     }
 

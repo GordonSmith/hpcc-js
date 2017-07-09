@@ -455,13 +455,6 @@ export class PropertyEditor extends HTMLWidget {
                     .on("change", function () {
                         context.setProperty(widget, param.id, this.value);
                     })
-                    .each(function () {
-                        const input = d3Select(this);
-                        const set = widget[param.id + "_options"]();
-                        for (const setItem of set) {
-                            input.append("option").attr("value", setItem).text(setItem);
-                        }
-                    })
                     ;
                 break;
             case "array":
@@ -475,7 +468,6 @@ export class PropertyEditor extends HTMLWidget {
                     ;
                 break;
             default:
-
                 cell.append("input")
                     .attr("id", this.id() + "_" + param.id)
                     .classed("property-input", true)
@@ -502,6 +494,19 @@ export class PropertyEditor extends HTMLWidget {
         const val = widget ? widget[param.id]() : "";
         element.property("disabled", widget[param.id + "_disabled"] && widget[param.id + "_disabled"]());
         switch (param.type) {
+            case "boolean":
+                element.property("checked", val);
+                break;
+            case "set":
+                const options = element.selectAll("option").data(widget[param.id + "_options"]() as string[]);
+                options.enter().append("option")
+                    .merge(options)
+                    .attr("value", d => d)
+                    .text(d => d)
+                    ;
+                options.exit().remove();
+                element.property("value", val);
+                break;
             case "array":
             case "object":
                 element.property("value", JSON.stringify(val, function replacer(_key, value) {
@@ -510,9 +515,6 @@ export class PropertyEditor extends HTMLWidget {
                     }
                     return value;
                 }));
-                break;
-            case "boolean":
-                element.property("checked", val);
                 break;
             default:
                 element.property("value", val);
