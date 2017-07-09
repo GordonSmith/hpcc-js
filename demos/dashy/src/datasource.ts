@@ -12,7 +12,31 @@ function schemaRow2IField(row): IField {
     };
 }
 
-export abstract class ResultSource extends PropertyExt implements IDatasource {
+export abstract class Datasource extends PropertyExt {
+    sample(samples: number, sampleSize: number): Promise<any[]> {
+        if (samples * sampleSize >= this.total()) {
+            return this.fetch(0, this.total());
+        } else {
+            const pages: Array<Promise<any[]>> = [];
+            const lastPage = this.total() - sampleSize;
+            for (let i = 0; i < samples; ++i) {
+                pages.push(this.fetch(Math.floor(i * lastPage / sampleSize), sampleSize));
+            }
+            return Promise.all(pages).then(responses => {
+                let retVal2 = [];
+                for (const response of responses) {
+                    retVal2 = retVal2.concat(response);
+                }
+                return retVal2;
+            });
+        }
+    }
+
+    abstract fetch(from: number, count: number): Promise<any[]>;
+    abstract total(): number;
+}
+
+export abstract class ResultSource extends Datasource implements IDatasource {
     _result: Result;
     _schema: XSDXMLNode[] = [];
     _total: number;
@@ -35,25 +59,6 @@ export abstract class ResultSource extends PropertyExt implements IDatasource {
 
     fields(): IField[] {
         return this._schema.map(schemaRow2IField);
-    }
-
-    sample(samples: number, sampleSize: number): Promise<any[]> {
-        if (samples * sampleSize >= this.total()) {
-            return this.fetch(0, this.total());
-        } else {
-            const pages: Array<Promise<any[]>> = [];
-            const lastPage = this.total() - sampleSize;
-            for (let i = 0; i < samples; ++i) {
-                pages.push(this.fetch(Math.floor(i * lastPage / sampleSize), sampleSize));
-            }
-            return Promise.all(pages).then(responses => {
-                let retVal2 = [];
-                for (const response of responses) {
-                    retVal2 = retVal2.concat(response);
-                }
-                return retVal2;
-            });
-        }
     }
 
     fetch(from: number, count: number): Promise<any[]> {
@@ -122,7 +127,7 @@ export class LogicalFile extends ResultSource {
 }
 LogicalFile.prototype._class += " LogicalFile";
 
-export class Databomb extends PropertyExt implements IDatasource {
+export class Databomb extends Datasource implements IDatasource {
     @publish([], "array", "Databomb payload")
     payload: { (): any[]; (_: any[]): Databomb };
 
@@ -156,10 +161,6 @@ export class Databomb extends PropertyExt implements IDatasource {
         return [];
     }
 
-    sample(samples: number, sampleSize: number): Promise<any[]> {
-        return Promise.resolve([]);
-    }
-
     fetch(from: number, count: number): Promise<any[]> {
         return Promise.resolve(this.payload().filter((row, idx) => idx >= from && idx < from + count));
     }
@@ -169,3 +170,9 @@ export class Databomb extends PropertyExt implements IDatasource {
     }
 }
 Databomb.prototype._class += " Databomb";
+
+export class NullDatasource extends Databomb {
+    label(): string {
+        return "null";
+    }
+}

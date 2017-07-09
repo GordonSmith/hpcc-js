@@ -9,6 +9,17 @@ import { Vertex } from "./Vertex";
 
 import "../src/Graph.css";
 
+export interface Lineage {
+    parent: Vertex;
+    child: Vertex;
+}
+export interface IGraphData {
+    vertices: Vertex[];
+    edges: Edge[];
+    hierarchy?: Lineage[];
+    merge?: boolean;
+}
+
 export class Graph extends SVGZoomWidget {
     Vertex;
     Edge;
@@ -55,16 +66,16 @@ export class Graph extends SVGZoomWidget {
         this.data({ vertices: [], edges: [], hierarchy: [], merge: false });
     }
 
-    data(): any;
-    data(_: any): Graph;
-    data(_?: any): any | Graph {
+    data(): IGraphData;
+    data(_: IGraphData): Graph;
+    data(_?: IGraphData): IGraphData | Graph {
         const retVal = SVGZoomWidget.prototype.data.apply(this, arguments);
         if (arguments.length) {
-            if (!this.data().merge) {
+            if (!_.merge) {
                 this.graphData = new GraphData();
                 this._renderCount = 0;
             }
-            const data = this.graphData.setData(this.data().vertices || [], this.data().edges || [], this.data().hierarchy || [], this.data().merge || false);
+            const data = this.graphData.setData(_.vertices || [], _.edges || [], _.hierarchy || [], _.merge || false);
 
             const context = this;
             data.addedVertices.forEach(function (item) {
