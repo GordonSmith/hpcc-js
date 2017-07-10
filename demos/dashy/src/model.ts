@@ -1,15 +1,17 @@
 import { PropertyExt } from "@hpcc-js/common";
 import { IDatasource } from "@hpcc-js/dgrid";
 import { Edge, Vertex } from "@hpcc-js/graph";
-import { Databomb, LogicalFile, NullDatasource, WUResult } from "./datasource";
+import { Databomb, NullDatasource } from "./datasources/databomb";
+import { LogicalFile } from "./datasources/logicalfile";
+import { WUResult } from "./datasources/wuresult";
 import { deserialize as d2 } from "./serialization";
-import { NestedView, View, ViewDatasource } from "./view";
+import { View, ViewDatasource } from "./views/view";
 
 export type CDatasource = ViewDatasource | View;
 export class Model extends PropertyExt {
     private _datasources: CDatasource[] = [];
-    views: Array<View | NestedView> = [];
-    private _nullDatasource = new NullDatasource()
+    views: View[] = [];
+    private _nullDatasource = new NullDatasource();
 
     private vertexMap: { [key: string]: Vertex } = {};
     private edgeMap: { [key: string]: Edge } = {};
@@ -30,7 +32,7 @@ export class Model extends PropertyExt {
     datasource(label): IDatasource | undefined {
         const retVal = this._datasources.filter(ds => ds.label() === label);
         if (retVal.length) {
-            return retVal[0];
+            return retVal[0] as IDatasource;
         }
         return this._nullDatasource;
     }

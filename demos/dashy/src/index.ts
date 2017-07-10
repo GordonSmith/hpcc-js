@@ -3,9 +3,13 @@ import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
-import { Databomb, LogicalFile, WUResult } from "./datasource";
+import { Databomb } from "./datasources/databomb";
+import { LogicalFile } from "./datasources/logicalfile";
+import { WUResult } from "./datasources/wuresult";
 import { Model } from "./model";
-import { NestedView, View } from "./view";
+import { FlatView } from "./views/flatview";
+import { NestedView } from "./views/nestedview";
+import { View } from "./views/view";
 
 export class App {
     _dockPanel = new DockPanel();
@@ -94,8 +98,8 @@ export class App {
             ;
         this._model.addDatasource(logicalFile);
 
-        this._model.views.push(new View(this._model).source(wuResult.label()));
-        this._model.views.push(new View(this._model).source(wuResult.label()));
+        this._model.views.push(new FlatView(this._model).source(wuResult.label()));
+        this._model.views.push(new FlatView(this._model).source(wuResult.label()));
         this._model.views.push(new NestedView(this._model).source(wuResult.label()));
         this._model.views.push(new NestedView(this._model).source(wuResult.label()));
         this.loadEditor();
