@@ -264,7 +264,7 @@ export class PropertyExt extends Class {
         if (meta.ext.internal) {
             this[__private_ + id] = true;
         }
-        this[id] = function (_) {
+        this[id + "_access"] = function (_) {
             if (!arguments.length) {
                 if (this[id + "_disabled"]()) return this[id + "_default"]();
                 return this[__prop_ + id] !== undefined ? this[__prop_ + id] : this[id + "_default"]();
@@ -284,6 +284,7 @@ export class PropertyExt extends Class {
             }
             return this;
         };
+        this[id] = this[id + "_access"];
         this[id + "_disabled"] = function () {
             return ext && ext.disable ? !!ext.disable(this) : false;
         };
@@ -415,7 +416,7 @@ export class PropertyExt extends Class {
         }
     }
 
-    monitor(func: (id: string, newVal: any, oldVal: any) => void): { remove: () => void } {
+    monitor(func: (id: string, newVal: any, oldVal: any) => void): { _watches: any; remove: () => void } {
         return {
             _watches: this.publishedProperties().map(function (meta) {
                 return this.monitorProperty(meta.id, func);
