@@ -253,7 +253,7 @@ export class DatasourceStore {
     fetchRange(options): Promise<any[]> {
         const retVal = new Deferred();
         this._request(options.start, options.end).then(response => retVal.resolve(response));
-        return new QueryResults(retVal.then(response => response.data.slice(options.start, options.end)), {
+        return new QueryResults(retVal.then(response => response.data), {
             totalLength: retVal.then(response => response.totalLength)
         });
     }
