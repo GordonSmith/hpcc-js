@@ -11,6 +11,7 @@
         "noUnusedLocals": true,
         "strictNullChecks": true,
         "importHelpers": true,
+        "skipLibCheck": true,
         "lib": [
             "dom",
             "es5",

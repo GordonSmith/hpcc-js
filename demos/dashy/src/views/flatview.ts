@@ -1,7 +1,7 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
 import { nest as d3Nest } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
-import { ComputedField, View } from "./view";
+import { AggregateField, View } from "./view";
 
 export class GroupByColumn extends PropertyExt {
     _owner;
@@ -11,12 +11,12 @@ export class GroupByColumn extends PropertyExt {
         this._owner = owner;
     }
 
+    @publish(undefined, "set", "Field", function () { return this.columns(); }, { optional: true })
+    column: { (): string; (_: string): GroupByColumn; };
+
     columns() {
         return this._owner.columns();
     }
-
-    @publish(undefined, "set", "Field", function () { return this.columns(); }, { optional: true })
-    column: { (): string; (_: string): GroupByColumn; };
 }
 GroupByColumn.prototype._class += " GroupByColumn";
 
@@ -24,8 +24,8 @@ export class FlatView extends View {
     @publish([], "propertyArray", "Source Columns", null, { autoExpand: GroupByColumn })
     groupBy: { (): GroupByColumn[]; (_: GroupByColumn[]): View; };
 
-    @publish([], "propertyArray", "Computed Fields", null, { autoExpand: ComputedField })
-    computedFields: { (): ComputedField[]; (_: ComputedField[]): View; };
+    @publish([], "propertyArray", "Computed Fields", null, { autoExpand: AggregateField })
+    computedFields: { (): AggregateField[]; (_: AggregateField[]): View; };
 
     hash(): string {
         return super.hash({
@@ -71,10 +71,10 @@ export class FlatView extends View {
                 return columns.indexOf(field.id) < 0;
             }));
         }
-        return retVal;
+        return retVal.length === 1 ? retVal[0].children : retVal;
     }
 
-    fetch(from: number, count: number): Promise<any[]> {
+    _fetch(from: number, count: number): Promise<any[]> {
         return this.sample(this.samples(), this.sampleSize()).then(response => {
             const retVal = d3Nest()
                 .key(row => {
@@ -105,7 +105,7 @@ export class FlatView extends View {
                 })
                 ;
             this._total = retVal.length;
-            return retVal;
+            return retVal.length === 1 ? retVal[0].values : retVal;
         });
     }
 }

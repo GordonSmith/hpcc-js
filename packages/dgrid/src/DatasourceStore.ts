@@ -64,7 +64,7 @@ export class DatasourceCache implements IDatasource {
         return retVal;
     }
 }
-
+/*
 function entitiesEncode(str) {
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
@@ -82,7 +82,7 @@ function safeEncode(item) {
     }
     return item;
 }
-
+*/
 const LINE_SPLITTER = `<br><hr class='dgrid-fakeline'>`;
 const LINE_SPLITTER2 = `<br><hr class='dgrid-fakeline' style='visibility: hidden'>`;
 

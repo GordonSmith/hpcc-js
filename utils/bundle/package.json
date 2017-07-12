@@ -18,14 +18,12 @@
     "build": "tsc"
   },
   "dependencies": {
-    "d3-request": "^1.0.5",
-    "toposort": "^1.0.3",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
-    "@types/node": "^8.0.1",
+    "@types/node": "^8.0.10",
     "rimraf": "^2.6.1",
-    "typescript": "^2.3.4"
+    "typescript": "^2.4.1"
   },
   "repository": {
     "type": "git",
