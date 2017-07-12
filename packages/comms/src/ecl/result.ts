@@ -72,7 +72,7 @@ export class Result extends StateObject<ECLResultEx & DFUQuery.DFULogicalFile, E
         return this.Total !== -1;
     }
 
-    fetchXMLSchema(): Promise<XSDSchema> {
+    fetchXMLSchema(): Promise<XSDSchema | null> {
         if (this.xsdSchema) {
             return Promise.resolve(this.xsdSchema);
         }
@@ -81,7 +81,7 @@ export class Result extends StateObject<ECLResultEx & DFUQuery.DFULogicalFile, E
                 this.xsdSchema = parseXSD(response.Result.XmlSchema.xml);
                 return this.xsdSchema;
             }
-            return this;
+            return null;
         });
     }
 

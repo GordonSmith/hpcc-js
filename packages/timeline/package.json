@@ -29,7 +29,7 @@
     "@hpcc-js/bundle": "^0.0.4",
     "rimraf": "^2.6.1",
     "typedoc": "^0.7.1",
-    "typescript": "^2.3.4"
+    "typescript": "^2.4.1"
   },
   "repository": {
     "type": "git",

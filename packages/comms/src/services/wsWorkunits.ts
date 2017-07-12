@@ -2437,7 +2437,7 @@ export class WorkunitsService {
         return this._connection.send("WUDetails", request);
     }
 
-    WUCDebug(request: WUCDebug.Request): Promise<XMLNode> {
+    WUCDebug(request: WUCDebug.Request): Promise<XMLNode | null> {
         return this._connection.send("WUCDebug", request).then((response) => {
             const retVal = xml2json(response.Result);
             const children = retVal.children();

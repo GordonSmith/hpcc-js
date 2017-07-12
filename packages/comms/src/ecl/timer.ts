@@ -1,5 +1,5 @@
-import { IConnection, IOptions } from "../connection";
 import { espTime2Seconds, StateObject } from "@hpcc-js/util";
+import { IConnection, IOptions } from "../connection";
 import { WorkunitsService, WUInfo } from "../services/wsWorkunits";
 
 export interface ECLTimerEx extends WUInfo.ECLTimer {
@@ -34,7 +34,6 @@ export class Timer extends StateObject<ECLTimerEx, ECLTimerEx> implements ECLTim
             Wuid: wuid,
             Seconds: Math.round(secs * 1000) / 1000,
             HasSubGraphId: eclTimer.SubGraphId !== undefined,
-            XXX: true,
             ...eclTimer
         });
     }

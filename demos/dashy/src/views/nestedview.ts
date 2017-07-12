@@ -1,7 +1,7 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
 import { nest as d3Nest } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
-import { ComputedField, View } from "./view";
+import { AggregateField, View } from "./view";
 
 export class NestedGroupByColumn extends PropertyExt {
     _owner;
@@ -9,8 +9,8 @@ export class NestedGroupByColumn extends PropertyExt {
     @publish(undefined, "set", "Field", function () { return this.columns(); }, { optional: true })
     column: { (): string; (_: string): NestedGroupByColumn; };
 
-    @publish([], "propertyArray", "Computed Fields", null, { autoExpand: ComputedField })
-    computedFields: { (): ComputedField[]; (_: ComputedField[]): NestedGroupByColumn; };
+    @publish([], "propertyArray", "Computed Fields", null, { autoExpand: AggregateField })
+    computedFields: { (): AggregateField[]; (_: AggregateField[]): NestedGroupByColumn; };
 
     constructor(owner?) {
         super();
@@ -107,7 +107,7 @@ export class NestedView extends View {
         return rows;
     }
 
-    fetch(from: number, count: number): Promise<any[]> {
+    _fetch(from: number, count: number): Promise<any[]> {
         return this.sample(this.samples(), this.sampleSize()).then(response => {
             const retVal = this.nest(response);
             this._total = retVal.length;

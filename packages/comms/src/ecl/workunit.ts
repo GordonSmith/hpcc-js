@@ -471,7 +471,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
         return this.fetchDetails({
             Filter: {
                 AttributeFilters: {
-                    WUAttributeFilter: ["TimeElapsed"]
+                    WUAttributeFilter: [{ Name: "TimeElapsed" }]
                 }
             }
         }).then((scopes) => {
@@ -639,7 +639,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
                 logger.warning("Unexpected exception:  ");
                 throw e;
             }
-            return {};
+            return {} as WsWorkunits.WUQuery.Response;
         });
     }
 
@@ -671,7 +671,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
             this.set({
                 ResultViews: includeResults ? response.ResultViews : [],
                 HelpersCount: response.Workunit.Helpers && response.Workunit.Helpers.ECLHelpFile ? response.Workunit.Helpers.ECLHelpFile.length : 0
-            });
+            } as IWorkunitState);
             return response;
         }).catch((e: ESPExceptions) => {
             //  deleted  ---
@@ -687,7 +687,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
                 logger.warning("Unexpected exception:  ");
                 throw e;
             }
-            return {};
+            return {} as WsWorkunits.WUInfo.Response;
         });
     }
 
@@ -731,7 +731,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
         });
     }
 
-    protected WUCDebug(command: string, opts: any = {}): Promise<XMLNode> {
+    protected WUCDebug(command: string, opts: any = {}): Promise<XMLNode | null> {
         let optsStr = "";
         for (const key in opts) {
             if (opts.hasOwnProperty(key)) {
