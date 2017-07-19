@@ -12,14 +12,16 @@
         "strictNullChecks": false,
         "importHelpers": true,
         "experimentalDecorators": true,
+        "downlevelIteration": true,
         "lib": [
             "dom",
             "es5",
-            "es2015.promise"
+            "es2015.promise",
+            "es2015.iterable"
         ],
         "types": []
     },
     "include": [
-        "src/*"
+        "src/**/*"
     ]
 }

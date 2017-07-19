@@ -8,7 +8,7 @@ export class LogicalFile extends ESPResult {
     @publish("", "string", "Logical File Name")
     fileName: { (): string; (_: string): LogicalFile };
 
-    _prevHash;
+    _prevHash: string;
 
     label(): string {
         return this.fileName();

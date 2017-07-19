@@ -267,6 +267,16 @@ export class Graph extends SVGZoomWidget {
                     vertex: d
                 });
             })
+            .on("contextmenu", function (d) {
+                const vertexElement = d3Select(this).select(".graph_Vertex");
+                let selected = false;
+                if (!vertexElement.empty()) {
+                    selected = vertexElement.classed("selected");
+                }
+                context.vertex_contextmenu(context.rowToObj(d.data()), "", selected, {
+                    vertex: d
+                });
+            })
             .on("mouseover", function (d) {
                 if (context._dragging)
                     return;
@@ -558,6 +568,9 @@ export class Graph extends SVGZoomWidget {
     }
 
     vertex_dblclick(_row, _col, _sel, _opts) {
+    }
+
+    vertex_contextmenu(_row, _col, _sel, _opts) {
     }
 
     vertex_mouseover(element, d) {

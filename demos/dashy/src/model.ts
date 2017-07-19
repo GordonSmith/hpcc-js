@@ -5,13 +5,15 @@ import { Databomb, NullDatasource } from "./datasources/databomb";
 import { LogicalFile } from "./datasources/logicalfile";
 import { WUResult } from "./datasources/wuresult";
 import { deserialize as d2 } from "./serialization";
+import { NullView } from "./views/nullview";
 import { View, ViewDatasource } from "./views/view";
 
 export type CDatasource = ViewDatasource | View;
 export class Model extends PropertyExt {
     private _datasources: CDatasource[] = [];
-    views: View[] = [];
     private _nullDatasource = new NullDatasource();
+    private _views: View[] = [];
+    private _nullView = new NullView(this, "");
 
     private vertexMap: { [key: string]: Vertex } = {};
     private edgeMap: { [key: string]: Edge } = {};
@@ -29,7 +31,7 @@ export class Model extends PropertyExt {
         return this._datasources.map(ds => ds.label());
     }
 
-    datasource(label): IDatasource | undefined {
+    datasource(label: string): IDatasource | undefined {
         const retVal = this._datasources.filter(ds => ds.label() === label);
         if (retVal.length) {
             return retVal[0] as IDatasource;
@@ -37,31 +39,68 @@ export class Model extends PropertyExt {
         return this._nullDatasource;
     }
 
+    addView(view: View): this {
+        this._views.push(view);
+        return this;
+    }
+
+    viewLabels() {
+        return this._views.map(ds => ds.label());
+    }
+
+    view(label: string): View | undefined {
+        const retVal = this._views.filter(ds => ds.label() === label);
+        if (retVal.length) {
+            return retVal[0] as View;
+        }
+        return this._nullView;
+    }
+
     createGraph() {
-        const vertices: Vertex[] = this.datasources().concat(this.views as any).map(ds => {
+        const vertices: Vertex[] = this.datasources().concat(this._views as any).map(ds => {
             let retVal: Vertex = this.vertexMap[ds.id()];
             if (!retVal) {
                 retVal = new Vertex()
                     .columns(["DS"])
                     .data([[ds]])
-                    .text(ds.label())
                     ;
                 this.vertexMap[ds.id()] = retVal;
             }
+            retVal.text(ds.label());
+            retVal.getBBox(true);
             return retVal;
         });
-        const edges: Edge[] = this.views.map(view => {
-            const edgeID = `${view.datasource().id()}->${view.id()}`;
-            let retVal: Edge = this.edgeMap[edgeID];
-            if (!retVal) {
-                retVal = new Edge()
+        const edges: Edge[] = [];
+        this._views.forEach(view => {
+            const dsEdgeID = `${view.datasource().id()}->${view.id()}`;
+            let dsEdge: Edge = this.edgeMap[dsEdgeID];
+            if (!dsEdge) {
+                dsEdge = new Edge()
                     .sourceVertex(this.vertexMap[view.datasource().id()])
                     .targetVertex(this.vertexMap[view.id()])
                     ;
-                this.edgeMap[edgeID] = retVal;
+                this.edgeMap[dsEdgeID] = dsEdge;
             }
-            return retVal;
+            edges.push(dsEdge);
+            view.filters().forEach(filter => {
+                if (filter.source()) {
+                    const filterView = this.view(filter.source());
+                    const filterEdgeID = `${filterView.id()}->${view.id()}`;
+                    let filterEdge: Edge = this.edgeMap[filterEdgeID];
+                    if (!filterEdge) {
+                        filterEdge = new Edge()
+                            .sourceVertex(this.vertexMap[filterView.id()])
+                            .targetVertex(this.vertexMap[view.id()])
+                            .strokeDasharray("1,5")
+                            ;
+                        this.edgeMap[filterEdgeID] = filterEdge;
+                    }
+                    filterEdge.text("Sel:");
+                    edges.push(filterEdge);
+                }
+            });
         });
+
         return {
             vertices,
             edges
