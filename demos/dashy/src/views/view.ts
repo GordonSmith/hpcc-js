@@ -50,7 +50,7 @@ export class AggregateField extends PropertyExt {
 AggregateField.prototype._class += " CalcField";
 
 export class SortColumn extends PropertyExt {
-    _owner;
+    _owner: View;
 
     @publish(null, "set", "Sort Field", function () { return this.fields(); }, { optional: true })
     sortColumn: { (): string; (_: string): SortColumn; };
@@ -76,24 +76,122 @@ export class SortColumn extends PropertyExt {
 }
 SortColumn.prototype._class += " CalcField";
 
+export class ColumnMapping extends PropertyExt {
+    _owner: Filter;
+
+    @publish(null, "set", "Local Fields", function () { return this.fields(); }, { optional: true })
+    localField: { (): string; (_: string): SortColumn; };
+    @publish(null, "set", "Filter Fields", function () { return this.filterFields(); }, { optional: true })
+    filterField: { (): string; (_: string): SortColumn; };
+    @publish("==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "contains"])
+    condition: { (): string; (_: string): SortColumn; };
+
+    constructor(owner?) {
+        super();
+        this._owner = owner;
+    }
+
+    hash() {
+        return hashSum({});
+    }
+
+    fields() {
+        return this._owner._owner.datasource().fields().map(field => field.label);
+    }
+
+    field(label: string): IField | undefined {
+        return this._owner._owner.datasource().fields().filter(field => field.label === label)[0];
+    }
+
+    filterFields() {
+        return this._owner.fields().map(field => field.label);
+    }
+
+    createFilter(filterSelection: any[]): (localRow: any) => boolean {
+        const lf = this.localField();
+        const ff = this.filterField();
+        switch (this.condition()) {
+            case "==":
+                return (localRow) => localRow[lf] === filterSelection[0][ff];
+            case "!=":
+                return (localRow) => localRow[lf] !== filterSelection[0][ff];
+            case "<":
+                return (localRow) => localRow[lf] < filterSelection[0][ff];
+            case "<=":
+                return (localRow) => localRow[lf] <= filterSelection[0][ff];
+            case ">":
+                return (localRow) => localRow[lf] > filterSelection[0][ff];
+            case ">=":
+                return (localRow) => localRow[lf] >= filterSelection[0][ff];
+            case "conatins":
+                return (localRow) => filterSelection.some(fsRow => localRow[lf] === fsRow[ff]);
+        }
+    }
+}
+ColumnMapping.prototype._class += " ColumnMapping";
+
+export class Filter extends PropertyExt {
+    _owner: View;
+
+    @publish(null, "set", "Datasource", function () { return this._owner._model.viewLabels(); }, { optional: true })
+    source: { (): string; (_: string): View };
+
+    @publish(false, "boolean", "Ignore null filters")
+    nullable: { (): boolean; (_: boolean): View };
+
+    @publish([], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping })
+    mappings: { (): ColumnMapping[]; (_: ColumnMapping[]): View; };
+    validMappings(): ColumnMapping[] {
+        return this.mappings().filter(mapping => !!mapping.localField() && !!mapping.filterField());
+    }
+
+    constructor(owner?) {
+        super();
+        this._owner = owner;
+    }
+
+    hash(): string {
+        return hashSum({
+            source: this.source(),
+            nullable: this.nullable(),
+            mappings: this.validMappings().map(mapping => mapping.hash())
+        });
+    }
+
+    view(): View {
+        return this._owner._model.view(this.source());
+    }
+
+    fields(): IField[] {
+        return this.view().fields();
+    }
+
+    selection(): any[] {
+        return this.view().selection();
+    }
+}
+Filter.prototype._class += " CalcField";
+
 export interface IView<T> extends IDatasource {
     source: { (): string; (_: string): T };
 }
 
 export abstract class View extends PropertyExt implements IView<View> {
 
-    _total = 0;
-
+    _model: Model;
     _fieldIdx: { [key: string]: IField } = {};
-
+    _total = 0;
+    _selection: any[] = [];
     _prevHash;
 
-    _model: Model;
-
-    constructor(model: Model) {
+    constructor(model: Model, label: string) {
         super();
         this._model = model;
+        this.label(label);
     }
+
+    @publish(null, "string", "Label")
+    label: { (): string; (_: string): View };
 
     @publish(null, "set", "Datasource", function () { return this._model.datasourceLabels(); })
     source: { (): string; (_: string): View };
@@ -104,6 +202,12 @@ export abstract class View extends PropertyExt implements IView<View> {
     sampleSize: { (): number; (_: number): View; };
     @publish(true, "boolean", "Show payload")
     payload: { (): boolean; (_: boolean): View; };
+
+    @publish([], "propertyArray", "Filter", null, { autoExpand: Filter })
+    filters: { (): Filter[]; (_: Filter[]): View; };
+    validFilters(): Filter[] {
+        return this.filters().filter(filter => filter.source());
+    }
 
     @publish([], "propertyArray", "Source Columns", null, { autoExpand: SortColumn })
     sortBy: { (): SortColumn[]; (_: SortColumn[]): View; };
@@ -136,6 +240,7 @@ export abstract class View extends PropertyExt implements IView<View> {
         return hashSum({
             samples: this.samples(),
             sampleSize: this.sampleSize(),
+            filter: this.filters().map(filter => filter.hash()),
             datasource: this.datasource().hash(),
             ...more
         });
@@ -150,10 +255,6 @@ export abstract class View extends PropertyExt implements IView<View> {
         });
     }
 
-    label(): string {
-        return `View\n${this.datasource().label()}`;
-    }
-
     sample(samples: number, sampleSize: number): Promise<any[]> {
         return this.datasource().sample(samples, sampleSize);
     }
@@ -163,31 +264,86 @@ export abstract class View extends PropertyExt implements IView<View> {
     }
 
     abstract fields(): IField[];
-    abstract _fetch(from: number, count: number): Promise<any[]>;
 
     fetch(from: number, count: number): Promise<any[]> {
-        return this._fetch(from, count).then(response => {
-            return this._postProcess(response);
+        return this._fetch(from, count).then(data => {
+            data = this._preProcess(data);
+            data = this._postProcess(data);
+            return data;
         });
     }
 
-    _postProcess(data: any[]): any[] {
-        const retVal = data.sort((l, r) => {
-            for (const sortBy of this.sortBy()) {
-                const sortByField = sortBy.field(sortBy.sortColumn());
-                if (sortByField) {
-                    const retVal2 = (sortBy.descending() ? d3Descending : d3Ascending)(l[sortByField.label], r[sortByField.label]);
+    protected abstract _fetch(from: number, count: number): Promise<any[]>;
+
+    selection(): any[];
+    selection(_: any[]): this;
+    selection(_?: any[]): any[] | this {
+        if (_ === void 0) return this._selection;
+        this._selection = _;
+        return this;
+    }
+
+    protected _preProcess(data: any[]): any[] {
+        data = this._preFilter(data);
+        return data;
+    }
+
+    protected _postProcess(data: any[]): any[] {
+        data = this._postSort(data);
+        data = this._postLimit(data);
+        return data;
+    }
+    protected _preFilter(data: any[]): any[] {
+        const filters: Array<(localRow: any) => boolean> = [];
+        for (const filter of this.validFilters()) {
+            const selection = filter.selection();
+            if (selection.length === 0) {
+                if (!filter.nullable()) {
+                    return [];
+                }
+            } else {
+                for (const mapping of filter.validMappings()) {
+                    filters.push(mapping.createFilter(selection));
+                }
+            }
+        }
+        if (filters.length) {
+            return data.filter(row => {
+                return filters.every(filter => filter(row));
+            });
+        }
+        return data;
+    }
+
+    protected _postSort(data: any[]): any[] {
+        const sortByArr = [];
+        for (const sortBy of this.sortBy()) {
+            const sortByField = sortBy.field(sortBy.sortColumn());
+            if (sortByField) {
+                sortByArr.push({ sortBy, sortByField });
+            }
+        }
+
+        if (sortByArr.length) {
+            return data.sort((l, r) => {
+                for (const item of sortByArr) {
+                    const retVal2 = (item.sortBy.descending() ? d3Descending : d3Ascending)(l[item.sortByField.label], r[item.sortByField.label]);
                     if (retVal2 !== 0) {
                         return retVal2;
                     }
                 }
-            }
-            return 0;
-        });
-        if (this.limit_exists()) {
-            retVal.length = this.limit();
+                return 0;
+            });
+
         }
-        return retVal;
+        return data;
+    }
+
+    protected _postLimit(data: any[]): any[] {
+        if (this.limit_exists()) {
+            data.length = this.limit();
+        }
+        return data;
     }
 }
 View.prototype._class += " View";

@@ -11,7 +11,7 @@ export abstract class Datasource extends PropertyExt {
                 pages.push(this.fetch(Math.floor(i * lastPage / sampleSize), sampleSize));
             }
             return Promise.all(pages).then(responses => {
-                let retVal2 = [];
+                let retVal2: any[] = [];
                 for (const response of responses) {
                     retVal2 = retVal2.concat(response);
                 }

@@ -17,7 +17,7 @@ export interface IDatasource {
     fields: () => IField[];
     total: () => number;
     fetch: (from: number, count: number) => Promise<any[]>;
-    sample: (samples: number, sampleSize: number) => Promise<any[]>;
+    //    sample: (samples: number, sampleSize: number) => Promise<any[]>;
 }
 
 export class DatasourceCache implements IDatasource {
@@ -53,6 +53,7 @@ export class DatasourceCache implements IDatasource {
         }
         return retVal;
     }
+    /*
     sample(samples: number, sampleSize: number) {
         this.validateCache();
         const cacheID = `${samples}->${sampleSize}`;
@@ -63,6 +64,7 @@ export class DatasourceCache implements IDatasource {
         }
         return retVal;
     }
+    */
 }
 /*
 function entitiesEncode(str) {

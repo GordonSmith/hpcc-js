@@ -1,5 +1,6 @@
+export { CommandRegistry } from '@phosphor/commands';
 export { Message } from "@phosphor/messaging";
-export { DockPanel, SplitPanel, Widget } from "@phosphor/widgets";
+export { CommandPalette, ContextMenu, DockPanel, SplitPanel, Menu, MenuBar, Widget } from "@phosphor/widgets";
 
 import "@phosphor/widgets/style/widget.css";
 import "@phosphor/widgets/style/commandpalette.css";

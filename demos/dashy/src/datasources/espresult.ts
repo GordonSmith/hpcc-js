@@ -4,7 +4,7 @@ import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Datasource } from "./datasource";
 
-function schemaRow2IField(row): IField {
+function schemaRow2IField(row: any): IField {
     return {
         id: row.name,
         label: row.name,
@@ -28,9 +28,12 @@ export abstract class ESPResult extends Datasource implements IDatasource {
     abstract label(): string;
 
     refresh(): Promise<void> {
-        return this._result.refresh().then((result) => {
+        return this._result.refresh().then(result => {
             this._total = result.Total;
             this._schema = result.fields();
+        }).catch(e => {
+            this._total = 0;
+            this._schema = [];
         });
     }
 
@@ -39,7 +42,11 @@ export abstract class ESPResult extends Datasource implements IDatasource {
     }
 
     fetch(from: number, count: number): Promise<any[]> {
-        return this._result.fetchRows(from, count);
+        return this._result
+            .fetchRows(from, count)
+            .catch(e => {
+                return [];
+            });
     }
 
     total(): number {

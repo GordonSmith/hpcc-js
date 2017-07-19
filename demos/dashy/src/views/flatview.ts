@@ -4,9 +4,9 @@ import { IField } from "@hpcc-js/dgrid";
 import { AggregateField, View } from "./view";
 
 export class GroupByColumn extends PropertyExt {
-    _owner;
+    _owner: FlatView;
 
-    constructor(owner?) {
+    constructor(owner: FlatView) {
         super();
         this._owner = owner;
     }
@@ -27,6 +27,9 @@ export class FlatView extends View {
     @publish([], "propertyArray", "Computed Fields", null, { autoExpand: AggregateField })
     computedFields: { (): AggregateField[]; (_: AggregateField[]): View; };
 
+    @publish(false, "boolean", "Show groupBy fileds in payload")
+    payloadDuplicateFields: { (): boolean; (_: boolean): View; };
+
     hash(): string {
         return super.hash({
             groupBy: this.groupBy(),
@@ -34,9 +37,17 @@ export class FlatView extends View {
         });
     }
 
+    cleanGroupBy() {
+        return this.groupBy().filter(groupBy => groupBy.column());
+    }
+
+    hasGroupBy() {
+        return this.cleanGroupBy().length;
+    }
+
     fields(): IField[] {
         const retVal: IField[] = [];
-        const groups: GroupByColumn[] = this.groupBy().filter(groupBy => groupBy.column());
+        const groups: GroupByColumn[] = this.cleanGroupBy();
         for (const groupBy of groups) {
             const groupByField = this.field(groupBy.column());
             const field: IField = {
@@ -68,45 +79,52 @@ export class FlatView extends View {
             retVal.push(rows);
             const columns = groups.map(groupBy => groupBy.column());
             rows.children.push(...this.datasource().fields().filter(field => {
-                return columns.indexOf(field.id) < 0;
+                return this.payloadDuplicateFields() || columns.indexOf(field.id) < 0;
             }));
         }
-        return retVal.length === 1 ? retVal[0].children : retVal;
+        return this.hasGroupBy() ? retVal : retVal[0].children;
     }
 
-    _fetch(from: number, count: number): Promise<any[]> {
-        return this.sample(this.samples(), this.sampleSize()).then(response => {
-            const retVal = d3Nest()
-                .key(row => {
-                    let key = "";
-                    for (const groupBy of this.groupBy()) {
-                        if (groupBy.column()) {
-                            if (key) {
-                                key += ":";
-                            }
-                            key += row[groupBy.column()];
+    protected _fetch(from: number, count: number): Promise<any[]> {
+        return this.sample(this.samples(), this.sampleSize());
+    }
+
+    protected _preProcess(data: any[]): any[] {
+        data = super._preProcess(data);
+        data = this._preGroupBy(data);
+        return data;
+    }
+
+    protected _preGroupBy(data: any[]): any[] {
+        if (data.length === 0) return data;
+        const retVal = d3Nest()
+            .key(row => {
+                let key = "";
+                for (const groupBy of this.groupBy()) {
+                    if (groupBy.column()) {
+                        if (key) {
+                            key += ":";
                         }
+                        key += row[groupBy.column()];
                     }
-                    return key;
-                })
-                .entries(response).map(row => {
-                    delete row.key;
-                    for (const groupBy of this.groupBy()) {
-                        if (groupBy.column()) {
-                            row[groupBy.column()] = row.values[0][groupBy.column()];
-                        }
+                }
+                return key;
+            })
+            .entries(data).map(row => {
+                delete row.key;
+                for (const groupBy of this.cleanGroupBy()) {
+                    row[groupBy.column()] = row.values[0][groupBy.column()];
+                }
+                for (const cf of this.computedFields()) {
+                    if (cf.label()) {
+                        row[cf.label()] = cf.aggregate(row.values);
                     }
-                    for (const cf of this.computedFields()) {
-                        if (cf.label()) {
-                            row[cf.label()] = cf.aggregate(row.values);
-                        }
-                    }
-                    return row;
-                })
-                ;
-            this._total = retVal.length;
-            return retVal.length === 1 ? retVal[0].values : retVal;
-        });
+                }
+                return row;
+            })
+            ;
+        this._total = retVal.length;
+        return this.hasGroupBy() ? retVal : retVal[0].values;
     }
 }
 FlatView.prototype._class += " FlatView";

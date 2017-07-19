@@ -22,7 +22,7 @@ export default {
         }),
         commonjs({
             namedExports: {
-                "@phosphor/widgets": ["Widget", "DockPanel", "SplitPanel"]
+                "@phosphor/widgets": ["CommandRegistry", "Message", "CommandPalette", "ContextMenu", "DockPanel", "SplitPanel", "Menu", "MenuBar", "Widget"]
             }
         }),
         sourcemaps()
