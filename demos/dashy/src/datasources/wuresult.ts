@@ -13,7 +13,7 @@ export class WUResult extends ESPResult {
     _prevHash: string;
 
     label(): string {
-        return `${this.wuid()}[${this.resultName()}]`;
+        return `${super.label()}\n${this.wuid()}\n${this.resultName()}`;
     }
 
     hash(): string {

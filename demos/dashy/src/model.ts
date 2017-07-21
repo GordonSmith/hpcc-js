@@ -27,12 +27,12 @@ export class Model extends PropertyExt {
         return this;
     }
 
-    datasourceLabels() {
-        return this._datasources.map(ds => ds.label());
+    datasourceIDs() {
+        return this._datasources.map(ds => ds.id());
     }
 
-    datasource(label: string): IDatasource | undefined {
-        const retVal = this._datasources.filter(ds => ds.label() === label);
+    datasource(id: string): IDatasource | undefined {
+        const retVal = this._datasources.filter(ds => ds.id() === id);
         if (retVal.length) {
             return retVal[0] as IDatasource;
         }
@@ -44,12 +44,12 @@ export class Model extends PropertyExt {
         return this;
     }
 
-    viewLabels() {
-        return this._views.map(ds => ds.label());
+    viewIDs() {
+        return this._views.map(view => view.id());
     }
 
-    view(label: string): View | undefined {
-        const retVal = this._views.filter(ds => ds.label() === label);
+    view(id: string): View | undefined {
+        const retVal = this._views.filter(view => view.id() === id);
         if (retVal.length) {
             return retVal[0] as View;
         }
@@ -63,10 +63,11 @@ export class Model extends PropertyExt {
                 retVal = new Vertex()
                     .columns(["DS"])
                     .data([[ds]])
+                    .icon_shape_diameter(0)
                     ;
                 this.vertexMap[ds.id()] = retVal;
             }
-            retVal.text(ds.label());
+            retVal.text(`[${ds.id()}]\n${ds.label()}`);
             retVal.getBBox(true);
             return retVal;
         });

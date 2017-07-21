@@ -1,8 +1,8 @@
 import { publish } from "@hpcc-js/common";
 import { Result, XSDXMLNode } from "@hpcc-js/comms";
-import { IDatasource, IField } from "@hpcc-js/dgrid";
+import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
-import { Datasource } from "./datasource";
+import { SamplingDatasource } from "./datasource";
 
 function schemaRow2IField(row: any): IField {
     return {
@@ -13,7 +13,7 @@ function schemaRow2IField(row: any): IField {
     };
 }
 
-export abstract class ESPResult extends Datasource implements IDatasource {
+export abstract class ESPResult extends SamplingDatasource {
     _result: Result;
     _schema: XSDXMLNode[] = [];
     _total: number;
@@ -25,8 +25,6 @@ export abstract class ESPResult extends Datasource implements IDatasource {
         return hashSum(this.url());
     }
 
-    abstract label(): string;
-
     refresh(): Promise<void> {
         return this._result.refresh().then(result => {
             this._total = result.Total;
@@ -37,11 +35,11 @@ export abstract class ESPResult extends Datasource implements IDatasource {
         });
     }
 
-    fields(): IField[] {
+    outFields(): IField[] {
         return this._schema.map(schemaRow2IField);
     }
 
-    fetch(from: number, count: number): Promise<any[]> {
+    protected _fetch(from: number, count: number): Promise<any[]> {
         return this._result
             .fetchRows(from, count)
             .catch(e => {

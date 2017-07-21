@@ -5,6 +5,7 @@ import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
 import { Databomb } from "./datasources/databomb";
+import { Form } from "./datasources/form";
 import { LogicalFile } from "./datasources/logicalfile";
 import { WUResult } from "./datasources/wuresult";
 import { Model } from "./model";
@@ -23,6 +24,38 @@ commands.addCommand("addWUResult", {
     }
 });
 
+commands.addCommand("addLogicalFile", {
+    label: "Add Logical File",
+    execute: () => {
+        app._model.addDatasource(new LogicalFile());
+        app.loadGraph(true);
+    }
+});
+
+commands.addCommand("addDatabomb", {
+    label: "Add Databomb",
+    execute: () => {
+        app._model.addDatasource(new Databomb());
+        app.loadGraph(true);
+    }
+});
+
+commands.addCommand("addForm", {
+    label: "Add Form",
+    execute: () => {
+        app._model.addDatasource(new Form());
+        app.loadGraph(true);
+    }
+});
+
+commands.addCommand("addView", {
+    label: "Add View",
+    execute: () => {
+        app._model.addView(new FlatView(app._model));
+        app.loadGraph(true);
+    }
+});
+
 commands.addCommand("remove", {
     label: "Remove Item",
     execute: () => {
@@ -31,11 +64,16 @@ commands.addCommand("remove", {
 
 const palette = new CommandPalette({ commands });
 palette.addItem({ command: "addWUResult", category: "Notebook" });
+palette.addItem({ command: "addView", category: "Notebook" });
 palette.addItem({ command: "remove", category: "Notebook" });
 palette.id = "palette";
 
 const contextMenu = new ContextMenu({ commands });
 contextMenu.addItem({ command: "addWUResult", selector: ".graph_Graph > .zoomBackground" });
+contextMenu.addItem({ command: "addLogicalFile", selector: ".graph_Graph > .zoomBackground" });
+contextMenu.addItem({ command: "addDatabomb", selector: ".graph_Graph > .zoomBackground" });
+contextMenu.addItem({ command: "addForm", selector: ".graph_Graph > .zoomBackground" });
+contextMenu.addItem({ command: "addView", selector: ".graph_Graph > .zoomBackground" });
 contextMenu.addItem({ command: "remove", selector: ".graph_Vertex" });
 
 document.addEventListener("contextmenu", (event: MouseEvent) => {
@@ -69,6 +107,7 @@ export class App {
                 this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
                     console.log(id, newValue, oldValue);
                     switch (id) {
+                        case "label":
                         case "filters":
                         case "source":
                             this.loadGraph(true);
@@ -127,14 +166,30 @@ export class App {
             ;
         this._model.addDatasource(databomb);
 
+        const form = new Form()
+            .payload({
+                state: "FL",
+                someStr: "",
+                someNumber: 42,
+                someBoolean: false
+            })
+            ;
+        this._model.addDatasource(form);
+
         const logicalFile = new LogicalFile()
             .url("http://192.168.3.22:8010")
-            .fileName("progguide::exampledata::keys::accounts.personid.payload")
+            .filename("progguide::exampledata::keys::accounts.personid.payload")
             ;
         this._model.addDatasource(logicalFile);
 
-        this._model.addView(new FlatView(this._model, "View 1").source(wuResult.label()));
-        this._model.addView(new FlatView(this._model, "View 2").source(wuResult.label()));
+        const view1 = (new FlatView(this._model, "View 1").source(wuResult.id()) as FlatView)
+            .appendGroupBys([{ field: "state" }])
+            .appendComputedFields([{ label: "weight", type: "count" }])
+            ;
+        const view2 = new FlatView(this._model, "View 2").source(wuResult.id())
+            .appendFilter(view1, [{ filterField: "state", localField: "state" }]);
+        this._model.addView(view1);
+        this._model.addView(view2);
         this.loadEditor();
         this.loadGraph();
     }

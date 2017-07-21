@@ -12,36 +12,35 @@ export interface IField {
 export interface IDatasource {
     id: () => string;
     hash: () => string;
-
     label: () => string;
-    fields: () => IField[];
+
+    outFields: () => IField[];
     total: () => number;
     fetch: (from: number, count: number) => Promise<any[]>;
-    //    sample: (samples: number, sampleSize: number) => Promise<any[]>;
 }
 
 export class DatasourceCache implements IDatasource {
     protected _datasource: IDatasource;
     _prevHash: string;
     _fetchCache: { [key: string]: Promise<any[]> } = {};
-    _sampleCache: { [key: string]: Promise<any[]> } = {};
 
     constructor(datasource: IDatasource) {
         this._datasource = datasource;
     }
+
     validateCache() {
         const hash = this.hash();
         if (this._prevHash !== hash) {
             this._prevHash = hash;
             this._fetchCache = {};
-            this._sampleCache = {};
         }
     }
 
     id() { return this._datasource.id(); }
     hash() { return this._datasource.hash(); }
     label() { return this._datasource.label(); }
-    fields() { return this._datasource.fields(); }
+
+    outFields() { return this._datasource.outFields(); }
     total() { return this._datasource.total(); }
     fetch(from: number, count: number) {
         this.validateCache();
@@ -53,19 +52,8 @@ export class DatasourceCache implements IDatasource {
         }
         return retVal;
     }
-    /*
-    sample(samples: number, sampleSize: number) {
-        this.validateCache();
-        const cacheID = `${samples}->${sampleSize}`;
-        let retVal = this._fetchCache[cacheID];
-        if (!retVal) {
-            retVal = this._datasource.sample(samples, sampleSize);
-            this._fetchCache[cacheID] = retVal;
-        }
-        return retVal;
-    }
-    */
 }
+
 /*
 function entitiesEncode(str) {
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -195,7 +183,7 @@ export class DatasourceStore {
         this._datasource = new DatasourceCache(datasource);
 
         this._columnsIdx = {};
-        this._columns = this.db2Columns(this._datasource.fields()).map((column, idx) => {
+        this._columns = this.db2Columns(this._datasource.outFields()).map((column, idx) => {
             this._columnsIdx[column.field] = idx;
             return column;
         });

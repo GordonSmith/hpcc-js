@@ -3,11 +3,12 @@ import { ascending as d3Ascending, descending as d3Descending, deviation as d3De
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Databomb, NullDatasource } from "../datasources/databomb";
+import { Form } from "../datasources/form";
 import { LogicalFile } from "../datasources/logicalfile";
 import { WUResult } from "../datasources/wuresult";
 import { Model } from "../model";
 
-export type ViewDatasource = WUResult | LogicalFile | Databomb | NullDatasource;
+export type ViewDatasource = WUResult | LogicalFile | Databomb | NullDatasource | Form;
 
 function count(leaves: any[], callback: any): number {
     return leaves.length;
@@ -24,13 +25,14 @@ const d3Aggr = {
     sum: d3Sum
 };
 
+export type AggregateType = "count" | "min" | "max" | "sum" | "mean" | "median" | "variance" | "deviation";
 export class AggregateField extends PropertyExt {
     _owner;
 
     @publish(null, "string", "Label", null, { optional: true, disable: (w) => !w._owner.hasColumn() })
     label: { (): string; (_: string): AggregateField; };
     @publish("count", "set", "Aggregation Type", ["count", "min", "max", "sum", "mean", "median", "variance", "deviation"], { optional: true, disable: w => !w.label() })
-    aggrType: { (): string; (_: string): AggregateField; };
+    aggrType: { (): AggregateType; (_: AggregateType): AggregateField; };
     @publish(null, "set", "Aggregation Field", function () { return this.columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" })
     aggrColumn: { (): string; (_: string): AggregateField; };
 
@@ -44,10 +46,10 @@ export class AggregateField extends PropertyExt {
     }
 
     aggregate(values) {
-        return d3Aggr[this.aggrType()](values, leaf => leaf[this.aggrColumn()]);
+        return d3Aggr[this.aggrType() as string](values, leaf => leaf[this.aggrColumn()]);
     }
 }
-AggregateField.prototype._class += " CalcField";
+AggregateField.prototype._class += " AggregateField";
 
 export class SortColumn extends PropertyExt {
     _owner: View;
@@ -63,28 +65,28 @@ export class SortColumn extends PropertyExt {
     }
 
     fields() {
-        return this._owner.fields().map(field => field.label);
+        return this._owner.outFields().map(field => field.label);
     }
 
     field(label: string): IField | undefined {
-        return this._owner.fields().filter(field => field.label === label)[0];
+        return this._owner.outFields().filter(field => field.label === label)[0];
     }
 
     sort(values) {
         return values; // d3Aggr[this.aggrType()](values, leaf => leaf[this.aggrColumn()]);
     }
 }
-SortColumn.prototype._class += " CalcField";
+SortColumn.prototype._class += " SortColumn";
 
 export class ColumnMapping extends PropertyExt {
     _owner: Filter;
 
-    @publish(null, "set", "Local Fields", function () { return this.fields(); }, { optional: true })
-    localField: { (): string; (_: string): SortColumn; };
     @publish(null, "set", "Filter Fields", function () { return this.filterFields(); }, { optional: true })
-    filterField: { (): string; (_: string): SortColumn; };
+    filterField: { (): string; (_: string): ColumnMapping; };
+    @publish(null, "set", "Local Fields", function () { return this.localFields(); }, { optional: true })
+    localField: { (): string; (_: string): ColumnMapping; };
     @publish("==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "contains"])
-    condition: { (): string; (_: string): SortColumn; };
+    condition: { (): string; (_: string): ColumnMapping; };
 
     constructor(owner?) {
         super();
@@ -95,16 +97,18 @@ export class ColumnMapping extends PropertyExt {
         return hashSum({});
     }
 
-    fields() {
-        return this._owner._owner.datasource().fields().map(field => field.label);
+    localFields() {
+        return this._owner.inFields().map(field => field.label);
     }
 
+    /*
     field(label: string): IField | undefined {
-        return this._owner._owner.datasource().fields().filter(field => field.label === label)[0];
+        return this._owner.inFields().filter(field => field.label === label)[0];
     }
+    */
 
     filterFields() {
-        return this._owner.fields().map(field => field.label);
+        return this._owner.sourceOutFields().map(field => field.label);
     }
 
     createFilter(filterSelection: any[]): (localRow: any) => boolean {
@@ -133,19 +137,28 @@ ColumnMapping.prototype._class += " ColumnMapping";
 export class Filter extends PropertyExt {
     _owner: View;
 
-    @publish(null, "set", "Datasource", function () { return this._owner._model.viewLabels(); }, { optional: true })
-    source: { (): string; (_: string): View };
+    @publish(null, "set", "Datasource", function () { return this._owner._model.viewIDs(); }, { optional: true })
+    source: { (): string; (_: string): Filter };
 
     @publish(false, "boolean", "Ignore null filters")
-    nullable: { (): boolean; (_: boolean): View };
+    nullable: { (): boolean; (_: boolean): Filter };
 
     @publish([], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping })
-    mappings: { (): ColumnMapping[]; (_: ColumnMapping[]): View; };
+    mappings: { (): ColumnMapping[]; (_: ColumnMapping[]): Filter; };
     validMappings(): ColumnMapping[] {
         return this.mappings().filter(mapping => !!mapping.localField() && !!mapping.filterField());
     }
+    appendMappings(mappings: [{ filterField: string, localField: string }]): this {
+        for (const mapping of mappings) {
+            this.mappings().push(new ColumnMapping(this)
+                .filterField(mapping.filterField)
+                .localField(mapping.localField)
+            );
+        }
+        return this;
+    }
 
-    constructor(owner?) {
+    constructor(owner) {
         super();
         this._owner = owner;
     }
@@ -158,55 +171,65 @@ export class Filter extends PropertyExt {
         });
     }
 
-    view(): View {
+    inFields(): IField[] {
+        return this._owner.inFields();
+    }
+
+    sourceView(): View {
         return this._owner._model.view(this.source());
     }
 
-    fields(): IField[] {
-        return this.view().fields();
+    sourceOutFields(): IField[] {
+        return this.sourceView().outFields();
     }
 
-    selection(): any[] {
-        return this.view().selection();
+    sourceSelection(): any[] {
+        return this.sourceView().selection();
     }
 }
-Filter.prototype._class += " CalcField";
+Filter.prototype._class += " Filter";
 
 export interface IView<T> extends IDatasource {
     source: { (): string; (_: string): T };
 }
 
+let viewID = 0;
 export abstract class View extends PropertyExt implements IView<View> {
-
     _model: Model;
     _fieldIdx: { [key: string]: IField } = {};
     _total = 0;
     _selection: any[] = [];
     _prevHash;
 
-    constructor(model: Model, label: string) {
+    constructor(model: Model, label: string = "View") {
         super();
         this._model = model;
         this.label(label);
+        this._id = "v" + viewID++;
     }
 
     @publish(null, "string", "Label")
     label: { (): string; (_: string): View };
 
-    @publish(null, "set", "Datasource", function () { return this._model.datasourceLabels(); })
+    @publish(null, "set", "Datasource", function () { return this._model.datasourceIDs(); }, { optional: true })
     source: { (): string; (_: string): View };
 
-    @publish(10, "number", "Number of samples")
-    samples: { (): number; (_: number): View; };
-    @publish(100, "number", "Sample size")
-    sampleSize: { (): number; (_: number): View; };
-    @publish(true, "boolean", "Show payload")
-    payload: { (): boolean; (_: boolean): View; };
+    @publish(true, "boolean", "Show details")
+    details: { (): boolean; (_: boolean): View; };
+
+    @publish(false, "boolean", "Show groupBy fileds in details")
+    fullDetails: { (): boolean; (_: boolean): View; };
 
     @publish([], "propertyArray", "Filter", null, { autoExpand: Filter })
     filters: { (): Filter[]; (_: Filter[]): View; };
     validFilters(): Filter[] {
         return this.filters().filter(filter => filter.source());
+    }
+    appendFilter(source: View, mappings: [{ filterField: string, localField: string }]): this {
+        this.filters().push(new Filter(this)
+            .source(source.id())
+            .appendMappings(mappings));
+        return this;
     }
 
     @publish([], "propertyArray", "Source Columns", null, { autoExpand: SortColumn })
@@ -222,7 +245,7 @@ export abstract class View extends PropertyExt implements IView<View> {
 
     columns() {
         this._fieldIdx = {};
-        return (this.datasource().fields() as IField[]).map(field => {
+        return (this.datasource().outFields() as IField[]).map(field => {
             this._fieldIdx[field.id] = field;
             return field.id;
         });
@@ -238,8 +261,6 @@ export abstract class View extends PropertyExt implements IView<View> {
 
     hash(more: { [key: string]: any } = {}): string {
         return hashSum({
-            samples: this.samples(),
-            sampleSize: this.sampleSize(),
             filter: this.filters().map(filter => filter.hash()),
             datasource: this.datasource().hash(),
             ...more
@@ -255,25 +276,24 @@ export abstract class View extends PropertyExt implements IView<View> {
         });
     }
 
-    sample(samples: number, sampleSize: number): Promise<any[]> {
-        return this.datasource().sample(samples, sampleSize);
-    }
-
     total(): number {
         return this._total;
     }
 
-    abstract fields(): IField[];
-
-    fetch(from: number, count: number): Promise<any[]> {
-        return this._fetch(from, count).then(data => {
-            data = this._preProcess(data);
-            data = this._postProcess(data);
-            return data;
-        });
+    inFields(): IField[] {
+        return this.datasource().outFields();
     }
 
-    protected abstract _fetch(from: number, count: number): Promise<any[]>;
+    abstract outFields(): IField[];
+
+    fetch(from: number, count: number): Promise<any[]> {
+        return this.datasource().fetch(0, Number.MAX_VALUE).then(data => {
+            data = this._preProcess(data);
+            data = this._postProcess(data);
+            this._total = data.length;
+            return data.slice(from, from + count);
+        });
+    }
 
     selection(): any[];
     selection(_: any[]): this;
@@ -296,7 +316,7 @@ export abstract class View extends PropertyExt implements IView<View> {
     protected _preFilter(data: any[]): any[] {
         const filters: Array<(localRow: any) => boolean> = [];
         for (const filter of this.validFilters()) {
-            const selection = filter.selection();
+            const selection = filter.sourceSelection();
             if (selection.length === 0) {
                 if (!filter.nullable()) {
                     return [];

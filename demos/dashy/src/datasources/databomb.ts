@@ -1,28 +1,31 @@
 import { publish } from "@hpcc-js/common";
-import { IDatasource, IField } from "@hpcc-js/dgrid";
+import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
-import { Datasource } from "./Datasource";
+import { Datasource } from "./datasource";
 
-export class Databomb extends Datasource implements IDatasource {
+export class Databomb extends Datasource {
     @publish([], "array", "Databomb payload")
     payload: { (): any[]; (_: any[]): Databomb };
 
+    constructor() {
+        super();
+    }
+
     label(): string {
-        return "Databomb";
+        return `${super.label()}\nDatabomb`;
     }
 
     hash(): string {
-        return hashSum({ label: this.label() });
+        return hashSum({ id: this.id() });
     }
 
     refresh(): Promise<void> {
         return Promise.resolve();
     }
 
-    fields(): IField[] {
-        if (this.payload().length) {
+    outFields(): IField[] {
+        for (const row0 of this.payload()) {
             const retVal: IField[] = [];
-            const row0 = this.payload()[0];
             for (const key in row0) {
                 retVal.push(
                     {
@@ -37,17 +40,21 @@ export class Databomb extends Datasource implements IDatasource {
         return [];
     }
 
-    fetch(from: number, count: number): Promise<any[]> {
-        return Promise.resolve(this.payload().filter((row, idx) => idx >= from && idx < from + count));
-    }
-
     total(): number {
         return this.payload().length;
+    }
+
+    protected _fetch(from: number, count: number): Promise<any[]> {
+        return Promise.resolve(this.payload().slice(from, from + count));
     }
 }
 Databomb.prototype._class += " Databomb";
 
 export class NullDatasource extends Databomb {
+    constructor() {
+        super();
+    }
+
     label(): string {
         return "null";
     }
