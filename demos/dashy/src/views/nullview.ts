@@ -6,7 +6,7 @@ export class NullView extends View {
         return super.hash();
     }
 
-    fields(): IField[] {
+    outFields(): IField[] {
         return [];
     }
 

@@ -41,7 +41,7 @@ export class NestedView extends View {
         });
     }
 
-    fields(): IField[] {
+    outFields(): IField[] {
         const retVal: IField[] = [];
         let currField: IField[] = retVal;
         const groups: NestedGroupByColumn[] = this.groupBy().filter(groupBy => groupBy.column());
@@ -67,7 +67,7 @@ export class NestedView extends View {
             }
             const rows: IField = {
                 id: "rows",
-                label: "rows",
+                label: "details",
                 type: "object",
                 children: []
             };
@@ -75,7 +75,7 @@ export class NestedView extends View {
             currField = rows.children;
         }
         const columns = groups.map(groupBy => groupBy.column());
-        currField.push(...this.datasource().fields().filter(field => {
+        currField.push(...this.datasource().outFields().filter(field => {
             return columns.indexOf(field.id) < 0;
         }));
         return retVal;
@@ -106,13 +106,14 @@ export class NestedView extends View {
         }
         return rows;
     }
-
-    _fetch(from: number, count: number): Promise<any[]> {
-        return this.sample(this.samples(), this.sampleSize()).then(response => {
-            const retVal = this.nest(response);
-            this._total = retVal.length;
-            return retVal;
-        });
-    }
+    /*
+        _fetch(from: number, count: number): Promise<any[]> {
+            return this.sample(this.samples(), this.sampleSize()).then(response => {
+                const retVal = this.nest(response);
+                this._total = retVal.length;
+                return retVal;
+            });
+        }
+    */
 }
 NestedView.prototype._class += " NestedView";

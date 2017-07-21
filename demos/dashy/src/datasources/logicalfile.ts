@@ -6,23 +6,23 @@ import { ESPResult } from "./espresult";
 export class LogicalFile extends ESPResult {
     url: { (): string; (_: string): LogicalFile };
     @publish("", "string", "Logical File Name")
-    fileName: { (): string; (_: string): LogicalFile };
+    filename: { (): string; (_: string): LogicalFile };
 
     _prevHash: string;
 
     label(): string {
-        return this.fileName();
+        return `${super.label()}\n${this.filename()}`;
     }
 
     hash(): string {
-        return hashSum({ url: this.url(), fileName: this.fileName() });
+        return hashSum({ url: this.url(), fileName: this.filename() });
     }
 
     refreshPromise: Promise<void>;
     refresh(): Promise<void> {
         if (this._prevHash !== this.hash()) {
             this._prevHash = this.hash();
-            this._result = new Result({ baseUrl: this.url() }, this.fileName());
+            this._result = new Result({ baseUrl: this.url() }, this.filename());
             this.refreshPromise = super.refresh();
         }
         return this.refreshPromise;

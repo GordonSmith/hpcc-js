@@ -1,7 +1,7 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
 import { nest as d3Nest } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
-import { AggregateField, View } from "./view";
+import { AggregateField, AggregateType, View } from "./view";
 
 export class GroupByColumn extends PropertyExt {
     _owner: FlatView;
@@ -22,30 +22,48 @@ GroupByColumn.prototype._class += " GroupByColumn";
 
 export class FlatView extends View {
     @publish([], "propertyArray", "Source Columns", null, { autoExpand: GroupByColumn })
-    groupBy: { (): GroupByColumn[]; (_: GroupByColumn[]): View; };
+    groupBys: { (): GroupByColumn[]; (_: GroupByColumn[]): View; };
+    appendGroupBys(columns: [{ field: string }]): this {
+        for (const column of columns) {
+            this.groupBys().push(new GroupByColumn(this)
+                .column(column.field)
+            );
+        }
+        return this;
+    }
 
     @publish([], "propertyArray", "Computed Fields", null, { autoExpand: AggregateField })
     computedFields: { (): AggregateField[]; (_: AggregateField[]): View; };
-
-    @publish(false, "boolean", "Show groupBy fileds in payload")
-    payloadDuplicateFields: { (): boolean; (_: boolean): View; };
+    appendComputedFields(aggregateFields: [{ label: string, type: AggregateType, column?: string }]): this {
+        for (const aggregateField of aggregateFields) {
+            const aggrField = new AggregateField(this)
+                .label(aggregateField.label)
+                .aggrType(aggregateField.type)
+                ;
+            if (aggregateField.column !== void 0) {
+                aggrField.aggrColumn(aggregateField.column);
+            }
+            this.computedFields().push(aggrField);
+        }
+        return this;
+    }
 
     hash(): string {
         return super.hash({
-            groupBy: this.groupBy(),
+            groupBy: this.groupBys(),
             computedFields: this.computedFields()
         });
     }
 
     cleanGroupBy() {
-        return this.groupBy().filter(groupBy => groupBy.column());
+        return this.groupBys().filter(groupBy => groupBy.column());
     }
 
     hasGroupBy() {
         return this.cleanGroupBy().length;
     }
 
-    fields(): IField[] {
+    outFields(): IField[] {
         const retVal: IField[] = [];
         const groups: GroupByColumn[] = this.cleanGroupBy();
         for (const groupBy of groups) {
@@ -69,25 +87,27 @@ export class FlatView extends View {
                 retVal.push(computedField);
             }
         }
-        if (this.payload()) {
+        if (this.details()) {
             const rows: IField = {
                 id: "values",
-                label: "rows",
+                label: "details",
                 type: "object",
                 children: []
             };
             retVal.push(rows);
             const columns = groups.map(groupBy => groupBy.column());
-            rows.children.push(...this.datasource().fields().filter(field => {
-                return this.payloadDuplicateFields() || columns.indexOf(field.id) < 0;
+            rows.children.push(...this.datasource().outFields().filter(field => {
+                return this.fullDetails() || columns.indexOf(field.id) < 0;
             }));
         }
         return this.hasGroupBy() ? retVal : retVal[0].children;
     }
 
+    /*
     protected _fetch(from: number, count: number): Promise<any[]> {
         return this.sample(this.samples(), this.sampleSize());
     }
+    */
 
     protected _preProcess(data: any[]): any[] {
         data = super._preProcess(data);
@@ -100,7 +120,7 @@ export class FlatView extends View {
         const retVal = d3Nest()
             .key(row => {
                 let key = "";
-                for (const groupBy of this.groupBy()) {
+                for (const groupBy of this.groupBys()) {
                     if (groupBy.column()) {
                         if (key) {
                             key += ":";
