@@ -1,4 +1,4 @@
-import { PropertyExt, publish } from "@hpcc-js/common";
+import { PropertyExt, publish, publish2 } from "@hpcc-js/common";
 import { ascending as d3Ascending, descending as d3Descending, deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "@hpcc-js/common";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
@@ -194,9 +194,16 @@ export interface IView<T> extends IDatasource {
 }
 
 let viewID = 0;
+
+export interface View {
+    source(): string;
+    source(_: string): this;
+}
+
+@publish2("source", null, "set", "Datasource", function () { return this._model.datasourceIDs(); }, { optional: true })
 export abstract class View extends PropertyExt implements IView<View> {
+    _source: string = "42";
     _model: Model;
-    _fieldIdx: { [key: string]: IField } = {};
     _total = 0;
     _selection: any[] = [];
     _prevHash;
@@ -210,9 +217,6 @@ export abstract class View extends PropertyExt implements IView<View> {
 
     @publish(null, "string", "Label")
     label: { (): string; (_: string): View };
-
-    @publish(null, "set", "Datasource", function () { return this._model.datasourceIDs(); }, { optional: true })
-    source: { (): string; (_: string): View };
 
     @publish(true, "boolean", "Show details")
     details: { (): boolean; (_: boolean): View; };
@@ -244,9 +248,7 @@ export abstract class View extends PropertyExt implements IView<View> {
     }
 
     columns() {
-        this._fieldIdx = {};
         return (this.datasource().outFields() as IField[]).map(field => {
-            this._fieldIdx[field.id] = field;
             return field.id;
         });
     }
@@ -255,8 +257,13 @@ export abstract class View extends PropertyExt implements IView<View> {
         return true;
     }
 
-    field(fieldID: string) {
-        return this._fieldIdx[fieldID];
+    field(fieldID: string): IField | null {
+        for (const field of this.datasource().outFields()) {
+            if (field.id === fieldID) {
+                return field;
+            }
+        }
+        return null;
     }
 
     hash(more: { [key: string]: any } = {}): string {

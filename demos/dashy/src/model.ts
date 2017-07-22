@@ -1,6 +1,6 @@
-import { PropertyExt } from "@hpcc-js/common";
+import { PropertyExt, Surface } from "@hpcc-js/common";
 import { IDatasource } from "@hpcc-js/dgrid";
-import { Edge, Vertex } from "@hpcc-js/graph";
+import { Edge, IGraphData, Vertex } from "@hpcc-js/graph";
 import { Databomb, NullDatasource } from "./datasources/databomb";
 import { LogicalFile } from "./datasources/logicalfile";
 import { WUResult } from "./datasources/wuresult";
@@ -15,6 +15,7 @@ export class Model extends PropertyExt {
     private _views: View[] = [];
     private _nullView = new NullView(this, "");
 
+    private subgraphMap: { [key: string]: Surface } = {};
     private vertexMap: { [key: string]: Vertex } = {};
     private edgeMap: { [key: string]: Edge } = {};
 
@@ -56,8 +57,8 @@ export class Model extends PropertyExt {
         return this._nullView;
     }
 
-    createGraph() {
-        const vertices: Vertex[] = this.datasources().concat(this._views as any).map(ds => {
+    createGraph(): IGraphData {
+        const dsVertices: Vertex[] = this.datasources().map(ds => {
             let retVal: Vertex = this.vertexMap[ds.id()];
             if (!retVal) {
                 retVal = new Vertex()
@@ -71,6 +72,22 @@ export class Model extends PropertyExt {
             retVal.getBBox(true);
             return retVal;
         });
+
+        const vVertices: Vertex[] = this.datasources().concat(this._views as any).map(view => {
+            let retVal: Vertex = this.vertexMap[view.id()];
+            if (!retVal) {
+                retVal = new Vertex()
+                    .columns(["DS"])
+                    .data([[view]])
+                    .icon_shape_diameter(0)
+                    ;
+                this.vertexMap[view.id()] = retVal;
+            }
+            retVal.text(`[${view.id()}]\n${view.label()}`);
+            retVal.getBBox(true);
+            return retVal;
+        });
+
         const edges: Edge[] = [];
         this._views.forEach(view => {
             const dsEdgeID = `${view.datasource().id()}->${view.id()}`;
@@ -103,8 +120,9 @@ export class Model extends PropertyExt {
         });
 
         return {
-            vertices,
-            edges
+            vertices: dsVertices.concat(vVertices),
+            edges,
+            hierarchy: []
         };
     }
 }

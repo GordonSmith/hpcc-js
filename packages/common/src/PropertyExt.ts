@@ -486,3 +486,10 @@ export function publish(defaultValue, type?: PublishTypes, description?: string,
         target.publish(key, defaultValue, type, description, set, ext);
     };
 }
+
+export function publish2(methodID: string, defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}) {
+    // tslint:disable-next-line:ban-types
+    return function (target: Function) {
+        target.prototype.publish(methodID, defaultValue, type, description, set, ext);
+    };
+}
