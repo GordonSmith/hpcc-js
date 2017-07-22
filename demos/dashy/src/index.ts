@@ -103,27 +103,12 @@ export class App {
                     ;
                 this._propertyEditor
                     .widget(this._currActivity)
-                    .lazyRender(w => {
+                    .render(w => {
                         this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
-                            console.log(id, newValue, oldValue);
-                            switch (id) {
-                                case "label":
-                                case "filters":
-                                case "source":
-                                    this.loadGraph(true);
-                                    this.refreshPreview(this._currActivity);
-                                    break;
-                                case "groupBy":
-                                    if (newValue instanceof Array) {
-                                    } else {
-                                        this.refreshPreview(this._currActivity);
-                                    }
-                                    break;
-                                default:
-                                    this.refreshPreview(this._currActivity);
-                            }
+                            console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
+                            this.loadGraph(true);
+                            this.refreshPreview(this._currActivity);
                         });
-
                     })
                     ;
             });

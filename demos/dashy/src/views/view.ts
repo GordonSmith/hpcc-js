@@ -36,9 +36,12 @@ export class AggregateField extends PropertyExt {
     @publish(null, "set", "Aggregation Field", function () { return this.columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" })
     aggrColumn: { (): string; (_: string): AggregateField; };
 
-    constructor(owner?) {
+    constructor(owner) {
         super();
         this._owner = owner;
+        this.monitor((id, newVal, oldVal) => {
+            this._owner.broadcast(id, newVal, oldVal, this);
+        });
     }
 
     columns() {
@@ -62,6 +65,9 @@ export class SortColumn extends PropertyExt {
     constructor(owner?) {
         super();
         this._owner = owner;
+        this.monitor((id, newVal, oldVal) => {
+            this._owner.broadcast(id, newVal, oldVal, this);
+        });
     }
 
     fields() {
@@ -88,9 +94,12 @@ export class ColumnMapping extends PropertyExt {
     @publish("==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "contains"])
     condition: { (): string; (_: string): ColumnMapping; };
 
-    constructor(owner?) {
+    constructor(owner) {
         super();
         this._owner = owner;
+        this.monitor((id, newVal, oldVal) => {
+            this._owner.broadcast(id, newVal, oldVal, this);
+        });
     }
 
     hash() {
@@ -161,6 +170,9 @@ export class Filter extends PropertyExt {
     constructor(owner) {
         super();
         this._owner = owner;
+        this.monitor((id, newVal, oldVal) => {
+            this._owner.broadcast(id, newVal, oldVal, this);
+        });
     }
 
     hash(): string {
@@ -332,6 +344,7 @@ export abstract class View extends PropertyExt implements IView<View> {
         data = this._postLimit(data);
         return data;
     }
+
     protected _preFilter(data: any[]): any[] {
         const filters: Array<(localRow: any) => boolean> = [];
         for (const filter of this.validFilters()) {

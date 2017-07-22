@@ -391,7 +391,7 @@ export class PropertyExt extends Class {
         };
     }
 
-    monitorProperty(propID: string, func: (id: string, newVal: any, oldVal: any) => void) {
+    monitorProperty(propID: string, func: (id: string, newVal: any, oldVal: any) => void): { remove: () => void } {
         const meta = this.publishedProperty(propID);
         switch (meta.type) {
             case "proxy":
@@ -416,27 +416,26 @@ export class PropertyExt extends Class {
         }
     }
 
-    monitor(func: (id: string, newVal: any, oldVal: any) => void): { _watches: any; remove: () => void } {
+    monitor(func: (id: string, newVal: any, oldVal: any, source: PropertyExt) => void): { remove: () => void } {
+        const idx = this._watchArrIdx++;
+        this._watchArr[idx] = { propertyID: undefined, callback: func };
         return {
-            _watches: this.publishedProperties().map(function (meta) {
-                return this.monitorProperty(meta.id, func);
-            }, this),
-            // tslint:disable-next-line:object-literal-shorthand
-            remove: function () {
-                this._watches.forEach(function (watch) {
-                    watch.remove();
-                });
+            remove: () => {
+                delete this._watchArr[idx];
             }
         };
     }
 
     broadcast(key, newVal, oldVal, source) {
+        if (source && source !== this) {
+
+        }
         source = source || this;
         if (hashSum(newVal) !== hashSum(oldVal)) {
             for (const idx in this._watchArr) {
                 const monitor = this._watchArr[idx];
                 if ((monitor.propertyID === undefined || monitor.propertyID === key) && monitor.callback) {
-                    console.log(`broadcast(${key}, ${newVal}, ${oldVal}`);
+                    console.log(`${this.classID()}->broadcast(${key}, ${newVal}, ${oldVal})`);
                     setTimeout(function (monitor2) {
                         monitor2.callback(key, newVal, oldVal, source);
                     }, 0, monitor);
