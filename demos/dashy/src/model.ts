@@ -1,10 +1,11 @@
-import { PropertyExt, Surface } from "@hpcc-js/common";
+import { PropertyExt, Surface, Widget } from "@hpcc-js/common";
 import { IDatasource } from "@hpcc-js/dgrid";
-import { Edge, IGraphData, Vertex } from "@hpcc-js/graph";
+import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
 import { Databomb, NullDatasource } from "./datasources/databomb";
 import { LogicalFile } from "./datasources/logicalfile";
 import { WUResult } from "./datasources/wuresult";
 import { deserialize as d2 } from "./serialization";
+import { FlatView } from "./views/flatview";
 import { NullView } from "./views/nullview";
 import { View, ViewDatasource } from "./views/view";
 
@@ -57,72 +58,112 @@ export class Model extends PropertyExt {
         return this._nullView;
     }
 
+    createSurface(id: string, label: string, data: any): Surface {
+        let retVal: Surface = this.subgraphMap[id];
+        if (!retVal) {
+            retVal = new Surface()
+                .classed({ subgraph: true })
+                .showIcon(false)
+                .columns(["DS"])
+                .data([[data]])
+                ;
+            this.subgraphMap[id] = retVal;
+        }
+        retVal.title(`[${id}] - ${label}`);
+        retVal.getBBox(true);
+        return retVal;
+    }
+
+    createVertex(id: string, label: string, data: any, showID: boolean = false): Vertex {
+        let retVal: Vertex = this.vertexMap[id];
+        if (!retVal) {
+            retVal = new Vertex()
+                .columns(["DS"])
+                .data([[data]])
+                .icon_shape_diameter(0)
+                ;
+            this.vertexMap[id] = retVal;
+        }
+        retVal.text(showID ? `[${id}]\n${label}` : label);
+        retVal.getBBox(true);
+        return retVal;
+    }
+
+    createEdge(sourceID: string, targetID: string) {
+        const edgeID = `${sourceID}->${targetID}`;
+        let retVal = this.edgeMap[edgeID];
+        if (!retVal) {
+            retVal = new Edge()
+                .sourceVertex(this.vertexMap[sourceID])
+                .targetVertex(this.vertexMap[targetID])
+                ;
+            this.edgeMap[edgeID] = retVal;
+        }
+        return retVal;
+    }
+
     createGraph(): IGraphData {
-        const dsVertices: Vertex[] = this.datasources().map(ds => {
-            let retVal: Vertex = this.vertexMap[ds.id()];
-            if (!retVal) {
-                retVal = new Vertex()
-                    .columns(["DS"])
-                    .data([[ds]])
-                    .icon_shape_diameter(0)
-                    ;
-                this.vertexMap[ds.id()] = retVal;
-            }
-            retVal.text(`[${ds.id()}]\n${ds.label()}`);
-            retVal.getBBox(true);
-            return retVal;
+        this.subgraphMap = {};
+        const hierarchy: Lineage[] = [];
+        const dsVertices: Widget[] = this.datasources().map(ds => {
+            return this.createVertex(ds.id(), ds.label(), ds);
         });
-
-        const vVertices: Vertex[] = this.datasources().concat(this._views as any).map(view => {
-            let retVal: Vertex = this.vertexMap[view.id()];
-            if (!retVal) {
-                retVal = new Vertex()
-                    .columns(["DS"])
-                    .data([[view]])
-                    .icon_shape_diameter(0)
-                    ;
-                this.vertexMap[view.id()] = retVal;
-            }
-            retVal.text(`[${view.id()}]\n${view.label()}`);
-            retVal.getBBox(true);
-            return retVal;
-        });
-
+        const sgVertices: Widget[] = [];
+        const vVertices: Widget[] = [];
         const edges: Edge[] = [];
-        this._views.forEach(view => {
-            const dsEdgeID = `${view.datasource().id()}->${view.id()}`;
-            let dsEdge: Edge = this.edgeMap[dsEdgeID];
-            if (!dsEdge) {
-                dsEdge = new Edge()
-                    .sourceVertex(this.vertexMap[view.datasource().id()])
-                    .targetVertex(this.vertexMap[view.id()])
-                    ;
-                this.edgeMap[dsEdgeID] = dsEdge;
+        const lastID: { [viewID: string]: string } = {};
+
+        const context = this;
+        function createSubVertex(parent: Widget, sourceID: string, id: string, label: string, data: any): string {
+            const retval: Vertex = context.createVertex(id, label, data);
+            vVertices.push(retval);
+            hierarchy.push({ parent, child: retval });
+            edges.push(context.createEdge(sourceID, id));
+            return id;
+        }
+
+        for (const view of this._views) {
+            const sg: Surface = this.createSurface(view.id(), view.label(), view);
+            sgVertices.push(sg);
+
+            let prevID = view.datasource().id();
+            if (view.hasFilter()) {
+                prevID = createSubVertex(sg, prevID, view.id(), "Filter", view);
             }
-            edges.push(dsEdge);
+            if (view instanceof FlatView) {
+                if (view.hasGroupBy()) {
+                    prevID = createSubVertex(sg, prevID, view.id() + "_gb", "Group By", view);
+                }
+                if (view.hasComputedFields()) {
+                    prevID = createSubVertex(sg, prevID, view.id() + "_cf", "Computed\nFields", view);
+                }
+            }
+            if (view.hasSortBy()) {
+                prevID = createSubVertex(sg, prevID, view.id() + "_s", "Sort", view);
+            }
+            if (view.hasLimit()) {
+                prevID = createSubVertex(sg, prevID, view.id() + "_l", "Limit", view);
+            }
+            if (prevID === view.datasource().id()) { //  No activities
+                prevID = createSubVertex(sg, prevID, view.id() + "_o", "Output", view);
+            }
+            lastID[view.id()] = prevID;
             view.filters().forEach(filter => {
                 if (filter.source()) {
                     const filterView = this.view(filter.source());
-                    const filterEdgeID = `${filterView.id()}->${view.id()}`;
-                    let filterEdge: Edge = this.edgeMap[filterEdgeID];
-                    if (!filterEdge) {
-                        filterEdge = new Edge()
-                            .sourceVertex(this.vertexMap[filterView.id()])
-                            .targetVertex(this.vertexMap[view.id()])
-                            .strokeDasharray("1,5")
-                            ;
-                        this.edgeMap[filterEdgeID] = filterEdge;
-                    }
-                    filterEdge.text("Sel:");
+                    const filterEdge: Edge = this.createEdge(lastID[filterView.id()], view.id())
+                        .strokeDasharray("1,5")
+                        .text("Sel:")
+                        ;
                     edges.push(filterEdge);
                 }
             });
-        });
+        }
 
         return {
-            vertices: dsVertices.concat(vVertices),
+            vertices: dsVertices.concat(vVertices).concat(sgVertices),
             edges,
-            hierarchy: []
+            hierarchy
         };
     }
 }

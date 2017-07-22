@@ -229,6 +229,9 @@ export abstract class View extends PropertyExt implements IView<View> {
     validFilters(): Filter[] {
         return this.filters().filter(filter => filter.source());
     }
+    hasFilter(): boolean {
+        return this.validFilters().length > 0;
+    }
     appendFilter(source: View, mappings: [{ filterField: string, localField: string }]): this {
         this.filters().push(new Filter(this)
             .source(source.id())
@@ -238,10 +241,19 @@ export abstract class View extends PropertyExt implements IView<View> {
 
     @publish([], "propertyArray", "Source Columns", null, { autoExpand: SortColumn })
     sortBy: { (): SortColumn[]; (_: SortColumn[]): View; };
+    validSortBy(): SortColumn[] {
+        return this.sortBy().filter(sortBy => sortBy.sortColumn());
+    }
+    hasSortBy(): boolean {
+        return this.validSortBy().length > 0;
+    }
 
     @publish(undefined, "number", "Limit output")
     limit: { (): number | undefined; (_: number | undefined): View; };
     limit_exists: () => boolean;
+    hasLimit(): boolean {
+        return this.limit_exists() && this.limit() > 0;
+    }
 
     datasource(): ViewDatasource {
         return this._model.datasource(this.source()) as ViewDatasource;
@@ -367,7 +379,7 @@ export abstract class View extends PropertyExt implements IView<View> {
     }
 
     protected _postLimit(data: any[]): any[] {
-        if (this.limit_exists()) {
+        if (this.hasLimit()) {
             data.length = this.limit();
         }
         return data;

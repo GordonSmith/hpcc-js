@@ -55,17 +55,25 @@ export class FlatView extends View {
         });
     }
 
-    cleanGroupBy() {
+    validGroupBy() {
         return this.groupBys().filter(groupBy => groupBy.column());
     }
 
     hasGroupBy() {
-        return this.cleanGroupBy().length;
+        return this.validGroupBy().length;
+    }
+
+    validComputedFields() {
+        return this.computedFields().filter(computedField => computedField.label());
+    }
+
+    hasComputedFields() {
+        return this.validComputedFields().length;
     }
 
     outFields(): IField[] {
         const retVal: IField[] = [];
-        const groups: GroupByColumn[] = this.cleanGroupBy();
+        const groups: GroupByColumn[] = this.validGroupBy();
         for (const groupBy of groups) {
             const groupByField = this.field(groupBy.column());
             const field: IField = {
@@ -132,7 +140,7 @@ export class FlatView extends View {
             })
             .entries(data).map(row => {
                 delete row.key;
-                for (const groupBy of this.cleanGroupBy()) {
+                for (const groupBy of this.validGroupBy()) {
                     row[groupBy.column()] = row.values[0][groupBy.column()];
                 }
                 for (const cf of this.computedFields()) {

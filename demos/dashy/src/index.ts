@@ -90,39 +90,42 @@ export class App {
         .allowDragging(false)
         .applyScaleOnLayout(true)
         .on("vertex_click", (row: any, col: string, sel: boolean, ext: any) => {
+            if (this._currActivity === row.__lparam[0] as any) return;
             this._currActivity = row.__lparam[0] as any;
             this._currActivity.refresh().then(() => {
                 if (this._monitorHandle) {
                     this._monitorHandle.remove();
                 }
-                this._propertyEditor
-                    .widget(this._currActivity)
-                    .render()
-                    ;
                 this._preview
                     .datasource(this._currActivity)
                     .paging(this._currActivity instanceof View ? false : true)
                     .lazyRender()
                     ;
-                this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
-                    console.log(id, newValue, oldValue);
-                    switch (id) {
-                        case "label":
-                        case "filters":
-                        case "source":
-                            this.loadGraph(true);
-                            this.refreshPreview(this._currActivity);
-                            break;
-                        case "groupBy":
-                            if (newValue instanceof Array) {
-                            } else {
-                                this.refreshPreview(this._currActivity);
+                this._propertyEditor
+                    .widget(this._currActivity)
+                    .lazyRender(w => {
+                        this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
+                            console.log(id, newValue, oldValue);
+                            switch (id) {
+                                case "label":
+                                case "filters":
+                                case "source":
+                                    this.loadGraph(true);
+                                    this.refreshPreview(this._currActivity);
+                                    break;
+                                case "groupBy":
+                                    if (newValue instanceof Array) {
+                                    } else {
+                                        this.refreshPreview(this._currActivity);
+                                    }
+                                    break;
+                                default:
+                                    this.refreshPreview(this._currActivity);
                             }
-                            break;
-                        default:
-                            this.refreshPreview(this._currActivity);
-                    }
-                });
+                        });
+
+                    })
+                    ;
             });
         })
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {

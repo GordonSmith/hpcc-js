@@ -9,6 +9,27 @@
     height:100vh;
 }
 
+.graph_Graph .graphVertex > .subgraph .title rect {
+    fill: #dcf1ff;
+    border-bottom-width:0px;
+}
+
+.graph_Graph .graphVertex > .subgraph .title text {
+    fill: black;
+}
+
+.graph_Graph .graphVertex > .subgraph rect {
+    fill: none;
+}
+
+.graph_Graph .graphVertex > .subgraph.selected rect {
+    stroke:red !important;
+}
+
+.graph_Graph .graphVertex .graph_Vertex.selected .common_Shape {
+    stroke:red !important;
+}
+
 .p-MenuBar {
   padding-left: 5px;
   background: #FAFAFA;
