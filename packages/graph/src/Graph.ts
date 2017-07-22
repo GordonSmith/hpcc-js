@@ -1,5 +1,5 @@
 ﻿import { IGraph } from "@hpcc-js/api";
-import { Platform, SVGZoomWidget, Utility } from "@hpcc-js/common";
+import { Platform, SVGZoomWidget, Utility, Widget } from "@hpcc-js/common";
 import { drag as d3Drag } from "d3-drag";
 import { event as d3Event, select as d3Select } from "d3-selection";
 import { Edge } from "./Edge";
@@ -10,11 +10,11 @@ import { Vertex } from "./Vertex";
 import "../src/Graph.css";
 
 export interface Lineage {
-    parent: Vertex;
-    child: Vertex;
+    parent: Widget;
+    child: Widget;
 }
 export interface IGraphData {
-    vertices: Vertex[];
+    vertices: Widget[];
     edges: Edge[];
     hierarchy?: Lineage[];
     merge?: boolean;
