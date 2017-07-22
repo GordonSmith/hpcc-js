@@ -182,7 +182,7 @@ export class App {
             ;
         this._model.addDatasource(logicalFile);
 
-        const view1 = (new FlatView(this._model, "View 1").source(wuResult.id()) as FlatView)
+        const view1 = new FlatView(this._model, "View 1").source(wuResult.id())
             .appendGroupBys([{ field: "state" }])
             .appendComputedFields([{ label: "weight", type: "count" }])
             ;
