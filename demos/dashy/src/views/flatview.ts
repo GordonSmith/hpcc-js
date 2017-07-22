@@ -9,6 +9,9 @@ export class GroupByColumn extends PropertyExt {
     constructor(owner: FlatView) {
         super();
         this._owner = owner;
+        this.monitor((id, newVal, oldVal) => {
+            this._owner.broadcast(id, newVal, oldVal, this);
+        });
     }
 
     @publish(undefined, "set", "Field", function () { return this.columns(); }, { optional: true })
@@ -56,7 +59,7 @@ export class FlatView extends View {
     }
 
     validGroupBy() {
-        return this.groupBys().filter(groupBy => groupBy.column());
+        return this.groupBys().filter(groupBy => !!groupBy.column());
     }
 
     hasGroupBy() {
@@ -96,19 +99,23 @@ export class FlatView extends View {
             }
         }
         if (this.details()) {
-            const rows: IField = {
-                id: "values",
-                label: "details",
-                type: "object",
-                children: []
-            };
-            retVal.push(rows);
+            let detailsTarget: IField[] = retVal;
+            if (this.hasGroupBy()) {
+                const rows: IField = {
+                    id: "values",
+                    label: "details",
+                    type: "object",
+                    children: []
+                };
+                retVal.push(rows);
+                detailsTarget = rows.children;
+            }
             const columns = groups.map(groupBy => groupBy.column());
-            rows.children.push(...this.datasource().outFields().filter(field => {
+            detailsTarget.push(...this.datasource().outFields().filter(field => {
                 return this.fullDetails() || columns.indexOf(field.id) < 0;
             }));
         }
-        return this.hasGroupBy() ? retVal : retVal[0].children;
+        return retVal;
     }
 
     /*

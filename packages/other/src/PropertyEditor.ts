@@ -358,9 +358,9 @@ export class PropertyEditor extends HTMLWidget {
             if (lastModified) {
                 changed = true;
                 const autoExpandWidget = new param.ext.autoExpand(widget);
-                autoExpandWidget.monitor((id, newVal, oldVal, source) => {
-                    widget.broadcast(param.id, newVal, oldVal, source);
-                });
+                // autoExpandWidget.monitor((id, newVal, oldVal, source) => {
+                // widget.broadcast(param.id, newVal, oldVal, source);
+                // });
                 noEmpties.push(autoExpandWidget);
             }
             if (changed) {
