@@ -1,4 +1,4 @@
-import { PropertyExt, publish } from "@hpcc-js/common";
+import { PropertyExt } from "@hpcc-js/common";
 import { nest as d3Nest } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
 import { AggregateField, AggregateType, View } from "./view";
@@ -14,18 +14,19 @@ export class GroupByColumn extends PropertyExt {
         });
     }
 
-    @publish(undefined, "set", "Field", function () { return this.columns(); }, { optional: true })
-    column: { (): string; (_: string): GroupByColumn; };
-
     columns() {
         return this._owner.columns();
     }
 }
 GroupByColumn.prototype._class += " GroupByColumn";
 
+export interface GroupByColumn {
+    column(): string;
+    column(_: string): this;
+}
+GroupByColumn.prototype.publish("column", undefined, "set", "Field", function () { return this.columns(); }, { optional: true });
+
 export class FlatView extends View {
-    @publish([], "propertyArray", "Source Columns", null, { autoExpand: GroupByColumn })
-    groupBys: { (): GroupByColumn[]; (_: GroupByColumn[]): View; };
     appendGroupBys(columns: [{ field: string }]): this {
         for (const column of columns) {
             this.groupBys().push(new GroupByColumn(this)
@@ -35,8 +36,6 @@ export class FlatView extends View {
         return this;
     }
 
-    @publish([], "propertyArray", "Computed Fields", null, { autoExpand: AggregateField })
-    computedFields: { (): AggregateField[]; (_: AggregateField[]): View; };
     appendComputedFields(aggregateFields: [{ label: string, type: AggregateType, column?: string }]): this {
         for (const aggregateField of aggregateFields) {
             const aggrField = new AggregateField(this)
@@ -163,3 +162,13 @@ export class FlatView extends View {
     }
 }
 FlatView.prototype._class += " FlatView";
+
+export interface FlatView {
+    groupBys(): GroupByColumn[];
+    groupBys(_: GroupByColumn[]): this;
+
+    computedFields(): AggregateField[];
+    computedFields(_: AggregateField[]): this;
+}
+FlatView.prototype.publish("groupBys", [], "propertyArray", "Source Columns", null, { autoExpand: GroupByColumn });
+FlatView.prototype.publish("computedFields", [], "propertyArray", "Computed Fields", null, { autoExpand: AggregateField });
