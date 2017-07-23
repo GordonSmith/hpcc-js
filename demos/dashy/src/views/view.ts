@@ -1,4 +1,4 @@
-import { PropertyExt, publish, publish2 } from "@hpcc-js/common";
+import { PropertyExt } from "@hpcc-js/common";
 import { ascending as d3Ascending, descending as d3Descending, deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "@hpcc-js/common";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
@@ -29,13 +29,6 @@ export type AggregateType = "count" | "min" | "max" | "sum" | "mean" | "median" 
 export class AggregateField extends PropertyExt {
     _owner;
 
-    @publish(null, "string", "Label", null, { optional: true, disable: (w) => !w._owner.hasColumn() })
-    label: { (): string; (_: string): AggregateField; };
-    @publish("count", "set", "Aggregation Type", ["count", "min", "max", "sum", "mean", "median", "variance", "deviation"], { optional: true, disable: w => !w.label() })
-    aggrType: { (): AggregateType; (_: AggregateType): AggregateField; };
-    @publish(null, "set", "Aggregation Field", function () { return this.columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" })
-    aggrColumn: { (): string; (_: string): AggregateField; };
-
     constructor(owner) {
         super();
         this._owner = owner;
@@ -54,13 +47,20 @@ export class AggregateField extends PropertyExt {
 }
 AggregateField.prototype._class += " AggregateField";
 
+export interface AggregateField {
+    label(): string;
+    label(_: string): this;
+    aggrType(): AggregateType;
+    aggrType(_: AggregateType): this;
+    aggrColumn(): string;
+    aggrColumn(_: string): this;
+}
+AggregateField.prototype.publish("label", null, "string", "Label", null, { optional: true, disable: (w) => !w._owner.hasColumn() });
+AggregateField.prototype.publish("aggrType", "count", "set", "Aggregation Type", ["count", "min", "max", "sum", "mean", "median", "variance", "deviation"], { optional: true, disable: w => !w.label() });
+AggregateField.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function () { return this.columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" });
+
 export class SortColumn extends PropertyExt {
     _owner: View;
-
-    @publish(null, "set", "Sort Field", function () { return this.fields(); }, { optional: true })
-    sortColumn: { (): string; (_: string): SortColumn; };
-    @publish(null, "boolean", "Sort Field")
-    descending: { (): boolean; (_: boolean): SortColumn; };
 
     constructor(owner?) {
         super();
@@ -84,15 +84,17 @@ export class SortColumn extends PropertyExt {
 }
 SortColumn.prototype._class += " SortColumn";
 
+export interface SortColumn {
+    sortColumn(): string;
+    sortColumn(_: string): SortColumn;
+    descending(): boolean;
+    descending(_: boolean): SortColumn;
+}
+SortColumn.prototype.publish("sortColumn", null, "set", "Sort Field", function () { return this.fields(); }, { optional: true });
+SortColumn.prototype.publish("descending", null, "boolean", "Sort Field");
+
 export class ColumnMapping extends PropertyExt {
     _owner: Filter;
-
-    @publish(null, "set", "Filter Fields", function () { return this.filterFields(); }, { optional: true })
-    filterField: { (): string; (_: string): ColumnMapping; };
-    @publish(null, "set", "Local Fields", function () { return this.localFields(); }, { optional: true })
-    localField: { (): string; (_: string): ColumnMapping; };
-    @publish("==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "contains"])
-    condition: { (): string; (_: string): ColumnMapping; };
 
     constructor(owner) {
         super();
@@ -142,18 +144,21 @@ export class ColumnMapping extends PropertyExt {
     }
 }
 ColumnMapping.prototype._class += " ColumnMapping";
+export interface ColumnMapping {
+    filterField(): string;
+    filterField(_: string): this;
+    localField(): string;
+    localField(_: string): this;
+    condition(): string;
+    condition(_: string): this;
+}
+ColumnMapping.prototype.publish("filterField", null, "set", "Filter Fields", function () { return this.filterFields(); }, { optional: true });
+ColumnMapping.prototype.publish("localField", null, "set", "Local Fields", function () { return this.localFields(); }, { optional: true });
+ColumnMapping.prototype.publish("condition", "==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "contains"]);
 
 export class Filter extends PropertyExt {
     _owner: View;
 
-    @publish(null, "set", "Datasource", function () { return this._owner._model.viewIDs(); }, { optional: true })
-    source: { (): string; (_: string): Filter };
-
-    @publish(false, "boolean", "Ignore null filters")
-    nullable: { (): boolean; (_: boolean): Filter };
-
-    @publish([], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping })
-    mappings: { (): ColumnMapping[]; (_: ColumnMapping[]): Filter; };
     validMappings(): ColumnMapping[] {
         return this.mappings().filter(mapping => !!mapping.localField() && !!mapping.filterField());
     }
@@ -200,20 +205,21 @@ export class Filter extends PropertyExt {
     }
 }
 Filter.prototype._class += " Filter";
-
-export interface IView<T> extends IDatasource {
-    source: { (): string; (_: string): T };
+export interface Filter {
+    source(): string;
+    source(_: string): this;
+    nullable(): boolean;
+    nullable(_: boolean): this;
+    mappings(): ColumnMapping[];
+    mappings(_: ColumnMapping[]): this;
 }
+Filter.prototype.publish("source", null, "set", "Datasource", function () { return this._owner._model.viewIDs(); }, { optional: true });
+Filter.prototype.publish("nullable", false, "boolean", "Ignore null filters");
+Filter.prototype.publish("mappings", [], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping });
 
 let viewID = 0;
 
-export interface View {
-    source(): string;
-    source(_: string): this;
-}
-
-@publish2("source", null, "set", "Datasource", function () { return this._model.datasourceIDs(); }, { optional: true })
-export abstract class View extends PropertyExt implements IView<View> {
+export abstract class View extends PropertyExt implements IDatasource {
     _source: string = "42";
     _model: Model;
     _total = 0;
@@ -227,17 +233,6 @@ export abstract class View extends PropertyExt implements IView<View> {
         this._id = "v" + viewID++;
     }
 
-    @publish(null, "string", "Label")
-    label: { (): string; (_: string): View };
-
-    @publish(true, "boolean", "Show details")
-    details: { (): boolean; (_: boolean): View; };
-
-    @publish(false, "boolean", "Show groupBy fileds in details")
-    fullDetails: { (): boolean; (_: boolean): View; };
-
-    @publish([], "propertyArray", "Filter", null, { autoExpand: Filter })
-    filters: { (): Filter[]; (_: Filter[]): View; };
     validFilters(): Filter[] {
         return this.filters().filter(filter => filter.source());
     }
@@ -251,8 +246,6 @@ export abstract class View extends PropertyExt implements IView<View> {
         return this;
     }
 
-    @publish([], "propertyArray", "Source Columns", null, { autoExpand: SortColumn })
-    sortBy: { (): SortColumn[]; (_: SortColumn[]): View; };
     validSortBy(): SortColumn[] {
         return this.sortBy().filter(sortBy => sortBy.sortColumn());
     }
@@ -260,8 +253,6 @@ export abstract class View extends PropertyExt implements IView<View> {
         return this.validSortBy().length > 0;
     }
 
-    @publish(undefined, "number", "Limit output")
-    limit: { (): number | undefined; (_: number | undefined): View; };
     limit_exists: () => boolean;
     hasLimit(): boolean {
         return this.limit_exists() && this.limit() > 0;
@@ -399,3 +390,27 @@ export abstract class View extends PropertyExt implements IView<View> {
     }
 }
 View.prototype._class += " View";
+
+export interface View {
+    label(): string;
+    label(_: string): this;
+    source(): string;
+    source(_: string): this;
+    details(): boolean;
+    details(_: boolean): this;
+    fullDetails(): boolean;
+    fullDetails(_: boolean): this;
+    filters(): Filter[];
+    filters(_: Filter[]): this;
+    sortBy(): SortColumn[];
+    sortBy(_: SortColumn[]): this;
+    limit(): number | undefined;
+    limit(_: number | undefined): this;
+}
+View.prototype.publish("label", null, "string", "Label");
+View.prototype.publish("source", null, "set", "Datasource", function () { return this._model.datasourceIDs(); }, { optional: true });
+View.prototype.publish("details", true, "boolean", "Show details");
+View.prototype.publish("fullDetails", false, "boolean", "Show groupBy fileds in details");
+View.prototype.publish("filters", [], "propertyArray", "Filter", null, { autoExpand: Filter });
+View.prototype.publish("sortBy", [], "propertyArray", "Source Columns", null, { autoExpand: SortColumn });
+View.prototype.publish("limit", undefined, "number", "Limit output");

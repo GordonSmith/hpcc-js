@@ -15,117 +15,137 @@ function isPrivate(obj, key) {
     return obj[__private_ + key];
 }
 
-function Meta(id, defaultValue, type, description, set, ext) {
-    ext = ext || {};
-    this.id = id;
-    this.type = type;
-    this.origDefaultValue = defaultValue;
-    this.defaultValue = ext.optional && defaultValue === null ? undefined : defaultValue;
-    this.description = description;
-    this.set = set;
-    this.ext = ext;
+class Meta {
+    id;
+    type;
+    origDefaultValue;
+    defaultValue;
+    description;
+    set;
+    ext;
+    checkedAssign;
 
-    switch (type) {
-        case "any":
-            this.checkedAssign = _ => _;
-            break;
-        case "set":
-            this.checkedAssign = function (_) {
-                const options = typeof set === "function" ? set.call(this) : set;
-                if (!options || options.indexOf(_) < 0) {
-                    console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
-                }
-                return _;
-            };
-            break;
-        case "html-color":
-            this.checkedAssign = function (_) {
-                if ((window as any).__hpcc_debug && _ && _ !== "red") {
-                    const litmus = "red";
-                    const d = document.createElement("div");
-                    d.style.color = litmus;
-                    d.style.color = _;
-                    // Element's style.color will be reverted to litmus or set to "" if an invalid color is given
-                    if (d.style.color === litmus || d.style.color === "") {
+    constructor(id, defaultValue, type, description, set, ext) {
+        ext = ext || {};
+        this.id = id;
+        this.type = type;
+        this.origDefaultValue = defaultValue;
+        this.defaultValue = ext.optional && defaultValue === null ? undefined : defaultValue;
+        this.description = description;
+        this.set = set;
+        this.ext = ext;
+
+        switch (type) {
+            case "any":
+                this.checkedAssign = _ => _;
+                break;
+            case "set":
+                this.checkedAssign = function (_) {
+                    const options = typeof set === "function" ? set.call(this) : set;
+                    if (!options || options.indexOf(_) < 0) {
                         console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
                     }
-                }
-                return _;
-            };
-            break;
-        case "boolean":
-            this.checkedAssign = function (_) {
-                return typeof (_) === "string" && ["false", "off", "0"].indexOf(_.toLowerCase()) >= 0 ? false : Boolean(_);
-            };
-            break;
-        case "number":
-            this.checkedAssign = function (_) {
-                return Number(_);
-            };
-            break;
-        case "string":
-            this.checkedAssign = function (_) {
-                return String(_);
-            };
-            break;
-        case "array":
-            this.checkedAssign = function (_) {
-                if (!(_ instanceof Array)) {
-                    console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
-                }
-                return _;
-            };
-            break;
-        case "object":
-            this.checkedAssign = function (_) {
-                if (!(_ instanceof Object)) {
-                    console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
-                }
-                return _;
-            };
-            break;
-        case "widget":
-            this.checkedAssign = function (_) {
-                if (!_._class || _._class.indexOf("common_PropertyExt") < 0) {
-                    console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
-                }
-                return _;
-            };
-            break;
-        case "widgetArray":
-            this.checkedAssign = function (_) {
-                if (_.some(function (row) { return (!row._class || row._class.indexOf("common_Widget") < 0); })) {
-                    console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
-                }
-                return _;
-            };
-            break;
-        case "propertyArray":
-            this.checkedAssign = function (_) {
-                if (_.some(function (row) { return !row.publishedProperties; })) {
-                    console.log("Invalid value for '" + id + "':  " + _ + " expected " + type);
-                }
-                return _;
-            };
-            break;
-        default:
-            this.checkedAssign = function (_) {
-                if ((window as any).__hpcc_debug) {
-                    console.error("Unchecked property type for '" + id + "':  " + _ + " expected " + type);
-                }
-                return _;
-            };
-            break;
+                    return _;
+                };
+                break;
+            case "html-color":
+                this.checkedAssign = function (_) {
+                    if ((window as any).__hpcc_debug && _ && _ !== "red") {
+                        const litmus = "red";
+                        const d = document.createElement("div");
+                        d.style.color = litmus;
+                        d.style.color = _;
+                        // Element's style.color will be reverted to litmus or set to "" if an invalid color is given
+                        if (d.style.color === litmus || d.style.color === "") {
+                            console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                        }
+                    }
+                    return _;
+                };
+                break;
+            case "boolean":
+                this.checkedAssign = function (_) {
+                    return typeof (_) === "string" && ["false", "off", "0"].indexOf(_.toLowerCase()) >= 0 ? false : Boolean(_);
+                };
+                break;
+            case "number":
+                this.checkedAssign = function (_) {
+                    return Number(_);
+                };
+                break;
+            case "string":
+                this.checkedAssign = function (_) {
+                    return String(_);
+                };
+                break;
+            case "array":
+                this.checkedAssign = function (_) {
+                    if (!(_ instanceof Array)) {
+                        console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                    }
+                    return _;
+                };
+                break;
+            case "object":
+                this.checkedAssign = function (_) {
+                    if (!(_ instanceof Object)) {
+                        console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                    }
+                    return _;
+                };
+                break;
+            case "widget":
+                this.checkedAssign = function (_) {
+                    if (!_._class || _._class.indexOf("common_PropertyExt") < 0) {
+                        console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                    }
+                    return _;
+                };
+                break;
+            case "widgetArray":
+                this.checkedAssign = function (_) {
+                    if (_.some(function (row) { return (!row._class || row._class.indexOf("common_Widget") < 0); })) {
+                        console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                    }
+                    return _;
+                };
+                break;
+            case "propertyArray":
+                this.checkedAssign = function (_) {
+                    if (_.some(function (row) { return !row.publishedProperties; })) {
+                        console.log("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                    }
+                    return _;
+                };
+                break;
+            default:
+                this.checkedAssign = function (_) {
+                    if ((window as any).__hpcc_debug) {
+                        console.error("Unchecked property type for '" + id + "':  " + _ + " expected " + type);
+                    }
+                    return _;
+                };
+                break;
+        }
     }
 }
 
-function MetaProxy(id, proxy, method, defaultValue, ext?) {
-    this.id = id;
-    this.type = "proxy";
-    this.proxy = proxy;
-    this.method = method;
-    this.defaultValue = defaultValue;
-    this.ext = ext || {};
+class MetaProxy {
+    id;
+    type;
+    proxy;
+    method;
+    defaultValue;
+    ext;
+
+    constructor(id, proxy, method, defaultValue, ext?) {
+        this.id = id;
+        this.type = "proxy";
+        this.proxy = proxy;
+        this.method = method;
+        this.defaultValue = defaultValue;
+        this.ext = ext || {};
+    }
 }
 
 export type PublishTypes = "any" | "number" | "boolean" | "string" | "set" | "array" | "object" | "widget" | "widgetArray" | "propertyArray" | "html-color";
@@ -183,22 +203,35 @@ export class PropertyExt extends Class {
     // Publish Properties  ---
     publishedProperties(includePrivate = false, expandProxies = false) {
         const retVal = [];
-        for (const key in this) {
-            if (isMeta(key) && (includePrivate || !isPrivate(this, key))) {
-                let meta: any = this[key];
-                if (expandProxies && meta.type) {
-                    let item = this;
-                    while (meta.type === "proxy") {
-                        item = item[meta.proxy];
-                        meta = item.publishedProperty(meta.method);
-                    }
-                    const selfProp: any = this[key];
-                    if (meta.id !== selfProp.id) {
-                        meta = JSON.parse(JSON.stringify(meta));  //  Clone meta so we can safely replace the id.
-                        meta.id = selfProp.id;
+        const protoStack = [];
+        let __proto__ = Object.getPrototypeOf(this);
+        while (__proto__) {
+            if (__proto__ === PropertyExt.prototype) {
+                break;
+            }
+            protoStack.unshift(__proto__);
+            __proto__ = Object.getPrototypeOf(__proto__);
+        }
+        for (__proto__ of protoStack) {
+            for (const key in __proto__) {
+                if (__proto__.hasOwnProperty(key)) {
+                    if (isMeta(key) && (includePrivate || !isPrivate(this, key))) {
+                        let meta: any = this[key];
+                        if (expandProxies && meta.type) {
+                            let item = this;
+                            while (meta.type === "proxy") {
+                                item = item[meta.proxy];
+                                meta = item.publishedProperty(meta.method);
+                            }
+                            const selfProp: any = this[key];
+                            if (meta.id !== selfProp.id) {
+                                meta = JSON.parse(JSON.stringify(meta));  //  Clone meta so we can safely replace the id.
+                                meta.id = selfProp.id;
+                            }
+                        }
+                        retVal.push(meta);
                     }
                 }
-                retVal.push(meta);
             }
         }
         return retVal;
