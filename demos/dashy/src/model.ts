@@ -3,14 +3,16 @@ import { IDatasource } from "@hpcc-js/dgrid";
 import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
 import { Databomb, NullDatasource } from "./datasources/databomb";
 import { LogicalFile } from "./datasources/logicalfile";
+import { Workunit } from "./datasources/workunit";
 import { WUResult } from "./datasources/wuresult";
 import { deserialize as d2 } from "./serialization";
 import { FlatView } from "./views/flatview";
 import { NullView } from "./views/nullview";
 import { View, ViewDatasource } from "./views/view";
 
-export type CDatasource = ViewDatasource | View;
+export type CDatasource = ViewDatasource | View | Workunit;
 export class Model extends PropertyExt {
+    private _workunits: Workunit[] = [];
     private _datasources: CDatasource[] = [];
     private _nullDatasource = new NullDatasource();
     private _views: View[] = [];
@@ -20,8 +22,33 @@ export class Model extends PropertyExt {
     private vertexMap: { [key: string]: Vertex } = {};
     private edgeMap: { [key: string]: Edge } = {};
 
+    clear() {
+        this._workunits = [];
+        this._datasources = [];
+        this._views = [];
+
+        this.subgraphMap = {};
+        this.vertexMap = {};
+        this.edgeMap = {};
+    }
+
+    workunits() {
+        return [...this._workunits];
+    }
+
+    addWorkunit(workunit: Workunit): this {
+        this._workunits.push(workunit);
+        return this;
+    }
+
     datasources() {
-        return [...this._datasources];
+        const retVal = [...this._datasources];
+        for (const wu of this.workunits()) {
+            for (const wuResult of wu.results()) {
+                retVal.push(wuResult);
+            }
+        }
+        return retVal;
     }
 
     addDatasource(datasource: CDatasource): this {
@@ -30,11 +57,11 @@ export class Model extends PropertyExt {
     }
 
     datasourceIDs() {
-        return this._datasources.map(ds => ds.id());
+        return this.datasources().map(ds => ds.id());
     }
 
     datasource(id: string): IDatasource | undefined {
-        const retVal = this._datasources.filter(ds => ds.id() === id);
+        const retVal = this.datasources().filter(ds => ds.id() === id);
         if (retVal.length) {
             return retVal[0] as IDatasource;
         }
@@ -105,9 +132,7 @@ export class Model extends PropertyExt {
     createGraph(): IGraphData {
         this.subgraphMap = {};
         const hierarchy: Lineage[] = [];
-        const dsVertices: Widget[] = this.datasources().map(ds => {
-            return this.createVertex(ds.id(), ds.label(), ds);
-        });
+        const dsVertices: Widget[] = [];
         const sgVertices: Widget[] = [];
         const vVertices: Widget[] = [];
         const edges: Edge[] = [];
@@ -118,8 +143,23 @@ export class Model extends PropertyExt {
             const retval: Vertex = context.createVertex(id, label, data);
             vVertices.push(retval);
             hierarchy.push({ parent, child: retval });
-            edges.push(context.createEdge(sourceID, id));
+            if (sourceID) {
+                edges.push(context.createEdge(sourceID, id));
+            }
             return id;
+        }
+
+        for (const wu of this.workunits()) {
+            const sg: Surface = this.createSurface(wu.id(), wu.label(), wu);
+            sgVertices.push(sg);
+
+            for (const wuResult of wu._results) {
+                createSubVertex(sg, "", wuResult.id(), wuResult.label(), wuResult);
+            }
+        }
+
+        for (const ds of this.datasources()) {
+            dsVertices.push(this.createVertex(ds.id(), ds.label(), ds));
         }
 
         for (const view of this._views) {

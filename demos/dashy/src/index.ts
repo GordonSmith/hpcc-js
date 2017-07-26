@@ -4,88 +4,24 @@ import { Graph } from "@hpcc-js/graph";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
+import { Dashboard } from "./dashboard/dashboard";
+import { Viz } from "./dashboard/viz";
 import { Databomb } from "./datasources/databomb";
 import { Form } from "./datasources/form";
 import { LogicalFile } from "./datasources/logicalfile";
+import { Workunit } from "./datasources/workunit";
 import { WUResult } from "./datasources/wuresult";
 import { Model } from "./model";
 import { FlatView } from "./views/flatview";
 import { View } from "./views/view";
 
-let app: App;
-
-const commands = new CommandRegistry();
-
-commands.addCommand("addWUResult", {
-    label: "Add WU Result",
-    execute: () => {
-        app._model.addDatasource(new WUResult());
-        app.loadGraph(true);
-    }
-});
-
-commands.addCommand("addLogicalFile", {
-    label: "Add Logical File",
-    execute: () => {
-        app._model.addDatasource(new LogicalFile());
-        app.loadGraph(true);
-    }
-});
-
-commands.addCommand("addDatabomb", {
-    label: "Add Databomb",
-    execute: () => {
-        app._model.addDatasource(new Databomb());
-        app.loadGraph(true);
-    }
-});
-
-commands.addCommand("addForm", {
-    label: "Add Form",
-    execute: () => {
-        app._model.addDatasource(new Form());
-        app.loadGraph(true);
-    }
-});
-
-commands.addCommand("addView", {
-    label: "Add View",
-    execute: () => {
-        app._model.addView(new FlatView(app._model));
-        app.loadGraph(true);
-    }
-});
-
-commands.addCommand("remove", {
-    label: "Remove Item",
-    execute: () => {
-    }
-});
-
-const palette = new CommandPalette({ commands });
-palette.addItem({ command: "addWUResult", category: "Notebook" });
-palette.addItem({ command: "addView", category: "Notebook" });
-palette.addItem({ command: "remove", category: "Notebook" });
-palette.id = "palette";
-
-const contextMenu = new ContextMenu({ commands });
-contextMenu.addItem({ command: "addWUResult", selector: ".graph_Graph > .zoomBackground" });
-contextMenu.addItem({ command: "addLogicalFile", selector: ".graph_Graph > .zoomBackground" });
-contextMenu.addItem({ command: "addDatabomb", selector: ".graph_Graph > .zoomBackground" });
-contextMenu.addItem({ command: "addForm", selector: ".graph_Graph > .zoomBackground" });
-contextMenu.addItem({ command: "addView", selector: ".graph_Graph > .zoomBackground" });
-contextMenu.addItem({ command: "remove", selector: ".graph_Vertex" });
-
-document.addEventListener("contextmenu", (event: MouseEvent) => {
-    if (contextMenu.open(event)) {
-        event.preventDefault();
-    }
-});
+// let app: App;
 
 export class App {
     _dockPanel = new DockPanel();
     _currActivity;
     _monitorHandle: { remove: () => void };
+    _dashboard: Dashboard = new Dashboard();
     _graph: Graph = new Graph()
         .allowDragging(false)
         .applyScaleOnLayout(true)
@@ -106,8 +42,10 @@ export class App {
                     .render(w => {
                         this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
                             console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
-                            this.loadGraph(true);
-                            this.refreshPreview(this._currActivity);
+                            this._currActivity.refresh().then(() => {
+                                this.loadGraph(true);
+                                this.refreshPreview(this._currActivity);
+                            });
                         });
                     })
                     ;
@@ -132,15 +70,27 @@ export class App {
     _model = new Model();
 
     constructor(placeholder: string) {
-        app = this;
+        // app = this;
         this._dockPanel
             .target(placeholder)
-            .addWidget("Model", this._graph)
-            .addWidget("Preview", this._preview, "split-bottom", this._graph as any)
-            .addWidget("Properties", this._propertyEditor, "split-right", this._graph as any)
-            .addWidget("Debug", this._editor, "tab-after", this._propertyEditor)
+            .addWidget(this._dashboard, "Dashboard")
+            .addWidget(this._preview, "Preview", "split-bottom", this._dashboard as any)
+            .addWidget(this._propertyEditor, "Properties", "split-right", this._dashboard as any)
+            .addWidget(this._editor, "Debug", "tab-after", this._propertyEditor)
+            .addWidget(this._graph, "Model", "tab-after", this._dashboard)
             .lazyRender()
             ;
+        this.loadSample();
+        this.initMenu();
+    }
+
+    async loadSample() {
+        const wu = new Workunit()
+            .url("http://192.168.3.22:8010")
+            .wuid("W20170424-070701")
+            ;
+        await wu.refresh();
+        //  this._model.addWorkunit(wu);
 
         const wuResult = new WUResult()
             .url("http://192.168.3.22:8010")
@@ -170,14 +120,21 @@ export class App {
             ;
         this._model.addDatasource(logicalFile);
 
-        const view1 = new FlatView(this._model, "View 1").source(wuResult.id())
+        const filter1 = new FlatView(this._model, "Filter 1").source(wuResult.id())
             .appendGroupBys([{ field: "state" }])
             .appendComputedFields([{ label: "weight", type: "count" }])
             ;
-        const view2 = new FlatView(this._model, "View 2").source(wuResult.id())
-            .appendFilter(view1, [{ filterField: "state", localField: "state" }]);
-        this._model.addView(view1);
-        this._model.addView(view2);
+        const filter2 = new FlatView(this._model, "Filter 2").source(wuResult.id())
+            .appendGroupBys([{ field: "firstname" }])
+            .appendComputedFields([{ label: "weight", type: "count" }])
+            ;
+        const table1 = new FlatView(this._model, "View 2").source(wuResult.id())
+            .appendFilter(filter1, [{ filterField: "state", localField: "state" }])
+            .appendFilter(filter2, [{ filterField: "firstname", localField: "firstname" }])
+            ;
+        this._model.addView(filter1);
+        this._model.addView(filter2);
+        this._model.addView(table1);
         this.loadEditor();
         this.loadGraph();
     }
@@ -195,6 +152,14 @@ export class App {
         //        this._editor.ddl(serialize(this._model) as object);
     }
 
+    loadDashboard(refresh: boolean = true) {
+        this._dashboard
+            ;
+        if (refresh) {
+            this._dashboard.lazyRender();
+        }
+    }
+
     loadGraph(refresh: boolean = false) {
         this._graph
             .layout("Hierarchy")
@@ -204,6 +169,107 @@ export class App {
         if (refresh) {
             this._graph.lazyRender();
         }
+    }
+
+    initMenu() {
+        const commands = new CommandRegistry();
+
+        //  Dashboard  Commands  ---
+        commands.addCommand("dash_add", {
+            label: "Add Widget",
+            execute: () => {
+                this._dashboard.addVisualization(new Viz());
+                this.loadDashboard();
+            }
+        });
+
+        //  Model Commands  ---
+        commands.addCommand("clear", {
+            label: "Clear",
+            execute: () => {
+                this._model.clear();
+                this.loadGraph(true);
+            }
+        });
+
+        commands.addCommand("addWU", {
+            label: "Add Workunit",
+            execute: () => {
+                this._model.addWorkunit(new Workunit());
+                this.loadGraph(true);
+            }
+        });
+
+        commands.addCommand("addWUResult", {
+            label: "Add WU Result",
+            execute: () => {
+                this._model.addDatasource(new WUResult());
+                this.loadGraph(true);
+            }
+        });
+
+        commands.addCommand("addLogicalFile", {
+            label: "Add Logical File",
+            execute: () => {
+                this._model.addDatasource(new LogicalFile());
+                this.loadGraph(true);
+            }
+        });
+
+        commands.addCommand("addDatabomb", {
+            label: "Add Databomb",
+            execute: () => {
+                this._model.addDatasource(new Databomb());
+                this.loadGraph(true);
+            }
+        });
+
+        commands.addCommand("addForm", {
+            label: "Add Form",
+            execute: () => {
+                this._model.addDatasource(new Form());
+                this.loadGraph(true);
+            }
+        });
+
+        commands.addCommand("addView", {
+            label: "Add View",
+            execute: () => {
+                this._model.addView(new FlatView(this._model));
+                this.loadGraph(true);
+            }
+        });
+
+        commands.addCommand("remove", {
+            label: "Remove Item",
+            execute: () => {
+            }
+        });
+
+        const palette = new CommandPalette({ commands });
+        palette.addItem({ command: "addWUResult", category: "Notebook" });
+        palette.addItem({ command: "addView", category: "Notebook" });
+        palette.addItem({ command: "remove", category: "Notebook" });
+        palette.id = "palette";
+
+        const contextMenu = new ContextMenu({ commands });
+
+        contextMenu.addItem({ command: "dash_add", selector: `#${this._dashboard.id()}` });
+
+        contextMenu.addItem({ command: "clear", selector: ".graph_Graph > .zoomBackground" });
+        contextMenu.addItem({ command: "addWU", selector: ".graph_Graph > .zoomBackground" });
+        contextMenu.addItem({ command: "addWUResult", selector: ".graph_Graph > .zoomBackground" });
+        contextMenu.addItem({ command: "addLogicalFile", selector: ".graph_Graph > .zoomBackground" });
+        contextMenu.addItem({ command: "addDatabomb", selector: ".graph_Graph > .zoomBackground" });
+        contextMenu.addItem({ command: "addForm", selector: ".graph_Graph > .zoomBackground" });
+        contextMenu.addItem({ command: "addView", selector: ".graph_Graph > .zoomBackground" });
+        contextMenu.addItem({ command: "remove", selector: ".graph_Vertex" });
+
+        document.addEventListener("contextmenu", (event: MouseEvent) => {
+            if (contextMenu.open(event)) {
+                event.preventDefault();
+            }
+        });
     }
 
     doResize(width: number, height: number) {
