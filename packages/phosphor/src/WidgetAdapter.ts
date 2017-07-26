@@ -5,7 +5,6 @@ import { select as d3Select } from "d3-selection";
 import "../src/WidgetAdapter.css";
 
 export class WidgetAdapter extends Widget {
-    base: any = this;
     protected _element;
     _widget: HTMLWidget | SVGWidget;
     get widget() { return this._widget; }
@@ -14,32 +13,33 @@ export class WidgetAdapter extends Widget {
 
     constructor(widget: HTMLWidget | SVGWidget, name?: string, lparam: any = {}) {
         super();
-        this._element = d3Select(this.base.node);
+        this._element = d3Select(this.node);
         // this.setFlag(Widget.Flag.DisallowLayout);
-        this.base.addClass("phosphor_WidgetAdapter");
+        this.addClass("phosphor_WidgetAdapter");
         // this.addClass(name.toLowerCase());
-        this.base.title.label = name;
-        this.base.title.closable = false;
-        this.base.title.caption = `Long description for: ${name}`;
+        this.title.label = name;
+        this.title.closable = false;
+        this.title.caption = `Long description for: ${name}`;
 
         this._widget = widget
-            .target(this.base.node)
+            .target(this.node)
             ;
         this.lparam = lparam;
     }
 
     get inputNode(): HTMLInputElement {
-        return this.base.node.getElementsByTagName("input")[0] as HTMLInputElement;
+        return this.node.getElementsByTagName("input")[0] as HTMLInputElement;
     }
 
     protected onActivateRequest(msg: Message): void {
-        if (this.base.isAttached) {
+        if (this.isAttached) {
         }
     }
+
     protected onResize(msg: Widget.ResizeMessage): void {
         super.onResize(msg);
         if (msg.width >= 0 && msg.height >= 0) {
-            d3Select(this.base.node)
+            d3Select(this.node)
                 .style("padding", this.padding + "px")
                 .style("width", msg.width + "px")
                 .style("height", msg.height + "px")
@@ -48,6 +48,7 @@ export class WidgetAdapter extends Widget {
                 .resize({ width: msg.width - this.padding * 2 - 2, height: msg.height - this.padding * 2 - 2 })
                 .lazyRender()
                 ;
+            this.title.label = "test:  " + Math.random();
         }
     }
 }

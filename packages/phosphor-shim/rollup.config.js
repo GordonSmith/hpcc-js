@@ -7,7 +7,7 @@ const uglify = require('rollup-plugin-uglify');
 const sourcemaps = require('rollup-plugin-sourcemaps');
 
 export default {
-    entry: 'src/index.js',
+    entry: 'lib/index.js',
     format: 'umd',
     moduleName: "hpcc-js-phosphor-shim",
     dest: 'dist/phosphor-shim.js',

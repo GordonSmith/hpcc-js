@@ -30,6 +30,10 @@
     stroke:red !important;
 }
 
+.graph_Graph .common_Surface .common_Menu {
+  visibility: hidden;
+}
+
 .p-MenuBar {
   padding-left: 5px;
   background: #FAFAFA;

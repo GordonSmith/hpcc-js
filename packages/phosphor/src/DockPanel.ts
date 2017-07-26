@@ -27,13 +27,25 @@ export class DockPanel extends HTMLWidget {
         return retVal;
     }
 
-    addWidget(title: string, widget: SVGWidget | HTMLWidget, location: PDockPanel.InsertMode = "split-right", refWidget?: Widget) {
+    addWidget(widget: SVGWidget | HTMLWidget, title: string, location: PDockPanel.InsertMode = "split-right", refWidget?: Widget) {
         const addMode: PDockPanel.IAddOptions = { mode: location, ref: this.getWidgetAdapter(refWidget) };
         const wa = new WidgetAdapter(widget, title);
         wa.padding = 8;
         this._dock.addWidget(wa, addMode);
         this.content.push(wa);
         return this;
+    }
+
+    removeWidget(widget: SVGWidget | HTMLWidget) {
+        const wa = this.getWidgetAdapter(widget);
+        if (wa) {
+            wa.dispose();
+        }
+        return this;
+    }
+
+    widgets() {
+        return this.content.map(wa => wa._widget);
     }
 
     enter(domNode, element) {
