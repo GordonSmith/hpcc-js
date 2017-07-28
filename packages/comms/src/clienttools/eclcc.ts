@@ -174,7 +174,7 @@ export class ClientTools {
             const fileData = fs.readFileSync(filePath, "ascii");
             const retVal = xml2json(fileData);
             if (removeOnRead) {
-                fs.unlink(filePath);
+                fs.unlink(filePath, (err) => { });
             }
             resolve(retVal);
         });

@@ -18,6 +18,8 @@ export const SimpleQuery = _SimpleQuery;
 export const Store = _Store;
 
 //  dgrid  ---
+import * as Grid from "dgrid/Grid";
+import * as List from "dgrid/List";
 import * as OnDemandGrid from "dgrid/OnDemandGrid";
 import * as Keyboard from "dgrid/Keyboard";
 import * as Selection from "dgrid/Selection";
@@ -31,5 +33,5 @@ import "dgrid/css/dgrid.css";
 export const Grid = declare([OnDemandGrid, Keyboard, Selection, ColumnResizer, CompoundColumns]);
 Grid.prototype.i18nPagination = nlsPagination.root;
 
-export const PagingGrid = declare([OnDemandGrid, Pagination, Keyboard, Selection, ColumnResizer, CompoundColumns]);
+export const PagingGrid = declare([Grid, Pagination]);//, Keyboard, Selection, ColumnResizer, CompoundColumns]);
 PagingGrid.prototype.i18nPagination = nlsPagination.root;

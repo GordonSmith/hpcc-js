@@ -23,8 +23,10 @@ export default {
         commonjs({
             namedExports: {
                 "@phosphor/widgets": ["CommandRegistry", "Message", "CommandPalette", "ContextMenu", "DockPanel", "SplitPanel", "Menu", "MenuBar", "Widget"]
-            }
+            },
+            ignore: ['crypto']
         }),
+
         sourcemaps()
     ]
 };

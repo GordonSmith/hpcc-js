@@ -12,10 +12,10 @@
     "dist/**/*"
   ],
   "dependencies": {
-    "dgrid": "^1.1.0",
-    "dijit": "^1.12.2",
-    "dojo": "^1.12.2",
-    "dojo-dstore": "^1.1.1"
+    "dgrid": "~1.1.0",
+    "dijit": "~1.12.2",
+    "dojo": "~1.12.2",
+    "dojo-dstore": "~1.1.2"
   },
   "devDependencies": {
     "css-loader": "^0.26.1",
