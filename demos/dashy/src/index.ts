@@ -1,4 +1,5 @@
 ﻿import { DDLEditor } from "@hpcc-js/codemirror";
+import { Widget } from "@hpcc-js/common";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
 import { PropertyEditor } from "@hpcc-js/other";
@@ -21,35 +22,15 @@ export class App {
     _dockPanel = new DockPanel();
     _currActivity;
     _monitorHandle: { remove: () => void };
-    _dashboard: Dashboard = new Dashboard();
+    _dashboard: Dashboard = new Dashboard().on("ActiveChanged", (v, w, wa) => {
+        console.log("Active Changed:  " + v.id());
+        this.activeChanged(v);
+    });
     _graph: Graph = new Graph()
         .allowDragging(false)
         .applyScaleOnLayout(true)
         .on("vertex_click", (row: any, col: string, sel: boolean, ext: any) => {
-            if (this._currActivity === row.__lparam[0] as any) return;
-            this._currActivity = row.__lparam[0] as any;
-            this._currActivity.refresh().then(() => {
-                if (this._monitorHandle) {
-                    this._monitorHandle.remove();
-                }
-                this._preview
-                    .datasource(this._currActivity)
-                    .paging(this._currActivity instanceof View ? false : true)
-                    .lazyRender()
-                    ;
-                this._propertyEditor
-                    .widget(this._currActivity)
-                    .render(w => {
-                        this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
-                            console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
-                            this._currActivity.refresh().then(() => {
-                                this.loadGraph(true);
-                                this.refreshPreview(this._currActivity);
-                            });
-                        });
-                    })
-                    ;
-            });
+            this.activeChanged(row.__lparam[0]);
         })
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {
         })
@@ -148,6 +129,33 @@ export class App {
         });
     }
 
+    activeChanged(w: Widget) {
+        if (this._currActivity === w) return;
+        this._currActivity = w;
+        this._currActivity.refresh().then(() => {
+            if (this._monitorHandle) {
+                this._monitorHandle.remove();
+            }
+            this._preview
+                .datasource(this._currActivity)
+                .paging(this._currActivity instanceof View ? false : true)
+                .lazyRender()
+                ;
+            this._propertyEditor
+                .widget(this._currActivity)
+                .render(w => {
+                    this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
+                        console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
+                        this._currActivity.refresh().then(() => {
+                            this.loadGraph(true);
+                            this.refreshPreview(this._currActivity);
+                        });
+                    });
+                })
+                ;
+        });
+    }
+
     loadEditor() {
         //        this._editor.ddl(serialize(this._model) as object);
     }
@@ -178,7 +186,7 @@ export class App {
         commands.addCommand("dash_add", {
             label: "Add Widget",
             execute: () => {
-                this._dashboard.addVisualization(new Viz());
+                this._dashboard.addVisualization(new Viz(this._model));
                 this.loadDashboard();
             }
         });

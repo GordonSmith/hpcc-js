@@ -32,8 +32,7 @@ export class WidgetAdapter extends Widget {
     }
 
     protected onActivateRequest(msg: Message): void {
-        if (this.isAttached) {
-        }
+        super.onActivateRequest(msg);
     }
 
     protected onResize(msg: Widget.ResizeMessage): void {
@@ -48,7 +47,6 @@ export class WidgetAdapter extends Widget {
                 .resize({ width: msg.width - this.padding * 2 - 2, height: msg.height - this.padding * 2 - 2 })
                 .lazyRender()
                 ;
-            this.title.label = "test:  " + Math.random();
         }
     }
 }
