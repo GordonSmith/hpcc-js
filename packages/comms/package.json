@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/comms",
-  "version": "0.0.28",
+  "version": "0.0.30",
   "description": "hpcc-js - Communications",
   "browser": "lib/index-browser.js",
   "main": "lib/index-node.js",
@@ -19,14 +19,14 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/util": "^0.0.28",
+    "@hpcc-js/util": "^0.0.30",
     "d3-request": "^1.0.5",
     "safe-buffer": "^5.0.1",
     "tslib": "^1.7.1",
     "xmldom": "^0.1.27"
   },
   "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.4",
+    "@hpcc-js/bundle": "^0.0.6",
     "@types/d3-request": "^1.0.2",
     "@types/request": "^0.0.41",
     "@types/xmldom": "^0.1.29",

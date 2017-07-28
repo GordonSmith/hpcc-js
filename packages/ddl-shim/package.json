@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/ddl-shim",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "hpcc-js DDL parser",
   "main": "dist/ddl-shim.js",
   "types": "lib/index.d.ts",
@@ -17,8 +17,8 @@
   "dependencies": {
     "ajv": "^4.11.3",
     "reflect-metadata": "^0.1.10",
-    "typescript-json-schema": "^0.14.0",
-    "tslib": "^1.7.1"
+    "tslib": "^1.7.1",
+    "typescript-json-schema": "^0.14.0"
   },
   "devDependencies": {
     "rimraf": "^2.6.1"

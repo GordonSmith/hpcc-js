@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/c3-shim",
-  "version": "0.0.26",
+  "version": "0.0.28",
   "description": "hpcc-js - c3 shim",
   "main": "dist/c3-shim.js",
   "module": "dist/c3-shim.es6.js",
