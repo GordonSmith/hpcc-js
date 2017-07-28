@@ -705,9 +705,9 @@ WsWorkunits.prototype.fetchResultNames = function (callback) {
         this._resultNameCacheCount = 0;
         var context = this;
         this._fetchResultNamesPromise = this.jsonp(url, request).then(function (response) {
-                if (Utility.exists("WUInfoResponse.Workunit.Archived", response) && response.WUInfoResponse.Workunit.Archived) {
-                    console.log("WU is archived");
-                }
+            if (Utility.exists("WUInfoResponse.Workunit.Archived", response) && response.WUInfoResponse.Workunit.Archived) {
+                console.log("WU is archived");
+            }
             if (Utility.exists("WUInfoResponse.Workunit.Results.ECLResult", response)) {
                 response.WUInfoResponse.Workunit.Results.ECLResult.map(function (item) {
                     context._resultNameCache[item.Name] = [];

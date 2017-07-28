@@ -166,25 +166,25 @@ SourceMappings.prototype.getReverseMap = function (key) {
     return this.reverseMappings[key];
 };
 
-    SourceMappings.prototype.hipieMapSortArray = function (sort) {
-        return sort.map(function (sortField) {
-            var reverse = false;
-            if (sortField.indexOf("-") === 0) {
-                sortField = sortField.substring(1);
-                reverse = true;
-            }
-            var fieldIdx = this.columnsRHS.indexOf(sortField);
-            if (fieldIdx < 0) {
-                console.log("SourceMappings.prototype.hipieMapSortArray:  Invalid sort array - " + sortField);
-            }
-            return {
-                idx: fieldIdx,
-                reverse: reverse
-            };
-        }, this).filter(function (d) { return d.idx >= 0; });
-    };
+SourceMappings.prototype.hipieMapSortArray = function (sort) {
+    return sort.map(function (sortField) {
+        var reverse = false;
+        if (sortField.indexOf("-") === 0) {
+            sortField = sortField.substring(1);
+            reverse = true;
+        }
+        var fieldIdx = this.columnsRHS.indexOf(sortField);
+        if (fieldIdx < 0) {
+            console.log("SourceMappings.prototype.hipieMapSortArray:  Invalid sort array - " + sortField);
+        }
+        return {
+            idx: fieldIdx,
+            reverse: reverse
+        };
+    }, this).filter(function (d) { return d.idx >= 0; });
+};
 
-    function ChartMappings(visualization, mappings) {
+function ChartMappings(visualization, mappings) {
     SourceMappings.call(this, visualization, mappings);
     this.columns = ["label", "weight"];
     this.columnsIdx = { label: 0, weight: 1 };
@@ -544,7 +544,7 @@ Source.prototype.getData = function () {
     const db = this.getOutput().db;
     const retVal = this.mappings.doMapAll(db);
     if (retVal.length && this.sort) {
-            Utility.multiSort(retVal, this.mappings.hipieMapSortArray(this.sort));
+        Utility.multiSort(retVal, this.mappings.hipieMapSortArray(this.sort));
     }
     if (this.reverse) {
         retVal.reverse();
@@ -1802,7 +1802,7 @@ Datasource.prototype.accept = function (visitor) {
     this.filters.forEach(function (item) {
             item.calcRequest(retVal, request, fillInMissing);
     });
-        //  TODO - Workaround HIPIE issue where it omits filters at datasource level  ---
+    //  TODO - Workaround HIPIE issue where it omits filters at datasource level  ---
     this._outputArray.forEach(function (output) {
         output.filters.forEach(function (item) {
                 item.calcRequest(retVal, request, fillInMissing);
@@ -1817,17 +1817,17 @@ Datasource.prototype.fetchData = function (request, updates) {
     const myTransactionID = ++transactionID;
     transactionQueue.push(myTransactionID);
 
-        var dsRequest = request;
+    var dsRequest = request;
         dsRequest = this.calcRequest(request, this.isRoxie());
-    dsRequest.refresh = request.refresh || false;
-    if ((window as any).__hpcc_debug) {
-        console.log("fetchData:  " + JSON.stringify(updates) + "(" + JSON.stringify(request) + ")");
-    }
-    for (const key in dsRequest) {
-        if (dsRequest[key] === undefined) {
-            delete dsRequest[key];
+        dsRequest.refresh = request.refresh || false;
+        if ((window as any).__hpcc_debug) {
+            console.log("fetchData:  " + JSON.stringify(updates) + "(" + JSON.stringify(request) + ")");
         }
-    }
+        for (const key in dsRequest) {
+            if (dsRequest[key] === undefined) {
+                delete dsRequest[key];
+            }
+        }
     const now = Date.now();
     this.marshaller.commsEvent(this, "request", dsRequest);
     const context = this;
@@ -2094,9 +2094,9 @@ Marshaller.prototype.commsDataLoaded = function () {
 
 Marshaller.prototype.accept = function (visitor) {
     visitor.visit(this);
-        for (var key2 in this._datasources) {
-            this._datasources[key2].accept(visitor);
-        }
+    for (var key2 in this._datasources) {
+        this._datasources[key2].accept(visitor);
+    }
     this.dashboardTotal = 0;
     for (const key in this.dashboards) {
         this.dashboards[key].accept(visitor);
