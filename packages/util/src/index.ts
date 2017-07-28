@@ -1,3 +1,4 @@
+export * from "./array";
 export * from "./cache";
 export * from "./dictionary";
 export * from "./esp";
