@@ -8,8 +8,8 @@
     "clean": "rimraf ./src/ddlSchema*.ts && rimraf ./lib* && rimraf ./dist*",
     "create-schema": "echo /* tslint:disable */ > ./src/ddlSchema.ts && echo export const ddlSchema = >> ./src/ddlSchema.ts && typescript-json-schema --noExtraProps --required ./src/ddl.ts DDLSchema >> ./src/ddlSchema.ts && echo ; >> ./src/ddlSchema.ts",
     "create-schema2": "echo /* tslint:disable */ > ./src/ddlSchema2.ts && echo export const ddlSchema2 = >> ./src/ddlSchema2.ts && typescript-json-schema --noExtraProps --required ./src/ddl2.ts DDLSchema2 >> ./src/ddlSchema2.ts && echo ; >> ./src/ddlSchema2.ts",
-    "generate": "npm run create-schema && npm run create-schema2 && tsc",
-    "build": "npm run generate && tsc && webpack"
+    "generate": "npm run create-schema && npm run create-schema2",
+    "build": "npm run generate && tsc -p . && webpack"
   },
   "files": [
     "dist/**/*"
@@ -21,7 +21,8 @@
     "typescript-json-schema": "^0.14.0"
   },
   "devDependencies": {
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.1",
+    "webpack": "^2.6.1"
   },
   "repository": {
     "type": "git",

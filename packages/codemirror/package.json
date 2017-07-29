@@ -24,6 +24,7 @@
     "@hpcc-js/dgrid": "^0.0.33",
     "@hpcc-js/html": "^0.0.33",
     "@hpcc-js/phosphor": "^0.0.33",
+    "@hpcc-js/util": "^0.0.30",
     "tslib": "^1.7.1"
   },
   "devDependencies": {

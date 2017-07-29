@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "@hpcc-js/phosphor-shim",
   "version": "0.0.30",
   "description": "hpcc-js - Phosphor shim",
@@ -9,9 +10,7 @@
     "dist/*"
   ],
   "scripts": {
-    "build": "tsc -p .",
-    "bundle": "rollup -c",
-    "bundle-es6": "rollup -c -f es -o dist/phosphor-shim.es6.js",
+    "build": "tsc && tsc --module es6 --outDir ./lib-es6 && rollup -c && rollup -c -f es -o dist/phosphor-shim.es6.js",
     "clean": "rimraf lib* && rimraf dist*"
   },
   "dependencies": {
@@ -22,7 +21,7 @@
   "devDependencies": {
     "cross-env": "^5.0.1",
     "rimraf": "^2.6.1",
-    "rollup": "^0.43.0",
+    "rollup": "^0.45.2",
     "typescript": "^2.4.1"
   },
   "repository": {
