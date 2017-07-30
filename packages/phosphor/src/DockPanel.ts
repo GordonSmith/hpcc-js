@@ -1,4 +1,4 @@
-import { HTMLWidget, SVGWidget, Widget } from "@hpcc-js/common";
+import { HTMLWidget, Widget } from "@hpcc-js/common";
 import { DockPanel as PDockPanel, Widget as PWidget } from "@hpcc-js/phosphor-shim";
 
 import { WidgetAdapter } from "./WidgetAdapter";
@@ -27,7 +27,7 @@ export class DockPanel extends HTMLWidget {
         return retVal;
     }
 
-    addWidget(widget: SVGWidget | HTMLWidget, title: string, location: PDockPanel.InsertMode = "split-right", refWidget?: Widget) {
+    addWidget(widget: Widget, title: string, location: PDockPanel.InsertMode = "split-right", refWidget?: Widget) {
         const addMode: PDockPanel.IAddOptions = { mode: location, ref: this.getWidgetAdapter(refWidget) };
         const wa = new WidgetAdapter(widget, title);
         wa.padding = 8;
@@ -36,7 +36,7 @@ export class DockPanel extends HTMLWidget {
         return this;
     }
 
-    removeWidget(widget: SVGWidget | HTMLWidget) {
+    removeWidget(widget: Widget) {
         const wa = this.getWidgetAdapter(widget);
         if (wa) {
             wa.dispose();

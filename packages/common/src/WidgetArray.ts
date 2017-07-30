@@ -1,6 +1,7 @@
 import { Widget } from "./Widget";
+import { PropertyExt } from "./PropertyExt";
 
-export class WidgetArray extends Widget {
+export class WidgetArray extends PropertyExt {
 
     constructor() {
         super();

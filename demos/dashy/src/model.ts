@@ -1,6 +1,7 @@
 import { PropertyExt, Surface, Widget } from "@hpcc-js/common";
 import { IDatasource } from "@hpcc-js/dgrid";
 import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
+import { Viz } from "./dashboard/viz";
 import { Databomb, NullDatasource } from "./datasources/databomb";
 import { LogicalFile } from "./datasources/logicalfile";
 import { Workunit } from "./datasources/workunit";
@@ -17,6 +18,8 @@ export class Model extends PropertyExt {
     private _nullDatasource = new NullDatasource();
     private _views: View[] = [];
     private _nullView = new NullView(this, "");
+    private _visualizations: Viz[] = [];
+    private _nullVisualization = new Viz(this, "");
 
     private subgraphMap: { [key: string]: Surface } = {};
     private vertexMap: { [key: string]: Vertex } = {};
@@ -85,6 +88,19 @@ export class Model extends PropertyExt {
         return this._nullView;
     }
 
+    visualizations() {
+        return [...this._visualizations];
+    }
+
+    visualizationIDs() {
+        return this._visualizations.map(viz => viz.id());
+    }
+
+    addVisualization(viz: Viz): this {
+        this._visualizations.push(viz);
+        return this;
+    }
+
     createSurface(id: string, label: string, data: any): Surface {
         let retVal: Surface = this.subgraphMap[id];
         if (!retVal) {
@@ -101,6 +117,13 @@ export class Model extends PropertyExt {
         return retVal;
     }
 
+    visualization(id: string): Viz {
+        const retVal = this.visualizations().filter(ds => ds.id() === id);
+        if (retVal.length) {
+            return retVal[0];
+        }
+        return this._nullVisualization;
+    }
     createVertex(id: string, label: string, data: any, showID: boolean = false): Vertex {
         let retVal: Vertex = this.vertexMap[id];
         if (!retVal) {

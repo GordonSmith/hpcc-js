@@ -158,7 +158,9 @@ export class SVGWidget extends Widget {
         return retVal;
     }
 
-    target(_): this {
+    target(): any;
+    target(_): this;
+    target(_?: any): any | this {
         if (!arguments.length) return this._target;
         if (this._target && _ && (this._target.__data__.id !== _.__data__.id)) {
             throw new Error("Target can only be assigned once.");

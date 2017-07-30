@@ -2,6 +2,7 @@ import { PropertyExt } from "@hpcc-js/common";
 import { ascending as d3Ascending, descending as d3Descending, deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "@hpcc-js/common";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
+import { Viz } from "../dashboard/viz";
 import { Databomb, NullDatasource } from "../datasources/databomb";
 import { Form } from "../datasources/form";
 import { LogicalFile } from "../datasources/logicalfile";
@@ -10,12 +11,12 @@ import { Model } from "../model";
 
 export type ViewDatasource = WUResult | LogicalFile | Databomb | NullDatasource | Form;
 
-function count(leaves: any[], callback: any): number {
+function localCount(leaves: any[], callback: any): number {
     return leaves.length;
 }
 
 const d3Aggr = {
-    count,
+    count: localCount,
     min: d3Min,
     max: d3Max,
     mean: d3Mean,
@@ -192,16 +193,16 @@ export class Filter extends PropertyExt {
         return this._owner.inFields();
     }
 
-    sourceView(): View {
-        return this._owner._model.view(this.source());
+    sourceViz(): Viz {
+        return this._owner._model.visualization(this.source());
     }
 
     sourceOutFields(): IField[] {
-        return this.sourceView().outFields();
+        return this.sourceViz().toIDatasource().outFields();
     }
 
     sourceSelection(): any[] {
-        return this.sourceView().selection();
+        return this.sourceViz().selection();
     }
 }
 Filter.prototype._class += " Filter";
@@ -213,7 +214,7 @@ export interface Filter {
     mappings(): ColumnMapping[];
     mappings(_: ColumnMapping[]): this;
 }
-Filter.prototype.publish("source", null, "set", "Datasource", function () { return this._owner._model.viewIDs(); }, { optional: true });
+Filter.prototype.publish("source", null, "set", "Datasource", function () { return this._owner._model.visualizationIDs(); }, { optional: true });
 Filter.prototype.publish("nullable", false, "boolean", "Ignore null filters");
 Filter.prototype.publish("mappings", [], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping });
 
@@ -223,7 +224,6 @@ export abstract class View extends PropertyExt implements IDatasource {
     _source: string = "42";
     _model: Model;
     _total = 0;
-    _selection: any[] = [];
     _prevHash;
 
     constructor(model: Model, label: string = "View") {
@@ -308,21 +308,13 @@ export abstract class View extends PropertyExt implements IDatasource {
 
     abstract outFields(): IField[];
 
-    fetch(from: number, count: number): Promise<any[]> {
+    fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<any[]> {
         return this.datasource().fetch(0, Number.MAX_VALUE).then(data => {
             data = this._preProcess(data);
             data = this._postProcess(data);
             this._total = data.length;
             return data.slice(from, from + count);
         });
-    }
-
-    selection(): any[];
-    selection(_: any[]): this;
-    selection(_?: any[]): any[] | this {
-        if (_ === void 0) return this._selection;
-        this._selection = _;
-        return this;
     }
 
     protected _preProcess(data: any[]): any[] {

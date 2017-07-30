@@ -1,5 +1,5 @@
-import { DockPanel, WidgetAdapter } from "@hpcc-js/phosphor";
 import { Widget } from "@hpcc-js/common";
+import { DockPanel, WidgetAdapter } from "@hpcc-js/phosphor";
 import { Viz } from "./viz";
 
 export class Dashboard extends DockPanel {
@@ -18,7 +18,7 @@ export class Dashboard extends DockPanel {
 
     update(domNode, element) {
         const previous = this.widgets();
-        const current = this.visualizations().map(viz => viz.widget());
+        const current = this.visualizations().map(viz => viz.toWidget());
         const removed = previous.filter(x => current.indexOf(x) === -1);
         const added = current.filter(x => previous.indexOf(x) === -1);
         for (const w of removed) {
@@ -33,7 +33,7 @@ export class Dashboard extends DockPanel {
                 origActivateRequest.apply(this, arguments);
                 if (context._prevActive !== this._widget) {
                     context._prevActive = this._widget;
-                    context.ActiveChanged(context._visualizations.filter(v => v.widget() === this._widget)[0], this._widget, wa);
+                    context.ActiveChanged(context._visualizations.filter(v => v.toWidget() === this._widget)[0], this._widget, wa);
                 }
             };
         }

@@ -48,7 +48,7 @@ export class Common extends HTMLWidget {
             }, this._dgridDiv.node());
             this._dgrid.on("dgrid-select", (evt) => {
                 if (evt.rows && evt.rows.length) {
-                    this.click(evt.rows[0].data.__hpcc_orig, "", true);
+                    this.click(this.rowToObj(evt.rows[0].data.__hpcc_orig), "", true);
                 }
             });
         }

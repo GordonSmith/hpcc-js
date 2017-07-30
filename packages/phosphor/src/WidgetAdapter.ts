@@ -1,17 +1,17 @@
-import { HTMLWidget, SVGWidget } from "@hpcc-js/common";
-import { Message, Widget } from "@hpcc-js/phosphor-shim";
+import { Widget as CWidget } from "@hpcc-js/common";
+import { Message, Widget as PWidget } from "@hpcc-js/phosphor-shim";
 import { select as d3Select } from "d3-selection";
 
 import "../src/WidgetAdapter.css";
 
-export class WidgetAdapter extends Widget {
+export class WidgetAdapter extends PWidget {
     protected _element;
-    _widget: HTMLWidget | SVGWidget;
+    _widget: CWidget;
     get widget() { return this._widget; }
     lparam: any = {};
     padding: number = 0;
 
-    constructor(widget: HTMLWidget | SVGWidget, name?: string, lparam: any = {}) {
+    constructor(widget: CWidget, name?: string, lparam: any = {}) {
         super();
         this._element = d3Select(this.node);
         // this.setFlag(Widget.Flag.DisallowLayout);
@@ -35,7 +35,7 @@ export class WidgetAdapter extends Widget {
         super.onActivateRequest(msg);
     }
 
-    protected onResize(msg: Widget.ResizeMessage): void {
+    protected onResize(msg: PWidget.ResizeMessage): void {
         super.onResize(msg);
         if (msg.width >= 0 && msg.height >= 0) {
             d3Select(this.node)

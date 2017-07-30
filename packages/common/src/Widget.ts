@@ -18,7 +18,7 @@ export interface ISize {
 }
 
 let widgetID = 0;
-export class Widget extends PropertyExt {
+export abstract class Widget extends PropertyExt {
     _idSeed: string;
 
     protected _tag: string;
@@ -433,6 +433,9 @@ export class Widget extends PropertyExt {
     node() {
         return this._element.node();
     }
+
+    abstract target(): any;
+    abstract target(_): this;
 
     //  Render  ---
     private _prevNow = 0;

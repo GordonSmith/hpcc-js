@@ -1,12 +1,11 @@
 ﻿import { DDLEditor } from "@hpcc-js/codemirror";
-import { Widget } from "@hpcc-js/common";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
 import { Dashboard } from "./dashboard/dashboard";
-import { Viz } from "./dashboard/viz";
+import { IActivity, WUResultViz } from "./dashboard/viz";
 import { Databomb } from "./datasources/databomb";
 import { Form } from "./datasources/form";
 import { LogicalFile } from "./datasources/logicalfile";
@@ -16,14 +15,12 @@ import { Model } from "./model";
 import { FlatView } from "./views/flatview";
 import { View } from "./views/view";
 
-// let app: App;
-
 export class App {
     _dockPanel = new DockPanel();
-    _currActivity;
+    private _currActivity: IActivity;
     _monitorHandle: { remove: () => void };
-    _dashboard: Dashboard = new Dashboard().on("ActiveChanged", (v, w, wa) => {
-        console.log("Active Changed:  " + v.id());
+    _dashboard: Dashboard = new Dashboard().on("ActiveChanged", (v: IActivity, w, wa) => {
+        console.log("Active Changed:  " + v.toPropertyExt().id());
         this.activeChanged(v);
     });
     _graph: Graph = new Graph()
@@ -58,10 +55,10 @@ export class App {
             .addWidget(this._preview, "Preview", "split-bottom", this._dashboard as any)
             .addWidget(this._propertyEditor, "Properties", "split-right", this._dashboard as any)
             .addWidget(this._editor, "Debug", "tab-after", this._propertyEditor)
-            .addWidget(this._graph, "Model", "tab-after", this._dashboard)
+            .addWidget(this._graph as any, "Model", "tab-after", this._dashboard)
             .lazyRender()
             ;
-        this.loadSample();
+        //   this.loadSample();
         this.initMenu();
     }
 
@@ -120,7 +117,7 @@ export class App {
         this.loadGraph();
     }
 
-    refreshPreview(datasource: View) {
+    refreshPreview(datasource: IActivity) {
         datasource.refresh().then(() => {
             this._preview
                 .invalidate()
@@ -129,31 +126,30 @@ export class App {
         });
     }
 
-    activeChanged(w: Widget) {
+    async activeChanged(w: IActivity) {
         if (this._currActivity === w) return;
         this._currActivity = w;
-        this._currActivity.refresh().then(() => {
-            if (this._monitorHandle) {
-                this._monitorHandle.remove();
-            }
-            this._preview
-                .datasource(this._currActivity)
-                .paging(this._currActivity instanceof View ? false : true)
-                .lazyRender()
-                ;
-            this._propertyEditor
-                .widget(this._currActivity)
-                .render(w => {
-                    this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
-                        console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
-                        this._currActivity.refresh().then(() => {
-                            this.loadGraph(true);
-                            this.refreshPreview(this._currActivity);
-                        });
+        await this._currActivity.refresh();
+        if (this._monitorHandle) {
+            this._monitorHandle.remove();
+        }
+        this._preview
+            .datasource(this._currActivity.toIDatasource())
+            .paging(this._currActivity instanceof View ? false : true)
+            .lazyRender()
+            ;
+        this._propertyEditor
+            .widget(this._currActivity.toPropertyExt())
+            .render(widget => {
+                this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
+                    console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
+                    this._currActivity.refresh().then(() => {
+                        this.loadGraph(true);
+                        this.refreshPreview(this._currActivity);
                     });
-                })
-                ;
-        });
+                });
+            })
+            ;
     }
 
     loadEditor() {
@@ -184,9 +180,16 @@ export class App {
 
         //  Dashboard  Commands  ---
         commands.addCommand("dash_add", {
-            label: "Add Widget",
+            label: "Add WU Result View",
             execute: () => {
-                this._dashboard.addVisualization(new Viz(this._model));
+                const viz = new WUResultViz(this._model);
+                viz.source()
+                    .url("http://192.168.3.22:8010")
+                    .wuid("W20170424-070701")
+                    .resultName("Result 1")
+                    ;
+                this._dashboard.addVisualization(viz);
+                this._model.addVisualization(viz);
                 this.loadDashboard();
             }
         });
