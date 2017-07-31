@@ -1,6 +1,7 @@
 import { PropertyExt } from "@hpcc-js/common";
 import { nest as d3Nest } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
+import { hashSum } from "@hpcc-js/util";
 import { AggregateField, AggregateType, View } from "./view";
 
 export class GroupByColumn extends PropertyExt {
@@ -12,6 +13,10 @@ export class GroupByColumn extends PropertyExt {
         this.monitor((id, newVal, oldVal) => {
             this._owner.broadcast(id, newVal, oldVal, this);
         });
+    }
+
+    hash(): string {
+        return hashSum(this.column());
     }
 
     columns() {
@@ -52,8 +57,8 @@ export class FlatView extends View {
 
     hash(): string {
         return super.hash({
-            groupBy: this.groupBys(),
-            computedFields: this.computedFields()
+            groupBy: this.groupBys().map(gb => gb.hash()),
+            computedFields: this.computedFields().map(cf => cf.hash())
         });
     }
 

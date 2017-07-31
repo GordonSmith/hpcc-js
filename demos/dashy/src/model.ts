@@ -101,6 +101,13 @@ export class Model extends PropertyExt {
         return this;
     }
 
+    filteredBy(viz: Viz): Viz[] {
+        return this._visualizations.filter(otherViz => {
+            const filterIDs = otherViz.view().validFilters().map(filter => filter.source());
+            return filterIDs.indexOf(viz.id()) >= 0;
+        });
+    }
+
     createSurface(id: string, label: string, data: any): Surface {
         let retVal: Surface = this.subgraphMap[id];
         if (!retVal) {

@@ -15,7 +15,10 @@ export class LogicalFile extends ESPResult {
     }
 
     hash(): string {
-        return hashSum({ url: this.url(), fileName: this.filename() });
+        return hashSum({
+            url: this.url(),
+            fileName: this.filename()
+        });
     }
 
     refreshPromise: Promise<void>;

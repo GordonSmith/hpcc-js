@@ -11,13 +11,13 @@ export class WidgetAdapter extends PWidget {
     lparam: any = {};
     padding: number = 0;
 
-    constructor(widget: CWidget, name?: string, lparam: any = {}) {
+    constructor(widget: CWidget, lparam: any = {}) {
         super();
         this._element = d3Select(this.node);
         // this.setFlag(Widget.Flag.DisallowLayout);
         this.addClass("phosphor_WidgetAdapter");
         // this.addClass(name.toLowerCase());
-        this.title.label = name;
+        this.title.label = "";
         this.title.closable = false;
         this.title.caption = `Long description for: ${name}`;
 

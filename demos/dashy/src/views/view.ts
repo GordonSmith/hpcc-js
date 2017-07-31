@@ -38,12 +38,20 @@ export class AggregateField extends PropertyExt {
         });
     }
 
+    hash(): string {
+        return hashSum({
+            label: this.label(),
+            aggrType: this.aggrType(),
+            aggrColumn: this.aggrColumn()
+        });
+    }
+
     columns() {
         return this._owner.columns();
     }
 
     aggregate(values) {
-        return d3Aggr[this.aggrType() as string](values, leaf => leaf[this.aggrColumn()]);
+        return d3Aggr[this.aggrType() as string](values, leaf => +leaf[this.aggrColumn()]);
     }
 }
 AggregateField.prototype._class += " AggregateField";
@@ -106,7 +114,11 @@ export class ColumnMapping extends PropertyExt {
     }
 
     hash() {
-        return hashSum({});
+        return hashSum({
+            filterField: this.filterField(),
+            localField: this.localField(),
+            condition: this.condition()
+        });
     }
 
     localFields() {
@@ -202,7 +214,7 @@ export class Filter extends PropertyExt {
     }
 
     sourceSelection(): any[] {
-        return this.sourceViz().selection();
+        return this.sourceViz().state().selection();
     }
 }
 Filter.prototype._class += " Filter";
@@ -259,7 +271,7 @@ export abstract class View extends PropertyExt implements IDatasource {
     }
 
     datasource(): ViewDatasource {
-        return this._model.datasource(this.source()) as ViewDatasource;
+        return this.source() as ViewDatasource;
     }
 
     columns() {
@@ -383,11 +395,13 @@ export abstract class View extends PropertyExt implements IDatasource {
 }
 View.prototype._class += " View";
 
+const nullDS = new NullDatasource();
+
 export interface View {
     label(): string;
     label(_: string): this;
-    source(): string;
-    source(_: string): this;
+    source(): PropertyExt;
+    source(_: PropertyExt): this;
     details(): boolean;
     details(_: boolean): this;
     fullDetails(): boolean;
@@ -400,7 +414,7 @@ export interface View {
     limit(_: number | undefined): this;
 }
 View.prototype.publish("label", null, "string", "Label");
-View.prototype.publish("source", null, "set", "Datasource", function () { return this._model.datasourceIDs(); }, { optional: true });
+View.prototype.publish("source", nullDS, "widget", "Data Source");
 View.prototype.publish("details", true, "boolean", "Show details");
 View.prototype.publish("fullDetails", false, "boolean", "Show groupBy fileds in details");
 View.prototype.publish("filters", [], "propertyArray", "Filter", null, { autoExpand: Filter });

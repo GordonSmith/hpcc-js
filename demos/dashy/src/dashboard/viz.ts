@@ -7,11 +7,9 @@ import { FlatView } from "../views/flatview";
 
 export interface IActivity {
     toIDatasource(): IDatasource;
-    toPropertyExt(): PropertyExt;
-    toWidget(): PropertyExt;
-
-    selection(): object[];
-    selection(_: object[]): this;
+    dataProps(): PropertyExt;
+    vizProps(): PropertyExt;
+    stateProps(): PropertyExt;
 
     refresh(): Promise<void>;
     monitor(func: (id: string, newVal: any, oldVal: any, source: PropertyExt) => void): {
@@ -19,10 +17,20 @@ export interface IActivity {
     };
 }
 
-export class Viz extends PropertyExt implements IActivity {
-    private _selection: object[] = [];
+export class State extends PropertyExt {
+}
+State.prototype._class += " State";
+export interface State {
+    selection(): object[];
+    selection(_: object[]): this;
+}
+State.prototype.publish("selection", [], "array", "State");
 
-    constructor(model: Model, label: string = "Viz") {
+let vizID = 0;
+
+export class Viz extends PropertyExt implements IActivity {
+
+    constructor(model: Model, label: string = `Viz-${++vizID}`) {
         super();
         const view = new FlatView(model, label);
         model.addView(view);
@@ -31,26 +39,14 @@ export class Viz extends PropertyExt implements IActivity {
         const widget = new MultiChart()
             .chartType("TABLE")
             .on("click", function (row, col, sel) {
-                context.selection(sel ? [row] : []);
+                context.state().selection(sel ? [row] : []);
             })
             ;
         this.widget(widget);
+        this.state(new State());
 
         view.monitor(async () => {
-            await view.refresh();
-            const columns = view.outFields().map(field => field.label);
-            const data = await view.fetch();
-            this.widget()
-                .columns(columns)
-                .data(data.map(row => {
-                    const retVal = [];
-                    for (const column of columns) {
-                        retVal.push(row[column]);
-                    }
-                    return retVal;
-                }))
-                .lazyRender()
-                ;
+            this.refresh();
         });
     }
 
@@ -58,24 +54,34 @@ export class Viz extends PropertyExt implements IActivity {
         return this.view();
     }
 
-    toPropertyExt(): PropertyExt {
-        return this;
+    dataProps(): PropertyExt {
+        return this.view();
     }
 
-    toWidget(): Widget {
+    vizProps(): Widget {
         return this.widget();
     }
 
-    selection(): object[];
-    selection(_: object[]): this;
-    selection(_?: object[]): object[] | this {
-        if (_ === void 0) return this._selection;
-        this._selection = _;
-        return this;
+    stateProps(): PropertyExt {
+        return this.state();
     }
 
-    refresh(): Promise<void> {
-        return this.view().refresh();
+    async refresh() {
+        const view = this.view();
+        await view.refresh();
+        const columns = view.outFields().map(field => field.label);
+        const data = await view.fetch();
+        this.widget()
+            .columns(columns)
+            .data(data.map(row => {
+                const retVal = [];
+                for (const column of columns) {
+                    retVal.push(row[column]);
+                }
+                return retVal;
+            }))
+            .lazyRender()
+            ;
     }
 
     monitor(func: (id: string, newVal: any, oldVal: any, source: PropertyExt) => void): { remove: () => void; } {
@@ -88,24 +94,21 @@ export interface Viz {
     view(_: FlatView): this;
     widget(): Widget;
     widget(_: Widget): this;
+    state(): State;
+    state(_: State): this;
 }
 Viz.prototype.publish("view", null, "widget", "Data View");
 Viz.prototype.publish("widget", null, "widget", "Visualization");
+Viz.prototype.publish("state", null, "widget", "State");
 
 export class WUResultViz extends Viz {
-    constructor(model: Model, label: string = "Viz") {
+    constructor(model: Model, label?: string) {
         super(model, label);
         const datasource = new WUResult();
         model.addDatasource(datasource);
-        this.source(datasource);
-        this.view().source(datasource.id());
+        this.view().source(datasource);
         datasource.monitor(() => {
         });
     }
 }
 WUResultViz.prototype._class += " WUResultViz";
-export interface WUResultViz {
-    source(): WUResult;
-    source(_: WUResult): this;
-}
-WUResultViz.prototype.publish("source", new WUResult(), "widget", "Data Source");

@@ -16,7 +16,7 @@ export class Databomb extends Datasource {
     }
 
     hash(): string {
-        return hashSum({ id: this.id() });
+        return hashSum(this.id());
     }
 
     refresh(): Promise<void> {

@@ -14,7 +14,10 @@ export class Workunit extends PropertyExt implements IDatasource {
     }
 
     hash(): string {
-        return hashSum({ url: this.url(), wuid: this.wuid() });
+        return hashSum({
+            url: this.url(),
+            wuid: this.wuid()
+        });
     }
 
     refreshPromise: Promise<void>;

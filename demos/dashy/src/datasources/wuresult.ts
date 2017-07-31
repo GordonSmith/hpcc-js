@@ -17,7 +17,11 @@ export class WUResult extends ESPResult {
     }
 
     hash(): string {
-        return hashSum({ url: this.url(), wuid: this.wuid(), resultName: this.resultName() });
+        return hashSum({
+            url: this.url(),
+            wuid: this.wuid(),
+            resultName: this.resultName()
+        });
     }
 
     refreshPromise: Promise<void>;

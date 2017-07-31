@@ -2,7 +2,7 @@
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
 import { PropertyEditor } from "@hpcc-js/other";
-import { DockPanel } from "@hpcc-js/phosphor";
+import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
 import { Dashboard } from "./dashboard/dashboard";
 import { IActivity, WUResultViz } from "./dashboard/viz";
@@ -17,10 +17,11 @@ import { View } from "./views/view";
 
 export class App {
     _dockPanel = new DockPanel();
+    _dataSplit = new SplitPanel();
     private _currActivity: IActivity;
     _monitorHandle: { remove: () => void };
     _dashboard: Dashboard = new Dashboard().on("ActiveChanged", (v: IActivity, w, wa) => {
-        console.log("Active Changed:  " + v.toPropertyExt().id());
+        console.log("Active Changed:  " + v.dataProps().id());
         this.activeChanged(v);
     });
     _graph: Graph = new Graph()
@@ -32,29 +33,36 @@ export class App {
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {
         })
     ;
-    _propertyEditor: PropertyEditor = new PropertyEditor()
+    _dataProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
-        .showFields(true)
+        .showFields(false)
+    ;
+    _vizProperties: PropertyEditor = new PropertyEditor()
+        .show_settings(false)
+        .showFields(false)
+    ;
+    _stateProperties: PropertyEditor = new PropertyEditor()
+        .show_settings(false)
+        .showFields(false)
     ;
     _editor = new DDLEditor();
-    _preview = new DatasourceTable()
-        .on("click", (row: any, col: string, sel: boolean) => {
-            if (this._currActivity && this._currActivity.selection) {
-                this._currActivity.selection([row]);
-            }
-        })
-    ;
+    _preview = new DatasourceTable();
 
     _model = new Model();
 
     constructor(placeholder: string) {
         // app = this;
+        this._dataSplit
+            .addWidget(this._dataProperties)
+            .addWidget(this._preview)
+            ;
         this._dockPanel
             .target(placeholder)
             .addWidget(this._dashboard, "Dashboard")
-            .addWidget(this._preview, "Preview", "split-bottom", this._dashboard as any)
-            .addWidget(this._propertyEditor, "Properties", "split-right", this._dashboard as any)
-            .addWidget(this._editor, "Debug", "tab-after", this._propertyEditor)
+            .addWidget(this._dataSplit, "Data", "split-right", this._dashboard as any)
+            .addWidget(this._vizProperties, "Viz", "tab-after", this._dataSplit)
+            .addWidget(this._stateProperties, "State", "tab-after", this._vizProperties)
+            .addWidget(this._editor, "Debug", "tab-after", this._stateProperties)
             .addWidget(this._graph as any, "Model", "tab-after", this._dashboard)
             .lazyRender()
             ;
@@ -98,15 +106,15 @@ export class App {
             ;
         this._model.addDatasource(logicalFile);
 
-        const filter1 = new FlatView(this._model, "Filter 1").source(wuResult.id())
+        const filter1 = new FlatView(this._model, "Filter 1").source(wuResult)
             .appendGroupBys([{ field: "state" }])
             .appendComputedFields([{ label: "weight", type: "count" }])
             ;
-        const filter2 = new FlatView(this._model, "Filter 2").source(wuResult.id())
+        const filter2 = new FlatView(this._model, "Filter 2").source(wuResult)
             .appendGroupBys([{ field: "firstname" }])
             .appendComputedFields([{ label: "weight", type: "count" }])
             ;
-        const table1 = new FlatView(this._model, "View 2").source(wuResult.id())
+        const table1 = new FlatView(this._model, "View 2").source(wuResult)
             .appendFilter(filter1, [{ filterField: "state", localField: "state" }])
             .appendFilter(filter2, [{ filterField: "firstname", localField: "firstname" }])
             ;
@@ -114,7 +122,7 @@ export class App {
         this._model.addView(filter2);
         this._model.addView(table1);
         this.loadEditor();
-        this.loadGraph();
+        // this.loadGraph();
     }
 
     refreshPreview(datasource: IActivity) {
@@ -138,15 +146,31 @@ export class App {
             .paging(this._currActivity instanceof View ? false : true)
             .lazyRender()
             ;
-        this._propertyEditor
-            .widget(this._currActivity.toPropertyExt())
+        this._dataProperties
+            .widget(this._currActivity.dataProps())
             .render(widget => {
                 this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
                     console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
                     this._currActivity.refresh().then(() => {
-                        this.loadGraph(true);
+                        // this.loadGraph(true);
                         this.refreshPreview(this._currActivity);
                     });
+                });
+            })
+            ;
+        this._vizProperties
+            .widget(this._currActivity.vizProps())
+            .render(widget => {
+                this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
+                    console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
+                });
+            })
+            ;
+        this._stateProperties
+            .widget(this._currActivity.stateProps())
+            .render(widget => {
+                this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
+                    console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
                 });
             })
             ;
@@ -183,13 +207,22 @@ export class App {
             label: "Add WU Result View",
             execute: () => {
                 const viz = new WUResultViz(this._model);
-                viz.source()
+                (viz.view().source() as WUResult)
                     .url("http://192.168.3.22:8010")
                     .wuid("W20170424-070701")
                     .resultName("Result 1")
                     ;
                 this._dashboard.addVisualization(viz);
                 this._model.addVisualization(viz);
+                viz.state().monitorProperty("selection", (id, newVal, oldVal) => {
+                    for (const filteredViz of this._model.filteredBy(viz)) {
+                        filteredViz.refresh().then(() => {
+                            if (this._currActivity === filteredViz) {
+                                this.refreshPreview(filteredViz);
+                            }
+                        });
+                    }
+                });
                 this.loadDashboard();
             }
         });

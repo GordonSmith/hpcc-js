@@ -25,7 +25,7 @@ export class Form2 extends Datasource {
     }
 
     hash(): string {
-        return hashSum({ id: this.id() });
+        return hashSum(this.id());
     }
 
     refresh(): Promise<void> {
@@ -59,7 +59,7 @@ export class Form extends Datasource {
     }
 
     hash(): string {
-        return hashSum({ id: this.id() });
+        return hashSum(this.id());
     }
 
     refresh(): Promise<void> {
