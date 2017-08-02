@@ -1,34 +1,269 @@
 import { INDChart } from "@hpcc-js/api";
-import { HTMLWidget, Utility } from "@hpcc-js/common";
+import { Database, HTMLWidget, Utility, Widget } from "@hpcc-js/common";
 import { map as d3Map } from "d3-collection";
 import { IGraph } from "../api/IGraph";
 import { INDChart } from "../api/INDChart";
 import { HTMLWidget } from "@hpcc-js/common";
 import { Utility } from "@hpcc-js/common";
 
-export function MultiChart() {
-    HTMLWidget.call(this);
-    INDChart.call(this);
+export class MultiChart extends HTMLWidget {
+    _allCharts = {};
+    _chartTypeDefaults;
+    _chartTypeProperties;
+    _chartMonitor;
+    _switchingTo;
+
+    constructor() {
+        super();
+        INDChart.call(this);
         IGraph.call(this);
 
-    this._tag = "div";
+        this._tag = "div";
 
-    this._allCharts = {};
-    this._allChartTypes.forEach(function (item) {
-        const newItem = JSON.parse(JSON.stringify(item));
-        newItem.widget = null;
-        this._allCharts[item.id] = newItem;
-        this._allCharts[item.display] = newItem;
-        this._allCharts[item.widgetClass] = newItem;
-    }, this);
-    this._chartTypeDefaults = {};
-    this._chartTypeProperties = {};
+        this._allCharts = {};
+        this._allChartTypes.forEach(function (item) {
+            const newItem = JSON.parse(JSON.stringify(item));
+            newItem.widget = null;
+            this._allCharts[item.id] = newItem;
+            this._allCharts[item.display] = newItem;
+            this._allCharts[item.widgetClass] = newItem;
+        }, this);
+        this._chartTypeDefaults = {};
+        this._chartTypeProperties = {};
+    }
+    MultiChart.prototype.implements(IGraph.prototype);
+
+    fields(): Database.Field[];
+    fields(_: Database.Field[]): this;
+    fields(_?: Database.Field[]): Database.Field[] | this {
+        const retVal = super.fields.apply(this, arguments);
+        if (this.chart()) {
+            if (!arguments.length) return this.chart().fields();
+            this.chart().fields(_);
+        }
+        return retVal;
+    }
+
+    columns(): string[];
+    columns(_, asDefault): this;
+    columns(_?, asDefault?) {
+        const retVal = HTMLWidget.prototype.columns.apply(this, arguments);
+        if (this.chart()) {
+            if (!arguments.length) return this.chart().columns();
+            this.chart().columns(_, asDefault);
+        }
+        return retVal;
+    }
+
+    data(_?) {
+        const retVal = HTMLWidget.prototype.data.apply(this, arguments);
+        if (this.chart()) {
+            if (!arguments.length) return this.chart().data();
+            this.chart().data(_);
+        }
+        return retVal;
+    }
+        _.click = function (_row, _column, _selected) {
+            context.click.apply(context, arguments);
+        };
+        _.dblclick = function (_row, _column, _selected) {
+            context.dblclick.apply(context, arguments);
+        };
+            _.vertex_click = function (row, column, selected, more) {
+                context.vertex_click.apply(context, arguments);
+            };
+            _.vertex_dblclick = function (row, column, selected, more) {
+                context.vertex_dblclick.apply(context, arguments);
+            };
+            _.edge_click = function (row, column, selected, more) {
+                context.edge_click.apply(context, arguments);
+            };
+            _.edge_dblclick = function (row, column, selected, more) {
+                context.edge_dblclick.apply(context, arguments);
+            };
+        if (this._chartMonitor) {
+            this._chartMonitor.remove();
+            delete this._chartMonitor;
+        }
+        this._chartMonitor = _.monitor(function (key, newVal, oldVal) {
+            context.broadcast(key, newVal, oldVal, _);
+        });
+    }
+    return retVal;
+};
+
+    hasOverlay() {
+        return this.chart() && this.chart().hasOverlay();
+    }
+
+    visible(): boolean;
+    visible(_: boolean): this;
+    visible(_?: boolean): boolean | this {
+        if (!arguments.length) return this.chart() && this.chart().visible();
+        if (this.chart()) {
+            this.chart().visible(_);
+        }
+        return this;
+    }
+
+    chartTypeDefaults(_) {
+        if (!arguments.length) return this._chartTypeDefaults;
+        this._chartTypeDefaults = _;
+        return this;
+    }
+
+    chartTypeProperties(_) {
+        if (!arguments.length) return this._chartTypeProperties;
+        this._chartTypeProperties = _;
+        return this;
+    }
+
+    getChartDataFamily() {
+        return this._allCharts[this.chartType()].family;
+    }
+
+    requireContent(chartType, callback) {
+        Utility.requireWidget(this._allCharts[chartType].widgetClass).then(function (WidgetClass: any) {
+            callback(new WidgetClass());
+        });
+    }
+
+    switchChart(callback) {
+        if (this._switchingTo === this.chartType()) {
+            if (callback) {
+                callback(this);
+            }
+            return;
+        } else if (this._switchingTo) {
+            console.log("Attempting switch to:  " + this.chartType() + ", before previous switch is complete (" + this._switchingTo + ")");
+        }
+        this._switchingTo = this.chartType();
+        const oldContent = this.chart();
+        const context = this;
+        this.requireContent(this.chartType(), function (newContent) {
+            if (newContent !== oldContent) {
+                const size = context.size();
+                newContent
+                    .fields(context.fields())
+                    .data(context.data())
+                    .size(size)
+                    ;
+
+                context.chart(newContent);
+                if (oldContent) {
+                    oldContent
+                        .size({ width: 1, height: 1 })
+                        .render()
+                        ;
+                }
+            }
+            delete context._switchingTo;
+            if (callback) {
+                callback(this);
+            }
+        });
+    }
+
+    update(_domNode, element) {
+        HTMLWidget.prototype.update.apply(this, arguments);
+        const content = element.selectAll(".multiChart").data(this.chart() ? [this.chart()] : [], function (d) { return d._id; });
+        content.enter().append("div")
+            .attr("class", "multiChart")
+            .each(function (d) {
+                d.target(this);
+            })
+            ;
+
+        const currChart = this.chart();
+        if (currChart) {
+            for (const key in this._chartTypeDefaults) {
+                if (currChart[key + "_default"]) {
+                    try {
+                        currChart[key + "_default"](this._chartTypeDefaults[key]);
+                    } catch (e) {
+                        console.log("Exception Setting Default:  " + key);
+                    }
+                } else {
+                    console.log("Unknown Default:  " + key);
+                }
+            }
+            this._chartTypeDefaults = {};
+            for (const propKey in this._chartTypeProperties) {
+                if (currChart[propKey]) {
+                    try {
+                        currChart[propKey](this._chartTypeProperties[propKey]);
+                    } catch (e) {
+                        console.log("Exception Setting Property:  " + propKey);
+                    }
+                } else {
+                    console.log("Unknown Property:  " + propKey);
+                }
+            }
+            this._chartTypeProperties = {};
+        }
+
+        const context = this;
+        content
+            .each(function (d) { d.resize(context.size()); })
+            ;
+
+        content.exit().transition()
+            .each(function (d) { d.target(null); })
+            .remove()
+            ;
+    }
+
+    exit(_domNode, _element) {
+        if (this._chartMonitor) {
+            this._chartMonitor.remove();
+            delete this._chartMonitor;
+        }
+        if (this.chart()) {
+            this.chart().target(null);
+        }
+        HTMLWidget.prototype.exit.apply(this, arguments);
+    }
+
+    render(_callback) {
+        if (this.chartType() && (!this.chart() || (this.chart().classID() !== this._allCharts[this.chartType()].widgetClass))) {
+            const context = this;
+            const args = arguments;
+            this.switchChart(function () {
+                HTMLWidget.prototype.render.apply(context, args);
+            });
+            return this;
+        }
+        return HTMLWidget.prototype.render.apply(this, arguments);
+    }
 }
-MultiChart.prototype = Object.create(HTMLWidget.prototype);
-MultiChart.prototype.constructor = MultiChart;
 MultiChart.prototype._class += " chart_MultiChart";
 MultiChart.prototype.implements(INDChart.prototype);
-    MultiChart.prototype.implements(IGraph.prototype);
+export interface ChartMeta {
+    id: string;
+    display: string;
+    widgetClass: string;
+    widgetPath?: string;
+}
+export interface MultiChart {
+    _GraphChartTypes: ChartMeta[];
+    _1DChartTypes: ChartMeta[];
+    _2DChartTypes: ChartMeta[];
+    _NDChartTypes: ChartMeta[];
+    _mapChartTypes: ChartMeta[];
+    _anyChartTypes: ChartMeta[];
+    _allChartTypes: ChartMeta[];
+    _allMap;
+    _allFamilies: string[];
+    _allChartTypesMap;
+    _allChartTypesByClass;
+
+    chartType(): string;
+    chartType(_: string): this;
+    chart(): Widget;
+    chart(_: Widget): this;
+    chart_access(): Widget;
+    chart_access(_: Widget): this;
+}
 
 MultiChart.prototype._GraphChartTypes = [
     { id: "GRAPH", display: "Graph", widgetClass: "graph_Graph" }
@@ -97,8 +332,7 @@ MultiChart.prototype._anyChartTypes = [
     { id: "TABLE_TREEMAP", display: "Table driven Treemap", widgetClass: "tree_Treemap" },
     { id: "TABLE_SANKEY", display: "Table driven Sankey", widgetClass: "graph_Sankey" },
     { id: "TABLE_GMAP_PIN", display: "Table driven Google Map (pins)", widgetClass: "map_GMapPin" },
-        { id: "TABLE_GMAP_PINLINE", display: "Table driven Google Map (pins/lines)", widgetClass: "map_GMapPinLine" },
-        { id: "TABLE_ORB", display: "Pivot Table (orb.js)", widgetClass: "react_Orb" }
+    { id: "TABLE_GMAP_PINLINE", display: "Table driven Google Map (pins/lines)", widgetClass: "map_GMapPinLine" }
 ].map(function (item: any) { item.family = "any"; return item; });
 MultiChart.prototype._allChartTypes =
     MultiChart.prototype._GraphChartTypes.concat(
@@ -122,36 +356,9 @@ MultiChart.prototype.publishReset();
 MultiChart.prototype.publish("chartType", "BUBBLE", "set", "Chart Type", MultiChart.prototype._allChartTypes.map(function (item) { return item.id; }), { tags: ["Basic"] });
 MultiChart.prototype.publish("chart", null, "widget", "Chart", null, { tags: ["Basic"] });
 
-MultiChart.prototype.fields = function (_) {
-    const retVal = HTMLWidget.prototype.fields.apply(this, arguments);
-    if (this.chart()) {
-        if (!arguments.length) return this.chart().fields();
-        this.chart().fields(_);
-    }
-    return retVal;
-};
-
-MultiChart.prototype.columns = function (_, asDefault) {
-    const retVal = HTMLWidget.prototype.columns.apply(this, arguments);
-    if (this.chart()) {
-        if (!arguments.length) return this.chart().columns();
-        this.chart().columns(_, asDefault);
-    }
-    return retVal;
-};
-
-MultiChart.prototype.data = function (_) {
-    const retVal = HTMLWidget.prototype.data.apply(this, arguments);
-    if (this.chart()) {
-        if (!arguments.length) return this.chart().data();
-        this.chart().data(_);
-    }
-    return retVal;
-};
-
-MultiChart.prototype._origChart = MultiChart.prototype.chart;
-MultiChart.prototype.chart = function (_) {
-    const retVal = MultiChart.prototype._origChart.apply(this, arguments);
+const _origChart = MultiChart.prototype.chart;
+MultiChart.prototype.chart = function (_?) {
+    const retVal = _origChart.apply(this, arguments);
     if (arguments.length) {
         const context = this;
         if (this._allChartTypesByClass[_.classID()]) {
@@ -165,18 +372,6 @@ MultiChart.prototype.chart = function (_) {
         _.dblclick = function (_row, _column, _selected) {
             context.dblclick.apply(context, arguments);
         };
-            _.vertex_click = function (row, column, selected, more) {
-                context.vertex_click.apply(context, arguments);
-            };
-            _.vertex_dblclick = function (row, column, selected, more) {
-                context.vertex_dblclick.apply(context, arguments);
-            };
-            _.edge_click = function (row, column, selected, more) {
-                context.edge_click.apply(context, arguments);
-            };
-            _.edge_dblclick = function (row, column, selected, more) {
-                context.edge_dblclick.apply(context, arguments);
-            };
         if (this._chartMonitor) {
             this._chartMonitor.remove();
             delete this._chartMonitor;
@@ -186,146 +381,4 @@ MultiChart.prototype.chart = function (_) {
         });
     }
     return retVal;
-};
-
-MultiChart.prototype.hasOverlay = function () {
-    return this.chart() && this.chart().hasOverlay();
-};
-
-MultiChart.prototype.visible = function (_) {
-    if (!arguments.length) return this.chart() && this.chart().visible();
-    if (this.chart()) {
-        this.chart().visible(_);
-    }
-    return this;
-};
-
-MultiChart.prototype.chartTypeDefaults = function (_) {
-    if (!arguments.length) return this._chartTypeDefaults;
-    this._chartTypeDefaults = _;
-    return this;
-};
-
-MultiChart.prototype.chartTypeProperties = function (_) {
-    if (!arguments.length) return this._chartTypeProperties;
-    this._chartTypeProperties = _;
-    return this;
-};
-
-MultiChart.prototype.getChartDataFamily = function () {
-    return this._allCharts[this.chartType()].family;
-};
-
-MultiChart.prototype.requireContent = function (chartType, callback) {
-    Utility.requireWidget(this._allCharts[chartType].widgetClass).then(function (Widget: any) {
-        callback(new Widget());
-    });
-};
-
-MultiChart.prototype.switchChart = function (callback) {
-    if (this._switchingTo === this.chartType()) {
-        if (callback) {
-            callback(this);
-        }
-        return;
-    } else if (this._switchingTo) {
-        console.log("Attempting switch to:  " + this.chartType() + ", before previous switch is complete (" + this._switchingTo + ")");
-    }
-    this._switchingTo = this.chartType();
-    const oldContent = this.chart();
-    const context = this;
-    this.requireContent(this.chartType(), function (newContent) {
-        if (newContent !== oldContent) {
-            const size = context.size();
-            newContent
-                .fields(context.fields())
-                .data(context.data())
-                .size(size)
-                ;
-
-            context.chart(newContent);
-            if (oldContent) {
-                oldContent
-                    .size({ width: 1, height: 1 })
-                    .render()
-                    ;
-            }
-        }
-        delete context._switchingTo;
-        if (callback) {
-            callback(this);
-        }
-    });
-};
-
-MultiChart.prototype.update = function (_domNode, element) {
-    HTMLWidget.prototype.update.apply(this, arguments);
-    const content = element.selectAll(".multiChart").data(this.chart() ? [this.chart()] : [], function (d) { return d._id; });
-    content.enter().append("div")
-        .attr("class", "multiChart")
-        .each(function (d) {
-            d.target(this);
-        })
-        ;
-
-    const currChart = this.chart();
-    if (currChart) {
-        for (const key in this._chartTypeDefaults) {
-            if (currChart[key + "_default"]) {
-                try {
-                    currChart[key + "_default"](this._chartTypeDefaults[key]);
-                } catch (e) {
-                    console.log("Exception Setting Default:  " + key);
-                }
-            } else {
-                console.log("Unknown Default:  " + key);
-            }
-        }
-        this._chartTypeDefaults = {};
-        for (const propKey in this._chartTypeProperties) {
-            if (currChart[propKey]) {
-                try {
-                    currChart[propKey](this._chartTypeProperties[propKey]);
-                } catch (e) {
-                    console.log("Exception Setting Property:  " + propKey);
-                }
-            } else {
-                console.log("Unknown Property:  " + propKey);
-            }
-        }
-        this._chartTypeProperties = {};
-    }
-
-    const context = this;
-    content
-        .each(function (d) { d.resize(context.size()); })
-        ;
-
-    content.exit().transition()
-        .each(function (d) { d.target(null); })
-        .remove()
-        ;
-};
-
-MultiChart.prototype.exit = function (_domNode, _element) {
-    if (this._chartMonitor) {
-        this._chartMonitor.remove();
-        delete this._chartMonitor;
-    }
-    if (this.chart()) {
-        this.chart().target(null);
-    }
-    HTMLWidget.prototype.exit.apply(this, arguments);
-};
-
-MultiChart.prototype.render = function (callback) {
-    if (this.chartType() && (!this.chart() || (this.chart().classID() !== this._allCharts[this.chartType()].widgetClass))) {
-        const context = this;
-        const args = arguments;
-        this.switchChart(function () {
-            HTMLWidget.prototype.render.apply(context, args);
-        });
-        return this;
-    }
-    return HTMLWidget.prototype.render.apply(this, arguments);
 };

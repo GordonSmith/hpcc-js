@@ -1,6 +1,5 @@
 import { HTMLWidget, Widget } from "@hpcc-js/common";
 import { DockPanel as PDockPanel, Widget as PWidget } from "@hpcc-js/phosphor-shim";
-
 import { WidgetAdapter } from "./WidgetAdapter";
 
 import "../src/DockPanel.css";
@@ -29,7 +28,8 @@ export class DockPanel extends HTMLWidget {
 
     addWidget(widget: Widget, title: string, location: PDockPanel.InsertMode = "split-right", refWidget?: Widget) {
         const addMode: PDockPanel.IAddOptions = { mode: location, ref: this.getWidgetAdapter(refWidget) };
-        const wa = new WidgetAdapter(widget, title);
+        const wa = new WidgetAdapter(widget);
+        wa.title.label = title;
         wa.padding = 8;
         this._dock.addWidget(wa, addMode);
         this.content.push(wa);
@@ -44,7 +44,7 @@ export class DockPanel extends HTMLWidget {
         return this;
     }
 
-    widgets() {
+    widgets(): Widget[] {
         return this.content.map(wa => wa._widget);
     }
 
@@ -67,3 +67,5 @@ export class DockPanel extends HTMLWidget {
     }
 }
 DockPanel.prototype._class += " phosphor_DockPanel";
+
+DockPanel.prototype.publish("layout", "", "string");

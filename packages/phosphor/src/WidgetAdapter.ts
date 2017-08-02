@@ -11,7 +11,7 @@ export class WidgetAdapter extends PWidget {
     lparam: any = {};
     padding: number = 0;
 
-    constructor(widget: CWidget, lparam: any = {}) {
+    constructor(widget: CWidget, lparam: object = {}) {
         super();
         this._element = d3Select(this.node);
         // this.setFlag(Widget.Flag.DisallowLayout);

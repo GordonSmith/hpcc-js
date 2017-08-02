@@ -1,5 +1,7 @@
 import { MultiChart } from "@hpcc-js/chart";
 import { Class, Database, Utility, Widget } from "@hpcc-js/common";
+// import { IAnyVisualization, IDashboard, IDatasource, IOutput, ITableVisualization, StringStringDict, VisualizationType } from "@hpcc-js/ddl-shim";
+import { IDatasource, IFilter } from "@hpcc-js/ddl-shim";
 import { Comms, Table } from "@hpcc-js/other";
 import { map as d3Map } from "d3-collection";
 
@@ -168,18 +170,18 @@ SourceMappings.prototype.getReverseMap = function (key) {
 
 SourceMappings.prototype.hipieMapSortArray = function (sort) {
     return sort.map(function (sortField) {
-        var reverse = false;
+        let reverse = false;
         if (sortField.indexOf("-") === 0) {
             sortField = sortField.substring(1);
             reverse = true;
         }
-        var fieldIdx = this.columnsRHS.indexOf(sortField);
+        const fieldIdx = this.columnsRHS.indexOf(sortField);
         if (fieldIdx < 0) {
             console.log("SourceMappings.prototype.hipieMapSortArray:  Invalid sort array - " + sortField);
         }
         return {
             idx: fieldIdx,
-            reverse: reverse
+            reverse
         };
     }, this).filter(function (d) { return d.idx >= 0; });
 };
@@ -1212,15 +1214,15 @@ Visualization.prototype.loadWidgets = function (widgetPaths, callback) {
     this.widget = null;
 
     const context = this;
-    legacyRequire(widgetPaths, function (Widget) {
+    legacyRequire(widgetPaths, function (WidgetClass) {
         const existingWidget = context.dashboard.marshaller.getWidget(context.id);
         if (existingWidget) {
-            if (Widget.prototype._class !== existingWidget.classID()) {
+            if (WidgetClass.prototype._class !== existingWidget.classID()) {
                 console.log("Unexpected persisted widget type (old persist string?)");
             }
             context.setWidget(existingWidget);
         } else {
-            context.setWidget(new Widget());
+            context.setWidget(new WidgetClass());
         }
         if (callback) {
             callback(context.widget, arguments);
@@ -1459,7 +1461,7 @@ Visualization.prototype.deserializeState = function (state) {
 };
 
 //  Output  ---
-function Filter(datasource, ddlFilter) {
+function Filter(datasource, ddlFilter: string | IFilter) {
     this.datasource = datasource;
     if (typeof ddlFilter === "string") {
         ddlFilter = {
@@ -1713,7 +1715,7 @@ VisualizationRequestOptimizer.prototype.fetchData = function () {
 };
 
 //  Datasource  ---
-export function Datasource(marshaller, datasource, proxyMappings, timeout) {
+export function Datasource(marshaller, datasource: IDatasource, proxyMappings, timeout) {
     this.marshaller = marshaller;
     this.id = datasource.id;
     this.WUID = datasource.WUID;
@@ -1817,7 +1819,7 @@ Datasource.prototype.fetchData = function (request, updates) {
     const myTransactionID = ++transactionID;
     transactionQueue.push(myTransactionID);
 
-    var dsRequest = request;
+    let dsRequest = request;
         dsRequest = this.calcRequest(request, this.isRoxie());
         dsRequest.refresh = request.refresh || false;
         if ((window as any).__hpcc_debug) {
@@ -2094,7 +2096,7 @@ Marshaller.prototype.commsDataLoaded = function () {
 
 Marshaller.prototype.accept = function (visitor) {
     visitor.visit(this);
-    for (var key2 in this._datasources) {
+    for (const key2 in this._datasources) {
         this._datasources[key2].accept(visitor);
     }
     this.dashboardTotal = 0;
@@ -2218,7 +2220,7 @@ Marshaller.prototype.dashboardsLoaded = function () {
     return Promise.all(this.dashboardArray.map(function (dashboard) { return dashboard.loadedPromise(); }));
 };
 
-Marshaller.prototype.createDatasource = function (ddlDatasouce) {
+Marshaller.prototype.createDatasource = function (ddlDatasouce: IDatasource) {
     let retVal = this._datasources[ddlDatasouce.id];
     if (!retVal) {
         retVal = new Datasource(this, ddlDatasouce, this._proxyMappings, this._timeout);

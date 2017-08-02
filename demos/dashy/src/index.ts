@@ -1,18 +1,17 @@
-﻿import { DDLEditor } from "@hpcc-js/codemirror";
+﻿import { DDLEditor, JSONEditor } from "@hpcc-js/codemirror";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
 import { Dashboard } from "./dashboard/dashboard";
-import { IActivity, WUResultViz } from "./dashboard/viz";
+import { IActivity, Viz, WUResultViz } from "./dashboard/viz";
 import { Databomb } from "./datasources/databomb";
 import { Form } from "./datasources/form";
 import { LogicalFile } from "./datasources/logicalfile";
 import { Workunit } from "./datasources/workunit";
 import { WUResult } from "./datasources/wuresult";
 import { Model } from "./model";
-import { FlatView } from "./views/flatview";
 import { View } from "./views/view";
 
 export class App {
@@ -20,15 +19,18 @@ export class App {
     _dataSplit = new SplitPanel();
     private _currActivity: IActivity;
     _monitorHandle: { remove: () => void };
-    _dashboard: Dashboard = new Dashboard().on("ActiveChanged", (v: IActivity, w, wa) => {
-        console.log("Active Changed:  " + v.dataProps().id());
-        this.activeChanged(v);
+    _dashboard: Dashboard = new Dashboard().on("ActiveChanged", (viz: IActivity, w, wa) => {
+        console.log("Active Changed:  " + viz.dataProps().id());
+        this.activeChanged(viz);
     });
     _graph: Graph = new Graph()
         .allowDragging(false)
         .applyScaleOnLayout(true)
         .on("vertex_click", (row: any, col: string, sel: boolean, ext: any) => {
-            this.activeChanged(row.__lparam[0]);
+            const obj = row.__lparam[0];
+            if (obj instanceof Viz) {
+                this.activeChanged(row.__lparam[0]);
+            }
         })
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {
         })
@@ -45,7 +47,8 @@ export class App {
         .show_settings(false)
         .showFields(false)
     ;
-    _editor = new DDLEditor();
+    _ddlEditor = new DDLEditor();
+    _layoutEditor = new JSONEditor();
     _preview = new DatasourceTable();
 
     _model = new Model();
@@ -62,8 +65,9 @@ export class App {
             .addWidget(this._dataSplit, "Data", "split-right", this._dashboard as any)
             .addWidget(this._vizProperties, "Viz", "tab-after", this._dataSplit)
             .addWidget(this._stateProperties, "State", "tab-after", this._vizProperties)
-            .addWidget(this._editor, "Debug", "tab-after", this._stateProperties)
             .addWidget(this._graph as any, "Model", "tab-after", this._dashboard)
+            .addWidget(this._ddlEditor, "DDL", "tab-after", this._graph as any)
+            .addWidget(this._layoutEditor, "Layout", "tab-after", this._ddlEditor)
             .lazyRender()
             ;
         //   this.loadSample();
@@ -106,15 +110,15 @@ export class App {
             ;
         this._model.addDatasource(logicalFile);
 
-        const filter1 = new FlatView(this._model, "Filter 1").source(wuResult)
+        const filter1 = new View(this._model, "Filter 1").source(wuResult)
             .appendGroupBys([{ field: "state" }])
             .appendComputedFields([{ label: "weight", type: "count" }])
             ;
-        const filter2 = new FlatView(this._model, "Filter 2").source(wuResult)
+        const filter2 = new View(this._model, "Filter 2").source(wuResult)
             .appendGroupBys([{ field: "firstname" }])
             .appendComputedFields([{ label: "weight", type: "count" }])
             ;
-        const table1 = new FlatView(this._model, "View 2").source(wuResult)
+        const table1 = new View(this._model, "View 2").source(wuResult)
             .appendFilter(filter1, [{ filterField: "state", localField: "state" }])
             .appendFilter(filter2, [{ filterField: "firstname", localField: "firstname" }])
             ;
@@ -152,8 +156,8 @@ export class App {
                 this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
                     console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
                     this._currActivity.refresh().then(() => {
-                        // this.loadGraph(true);
                         this.refreshPreview(this._currActivity);
+                        this.loadGraph(true);
                     });
                 });
             })
@@ -174,6 +178,9 @@ export class App {
                 });
             })
             ;
+
+        this.loadDDL(true);
+        this.loadLayout(true);
     }
 
     loadEditor() {
@@ -192,10 +199,28 @@ export class App {
         this._graph
             .layout("Hierarchy")
             // .applyScaleOnLayout(true)
-            .data({ ...this._model.createGraph(), merge: false })
+            .data({ ...this._dashboard.createGraph(), merge: false })
             ;
         if (refresh) {
             this._graph.lazyRender();
+        }
+    }
+
+    loadDDL(refresh: boolean = false) {
+        if (refresh) {
+            this._ddlEditor
+                .ddl(this._dashboard.createDDL())
+                .lazyRender()
+                ;
+        }
+    }
+
+    loadLayout(refresh: boolean = false) {
+        if (refresh) {
+            this._layoutEditor
+                .json(this._dashboard.createLayout())
+                .lazyRender()
+                ;
         }
     }
 
@@ -279,7 +304,7 @@ export class App {
         commands.addCommand("addView", {
             label: "Add View",
             execute: () => {
-                this._model.addView(new FlatView(this._model));
+                this._model.addView(new View(this._model));
                 this.loadGraph(true);
             }
         });

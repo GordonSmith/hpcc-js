@@ -3,7 +3,7 @@ import { PropertyExt, Widget } from "@hpcc-js/common";
 import { IDatasource } from "@hpcc-js/dgrid";
 import { WUResult } from "../datasources/wuresult";
 import { Model } from "../model";
-import { FlatView } from "../views/flatview";
+import { View } from "../views/view";
 
 export interface IActivity {
     toIDatasource(): IDatasource;
@@ -32,7 +32,7 @@ export class Viz extends PropertyExt implements IActivity {
 
     constructor(model: Model, label: string = `Viz-${++vizID}`) {
         super();
-        const view = new FlatView(model, label);
+        const view = new View(model, label);
         model.addView(view);
         this.view(view);
         const context = this;
@@ -90,8 +90,8 @@ export class Viz extends PropertyExt implements IActivity {
 }
 Viz.prototype._class += " Viz";
 export interface Viz {
-    view(): FlatView;
-    view(_: FlatView): this;
+    view(): View;
+    view(_: View): this;
     widget(): Widget;
     widget(_: Widget): this;
     state(): State;

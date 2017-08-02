@@ -1,4 +1,4 @@
-import { PropertyExt } from "@hpcc-js/common";
+import { nest as d3Nest, PropertyExt } from "@hpcc-js/common";
 import { ascending as d3Ascending, descending as d3Descending, deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "@hpcc-js/common";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
@@ -230,9 +230,35 @@ Filter.prototype.publish("source", null, "set", "Datasource", function () { retu
 Filter.prototype.publish("nullable", false, "boolean", "Ignore null filters");
 Filter.prototype.publish("mappings", [], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping });
 
-let viewID = 0;
+export class GroupByColumn extends PropertyExt {
+    _owner: View;
 
-export abstract class View extends PropertyExt implements IDatasource {
+    constructor(owner: View) {
+        super();
+        this._owner = owner;
+        this.monitor((id, newVal, oldVal) => {
+            this._owner.broadcast(id, newVal, oldVal, this);
+        });
+    }
+
+    hash(): string {
+        return hashSum(this.column());
+    }
+
+    columns() {
+        return this._owner.columns();
+    }
+}
+GroupByColumn.prototype._class += " GroupByColumn";
+
+export interface GroupByColumn {
+    column(): string;
+    column(_: string): this;
+}
+GroupByColumn.prototype.publish("column", undefined, "set", "Field", function () { return this.columns(); }, { optional: true });
+
+let viewID = 0;
+export class View extends PropertyExt implements IDatasource {
     _source: string = "42";
     _model: Model;
     _total = 0;
@@ -295,8 +321,10 @@ export abstract class View extends PropertyExt implements IDatasource {
 
     hash(more: { [key: string]: any } = {}): string {
         return hashSum({
-            filter: this.filters().map(filter => filter.hash()),
             datasource: this.datasource().hash(),
+            filter: this.filters().map(filter => filter.hash()),
+            groupBy: this.groupBys().map(gb => gb.hash()),
+            computedFields: this.computedFields().map(cf => cf.hash()),
             ...more
         });
     }
@@ -318,26 +346,15 @@ export abstract class View extends PropertyExt implements IDatasource {
         return this.datasource().outFields();
     }
 
-    abstract outFields(): IField[];
-
     fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<any[]> {
         return this.datasource().fetch(0, Number.MAX_VALUE).then(data => {
-            data = this._preProcess(data);
-            data = this._postProcess(data);
+            data = this._preFilter(data);
+            data = this._preGroupBy(data);
+            data = this._postSort(data);
+            data = this._postLimit(data);
             this._total = data.length;
             return data.slice(from, from + count);
         });
-    }
-
-    protected _preProcess(data: any[]): any[] {
-        data = this._preFilter(data);
-        return data;
-    }
-
-    protected _postProcess(data: any[]): any[] {
-        data = this._postSort(data);
-        data = this._postLimit(data);
-        return data;
     }
 
     protected _preFilter(data: any[]): any[] {
@@ -392,6 +409,129 @@ export abstract class View extends PropertyExt implements IDatasource {
         }
         return data;
     }
+
+    //  ===
+
+    appendGroupBys(columns: [{ field: string }]): this {
+        for (const column of columns) {
+            this.groupBys().push(new GroupByColumn(this)
+                .column(column.field)
+            );
+        }
+        return this;
+    }
+
+    appendComputedFields(aggregateFields: [{ label: string, type: AggregateType, column?: string }]): this {
+        for (const aggregateField of aggregateFields) {
+            const aggrField = new AggregateField(this)
+                .label(aggregateField.label)
+                .aggrType(aggregateField.type)
+                ;
+            if (aggregateField.column !== void 0) {
+                aggrField.aggrColumn(aggregateField.column);
+            }
+            this.computedFields().push(aggrField);
+        }
+        return this;
+    }
+
+    validGroupBy() {
+        return this.groupBys().filter(groupBy => !!groupBy.column());
+    }
+
+    hasGroupBy() {
+        return this.validGroupBy().length;
+    }
+
+    validComputedFields() {
+        return this.computedFields().filter(computedField => computedField.label());
+    }
+
+    hasComputedFields() {
+        return this.validComputedFields().length;
+    }
+
+    outFields(): IField[] {
+        const retVal: IField[] = [];
+        const groups: GroupByColumn[] = this.validGroupBy();
+        for (const groupBy of groups) {
+            const groupByField = this.field(groupBy.column());
+            const field: IField = {
+                id: groupBy.column(),
+                label: groupBy.column(),
+                type: groupByField.type,
+                children: null
+            };
+            retVal.push(field);
+        }
+        for (const cf of this.computedFields()) {
+            if (cf.label()) {
+                const computedField: IField = {
+                    id: cf.label(),
+                    label: cf.label(),
+                    type: "number",
+                    children: null
+                };
+                retVal.push(computedField);
+            }
+        }
+        if (this.details()) {
+            let detailsTarget: IField[] = retVal;
+            if (this.hasGroupBy()) {
+                const rows: IField = {
+                    id: "values",
+                    label: "details",
+                    type: "object",
+                    children: []
+                };
+                retVal.push(rows);
+                detailsTarget = rows.children;
+            }
+            const columns = groups.map(groupBy => groupBy.column());
+            detailsTarget.push(...this.datasource().outFields().filter(field => {
+                return this.fullDetails() || columns.indexOf(field.id) < 0;
+            }));
+        }
+        return retVal;
+    }
+
+    /*
+    protected _fetch(from: number, count: number): Promise<any[]> {
+        return this.sample(this.samples(), this.sampleSize());
+    }
+    */
+
+    protected _preGroupBy(data: any[]): any[] {
+        if (data.length === 0) return data;
+        const retVal = d3Nest()
+            .key(row => {
+                let key = "";
+                for (const groupBy of this.groupBys()) {
+                    if (groupBy.column()) {
+                        if (key) {
+                            key += ":";
+                        }
+                        key += row[groupBy.column()];
+                    }
+                }
+                return key;
+            })
+            .entries(data).map(row => {
+                delete row.key;
+                for (const groupBy of this.validGroupBy()) {
+                    row[groupBy.column()] = row.values[0][groupBy.column()];
+                }
+                for (const cf of this.computedFields()) {
+                    if (cf.label()) {
+                        row[cf.label()] = cf.aggregate(row.values);
+                    }
+                }
+                return row;
+            })
+            ;
+        this._total = retVal.length;
+        return this.hasGroupBy() ? retVal : retVal[0].values;
+    }
 }
 View.prototype._class += " View";
 
@@ -408,6 +548,10 @@ export interface View {
     fullDetails(_: boolean): this;
     filters(): Filter[];
     filters(_: Filter[]): this;
+    groupBys(): GroupByColumn[];
+    groupBys(_: GroupByColumn[]): this;
+    computedFields(): AggregateField[];
+    computedFields(_: AggregateField[]): this;
     sortBy(): SortColumn[];
     sortBy(_: SortColumn[]): this;
     limit(): number | undefined;
@@ -418,5 +562,7 @@ View.prototype.publish("source", nullDS, "widget", "Data Source");
 View.prototype.publish("details", true, "boolean", "Show details");
 View.prototype.publish("fullDetails", false, "boolean", "Show groupBy fileds in details");
 View.prototype.publish("filters", [], "propertyArray", "Filter", null, { autoExpand: Filter });
+View.prototype.publish("groupBys", [], "propertyArray", "Source Columns", null, { autoExpand: GroupByColumn });
+View.prototype.publish("computedFields", [], "propertyArray", "Computed Fields", null, { autoExpand: AggregateField });
 View.prototype.publish("sortBy", [], "propertyArray", "Source Columns", null, { autoExpand: SortColumn });
 View.prototype.publish("limit", undefined, "number", "Limit output");
