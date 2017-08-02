@@ -107,8 +107,10 @@ export class WUResultViz extends Viz {
         const datasource = new WUResult();
         model.addDatasource(datasource);
         this.view().source(datasource);
-        datasource.monitor(() => {
+        datasource.monitor((id, newVal, oldVal) => {
+            this.view().broadcast(id, newVal, oldVal, datasource);
         });
+
     }
 }
 WUResultViz.prototype._class += " WUResultViz";

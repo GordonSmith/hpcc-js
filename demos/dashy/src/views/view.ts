@@ -283,7 +283,6 @@ export class View extends PropertyExt implements IDatasource {
             .appendMappings(mappings));
         return this;
     }
-
     validSortBy(): SortColumn[] {
         return this.sortBy().filter(sortBy => sortBy.sortColumn());
     }
