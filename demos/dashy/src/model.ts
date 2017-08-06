@@ -2,11 +2,11 @@ import { PropertyExt } from "@hpcc-js/common";
 import { IDatasource } from "@hpcc-js/dgrid";
 import { Viz } from "./dashboard/viz";
 import { Databomb, NullDatasource } from "./datasources/databomb";
-import { DatasourceClass } from "./datasources/dsPicker";
 import { LogicalFile } from "./datasources/logicalfile";
 import { Workunit } from "./datasources/workunit";
 import { WUResult } from "./datasources/wuresult";
 import { deserialize as d2 } from "./serialization";
+import { DatasourceClass } from "./views/activities/dsPicker";
 import { NullView } from "./views/nullview";
 import { View } from "./views/view";
 
@@ -94,7 +94,7 @@ export class Model extends PropertyExt {
 
     filteredBy(viz: Viz): Viz[] {
         return this._visualizations.filter(otherViz => {
-            const filterIDs = otherViz.view().validFilters().map(filter => filter.source());
+            const filterIDs = otherViz.view().filters().validFilters().map(filter => filter.source());
             return filterIDs.indexOf(viz.id()) >= 0;
         });
     }

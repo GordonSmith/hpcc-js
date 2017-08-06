@@ -4,7 +4,9 @@ import { IDashboard, IDatasource, IEvent, IEventUpdate, IFilter, IFilterRule, IO
 import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
 import { Persist } from "@hpcc-js/other";
 import { DockPanel, WidgetAdapter } from "@hpcc-js/phosphor";
-import { Databomb, DatasourceClass, LogicalFile, WUResult } from "../datasources/dsPicker";
+import { Databomb } from "../datasources/databomb";
+import { WUResult } from "../datasources/wuresult";
+import { DatasourceClass } from "../views/activities/dspicker";
 import { View } from "../views/view";
 import { Viz } from "./viz";
 
@@ -143,19 +145,16 @@ export class Dashboard extends DockPanel {
             const ds = view.datasource();
             let prevID = "";
             prevID = createVertex(prevID, ds.hash(), `${ds.label()}`, ds);
-            if (view.hasFilter()) {
+            if (view.filters().exists()) {
                 prevID = createVertex(prevID, view.id() + "_f", `${view.label()}:  Filter`, viz);
             }
-            if (view.hasGroupBy()) {
+            if (view.groupBy().exists()) {
                 prevID = createVertex(prevID, view.id() + "_gb", `${view.label()}:  GroupBy`, viz);
             }
-            if (view.hasComputedFields()) {
-                prevID = createVertex(prevID, view.id() + "_cf", `${view.label()}:  Computed\nFields`, viz);
-            }
-            if (view.hasSortBy()) {
+            if (view.sort().exists()) {
                 prevID = createVertex(prevID, view.id() + "_sb", `${view.label()}:  Sort`, viz);
             }
-            if (view.hasLimit()) {
+            if (view.limit().exists()) {
                 prevID = createVertex(prevID, view.id() + "_l", `${view.label()}:  Limit`, viz);
             }
             prevID = createVertex(prevID, view.id(), `${view.label()}:  Output`, viz);
@@ -163,7 +162,7 @@ export class Dashboard extends DockPanel {
 
         for (const viz of this._visualizations) {
             const view = viz.view();
-            view.filters().forEach(filter => {
+            view.filters().filter().forEach(filter => {
                 if (filter.source()) {
                     const filterEdge: Edge = this.createEdge(this.visualization(filter.source()).view().id(), view.id() + "_f")
                         .strokeDasharray("1,5")
@@ -183,7 +182,7 @@ export class Dashboard extends DockPanel {
 
     createDDLFilters(view: View): IFilter[] {
         const retVal: IFilter[] = [];
-        for (const filter of view.validFilters()) {
+        for (const filter of view.filters().validFilters()) {
             for (const mapping of filter.validMappings()) {
                 retVal.push({
                     nullable: filter.nullable(),
@@ -236,7 +235,7 @@ export class Dashboard extends DockPanel {
         };
         const updates = retVal["click"].updates;
         for (const updatesViz of this.visualizations()) {
-            for (const filter of updatesViz.view().validFilters()) {
+            for (const filter of updatesViz.view().filters().validFilters()) {
                 if (filter.source() === viz.id()) {
                     const eventUpdate: IEventUpdate = {
                         visualization: updatesViz.id(),

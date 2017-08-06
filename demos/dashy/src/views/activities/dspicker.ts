@@ -1,7 +1,7 @@
-import { PropertyExt } from "@hpcc-js/common";
-import { Databomb } from "../datasources/databomb";
-import { LogicalFile } from "../datasources/logicalfile";
-import { WUResult } from "../datasources/wuresult";
+import { Databomb } from "../../datasources/databomb";
+import { LogicalFile } from "../../datasources/logicalfile";
+import { WUResult } from "../../datasources/wuresult";
+import { Activity } from "./Activity";
 
 export {
     WUResult,
@@ -19,7 +19,7 @@ export type DatasourceType = Type.WURESULT | Type.LOGICALFILE | Type.DATABOMB;
 export type DatasourceClass = WUResult | LogicalFile | Databomb;
 const Types = [Type.WURESULT, Type.LOGICALFILE, Type.DATABOMB];
 
-export class DSPicker extends PropertyExt {
+export class DSPicker extends Activity {
     protected _wuResult = new WUResult()
         .url("http://192.168.3.22:8010")
         .wuid("W20170424-070701")
