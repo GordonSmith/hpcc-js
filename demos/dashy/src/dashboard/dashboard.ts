@@ -143,21 +143,21 @@ export class Dashboard extends DockPanel {
         for (const viz of this._visualizations) {
             const view = viz.view();
             const ds = view.datasource();
-            let prevID = "";
-            prevID = createVertex(prevID, ds.hash(), `${ds.label()}`, ds);
+            const firstID = createVertex("", ds.hash(), `${ds.label()}`, { viz, activity: view.dataSource() });
+            let prevID = firstID;
             if (view.filters().exists()) {
-                prevID = createVertex(prevID, view.id() + "_f", `${view.label()}:  Filter`, viz);
+                prevID = createVertex(prevID, view.id() + "_f", `${view.label()}:  Filter`, { viz, activity: view.filters() });
             }
             if (view.groupBy().exists()) {
-                prevID = createVertex(prevID, view.id() + "_gb", `${view.label()}:  GroupBy`, viz);
+                prevID = createVertex(prevID, view.id() + "_gb", `${view.label()}:  GroupBy`, { viz, activity: view.groupBy() });
             }
             if (view.sort().exists()) {
-                prevID = createVertex(prevID, view.id() + "_sb", `${view.label()}:  Sort`, viz);
+                prevID = createVertex(prevID, view.id() + "_sb", `${view.label()}:  Sort`, { viz, activity: view.sort() });
             }
             if (view.limit().exists()) {
-                prevID = createVertex(prevID, view.id() + "_l", `${view.label()}:  Limit`, viz);
+                prevID = createVertex(prevID, view.id() + "_l", `${view.label()}:  Limit`, { viz, activity: view.limit() });
             }
-            prevID = createVertex(prevID, view.id(), `${view.label()}:  Output`, viz);
+            prevID = createVertex(prevID, view.id(), `${view.label()}:  Output`, { viz, activity: view.limit() });
         }
 
         for (const viz of this._visualizations) {
@@ -166,7 +166,7 @@ export class Dashboard extends DockPanel {
                 if (filter.source()) {
                     const filterEdge: Edge = this.createEdge(this.visualization(filter.source()).view().id(), view.id() + "_f")
                         .strokeDasharray("1,5")
-                        .text("Sel:")
+                        // .text("Sel:")
                         ;
                     edges.push(filterEdge);
                 }

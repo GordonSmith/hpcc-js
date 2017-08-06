@@ -1,7 +1,7 @@
 import { PropertyExt } from "@hpcc-js/common";
-import { IField } from "@hpcc-js/dgrid";
+import { IDatasource, IField } from "@hpcc-js/dgrid";
 
-export class Activity extends PropertyExt {
+export abstract class Activity extends PropertyExt implements IDatasource {
     protected _sourceActivity: Activity;
 
     sourceActivity(): Activity;
@@ -22,5 +22,23 @@ export class Activity extends PropertyExt {
 
     process(): any[] {
         return this._sourceActivity.process();
+    }
+
+    exec(): Promise<void> {
+        return this._sourceActivity.exec();
+    }
+
+    //  IDatasource  ---
+    abstract hash(): string;
+    label(): string {
+        return this.id();
+    }
+    total(): number {
+        return this.process().length;
+
+    }
+    async fetch(from: number, count: number): Promise<any[]> {
+        await this.exec();
+        return this.process().slice(from, from + count);
     }
 }

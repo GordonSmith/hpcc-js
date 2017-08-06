@@ -1,3 +1,4 @@
+import { IField } from "@hpcc-js/dgrid";
 import { Databomb } from "../../datasources/databomb";
 import { LogicalFile } from "../../datasources/logicalfile";
 import { WUResult } from "../../datasources/wuresult";
@@ -37,6 +38,7 @@ export class DSPicker extends Activity {
             { state: "NY", weight: 100 }
         ])
     ;
+    _data: any[] = [];
 
     constructor() {
         super();
@@ -52,6 +54,24 @@ export class DSPicker extends Activity {
 
         this._databomb.monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this._databomb);
+        });
+    }
+
+    hash(): string {
+        return this.details().hash();
+    }
+
+    outFields(): IField[] {
+        return this.details().outFields();
+    }
+
+    process(): any[] {
+        return this._data;
+    }
+
+    exec(): Promise<void> {
+        return this.details().fetch(0, Number.MAX_VALUE).then(data => {
+            this._data = data;
         });
     }
 }

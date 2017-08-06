@@ -5,32 +5,31 @@ import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
 import { Dashboard } from "./dashboard/dashboard";
-import { IActivity, Viz, WUResultViz } from "./dashboard/viz";
+import { Viz, WUResultViz } from "./dashboard/viz";
 import { Databomb } from "./datasources/databomb";
 import { Form } from "./datasources/form";
 import { LogicalFile } from "./datasources/logicalfile";
 import { Workunit } from "./datasources/workunit";
 import { WUResult } from "./datasources/wuresult";
 import { Model } from "./model";
+import { Activity } from "./views/activities/activity";
 import { View } from "./views/view";
 
 export class App {
     _dockPanel = new DockPanel();
     _dataSplit = new SplitPanel();
-    private _currActivity: IActivity;
+    private _currActivity: Viz;
     _monitorHandle: { remove: () => void };
-    _dashboard: Dashboard = new Dashboard().on("ActiveChanged", (viz: IActivity, w, wa) => {
+    _dashboard: Dashboard = new Dashboard().on("ActiveChanged", (viz: Viz, w, wa) => {
         console.log("Active Changed:  " + viz.dataProps().id());
-        this.activeChanged(viz);
+        this.vizChanged(viz);
     });
     _graph: Graph = new Graph()
         .allowDragging(false)
         .applyScaleOnLayout(true)
         .on("vertex_click", (row: any, col: string, sel: boolean, ext: any) => {
             const obj = row.__lparam[0];
-            if (obj instanceof Viz) {
-                this.activeChanged(row.__lparam[0]);
-            }
+            this.vizChanged(obj.viz, obj.activity);
         })
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {
         })
@@ -74,8 +73,8 @@ export class App {
         this.initMenu();
     }
 
-    refreshPreview(datasource: IActivity) {
-        datasource.refresh().then(() => {
+    refreshPreview(datasource: Activity) {
+        datasource.exec().then(() => {
             this._preview
                 .invalidate()
                 .lazyRender()
@@ -83,15 +82,24 @@ export class App {
         });
     }
 
-    async activeChanged(w: IActivity) {
-        if (this._currActivity === w) return;
+    async vizChanged(w: Viz, activity?: Activity) {
+        if (this._currActivity === w) {
+            if (activity) {
+                this._preview
+                    .datasource(activity || this._currActivity.toIDatasource())
+                    .paging(this._currActivity instanceof View ? false : true)
+                    .lazyRender()
+                    ;
+            }
+            return;
+        }
         this._currActivity = w;
         await this._currActivity.refresh();
         if (this._monitorHandle) {
             this._monitorHandle.remove();
         }
         this._preview
-            .datasource(this._currActivity.toIDatasource())
+            .datasource(activity || this._currActivity.toIDatasource())
             .paging(this._currActivity instanceof View ? false : true)
             .lazyRender()
             ;
@@ -101,7 +109,7 @@ export class App {
                 this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
                     console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
                     this._currActivity.refresh().then(() => {
-                        this.refreshPreview(this._currActivity);
+                        this.refreshPreview(this._currActivity.view().limit());
                         this.loadGraph(true);
                     });
                 });
@@ -188,7 +196,7 @@ export class App {
                     for (const filteredViz of this._model.filteredBy(viz)) {
                         filteredViz.refresh().then(() => {
                             if (this._currActivity === filteredViz) {
-                                this.refreshPreview(filteredViz);
+                                this.refreshPreview(filteredViz.view().limit());
                             }
                         });
                     }

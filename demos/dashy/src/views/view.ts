@@ -2,25 +2,11 @@ import { PropertyExt } from "@hpcc-js/common";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Model } from "../model";
-import { Activity } from "./activities/activity";
 import { DatasourceClass, DSPicker } from "./activities/dspicker";
 import { Filters } from "./activities/filter";
 import { GroupBy } from "./activities/groupby";
 import { Limit } from "./activities/limit";
 import { Sort } from "./activities/sort";
-
-class SourceActivity extends Activity {
-    _fields: IField[];
-    _data: any[];
-
-    outFields(): any[] {
-        return this._fields;
-    }
-
-    process(): any[] {
-        return this._data;
-    }
-}
 
 let viewID = 0;
 export class View extends PropertyExt implements IDatasource {
@@ -28,7 +14,6 @@ export class View extends PropertyExt implements IDatasource {
     _model: Model;
     private _total = 0;
     _prevHash;
-    private _sourceActivity = new SourceActivity();
 
     constructor(model: Model, label: string = "View") {
         super();
@@ -39,7 +24,7 @@ export class View extends PropertyExt implements IDatasource {
         this.dataSource().monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this.dataSource());
         });
-        this.filters(new Filters(this).sourceActivity(this._sourceActivity));
+        this.filters(new Filters(this).sourceActivity(this.dataSource()));
         this.groupBy(new GroupBy(this).sourceActivity(this.filters()));
         this.sort(new Sort(this).sourceActivity(this.groupBy()));
         this.limit(new Limit(this).sourceActivity(this.sort()));
@@ -90,17 +75,23 @@ export class View extends PropertyExt implements IDatasource {
     }
 
     outFields(): IField[] {
-        this._sourceActivity._fields = this.datasource().outFields();
         return this.limit().outFields();
     }
 
     async fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<any[]> {
-        return this.datasource().fetch(0, Number.MAX_VALUE).then(data => {
-            this._sourceActivity._data = data;
-            data = this.limit().process();
-            this._total = data.length;
-            return data.slice(from, from + count);
-        });
+        await this.limit().exec();
+        const data = this.limit().process();
+        this._total = data.length;
+        return data.slice(from, from + count);
+        /*
+                return this.datasource().fetch(0, Number.MAX_VALUE).then(data => {
+                    this._sourceActivity._data = data;
+                    data = this.limit().process();
+                    this._total = data.length;
+                    return data.slice(from, from + count);
+                });
+            }
+            */
     }
 }
 View.prototype._class += " View";
