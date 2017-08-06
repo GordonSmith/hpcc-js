@@ -1,15 +1,11 @@
-import { nest as d3Nest, PropertyExt } from "@hpcc-js/common";
 import { ascending as d3Ascending, descending as d3Descending, deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "@hpcc-js/common";
+import { nest as d3Nest, PropertyExt } from "@hpcc-js/common";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Viz } from "../dashboard/viz";
-import { Databomb, NullDatasource } from "../datasources/databomb";
-import { Form } from "../datasources/form";
-import { LogicalFile } from "../datasources/logicalfile";
-import { WUResult } from "../datasources/wuresult";
+import { DatasourceClass } from "../datasources/dsPicker";
+import { DSPicker } from "../datasources/dspicker";
 import { Model } from "../model";
-
-export type ViewDatasource = WUResult | LogicalFile | Databomb | NullDatasource | Form;
 
 function localCount(leaves: any[], callback: any): number {
     return leaves.length;
@@ -115,7 +111,7 @@ export class ColumnMapping extends PropertyExt {
 
     hash() {
         return hashSum({
-            filterField: this.filterField(),
+            remoteField: this.remoteField(),
             localField: this.localField(),
             condition: this.condition()
         });
@@ -137,7 +133,7 @@ export class ColumnMapping extends PropertyExt {
 
     createFilter(filterSelection: any[]): (localRow: any) => boolean {
         const lf = this.localField();
-        const ff = this.filterField();
+        const ff = this.remoteField();
         switch (this.condition()) {
             case "==":
                 return (localRow) => localRow[lf] === filterSelection[0][ff];
@@ -158,14 +154,14 @@ export class ColumnMapping extends PropertyExt {
 }
 ColumnMapping.prototype._class += " ColumnMapping";
 export interface ColumnMapping {
-    filterField(): string;
-    filterField(_: string): this;
+    remoteField(): string;
+    remoteField(_: string): this;
     localField(): string;
     localField(_: string): this;
     condition(): string;
     condition(_: string): this;
 }
-ColumnMapping.prototype.publish("filterField", null, "set", "Filter Fields", function () { return this.filterFields(); }, { optional: true });
+ColumnMapping.prototype.publish("remoteField", null, "set", "Filter Fields", function () { return this.filterFields(); }, { optional: true });
 ColumnMapping.prototype.publish("localField", null, "set", "Local Fields", function () { return this.localFields(); }, { optional: true });
 ColumnMapping.prototype.publish("condition", "==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "contains"]);
 
@@ -173,12 +169,12 @@ export class Filter extends PropertyExt {
     _owner: View;
 
     validMappings(): ColumnMapping[] {
-        return this.mappings().filter(mapping => !!mapping.localField() && !!mapping.filterField());
+        return this.mappings().filter(mapping => !!mapping.localField() && !!mapping.remoteField());
     }
-    appendMappings(mappings: [{ filterField: string, localField: string }]): this {
+    appendMappings(mappings: [{ remoteField: string, localField: string }]): this {
         for (const mapping of mappings) {
             this.mappings().push(new ColumnMapping(this)
-                .filterField(mapping.filterField)
+                .remoteField(mapping.remoteField)
                 .localField(mapping.localField)
             );
         }
@@ -269,6 +265,10 @@ export class View extends PropertyExt implements IDatasource {
         this._model = model;
         this.label(label);
         this._id = "v" + viewID++;
+        this.dataSource(new DSPicker());
+        this.dataSource().monitor((id, newVal, oldVal) => {
+            this.broadcast(id, newVal, oldVal, this.dataSource());
+        });
     }
 
     validFilters(): Filter[] {
@@ -277,7 +277,7 @@ export class View extends PropertyExt implements IDatasource {
     hasFilter(): boolean {
         return this.validFilters().length > 0;
     }
-    appendFilter(source: View, mappings: [{ filterField: string, localField: string }]): this {
+    appendFilter(source: View, mappings: [{ remoteField: string, localField: string }]): this {
         this.filters().push(new Filter(this)
             .source(source.id())
             .appendMappings(mappings));
@@ -295,8 +295,8 @@ export class View extends PropertyExt implements IDatasource {
         return this.limit_exists() && this.limit() > 0;
     }
 
-    datasource(): ViewDatasource {
-        return this.source() as ViewDatasource;
+    datasource(): DatasourceClass {
+        return this.dataSource().details() as DatasourceClass;
     }
 
     columns() {
@@ -534,13 +534,11 @@ export class View extends PropertyExt implements IDatasource {
 }
 View.prototype._class += " View";
 
-const nullDS = new NullDatasource();
-
 export interface View {
     label(): string;
     label(_: string): this;
-    source(): PropertyExt;
-    source(_: PropertyExt): this;
+    dataSource(): DSPicker;
+    dataSource(_: DSPicker): this;
     details(): boolean;
     details(_: boolean): this;
     fullDetails(): boolean;
@@ -557,7 +555,7 @@ export interface View {
     limit(_: number | undefined): this;
 }
 View.prototype.publish("label", null, "string", "Label");
-View.prototype.publish("source", nullDS, "widget", "Data Source");
+View.prototype.publish("dataSource", null, "widget", "Data Source");
 View.prototype.publish("details", true, "boolean", "Show details");
 View.prototype.publish("fullDetails", false, "boolean", "Show groupBy fileds in details");
 View.prototype.publish("filters", [], "propertyArray", "Filter", null, { autoExpand: Filter });

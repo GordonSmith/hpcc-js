@@ -1,11 +1,10 @@
 import { MultiChart } from "@hpcc-js/chart";
 import { PropertyExt, Surface, Widget } from "@hpcc-js/common";
-import { IAnyVisualization, IDashboard, IDatasource, IOutput, ITableVisualization, StringStringDict, VisualizationType } from "@hpcc-js/ddl-shim";
+import { IDashboard, IDatasource, IEvent, IEventUpdate, IFilter, IFilterRule, IOutput, ITableVisualization, StringStringDict, VisualizationType } from "@hpcc-js/ddl-shim";
 import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
 import { Persist } from "@hpcc-js/other";
 import { DockPanel, WidgetAdapter } from "@hpcc-js/phosphor";
-import { Databomb } from "../datasources/databomb";
-import { WUResult } from "../datasources/wuresult";
+import { Databomb, DatasourceClass, LogicalFile, WUResult } from "../datasources/dsPicker";
 import { View } from "../views/view";
 import { Viz } from "./viz";
 
@@ -145,22 +144,25 @@ export class Dashboard extends DockPanel {
             let prevID = "";
             prevID = createVertex(prevID, ds.hash(), `${ds.label()}`, ds);
             if (view.hasFilter()) {
-                prevID = createVertex(prevID, view.id() + "_f", `${view.label()}:  Filter`, view);
+                prevID = createVertex(prevID, view.id() + "_f", `${view.label()}:  Filter`, viz);
             }
             if (view.hasGroupBy()) {
-                prevID = createVertex(prevID, view.id() + "_gb", `${view.label()}:  GroupBy`, view);
+                prevID = createVertex(prevID, view.id() + "_gb", `${view.label()}:  GroupBy`, viz);
             }
             if (view.hasComputedFields()) {
-                prevID = createVertex(prevID, view.id() + "_cf", `${view.label()}:  Computed\nFields`, view);
+                prevID = createVertex(prevID, view.id() + "_cf", `${view.label()}:  Computed\nFields`, viz);
             }
             if (view.hasSortBy()) {
-                prevID = createVertex(prevID, view.id() + "_sb", `${view.label()}:  Sort`, view);
+                prevID = createVertex(prevID, view.id() + "_sb", `${view.label()}:  Sort`, viz);
             }
             if (view.hasLimit()) {
-                prevID = createVertex(prevID, view.id() + "_l", `${view.label()}:  Limit`, view);
+                prevID = createVertex(prevID, view.id() + "_l", `${view.label()}:  Limit`, viz);
             }
-            prevID = createVertex(prevID, view.id(), `${view.label()}:  Output`, view);
+            prevID = createVertex(prevID, view.id(), `${view.label()}:  Output`, viz);
+        }
 
+        for (const viz of this._visualizations) {
+            const view = viz.view();
             view.filters().forEach(filter => {
                 if (filter.source()) {
                     const filterEdge: Edge = this.createEdge(this.visualization(filter.source()).view().id(), view.id() + "_f")
@@ -179,28 +181,80 @@ export class Dashboard extends DockPanel {
         };
     }
 
-    createDDLOutputs(ds: WUResult | Databomb | any): IOutput {
-        if (ds instanceof WUResult) {
-            return {
-                id: ds.resultName(),
-                from: ds.resultName()
-            };
+    createDDLFilters(view: View): IFilter[] {
+        const retVal: IFilter[] = [];
+        for (const filter of view.validFilters()) {
+            for (const mapping of filter.validMappings()) {
+                retVal.push({
+                    nullable: filter.nullable(),
+                    fieldid: mapping.localField(),
+                    rule: mapping.condition() as IFilterRule
+                });
+            }
         }
+        return retVal;
+    }
+
+    createDDLOutputs(ds: DatasourceClass): IOutput[] {
+        const retVal: IOutput[] = [];
+        for (const viz of this.visualizations()) {
+            const view = viz.view();
+            const vizDs = viz.view().datasource();
+            if (ds.hash() === vizDs.hash()) {
+                retVal.push({
+                    id: view.label(),
+                    from: ds instanceof WUResult ? ds.resultName() : view.id(),
+                    filter: this.createDDLFilters(view)
+                });
+            }
+        }
+        return retVal;
     }
 
     createDDLDatasources(): IDatasource[] {
-        return this.visualizations().map(viz => {
+        const dsDedup = {};
+        const retVal: IDatasource[] = [];
+        for (const viz of this.visualizations()) {
             const ds = viz.view().datasource();
-            return {
-                id: ds.id(),
-                databomb: ds instanceof Databomb,
-                WUID: ds instanceof WUResult,
-                outputs: [this.createDDLOutputs(ds)]
-            };
-        });
+            if (!dsDedup[ds.hash()]) {
+                dsDedup[ds.hash()] = true;
+                retVal.push({
+                    id: ds.id(),
+                    databomb: ds instanceof Databomb,
+                    WUID: ds instanceof WUResult,
+                    outputs: this.createDDLOutputs(ds)
+                });
+            }
+        }
+        return retVal;
     }
 
-    createDDLVisualizations(): IAnyVisualization[] {
+    createDDLEvents(viz): { [key: string]: IEvent } {
+        const retVal: { [key: string]: IEvent } = {};
+        retVal["click"] = {
+            updates: []
+        };
+        const updates = retVal["click"].updates;
+        for (const updatesViz of this.visualizations()) {
+            for (const filter of updatesViz.view().validFilters()) {
+                if (filter.source() === viz.id()) {
+                    const eventUpdate: IEventUpdate = {
+                        visualization: updatesViz.id(),
+                        datasource: updatesViz.view().datasource().id(),
+                        merge: false,
+                        mappings: {}
+                    };
+                    updates.push(eventUpdate);
+                    for (const mapping of filter.validMappings()) {
+                        eventUpdate.mappings[mapping.remoteField()] = mapping.localField();
+                    }
+                }
+            }
+        }
+        return retVal;
+    }
+
+    createDDLVisualizations(): ITableVisualization[] {
         return this.visualizations().map(viz => {
             const widget: MultiChart = viz.widget() as any;
             const view = viz.view();
@@ -221,6 +275,7 @@ export class Dashboard extends DockPanel {
                         value: view.outFields().map(field => field.id)
                     }
                 },
+                events: this.createDDLEvents(viz),
                 properties: {
                     chartType: widget.chartType()
                 } as StringStringDict

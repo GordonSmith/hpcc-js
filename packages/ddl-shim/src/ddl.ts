@@ -1,10 +1,11 @@
 export type StringStringDict = { [key: string]: string; };
 
 //  Datasource  ===============================================================
+export type IFilterRule = "==" | "!=" | "<" | "<=" | ">" | ">=" | "set" | "notequals";
 export interface IFilter {
     fieldid: string;
     nullable: boolean;
-    rule: "==" | "!=" | "<" | "<=" | ">" | ">=" | "set" | "notequals";
+    rule: IFilterRule;
     minid?: string;
     maxid?: string;
 }
@@ -28,7 +29,7 @@ export interface IDatasource {
 //  Event  ====================================================================
 export interface IEventUpdate {
     visualization: string;
-    instance: string;
+    instance?: string;
     datasource: string;
     col?: string;
     merge: boolean;
@@ -36,7 +37,7 @@ export interface IEventUpdate {
 }
 
 export interface IEvent {
-    mappings: StringStringDict;
+    mappings?: StringStringDict;  // Legacy
     updates: IEventUpdate[];
 }
 

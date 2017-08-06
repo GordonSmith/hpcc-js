@@ -74,61 +74,6 @@ export class App {
         this.initMenu();
     }
 
-    async loadSample() {
-        const wu = new Workunit()
-            .url("http://192.168.3.22:8010")
-            .wuid("W20170424-070701")
-            ;
-        await wu.refresh();
-        //  this._model.addWorkunit(wu);
-
-        const wuResult = new WUResult()
-            .url("http://192.168.3.22:8010")
-            .wuid("W20170424-070701")
-            .resultName("Result 1")
-            ;
-        this._model.addDatasource(wuResult);
-
-        const databomb = new Databomb()
-            .payload([{ subject: "maths", year1: 67 }, { subject: "english", year1: 55 }])
-            ;
-        this._model.addDatasource(databomb);
-
-        const form = new Form()
-            .payload({
-                state: "FL",
-                someStr: "",
-                someNumber: 42,
-                someBoolean: false
-            })
-            ;
-        this._model.addDatasource(form);
-
-        const logicalFile = new LogicalFile()
-            .url("http://192.168.3.22:8010")
-            .filename("progguide::exampledata::keys::accounts.personid.payload")
-            ;
-        this._model.addDatasource(logicalFile);
-
-        const filter1 = new View(this._model, "Filter 1").source(wuResult)
-            .appendGroupBys([{ field: "state" }])
-            .appendComputedFields([{ label: "weight", type: "count" }])
-            ;
-        const filter2 = new View(this._model, "Filter 2").source(wuResult)
-            .appendGroupBys([{ field: "firstname" }])
-            .appendComputedFields([{ label: "weight", type: "count" }])
-            ;
-        const table1 = new View(this._model, "View 2").source(wuResult)
-            .appendFilter(filter1, [{ filterField: "state", localField: "state" }])
-            .appendFilter(filter2, [{ filterField: "firstname", localField: "firstname" }])
-            ;
-        this._model.addView(filter1);
-        this._model.addView(filter2);
-        this._model.addView(table1);
-        this.loadEditor();
-        // this.loadGraph();
-    }
-
     refreshPreview(datasource: IActivity) {
         datasource.refresh().then(() => {
             this._preview
@@ -229,10 +174,10 @@ export class App {
 
         //  Dashboard  Commands  ---
         commands.addCommand("dash_add", {
-            label: "Add WU Result View",
+            label: "Add Viz",
             execute: () => {
                 const viz = new WUResultViz(this._model);
-                (viz.view().source() as WUResult)
+                (viz.view().dataSource().details() as WUResult)
                     .url("http://192.168.3.22:8010")
                     .wuid("W20170424-070701")
                     .resultName("Result 1")

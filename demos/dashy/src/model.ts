@@ -2,14 +2,15 @@ import { PropertyExt } from "@hpcc-js/common";
 import { IDatasource } from "@hpcc-js/dgrid";
 import { Viz } from "./dashboard/viz";
 import { Databomb, NullDatasource } from "./datasources/databomb";
+import { DatasourceClass } from "./datasources/dsPicker";
 import { LogicalFile } from "./datasources/logicalfile";
 import { Workunit } from "./datasources/workunit";
 import { WUResult } from "./datasources/wuresult";
 import { deserialize as d2 } from "./serialization";
 import { NullView } from "./views/nullview";
-import { View, ViewDatasource } from "./views/view";
+import { View } from "./views/view";
 
-export type CDatasource = ViewDatasource | View | Workunit;
+export type CDatasource = DatasourceClass | View | Workunit;
 export class Model extends PropertyExt {
     private _workunits: Workunit[] = [];
     private _datasources: CDatasource[] = [];
