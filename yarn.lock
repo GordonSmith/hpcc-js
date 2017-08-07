@@ -106,8 +106,8 @@
     "@phosphor/virtualdom" "^1.1.2"
 
 "@types/d3-array@*":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@types/d3-array/-/d3-array-1.2.0.tgz#9b1fc3202fc1a9f7da0f2873bd38b443137a9d34"
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@types/d3-array/-/d3-array-1.2.1.tgz#e489605208d46a1c9d980d2e5772fa9c75d9ec65"
 
 "@types/d3-axis@*":
   version "1.0.9"
@@ -297,13 +297,20 @@
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-1.0.2.tgz#b02d10ab028e2928ac592a051aaa4981a1941d03"
 
+"@types/glob@*":
+  version "5.0.30"
+  resolved "https://registry.yarnpkg.com/@types/glob/-/glob-5.0.30.tgz#1026409c5625a8689074602808d082b2867b8a51"
+  dependencies:
+    "@types/minimatch" "*"
+    "@types/node" "*"
+
 "@types/handlebars@^4.0.31":
   version "4.0.35"
   resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.35.tgz#409eb97a3ad6970daba4d586cb6afe3f5e082c01"
 
 "@types/handsontable@^0.31.1":
-  version "0.31.1"
-  resolved "https://registry.yarnpkg.com/@types/handsontable/-/handsontable-0.31.1.tgz#a73adb9afa4af4f7fb8f3906a9f2888ea3487dec"
+  version "0.31.2"
+  resolved "https://registry.yarnpkg.com/@types/handsontable/-/handsontable-0.31.2.tgz#885aad1eef057f3446667af314749698dbf46f00"
 
 "@types/highlight.js@^9.1.8":
   version "9.1.9"
@@ -317,13 +324,13 @@
   version "0.0.28"
   resolved "https://registry.yarnpkg.com/@types/marked/-/marked-0.0.28.tgz#44ba754e9fa51432583e8eb30a7c4dd249b52faa"
 
-"@types/minimatch@^2.0.29":
+"@types/minimatch@*", "@types/minimatch@^2.0.29":
   version "2.0.29"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-2.0.29.tgz#5002e14f75e2d71e564281df0431c8c1b4a2a36a"
 
 "@types/node@*", "@types/node@^8.0.10":
-  version "8.0.17"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.17.tgz#677bc8c118cfb76013febb62ede1f31d2c7222a1"
+  version "8.0.19"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.19.tgz#e46e2b0243de7d03f15b26b45c59ebb84f657a4e"
 
 "@types/request@^0.0.41":
   version "0.0.41"
@@ -333,9 +340,10 @@
     "@types/node" "*"
 
 "@types/shelljs@^0.7.0":
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.7.2.tgz#c2bdb3fe80cd7a3da08750ca898ae44c589671f3"
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/@types/shelljs/-/shelljs-0.7.4.tgz#137b5f31306eaff4de120ffe5b9d74b297809cfc"
   dependencies:
+    "@types/glob" "*"
     "@types/node" "*"
 
 "@types/xmldom@^0.1.29":
@@ -1261,8 +1269,8 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     sha.js "^2.4.8"
 
 cross-env@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-5.0.1.tgz#ff4e72ea43b47da2486b43a7f2043b2609e44913"
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-5.0.4.tgz#af93f5ce541ca9de49250b988104112e31c22563"
   dependencies:
     cross-spawn "^5.1.0"
     is-windows "^1.0.0"
@@ -4046,8 +4054,8 @@ rollup-plugin-alias@^1.3.1:
     slash "^1.0.0"
 
 rollup-plugin-commonjs@^8.0.2:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-8.0.2.tgz#98b1589bfe32a6c0f67790b60c0b499972afed89"
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-8.1.0.tgz#8ac9a87e6ea4c0d136e3e0e25ef41058957622b0"
   dependencies:
     acorn "^4.0.1"
     estree-walker "^0.3.0"
@@ -4341,8 +4349,8 @@ static-eval@~0.2.0:
     escodegen "~0.0.24"
 
 static-module@^1.1.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/static-module/-/static-module-1.4.0.tgz#bef0d9b6f89585f6f2359b8161beeab06055dbd2"
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/static-module/-/static-module-1.5.0.tgz#27da9883c41a8cd09236f842f0c1ebc6edf63d86"
   dependencies:
     concat-stream "~1.6.0"
     duplexer2 "~0.0.2"
@@ -4690,7 +4698,7 @@ typescript@2.3.4:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.4.tgz#3d38321828231e434f287514959c37a82b629f42"
 
-typescript@^2.4.1:
+typescript@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
 
@@ -4708,8 +4716,8 @@ uglify-js@^2.6, uglify-js@^2.8.27:
     uglify-to-browserify "~1.0.0"
 
 uglify-js@^3.0.9:
-  version "3.0.26"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.0.26.tgz#ba279ca597b13fe6c62c2d87dd5188e57a7a3233"
+  version "3.0.27"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.0.27.tgz#a97db8c8ba6b9dba4e2f88d86aa9548fa6320034"
   dependencies:
     commander "~2.11.0"
     source-map "~0.5.1"

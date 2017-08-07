@@ -27,7 +27,7 @@
     "karma-mocha-reporter": "^2.2.3",
     "rimraf": "^2.6.1",
     "style-loader": "^0.18.1",
-    "typescript": "^2.4.1",
+    "typescript": "^2.4.2",
     "webpack": "^2.6.1"
   },
   "scripts": {

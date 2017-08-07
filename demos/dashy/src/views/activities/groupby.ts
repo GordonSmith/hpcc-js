@@ -202,8 +202,8 @@ export class GroupBy extends Activity {
         return retVal;
     }
 
-    process(): any[] {
-        const data = super.process();
+    pullData(): any[] {
+        const data = super.pullData();
         if (data.length === 0) return data;
         const retVal = d3Nest()
             .key(row => {

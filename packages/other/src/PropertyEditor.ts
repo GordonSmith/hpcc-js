@@ -370,6 +370,13 @@ export class PropertyEditor extends HTMLWidget {
         }
 
         const context = this;
+        const span2 = element.selectAll(".headerSpan" + this.id()).data(widgetArr, function (d) { return d.id(); });
+        span2.enter().append("span")
+            .attr("class", "headerSpan" + this.id())
+            .text("Hello Ma")
+            ;
+        // context.thButtons(span2);
+
         const widgetCell = element.selectAll("div.propEditor" + this.id()).data(widgetArr, function (d) { return d.id(); });
         widgetCell.enter().append("div")
             .attr("class", "property-input-cell propEditor" + this.id())

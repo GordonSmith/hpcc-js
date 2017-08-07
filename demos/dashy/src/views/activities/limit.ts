@@ -23,8 +23,8 @@ export class Limit extends Activity {
         return this.rows_exists() && this.rows() > 0;
     }
 
-    process(): any[] {
-        const data = super.process();
+    pullData(): any[] {
+        const data = super.pullData();
         if (this.exists()) {
             data.length = this.rows();
         }

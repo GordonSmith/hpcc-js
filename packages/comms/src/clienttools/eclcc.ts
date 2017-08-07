@@ -172,7 +172,7 @@ export class ClientTools {
     private loadXMLDoc(filePath: any, removeOnRead?: boolean): Promise<XMLNode> {
         return new Promise((resolve, _reject) => {
             const fileData = fs.readFileSync(filePath, "ascii");
-            const retVal = xml2json(fileData);
+            const retVal = xml2json(fileData as any);
             if (removeOnRead) {
                 fs.unlink(filePath, (err) => { });
             }

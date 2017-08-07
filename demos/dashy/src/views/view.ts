@@ -80,7 +80,7 @@ export class View extends PropertyExt implements IDatasource {
 
     async fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<any[]> {
         await this.limit().exec();
-        const data = this.limit().process();
+        const data = this.limit().pullData();
         this._total = data.length;
         return data.slice(from, from + count);
         /*

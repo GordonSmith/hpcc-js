@@ -28,7 +28,7 @@
     "@types/handsontable": "^0.31.1",
     "rimraf": "^2.6.1",
     "typedoc": "^0.7.1",
-    "typescript": "^2.4.1"
+    "typescript": "^2.4.2"
   },
   "repository": {
     "type": "git",

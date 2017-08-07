@@ -5,6 +5,19 @@ import { Viz } from "../../dashboard/viz";
 import { View } from "../view";
 import { Activity } from "./activity";
 
+export enum Rule {
+    eq = "==",
+    neq = "!=",
+    gt = ">",
+    gte = ">=",
+    lt = "<",
+    lte = "<=",
+    contains = "contains"
+}
+export type RuleType = Rule.eq | Rule.neq | Rule.gt | Rule.gte | Rule.lt | Rule.lte | Rule.contains;
+export const RuleKeyArr = Object.keys(Rule);
+export const RuleValueArr = RuleKeyArr.map(key => Rule[key]);
+
 export class ColumnMapping extends PropertyExt {
     _owner: Filter;
 
@@ -40,22 +53,22 @@ export class ColumnMapping extends PropertyExt {
 
     createFilter(filterSelection: any[]): (localRow: any) => boolean {
         const lf = this.localField();
-        const ff = this.remoteField();
+        const rf = this.remoteField();
         switch (this.condition()) {
             case "==":
-                return (localRow) => localRow[lf] === filterSelection[0][ff];
+                return (localRow) => localRow[lf] === filterSelection[0][rf];
             case "!=":
-                return (localRow) => localRow[lf] !== filterSelection[0][ff];
+                return (localRow) => localRow[lf] !== filterSelection[0][rf];
             case "<":
-                return (localRow) => localRow[lf] < filterSelection[0][ff];
+                return (localRow) => localRow[lf] < filterSelection[0][rf];
             case "<=":
-                return (localRow) => localRow[lf] <= filterSelection[0][ff];
+                return (localRow) => localRow[lf] <= filterSelection[0][rf];
             case ">":
-                return (localRow) => localRow[lf] > filterSelection[0][ff];
+                return (localRow) => localRow[lf] > filterSelection[0][rf];
             case ">=":
-                return (localRow) => localRow[lf] >= filterSelection[0][ff];
+                return (localRow) => localRow[lf] >= filterSelection[0][rf];
             case "conatins":
-                return (localRow) => filterSelection.some(fsRow => localRow[lf] === fsRow[ff]);
+                return (localRow) => filterSelection.some(fsRow => localRow[lf] === fsRow[rf]);
         }
     }
 
@@ -74,7 +87,7 @@ export interface ColumnMapping {
 }
 ColumnMapping.prototype.publish("remoteField", null, "set", "Filter Fields", function () { return this.filterFields(); }, { optional: true });
 ColumnMapping.prototype.publish("localField", null, "set", "Local Fields", function () { return this.localFields(); }, { optional: true });
-ColumnMapping.prototype.publish("condition", "==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "contains"]);
+ColumnMapping.prototype.publish("condition", "==", "set", "Filter Fields", RuleValueArr);
 
 export class Filter extends PropertyExt {
     _view: View;
@@ -184,8 +197,8 @@ export class Filters extends Activity {
         return this;
     }
 
-    process(): any[] {
-        let data = super.process();
+    pullData(): any[] {
+        let data = super.pullData();
         const filters = this.validFilters();
         //  Test for null selection + nullable
         for (const filter of filters) {

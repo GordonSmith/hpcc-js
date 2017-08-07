@@ -1,11 +1,8 @@
 import { PropertyExt } from "@hpcc-js/common";
 import { IDatasource } from "@hpcc-js/dgrid";
 import { Viz } from "./dashboard/viz";
-import { Databomb, NullDatasource } from "./datasources/databomb";
-import { LogicalFile } from "./datasources/logicalfile";
+import { NullDatasource } from "./datasources/databomb";
 import { Workunit } from "./datasources/workunit";
-import { WUResult } from "./datasources/wuresult";
-import { deserialize as d2 } from "./serialization";
 import { DatasourceClass } from "./views/activities/dsPicker";
 import { NullView } from "./views/nullview";
 import { View } from "./views/view";
@@ -108,18 +105,3 @@ export class Model extends PropertyExt {
     }
 }
 Model.prototype._class += " Model";
-
-export function deserialize(json: string | object) {
-    return d2(json, (classID) => {
-        switch (classID) {
-            case "Model":
-                return new Model();
-            case "WUResult":
-                return new WUResult();
-            case "LogicalFile":
-                return new LogicalFile();
-            case "Databomb":
-                return new Databomb();
-        }
-    });
-}

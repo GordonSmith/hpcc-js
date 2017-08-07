@@ -1,8 +1,13 @@
 import { PropertyExt } from "@hpcc-js/common";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
+import { RuleType } from "./filter";
+
+export interface IOptimization {
+    filters?: Array<{ fieldid: string, value: any, rule: RuleType }>;
+}
 
 export abstract class Activity extends PropertyExt implements IDatasource {
-    protected _sourceActivity: Activity;
+    private _sourceActivity: Activity;
 
     sourceActivity(): Activity;
     sourceActivity(_: Activity): this;
@@ -13,19 +18,19 @@ export abstract class Activity extends PropertyExt implements IDatasource {
     }
 
     inFields(): IField[] {
-        return this._sourceActivity.outFields();
+        return this._sourceActivity ? this._sourceActivity.outFields() : [];
     }
 
     outFields(): IField[] {
         return this.inFields();
     }
 
-    process(): any[] {
-        return this._sourceActivity.process();
+    pullData(): any[] {
+        return this._sourceActivity ? this._sourceActivity.pullData() : [];
     }
 
-    exec(): Promise<void> {
-        return this._sourceActivity.exec();
+    exec(opts: IOptimization = {}): Promise<void> {
+        return this._sourceActivity ? this._sourceActivity.exec(opts) : Promise.resolve();
     }
 
     //  IDatasource  ---
@@ -33,12 +38,13 @@ export abstract class Activity extends PropertyExt implements IDatasource {
     label(): string {
         return this.id();
     }
+
     total(): number {
-        return this.process().length;
+        return this.pullData().length;
 
     }
     async fetch(from: number, count: number): Promise<any[]> {
         await this.exec();
-        return this.process().slice(from, from + count);
+        return this.pullData().slice(from, from + count);
     }
 }

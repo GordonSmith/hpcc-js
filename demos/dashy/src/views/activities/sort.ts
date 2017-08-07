@@ -74,8 +74,8 @@ export class Sort extends Activity {
         return this.validSortBy().length > 0;
     }
 
-    process(): any[] {
-        const data = super.process();
+    pullData(): any[] {
+        const data = super.pullData();
         const sortByArr = [];
         for (const sortBy of this.column()) {
             const sortByField = sortBy.field(sortBy.label());

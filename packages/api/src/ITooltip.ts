@@ -6,7 +6,7 @@ const tip = _tip.tip || _tip.default || _tip;
 
 import "../src/ITooltip.css";
 
-export class ITooltip extends Widget {
+export abstract class ITooltip extends Widget {
     protected _valueFormatter;
     layerEnter;
     layerUpdate;
@@ -52,6 +52,9 @@ export class ITooltip extends Widget {
             };
         }
     }
+
+    abstract target(): any;
+    abstract target(_: any): this;
 
     tooltipEnter(element) {
         const context = this;

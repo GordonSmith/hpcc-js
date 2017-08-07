@@ -294,7 +294,7 @@ export const ddlSchema =
                 },
                 "filter": {
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/IFilter"
                     },
                     "type": "array"
                 },
@@ -331,7 +331,6 @@ export const ddlSchema =
                 }
             },
             "required": [
-                "mappings",
                 "updates"
             ],
             "type": "object"
@@ -363,11 +362,49 @@ export const ddlSchema =
             },
             "required": [
                 "datasource",
-                "instance",
                 "merge",
                 "visualization"
             ],
             "type": "object"
+        },
+        "IFilter": {
+            "additionalProperties": false,
+            "properties": {
+                "fieldid": {
+                    "type": "string"
+                },
+                "maxid": {
+                    "type": "string"
+                },
+                "minid": {
+                    "type": "string"
+                },
+                "nullable": {
+                    "type": "boolean"
+                },
+                "rule": {
+                    "$ref": "#/definitions/IFilterRule"
+                }
+            },
+            "required": [
+                "fieldid",
+                "nullable",
+                "rule"
+            ],
+            "type": "object"
+        },
+        "IFilterRule": {
+            "enum": [
+                "!=",
+                "<",
+                "<=",
+                "==",
+                ">",
+                ">=",
+                "notequals",
+                "set"
+            ],
+            "type": "string"
         },
         "IGraphLink": {
             "additionalProperties": false,
@@ -766,7 +803,7 @@ export const ddlSchema =
             "properties": {
                 "filter": {
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/IFilter"
                     },
                     "type": "array"
                 },

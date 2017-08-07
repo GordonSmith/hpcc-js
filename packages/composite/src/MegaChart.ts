@@ -251,13 +251,13 @@ export class MegaChart extends Border {
     }
 
     update(domNode, element) {
-        function showHideButton(twArr, button, show) {
-            if (show && twArr.indexOf(button) === -1) {
-                twArr.push(button);
+        function showHideButton(twArr2, button, show) {
+            if (show && twArr2.indexOf(button) === -1) {
+                twArr2.push(button);
             } else if (!show) {
-                const idx = twArr.indexOf(button);
+                const idx = twArr2.indexOf(button);
                 if (idx >= 0) {
-                    twArr.splice(idx, 1);
+                    twArr2.splice(idx, 1);
                 }
             }
         }

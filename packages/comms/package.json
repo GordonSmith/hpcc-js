@@ -13,14 +13,16 @@
   ],
   "scripts": {
     "clean": "rimraf lib* && rimraf dist*",
-    "build": "tsc",
-    "build-es6": "tsc --module es6 --outDir ./lib-es6",
+    "build": "tsc -p .",
+    "build-es6": "tsc --module es6 --outDir ./lib-es6 -p .",
     "bundle": "node ./node_modules/@hpcc-js/bundle/lib/rollup",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
     "@hpcc-js/util": "^0.0.32",
     "d3-request": "^1.0.5",
+    "d3-time-format": "^2.0.5",
+    "es6-promise": "^4.1.1",
     "safe-buffer": "^5.0.1",
     "tslib": "^1.7.1",
     "xmldom": "^0.1.27"
@@ -32,7 +34,7 @@
     "@types/xmldom": "^0.1.29",
     "rimraf": "^2.6.1",
     "typedoc": "^0.7.1",
-    "typescript": "^2.4.1"
+    "typescript": "^2.4.2"
   },
   "repository": {
     "type": "git",

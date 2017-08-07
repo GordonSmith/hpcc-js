@@ -1,8 +1,9 @@
 import { IField } from "@hpcc-js/dgrid";
 import { Databomb } from "../../datasources/databomb";
+import { Form } from "../../datasources/form";
 import { LogicalFile } from "../../datasources/logicalfile";
 import { WUResult } from "../../datasources/wuresult";
-import { Activity } from "./Activity";
+import { Activity, IOptimization } from "./Activity";
 
 export {
     WUResult,
@@ -17,7 +18,7 @@ export enum Type {
 }
 
 export type DatasourceType = Type.WURESULT | Type.LOGICALFILE | Type.DATABOMB;
-export type DatasourceClass = WUResult | LogicalFile | Databomb;
+export type DatasourceClass = WUResult | LogicalFile | Databomb | Form;
 const Types = [Type.WURESULT, Type.LOGICALFILE, Type.DATABOMB];
 
 export class DSPicker extends Activity {
@@ -38,6 +39,8 @@ export class DSPicker extends Activity {
             { state: "NY", weight: 100 }
         ])
     ;
+    _prevHash;
+    _dataPromise: Promise<void>;
     _data: any[] = [];
 
     constructor() {
@@ -65,14 +68,19 @@ export class DSPicker extends Activity {
         return this.details().outFields();
     }
 
-    process(): any[] {
+    pullData(): any[] {
         return this._data;
     }
 
-    exec(): Promise<void> {
-        return this.details().fetch(0, Number.MAX_VALUE).then(data => {
-            this._data = data;
-        });
+    exec(opts: IOptimization = {}): Promise<void> {
+        if (this._prevHash !== this.details().hash()) {
+            this._prevHash = this.details().hash();
+            delete this._data;
+            this._dataPromise = this.details().fetch(0, Number.MAX_VALUE).then(data => {
+                this._data = data;
+            });
+        }
+        return this._dataPromise;
     }
 }
 DSPicker.prototype._class += " DSPicker";

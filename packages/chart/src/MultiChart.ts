@@ -106,13 +106,17 @@ export class MultiChart extends HTMLWidget {
         return this;
     }
 
-    chartTypeDefaults(_) {
+    chartTypeDefaults(): object;
+    chartTypeDefaults(_: object): this;
+    chartTypeDefaults(_?: object): object | this {
         if (!arguments.length) return this._chartTypeDefaults;
         this._chartTypeDefaults = _;
         return this;
     }
 
-    chartTypeProperties(_) {
+    chartTypeProperties(): object;
+    chartTypeProperties(_: object): this;
+    chartTypeProperties(_?: object): object | this {
         if (!arguments.length) return this._chartTypeProperties;
         this._chartTypeProperties = _;
         return this;
@@ -234,6 +238,12 @@ export class MultiChart extends HTMLWidget {
             return this;
         }
         return HTMLWidget.prototype.render.apply(this, arguments);
+    }
+
+    click(_row, _column, _selected) {
+    }
+
+    dblclick(_row, _column, _selected) {
     }
 }
 MultiChart.prototype._class += " chart_MultiChart";

@@ -1,11 +1,14 @@
 import { Widget } from "@hpcc-js/common";
 
-export class IInput extends Widget {
+export abstract class IInput extends Widget {
     _inputElement;
 
     constructor() {
         super();
     }
+
+    abstract target(): any;
+    abstract target(_: any): this;
 
     //  Implementation  ---
     isValid() {
