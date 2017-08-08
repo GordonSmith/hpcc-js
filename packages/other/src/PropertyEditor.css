@@ -23,9 +23,12 @@
 .other_PropertyEditor .other_PropertyEditor .other_PropertyEditor .other_PropertyEditor .headerRow{background-color:#bbb;}
 .other_PropertyEditor .other_PropertyEditor .other_PropertyEditor .other_PropertyEditor .other_PropertyEditor .headerRow{background-color:#aaa;}
 
+.other_PropertyEditor div.property-table-collapsed {
+    display:none;
+}
+
 .other_PropertyEditor .headerRow > div > span {
     font-weight: bold;
-    float:left;
     padding-top:4px;
     padding-bottom:4px;
 }
@@ -50,9 +53,6 @@
 .other_PropertyEditor .property-table thead > tr > th > i:hover{
     background-color: #555;
     cursor:pointer;
-}
-.other_PropertyEditor .property-table.property-table-collapsed tbody{
-    display:none;
 }
 .other_PropertyEditor .property-table tbody > tr:nth-child(even){
     background-color: #F9F9F9;
@@ -80,6 +80,7 @@
     text-align:left;
     height:20px;
     padding:1px 0;
+    width:80%
 }
 .other_PropertyEditor .property-input-cell > input,
 .other_PropertyEditor .property-input-cell > textarea{

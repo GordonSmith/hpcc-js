@@ -24,7 +24,7 @@ export class PropertyEditor extends HTMLWidget {
     _selectedItems;
     __meta_sorting;
     _watch;
-    _childPE = d3Local<PropertyEditor>();
+    private _childPE = d3Local<PropertyEditor>();
 
     constructor() {
         super();
@@ -166,50 +166,35 @@ export class PropertyEditor extends HTMLWidget {
         }
     }
 
-    thButtons(th, expandButton?) {
+    thButtons(th) {
         const context = this;
-        const collapseIcon = (expandButton ? expandButton : th.append("i"))
-            .attr("class", "fa fa-minus-square-o")
-            .on("click", function (d) {
-                const clickTarget = expandButton ? th.select("table") : d;
-                clickTarget
-                    .classed("property-table-collapsed", !clickTarget.classed("property-table-collapsed"))
+        const sortIcon = th.append("i")
+            .attr("class", "fa " + context.__meta_sorting.ext.icons[context.sorting_options().indexOf(context.sorting())])
+            .on("click", function () {
+                const sort = context.sorting();
+                const types = context.sorting_options();
+                const icons = context.__meta_sorting.ext.icons;
+                sortIcon
+                    .classed(icons[types.indexOf(sort)], false)
+                    .classed(icons[(types.indexOf(sort) + 1) % types.length], true)
                     ;
-                collapseIcon
-                    .classed("fa-minus-square-o", !clickTarget.classed("property-table-collapsed"))
-                    .classed("fa-plus-square-o", clickTarget.classed("property-table-collapsed"))
-                    ;
+                context.sorting(types[(types.indexOf(sort) + 1) % types.length]).render();
             })
             ;
-        if (this.parentPropertyEditor() === null && !expandButton) {
-            const sortIcon = th.append("i")
-                .attr("class", "fa " + context.__meta_sorting.ext.icons[context.sorting_options().indexOf(context.sorting())])
-                .on("click", function () {
-                    const sort = context.sorting();
-                    const types = context.sorting_options();
-                    const icons = context.__meta_sorting.ext.icons;
-                    sortIcon
-                        .classed(icons[types.indexOf(sort)], false)
-                        .classed(icons[(types.indexOf(sort) + 1) % types.length], true)
-                        ;
-                    context.sorting(types[(types.indexOf(sort) + 1) % types.length]).render();
-                })
-                ;
-            const hideParamsIcon = th.append("i")
-                .attr("class", "fa " + (context.hideNonWidgets() ? "fa-eye-slash" : "fa-eye"))
-                .on("click", function () {
-                    hideParamsIcon
-                        .classed("fa-eye", context.hideNonWidgets())
-                        .classed("fa-eye-slash", !context.hideNonWidgets())
-                        ;
-                    context.hideNonWidgets(!context.hideNonWidgets()).render();
-                })
-                ;
-            hideParamsIcon
-                .classed("fa-eye", !context.hideNonWidgets())
-                .classed("fa-eye-slash", context.hideNonWidgets())
-                ;
-        }
+        const hideParamsIcon = th.append("i")
+            .attr("class", "fa " + (context.hideNonWidgets() ? "fa-eye-slash" : "fa-eye"))
+            .on("click", function () {
+                hideParamsIcon
+                    .classed("fa-eye", context.hideNonWidgets())
+                    .classed("fa-eye-slash", !context.hideNonWidgets())
+                    ;
+                context.hideNonWidgets(!context.hideNonWidgets()).render();
+            })
+            ;
+        hideParamsIcon
+            .classed("fa-eye", !context.hideNonWidgets())
+            .classed("fa-eye-slash", context.hideNonWidgets())
+            ;
     }
 
     gatherDataTree(widget) {
@@ -391,26 +376,50 @@ export class PropertyEditor extends HTMLWidget {
 
         const context = this;
         element.classed("headerRow", true);
-        const peHeader = element.selectAll(`div.headerSpan-${this.id()}`).data(widgetArr, function (d) { return d.id(); });
-        peHeader.enter().append("div")
-            .attr("class", `headerSpan headerSpan-${this.id()}`)
-            .each(function (d) {
-                const element2 = d3Select(this).html("");
-                element2.append("span")
-                    .text(() => `${param.id}`)
+        const peInput = element.selectAll(`div.peInput-${this.depth()}`).data(widgetArr, function (d) { return d.id(); });
+        peInput.enter().append("div")
+            .attr("class", `peInput-${this.depth()}`)
+            .each(function (w) {
+                const peInputElement = d3Select(this);
+
+                //  Header  ---
+                peInputElement.append("span");
+                peInputElement.append("i")
+                    .attr("class", "fa")
+                    .on("click", function (d) {
+                        const clickTarget = peInputElement.select("div");
+                        clickTarget
+                            .classed("property-table-collapsed", !clickTarget.classed("property-table-collapsed"))
+                            ;
+                        d3Select(this)
+                            .classed("fa-minus-square-o", !clickTarget.classed("property-table-collapsed"))
+                            .classed("fa-plus-square-o", clickTarget.classed("property-table-collapsed"))
+                            ;
+                    })
                     ;
-                const expandButton = element2.append("i");
-                context.thButtons(element, expandButton);
+
+                //  Body  ---
+                const peDiv = peInputElement.append("div")
+                    // .attr("class", `property-input-cell propEditor-${context.depth()}`)
+                    ;
+                context._childPE.set(this, new PropertyEditor().label(param.id).target(peDiv.node()));
             })
-            ;
-        peHeader.exit().remove();
-        const widgetCell = element.selectAll(`div.propEditor-${this.id()}`).data(widgetArr, function (d) { return d.id(); });
-        widgetCell.enter().append("div")
-            .attr("class", `property-input-cell propEditor-${this.id()}`)
+            .merge(peInput)
             .each(function (w) {
-                context._childPE.set(this, new PropertyEditor().label(param.id).target(this));
-            }).merge(widgetCell)
-            .each(function (w) {
+                const peInputElement = d3Select(this);
+                const clickTarget = peInputElement.select("div");
+
+                //  Header  ---
+                d3Select(this).select("span")
+                    .text(`${param.id}`)
+                    ;
+
+                d3Select(this).select("i")
+                    .classed("fa-minus-square-o", !clickTarget.classed("property-table-collapsed"))
+                    .classed("fa-plus-square-o", clickTarget.classed("property-table-collapsed"))
+                    ;
+
+                //  Body  ---
                 context._childPE.get(this)
                     .parentPropertyEditor(context)
                     .showFields(context.showFields())
@@ -425,8 +434,8 @@ export class PropertyEditor extends HTMLWidget {
                     ;
             })
             ;
-        widgetCell.exit()
-            .each(function () {
+        peInput.exit()
+            .each(function (w) {
                 context._childPE.get(this)
                     .widget(null)
                     .render()

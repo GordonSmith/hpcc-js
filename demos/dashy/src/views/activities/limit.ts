@@ -26,7 +26,7 @@ export class Limit extends Activity {
     pullData(): any[] {
         const data = super.pullData();
         if (this.exists()) {
-            data.length = this.rows();
+            data.length = Math.min(this.rows(), data.length);
         }
         return data;
     }
