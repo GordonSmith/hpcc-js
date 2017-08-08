@@ -166,7 +166,7 @@ export class Dashboard extends DockPanel {
                 if (filter.source()) {
                     const filterEdge: Edge = this.createEdge(this.visualization(filter.source()).view().id(), view.id() + "_f")
                         .strokeDasharray("1,5")
-                        // .text("Sel:")
+                        .text("filter")
                         ;
                     edges.push(filterEdge);
                 }

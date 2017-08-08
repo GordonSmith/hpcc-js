@@ -44,6 +44,10 @@ export class DockPanel extends HTMLWidget {
         return this;
     }
 
+    isVisible(widget: Widget) {
+        return this.getWidgetAdapter(widget).isVisible;
+    }
+
     widgets(): Widget[] {
         return this.content.map(wa => wa._widget);
     }

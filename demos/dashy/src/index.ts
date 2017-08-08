@@ -141,9 +141,7 @@ export class App {
     }
 
     loadDashboard(refresh: boolean = true) {
-        this._dashboard
-            ;
-        if (refresh) {
+        if (refresh && this._dockPanel.isVisible(this._dashboard as any)) {
             this._dashboard.lazyRender();
         }
     }
@@ -151,27 +149,30 @@ export class App {
     loadGraph(refresh: boolean = false) {
         this._graph
             .layout("Hierarchy")
-            // .applyScaleOnLayout(true)
             .data({ ...this._dashboard.createGraph(), merge: false })
             ;
-        if (refresh) {
+        if (refresh && this._dockPanel.isVisible(this._graph as any)) {
             this._graph.lazyRender();
         }
     }
 
     loadDDL(refresh: boolean = false) {
-        if (refresh) {
+        this._ddlEditor
+            .ddl(this._dashboard.createDDL())
+            ;
+        if (refresh && this._dockPanel.isVisible(this._ddlEditor as any)) {
             this._ddlEditor
-                .ddl(this._dashboard.createDDL())
                 .lazyRender()
                 ;
         }
     }
 
     loadLayout(refresh: boolean = false) {
-        if (refresh) {
+        this._layoutEditor
+            .json(this._dashboard.createLayout())
+            ;
+        if (refresh && this._dockPanel.isVisible(this._layoutEditor as any)) {
             this._layoutEditor
-                .json(this._dashboard.createLayout())
                 .lazyRender()
                 ;
         }

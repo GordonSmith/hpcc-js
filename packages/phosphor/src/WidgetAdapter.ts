@@ -33,6 +33,9 @@ export class WidgetAdapter extends PWidget {
 
     protected onActivateRequest(msg: Message): void {
         super.onActivateRequest(msg);
+        this._widget
+            .lazyRender()
+            ;
     }
 
     protected onResize(msg: PWidget.ResizeMessage): void {

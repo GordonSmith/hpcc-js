@@ -1,7 +1,7 @@
 import { HTMLWidget, Platform, PropertyExt } from "@hpcc-js/common";
 import { Widget } from "@hpcc-js/common";
 import { Grid } from "@hpcc-js/layout";
-import { select as d3Select, selectAll as d3SelectAll } from "d3-selection";
+import { local as d3Local, select as d3Select, selectAll as d3SelectAll } from "d3-selection";
 import * as Persist from "./Persist";
 
 import "../src/PropertyEditor.css";
@@ -24,6 +24,7 @@ export class PropertyEditor extends HTMLWidget {
     _selectedItems;
     __meta_sorting;
     _watch;
+    _childPE = d3Local<PropertyEditor>();
 
     constructor() {
         super();
@@ -37,6 +38,16 @@ export class PropertyEditor extends HTMLWidget {
         if (!arguments.length) return this._parentPropertyEditor;
         this._parentPropertyEditor = _;
         return this;
+    }
+
+    depth(): number {
+        let retVal = 0;
+        let parent = this.parentPropertyEditor();
+        while (parent) {
+            ++retVal;
+            parent = parent.parentPropertyEditor();
+        }
+        return retVal;
     }
 
     show_settings(): boolean;
@@ -70,19 +81,27 @@ export class PropertyEditor extends HTMLWidget {
             return true;
         });
 
-        const table2 = element2.selectAll(".table" + this.id()).data(rootWidgets, function (d) { return d.id(); });
+        const table2 = element2.selectAll(`table.property-table.table-${this.depth()}`).data(rootWidgets, function (d) {
+            //  We reuse the existing DOM Nodes and this node _might_ have been a regular Input previously  ---
+            if (typeof d.id !== "function") {
+                return `meta-${d.id}`;
+            }
+            return d.id();
+        });
         table2.enter().append("table")
-            .attr("class", "property-table table" + this.id())
+            .attr("class", `property-table table-${this.depth()}`)
             .each(function () {
                 const table = d3Select(this);
-                table.append("thead").append("tr").append("th").datum(table)
-                    .attr("colspan", "2")
-                    .each(function () {
-                        const th = d3Select(this);
-                        th.append("span");
-                        context.thButtons(th);
-                    })
-                    ;
+                if (context.parentPropertyEditor() === null) {
+                    table.append("thead").append("tr").append("th").datum(table)
+                        .attr("colspan", "2")
+                        .each(function () {
+                            const th = d3Select(this);
+                            th.append("span");
+                            context.thButtons(th);
+                        })
+                        ;
+                }
                 table.append("tbody");
             })
             .merge(table2)
@@ -147,21 +166,22 @@ export class PropertyEditor extends HTMLWidget {
         }
     }
 
-    thButtons(th) {
+    thButtons(th, expandButton?) {
         const context = this;
-        const collapseIcon = th.append("i")
+        const collapseIcon = (expandButton ? expandButton : th.append("i"))
             .attr("class", "fa fa-minus-square-o")
             .on("click", function (d) {
-                d
-                    .classed("property-table-collapsed", !d.classed("property-table-collapsed"))
+                const clickTarget = expandButton ? th.select("table") : d;
+                clickTarget
+                    .classed("property-table-collapsed", !clickTarget.classed("property-table-collapsed"))
                     ;
                 collapseIcon
-                    .classed("fa-minus-square-o", !d.classed("property-table-collapsed"))
-                    .classed("fa-plus-square-o", d.classed("property-table-collapsed"))
+                    .classed("fa-minus-square-o", !clickTarget.classed("property-table-collapsed"))
+                    .classed("fa-plus-square-o", clickTarget.classed("property-table-collapsed"))
                     ;
             })
             ;
-        if (this.parentPropertyEditor() === null) {
+        if (this.parentPropertyEditor() === null && !expandButton) {
             const sortIcon = th.append("i")
                 .attr("class", "fa " + context.__meta_sorting.ext.icons[context.sorting_options().indexOf(context.sorting())])
                 .on("click", function () {
@@ -370,24 +390,28 @@ export class PropertyEditor extends HTMLWidget {
         }
 
         const context = this;
-        const span2 = element.selectAll(".headerSpan" + this.id()).data(widgetArr, function (d) { return d.id(); });
-        span2.enter().append("span")
-            .attr("class", "headerSpan" + this.id())
-            .text("Hello Ma")
-            ;
-        // context.thButtons(span2);
-
-        const widgetCell = element.selectAll("div.propEditor" + this.id()).data(widgetArr, function (d) { return d.id(); });
-        widgetCell.enter().append("div")
-            .attr("class", "property-input-cell propEditor" + this.id())
-            .each(function (w) {
-                d3Select(this)
-                    .attr("data-widgetid", w.id())
-                    .property("data-propEditor", new PropertyEditor().label(param.id).target(this))
+        element.classed("headerRow", true);
+        const peHeader = element.selectAll(`div.headerSpan-${this.id()}`).data(widgetArr, function (d) { return d.id(); });
+        peHeader.enter().append("div")
+            .attr("class", `headerSpan headerSpan-${this.id()}`)
+            .each(function (d) {
+                const element2 = d3Select(this).html("");
+                element2.append("span")
+                    .text(() => `${param.id}`)
                     ;
+                const expandButton = element2.append("i");
+                context.thButtons(element, expandButton);
+            })
+            ;
+        peHeader.exit().remove();
+        const widgetCell = element.selectAll(`div.propEditor-${this.id()}`).data(widgetArr, function (d) { return d.id(); });
+        widgetCell.enter().append("div")
+            .attr("class", `property-input-cell propEditor-${this.id()}`)
+            .each(function (w) {
+                context._childPE.set(this, new PropertyEditor().label(param.id).target(this));
             }).merge(widgetCell)
             .each(function (w) {
-                d3Select(this).property("data-propEditor")
+                context._childPE.get(this)
                     .parentPropertyEditor(context)
                     .showFields(context.showFields())
                     .showData(context.showData())
@@ -403,15 +427,12 @@ export class PropertyEditor extends HTMLWidget {
             ;
         widgetCell.exit()
             .each(function () {
-                const element2 = d3Select(this);
-                element2.property("data-propEditor")
+                context._childPE.get(this)
                     .widget(null)
                     .render()
                     .target(null)
                     ;
-                element2
-                    .property("data-propEditor", null)
-                    ;
+                context._childPE.remove(this);
             })
             .remove()
             ;
