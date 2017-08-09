@@ -144,7 +144,7 @@ export class Dashboard extends DockPanel {
         for (const viz of this._visualizations) {
             const view = viz.view();
             const ds = view.datasource();
-            const firstID = createVertex("", ds.hash(), `${ds.label()}`, { viz: undefined, activity: view.dataSource() });
+            const firstID = createVertex("", ds.hash(), `${ds.label()}`, { viz: undefined, activity: view.datasource() });
             let prevID = firstID;
             if (view.filters().exists()) {
                 prevID = createVertex(prevID, view.id() + "_f", `${view.label()}:  Filter`, { viz, activity: view.filters() });

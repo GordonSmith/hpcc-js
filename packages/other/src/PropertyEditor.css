@@ -38,6 +38,7 @@
 
 .other_PropertyEditor .headerRow > .peInput > span {
     font-weight: bold;
+    padding-left: 2px;
 }
 
 .other_PropertyEditor .headerRow > .peInput > i {
