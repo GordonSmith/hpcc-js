@@ -82,58 +82,61 @@ export class App {
         });
     }
 
-    async vizChanged(w: Viz, activity?: Activity) {
-        if (this._currActivity === w) {
-            if (activity) {
-                this._preview
-                    .datasource(activity || this._currActivity.toIDatasource())
-                    .paging(this._currActivity instanceof View ? false : true)
-                    .lazyRender()
-                    ;
+    async vizChanged(activity: Viz, subActivity?: Activity) {
+        if (this._currActivity === activity) {
+            if (subActivity) {
+                this.loadPreview(subActivity);
             }
             return;
         }
-        this._currActivity = w;
-        await this._currActivity.refresh();
+        if (activity) {
+            await activity.refresh();
+        }
+        this._currActivity = activity;
+        this.loadProperties();
+        this.loadPreview(subActivity);
+        this.loadDDL(true);
+        this.loadLayout(true);
+    }
+
+    loadProperties() {
         if (this._monitorHandle) {
             this._monitorHandle.remove();
+            delete this._monitorHandle;
         }
-        this._preview
-            .datasource(activity || this._currActivity.toIDatasource())
-            .paging(this._currActivity instanceof View ? false : true)
-            .lazyRender()
-            ;
+        const dataProps = this._currActivity ? this._currActivity.dataProps() : null;
+        const vizProps = this._currActivity ? this._currActivity.vizProps() : null;
+        const stateProps = this._currActivity ? this._currActivity.stateProps() : null;
         this._dataProperties
-            .widget(this._currActivity.dataProps())
+            .widget(dataProps)
             .render(widget => {
-                this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
-                    console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
-                    this._currActivity.refresh().then(() => {
-                        this.refreshPreview(this._currActivity.view().limit());
-                        this.loadGraph(true);
+                if (this._currActivity) {
+                    this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
+                        console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
+                        this._currActivity.refresh().then(() => {
+                            this.refreshPreview(this._currActivity.view().limit());
+                            this.loadGraph(true);
+                        });
                     });
-                });
+                }
             })
             ;
         this._vizProperties
-            .widget(this._currActivity.vizProps())
-            .render(widget => {
-                this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
-                    console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
-                });
-            })
+            .widget(vizProps)
+            .render()
             ;
         this._stateProperties
-            .widget(this._currActivity.stateProps())
-            .render(widget => {
-                this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
-                    console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
-                });
-            })
+            .widget(stateProps)
+            .render()
             ;
+    }
 
-        this.loadDDL(true);
-        this.loadLayout(true);
+    loadPreview(subActivity?: Activity) {
+        this._preview
+            .datasource(subActivity || this._currActivity.toIDatasource())
+            .paging(this._currActivity instanceof View ? false : true)
+            .lazyRender()
+            ;
     }
 
     loadEditor() {

@@ -67,8 +67,8 @@ export class PropertyEditor extends HTMLWidget {
         return this.show_settings() ? [this] : this.widget() ? [this.widget()] : [];
     }
 
-    update(domNode, element2) {
-        super.update(domNode, element2);
+    update(domNode, element) {
+        super.update(domNode, element);
 
         const context = this;
 
@@ -81,56 +81,47 @@ export class PropertyEditor extends HTMLWidget {
             return true;
         });
 
-        const table2 = element2.selectAll(`table.property-table.table-${this.depth()}`).data(rootWidgets, function (d) {
+        const table = element.selectAll(`table.property-table.table-${this.depth()}`).data(rootWidgets, function (d) {
             //  We reuse the existing DOM Nodes and this node _might_ have been a regular Input previously  ---
             if (typeof d.id !== "function") {
                 return `meta-${d.id}`;
             }
             return d.id();
         });
-        table2.enter().append("table")
+        table.enter().append("table")
             .attr("class", `property-table table-${this.depth()}`)
             .each(function () {
-                const table = d3Select(this);
+                const tableElement = d3Select(this);
+
+                //  Header  ---
                 if (context.parentPropertyEditor() === null) {
-                    table.append("thead").append("tr").append("th").datum(table)
+                    tableElement.append("thead").append("tr").append("th")// .datum(tableElement)
                         .attr("colspan", "2")
                         .each(function () {
-                            const th = d3Select(this);
-                            th.append("span");
-                            context.thButtons(th);
+                            context.enterHeader(d3Select(this));
                         })
                         ;
                 }
-                table.append("tbody");
+
+                //  Body  ---
+                tableElement.append("tbody");
             })
-            .merge(table2)
-            .each(function (d2) {
-                const element = d3Select(this);
-                element.select("thead > tr > th > span")
-                    .text(function (d: any) {
-                        let spanText = "";
-                        if (context.label()) {
-                            spanText += context.label();
-                        }
-                        if (d && d.classID) {
-                            if (spanText) {
-                                spanText += " - ";
-                            }
-                            spanText += d.classID();
-                        }
-                        return spanText;
-                    })
-                    ;
-                element.selectAll("i")
-                    .classed("fa-eye", !context.hideNonWidgets())
-                    .classed("fa-eye-slash", context.hideNonWidgets());
-                context.renderInputs(element.select("tbody"), d2);
+            .merge(table)
+            .each(function (tableData) {
+                const tableElement = d3Select(this);
+
+                //  Header  ---
+                if (context.parentPropertyEditor() === null) {
+                    context.updateHeader(tableElement.select("thead > tr > th"));
+                }
+
+                //  Body  ---
+                context.renderInputs(tableElement.select("tbody"), tableData);
             })
             ;
-        table2.exit()
+        table.exit()
             .each(function () {
-                context.renderInputs(element2.select("tbody"), null);
+                context.renderInputs(element.select("tbody"), null);
             })
             .remove()
             ;
@@ -166,34 +157,122 @@ export class PropertyEditor extends HTMLWidget {
         }
     }
 
-    thButtons(th) {
+    enterHeader(th) {
         const context = this;
-        const sortIcon = th.append("i")
-            .attr("class", "fa " + context.__meta_sorting.ext.icons[context.sorting_options().indexOf(context.sorting())])
+
+        th.append("span");
+        th.append("i")
+            .attr("class", "expandIcon fa")
             .on("click", function () {
-                const sort = context.sorting();
-                const types = context.sorting_options();
-                const icons = context.__meta_sorting.ext.icons;
-                sortIcon
-                    .classed(icons[types.indexOf(sort)], false)
-                    .classed(icons[(types.indexOf(sort) + 1) % types.length], true)
-                    ;
-                context.sorting(types[(types.indexOf(sort) + 1) % types.length]).render();
+                switch (context.peInputIcon()) {
+                    case "fa-caret-up":
+                    case "fa-caret-right":
+                        context.element().selectAll(`.table-${context.depth()} > tbody > tr > .headerRow > .peInput > .property-table-collapsed`)
+                            .classed("property-table-collapsed", false)
+                            ;
+                        context.element().selectAll(`.table-${context.depth()} > tbody > tr > .headerRow > .peInput > i`)
+                            .classed("fa-minus-square-o", true)
+                            .classed("fa-plus-square-o", false)
+                            ;
+                        break;
+                    case "fa-caret-down":
+                        context.element().selectAll(`.table-${context.depth()} > tbody > tr > .headerRow > .peInput > div`)
+                            .classed("property-table-collapsed", true)
+                            ;
+                        context.element().selectAll(`.table-${context.depth()} > tbody > tr > .headerRow > .peInput > i`)
+                            .classed("fa-minus-square-o", false)
+                            .classed("fa-plus-square-o", true)
+                            ;
+                        break;
+                }
+                context.refreshExpandIcon();
             })
             ;
-        const hideParamsIcon = th.append("i")
-            .attr("class", "fa " + (context.hideNonWidgets() ? "fa-eye-slash" : "fa-eye"))
+
+        const sortIcon = th.append("i")
+            .attr("class", "sortIcon fa")
             .on("click", function () {
-                hideParamsIcon
-                    .classed("fa-eye", context.hideNonWidgets())
-                    .classed("fa-eye-slash", !context.hideNonWidgets())
-                    ;
+                context.refreshSortIcon(sortIcon, true);
+            })
+            ;
+
+        const hideParamsIcon = th.append("i")
+            .attr("class", "hideParamsIcon fa")
+            .on("click", function () {
                 context.hideNonWidgets(!context.hideNonWidgets()).render();
             })
             ;
+    }
+
+    updateHeader(th) {
+        const widget: any = this.widget();
+        let spanText = "";
+        if (widget) {
+            if (widget.label) {
+                spanText += widget.label();
+            }
+            if (widget.classID) {
+                if (spanText) {
+                    spanText += " - ";
+                }
+                spanText += widget.classID();
+            }
+        }
+        th.select("span")
+            .text(spanText)
+            ;
+        this.refreshExpandIcon();
+        this.refreshSortIcon(th.select(".sortIcon"));
+        this.refreshHideParamsIcon(th.select(".hideParamsIcon"));
+    }
+
+    peInputCount() {
+        return this.element().selectAll(`.table-${this.depth()} > tbody > tr > .headerRow > .peInput > div`).size();
+    }
+
+    peInputCollapsedCount() {
+        return this.element().selectAll(`.table-${this.depth()} > tbody > tr > .headerRow > .peInput > div.property-table-collapsed`).size();
+    }
+
+    peInputIcon(): "fa-caret-down" | "fa-caret-up" | "fa-caret-right" {
+        const collapsed = this.peInputCollapsedCount();
+        if (collapsed === 0) {
+            return "fa-caret-down";
+        } else if (collapsed === this.peInputCount()) {
+            return "fa-caret-up";
+        }
+        return "fa-caret-right";
+    }
+
+    refreshExpandIcon() {
+        const newIcon = this.peInputIcon();
+        this.element().select(`.table-${this.depth()} > thead > tr > th > .expandIcon`)
+            .classed("fa-caret-up", false)
+            .classed("fa-caret-right", false)
+            .classed("fa-caret-down", false)
+            .classed(newIcon, true)
+            ;
+    }
+
+    refreshSortIcon(sortIcon, increment = false) {
+        const sort = this.sorting();
+        const types = this.sorting_options();
+        const icons = this.__meta_sorting.ext.icons;
+        if (increment) {
+            sortIcon.classed(icons[types.indexOf(sort)], false);
+            this.sorting(types[(types.indexOf(sort) + 1) % types.length]).render();
+        } else {
+            sortIcon
+                .classed(icons[(types.indexOf(sort)) % types.length], true)
+                .attr("title", sort)
+                ;
+        }
+    }
+
+    refreshHideParamsIcon(hideParamsIcon) {
         hideParamsIcon
-            .classed("fa-eye", !context.hideNonWidgets())
-            .classed("fa-eye-slash", context.hideNonWidgets())
+            .classed("fa-eye", !this.hideNonWidgets())
+            .classed("fa-eye-slash", this.hideNonWidgets())
             ;
     }
 
@@ -378,7 +457,7 @@ export class PropertyEditor extends HTMLWidget {
         element.classed("headerRow", true);
         const peInput = element.selectAll(`div.peInput-${this.depth()}`).data(widgetArr, function (d) { return d.id(); });
         peInput.enter().append("div")
-            .attr("class", `peInput-${this.depth()}`)
+            .attr("class", `peInput peInput-${this.depth()}`)
             .each(function (w) {
                 const peInputElement = d3Select(this);
 
@@ -395,12 +474,13 @@ export class PropertyEditor extends HTMLWidget {
                             .classed("fa-minus-square-o", !clickTarget.classed("property-table-collapsed"))
                             .classed("fa-plus-square-o", clickTarget.classed("property-table-collapsed"))
                             ;
+                        context.refreshExpandIcon();
                     })
                     ;
 
                 //  Body  ---
                 const peDiv = peInputElement.append("div")
-                    // .attr("class", `property-input-cell propEditor-${context.depth()}`)
+                    // .attr("class", `property- input - cell propEditor-${context.depth() }`)
                     ;
                 context._childPE.set(this, new PropertyEditor().label(param.id).target(peDiv.node()));
             })

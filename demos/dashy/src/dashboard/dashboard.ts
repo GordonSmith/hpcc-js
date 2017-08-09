@@ -140,10 +140,11 @@ export class Dashboard extends DockPanel {
             return id;
         }
 
+        const lastID = {};
         for (const viz of this._visualizations) {
             const view = viz.view();
             const ds = view.datasource();
-            const firstID = createVertex("", ds.hash(), `${ds.label()}`, { viz, activity: view.dataSource() });
+            const firstID = createVertex("", ds.hash(), `${ds.label()}`, { viz: undefined, activity: view.dataSource() });
             let prevID = firstID;
             if (view.filters().exists()) {
                 prevID = createVertex(prevID, view.id() + "_f", `${view.label()}:  Filter`, { viz, activity: view.filters() });
@@ -157,14 +158,17 @@ export class Dashboard extends DockPanel {
             if (view.limit().exists()) {
                 prevID = createVertex(prevID, view.id() + "_l", `${view.label()}:  Limit`, { viz, activity: view.limit() });
             }
-            prevID = createVertex(prevID, view.id(), `${view.label()}:  Output`, { viz, activity: view.limit() });
+            if (prevID === firstID) {
+                prevID = createVertex(prevID, view.id() + "_o", `${view.label()}:  Output`, { viz, activity: view.limit() });
+            }
+            lastID[view.id()] = prevID;
         }
 
         for (const viz of this._visualizations) {
             const view = viz.view();
             view.filters().filter().forEach(filter => {
                 if (filter.source()) {
-                    const filterEdge: Edge = this.createEdge(this.visualization(filter.source()).view().id(), view.id() + "_f")
+                    const filterEdge: Edge = this.createEdge(lastID[this.visualization(filter.source()).view().id()], view.id() + "_f")
                         .strokeDasharray("1,5")
                         .text("filter")
                         ;

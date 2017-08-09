@@ -23,32 +23,45 @@
 .other_PropertyEditor .other_PropertyEditor .other_PropertyEditor .other_PropertyEditor .headerRow{background-color:#bbb;}
 .other_PropertyEditor .other_PropertyEditor .other_PropertyEditor .other_PropertyEditor .other_PropertyEditor .headerRow{background-color:#aaa;}
 
+.other_PropertyEditor .fa {
+    font-size:14px;
+    width:14px
+}
+
 .other_PropertyEditor div.property-table-collapsed {
     display:none;
 }
 
-.other_PropertyEditor .headerRow > div > span {
+.other_PropertyEditor .headerRow > .peInput {
+    padding-top:2px;
+}
+
+.other_PropertyEditor .headerRow > .peInput > span {
     font-weight: bold;
-    padding-top:4px;
-    padding-bottom:4px;
 }
-.other_PropertyEditor .headerRow > div > i {
+
+.other_PropertyEditor .headerRow > .peInput > i {
     float:right;
-    padding: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
-.other_PropertyEditor .headerRow > span > i:hover{
+
+.other_PropertyEditor .headerRow > span > i:hover {
     background-color: #555;
     cursor:pointer;
 }
-.other_PropertyEditor .property-table thead > tr > th{
+.other_PropertyEditor .property-table thead > tr > th {
     text-align:left;
     background-color:#333;
     color:#fff;
+    padding-top:2px;
     padding-left:4px;
 }
-.other_PropertyEditor .property-table thead > tr > th > i{
+.other_PropertyEditor .property-table thead > tr > th > i {
     float:right;
-    padding: 4px;
+    padding-top: 2px;
+    padding-right: 4px;
+    padding-bottom: 2px;
 }
 .other_PropertyEditor .property-table thead > tr > th > i:hover{
     background-color: #555;
