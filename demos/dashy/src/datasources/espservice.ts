@@ -1,10 +1,9 @@
-import { publish } from "@hpcc-js/common";
 import { Result, XSDXMLNode } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { SamplingDatasource } from "./datasource";
 
-function schemaRow2IField(row: any): IField {
+export function schemaRow2IField(row: any): IField {
     return {
         id: row.name,
         label: row.name,
@@ -13,17 +12,22 @@ function schemaRow2IField(row: any): IField {
     };
 }
 
-export abstract class ESPResult extends SamplingDatasource {
-    _result: Result;
-    _schema: XSDXMLNode[] = [];
-    _total: number;
-
-    @publish("", "string", "ESP Url (http://x.x.x.x:8010)")
-    url: { (): string; (_: string): ESPResult };
-
+export abstract class ESPService extends SamplingDatasource {
     hash(): string {
         return hashSum(this.url());
     }
+}
+ESPService.prototype._class += " ResultSource";
+export interface ESPService {
+    url(): string;
+    url(_: string): this;
+}
+ESPService.prototype.publish("url", "", "string", "ESP Url (http://x.x.x.x:8010)");
+
+export abstract class ResultService extends ESPService {
+    _result: Result;
+    _schema: XSDXMLNode[] = [];
+    _total: number;
 
     refresh(): Promise<void> {
         return this._result.refresh().then(result => {
@@ -51,4 +55,4 @@ export abstract class ESPResult extends SamplingDatasource {
         return this._total;
     }
 }
-ESPResult.prototype._class += " ResultSource";
+ResultService.prototype._class += " ResultService";

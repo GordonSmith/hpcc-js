@@ -3,7 +3,7 @@ import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Viz } from "../../dashboard/viz";
 import { View } from "../view";
-import { Activity } from "./activity";
+import { Activity, IOptimization } from "./activity";
 
 export enum Rule {
     eq = "==",
@@ -55,19 +55,19 @@ export class ColumnMapping extends PropertyExt {
         const lf = this.localField();
         const rf = this.remoteField();
         switch (this.condition()) {
-            case "==":
+            case Rule.eq:
                 return (localRow) => localRow[lf] === filterSelection[0][rf];
-            case "!=":
+            case Rule.neq:
                 return (localRow) => localRow[lf] !== filterSelection[0][rf];
-            case "<":
+            case Rule.lt:
                 return (localRow) => localRow[lf] < filterSelection[0][rf];
-            case "<=":
+            case Rule.lte:
                 return (localRow) => localRow[lf] <= filterSelection[0][rf];
-            case ">":
+            case Rule.gt:
                 return (localRow) => localRow[lf] > filterSelection[0][rf];
-            case ">=":
+            case Rule.gte:
                 return (localRow) => localRow[lf] >= filterSelection[0][rf];
-            case "conatins":
+            case Rule.contains:
                 return (localRow) => filterSelection.some(fsRow => localRow[lf] === fsRow[rf]);
         }
     }
@@ -82,8 +82,8 @@ export interface ColumnMapping {
     remoteField(_: string): this;
     localField(): string;
     localField(_: string): this;
-    condition(): string;
-    condition(_: string): this;
+    condition(): Rule;
+    condition(_: Rule): this;
 }
 ColumnMapping.prototype.publish("remoteField", null, "set", "Filter Fields", function () { return this.filterFields(); }, { optional: true });
 ColumnMapping.prototype.publish("localField", null, "set", "Local Fields", function () { return this.localFields(); }, { optional: true });
@@ -195,6 +195,21 @@ export class Filters extends Activity {
             .source(source.id())
             .appendMappings(mappings));
         return this;
+    }
+
+    exec(opts: IOptimization = {}): Promise<void> {
+        if (!opts.filters) {
+            opts.filters = [];
+        }
+        for (const filter of this.validFilters()) {
+            for (const mapping of filter.validMappings())
+                opts.filters.push({
+                    fieldid: mapping.localField(),
+                    value: filter.sourceSelection()[mapping.remoteField()],
+                    rule: mapping.condition()
+                });
+        }
+        return super.exec(opts);
     }
 
     pullData(): any[] {

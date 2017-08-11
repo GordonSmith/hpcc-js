@@ -7,7 +7,7 @@
     "declaration": false,
     "moduleResolution": "node",
     "noImplicitAny": true,
-    "noEmitOnError": true,
+    "noEmitOnError": false,
     "noUnusedLocals": true,
     "strictNullChecks": true,
     "lib": [

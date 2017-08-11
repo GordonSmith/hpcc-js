@@ -25,12 +25,12 @@ export abstract class Activity extends PropertyExt implements IDatasource {
         return this.inFields();
     }
 
-    pullData(): any[] {
-        return this._sourceActivity ? this._sourceActivity.pullData() : [];
-    }
-
     exec(opts: IOptimization = {}): Promise<void> {
         return this._sourceActivity ? this._sourceActivity.exec(opts) : Promise.resolve();
+    }
+
+    pullData(): any[] {
+        return this._sourceActivity ? this._sourceActivity.pullData() : [];
     }
 
     //  IDatasource  ---

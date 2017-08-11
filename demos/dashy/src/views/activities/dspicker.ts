@@ -2,8 +2,9 @@ import { IField } from "@hpcc-js/dgrid";
 import { Databomb } from "../../datasources/databomb";
 import { Form } from "../../datasources/form";
 import { LogicalFile } from "../../datasources/logicalfile";
+import { Query } from "../../datasources/query";
 import { WUResult } from "../../datasources/wuresult";
-import { Activity, IOptimization } from "./Activity";
+import { Activity, IOptimization } from "./activity";
 
 export {
     WUResult,
@@ -14,12 +15,16 @@ export {
 export enum Type {
     WURESULT = "WU Result",
     LOGICALFILE = "Logical File",
-    DATABOMB = "Databomb"
+    DATABOMB = "Databomb",
+    QUERY = "Query"
 }
 
-export type DatasourceType = Type.WURESULT | Type.LOGICALFILE | Type.DATABOMB;
-export type DatasourceClass = WUResult | LogicalFile | Databomb | Form;
-const Types = [Type.WURESULT, Type.LOGICALFILE, Type.DATABOMB];
+export type DatasourceType = Type.WURESULT | Type.LOGICALFILE | Type.DATABOMB | Type.QUERY;
+export type DatasourceClass = WUResult | LogicalFile | Databomb | Form | Query;
+const Types = [Type.WURESULT, Type.LOGICALFILE, Type.DATABOMB, Type.QUERY];
+
+export interface IDatasource {
+}
 
 export class DSPicker extends Activity {
     protected _wuResult = new WUResult()
@@ -39,6 +44,12 @@ export class DSPicker extends Activity {
             { state: "NY", weight: 100 }
         ])
     ;
+    protected _query = new Query()
+        .url("http://192.168.3.22:8010")
+        .querySet("roxie")
+        .queryId("peopleaccounts.1")
+        .resultName("Accounts")
+    ;
     _prevHash;
     _dataPromise: Promise<void>;
     _data: any[] = [];
@@ -57,6 +68,10 @@ export class DSPicker extends Activity {
 
         this._databomb.monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this._databomb);
+        });
+
+        this._query.monitor((id, newVal, oldVal) => {
+            this.broadcast(id, newVal, oldVal, this._query);
         });
     }
 
@@ -108,6 +123,9 @@ DSPicker.prototype.type = function (_?: DatasourceType) {
                 break;
             case Type.DATABOMB:
                 this.details(this._databomb);
+                break;
+            case Type.QUERY:
+                this.details(this._query);
                 break;
         }
     }

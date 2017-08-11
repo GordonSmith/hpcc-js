@@ -1,10 +1,9 @@
 import { publish } from "@hpcc-js/common";
 import { Result } from "@hpcc-js/comms";
 import { hashSum } from "@hpcc-js/util";
-import { ESPResult } from "./espresult";
+import { ResultService } from "./espservice";
 
-export class WUResult extends ESPResult {
-    url: { (): string; (_: string): WUResult };
+export class WUResult extends ResultService {
     @publish("", "string", "Workunit ID")
     wuid: { (): string; (_: string): WUResult };
     @publish("", "string", "Result Name")

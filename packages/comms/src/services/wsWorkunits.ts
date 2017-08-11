@@ -2313,6 +2313,10 @@ export class WorkunitsService {
         this._connection = new ESPConnection(optsConnection, "WsWorkunits", "1.68");
     }
 
+    opts() {
+        return this._connection.opts();
+    }
+
     connection(): ESPConnection {
         return this._connection;
     }

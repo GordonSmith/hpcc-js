@@ -42,7 +42,7 @@ describe("test/esp/ecl/Workunit", function () {
             return wu1.fetchResults().then((results) => {
                 expect(results.length).equals(1);
                 return wu1.CResults[0].fetchXMLSchema().then((schema) => {
-                    expect(schema.root).exist;
+                    expect(schema!.root).exist;
                     return schema;
                 });
             });

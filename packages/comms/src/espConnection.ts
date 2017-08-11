@@ -1,5 +1,5 @@
-import { createConnection, IConnection, IOptions, ResponseType } from "./connection";
 import { join } from "@hpcc-js/util";
+import { createConnection, IConnection, IOptions, ResponseType } from "./connection";
 
 export function isArray(arg: any) {
     return Object.prototype.toString.call(arg) === "[object Array]";
@@ -83,7 +83,20 @@ export class ESPConnection implements IConnection {
 
     send(action: string, _request: any = {}, responseType: ResponseType = ResponseType.JSON): Promise<any> {
         const request = { ..._request, ...{ ver_: this._version } };
-        const serviceAction = join(this._service, action + ".json");
+        let serviceAction;
+        switch (responseType) {
+            case ResponseType.XSD:
+                serviceAction = join(this._service, action + ".xsd");
+                break;
+            case ResponseType.JSON2:
+                serviceAction = join(this._service, action + "/json");
+                responseType = ResponseType.JSON;
+                const actionParts = action.split("/");
+                action = actionParts.pop();
+                break;
+            default:
+                serviceAction = join(this._service, action + ".json");
+        }
         return this._connection.send(serviceAction, request, responseType).then((response) => {
             if (responseType === ResponseType.JSON) {
                 if (response.Exceptions) {

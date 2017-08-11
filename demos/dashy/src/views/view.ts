@@ -30,18 +30,18 @@ export class View extends PropertyExt implements IDatasource {
         this.limit(new Limit(this).sourceActivity(this.sort()));
     }
 
-    datasource(): DatasourceClass {
-        return this.dataSource().details() as DatasourceClass;
+    rawDatasource(): DatasourceClass {
+        return this.dataSource().details();
     }
 
     columns() {
-        return (this.datasource().outFields() as IField[]).map(field => {
+        return (this.rawDatasource().outFields() as IField[]).map(field => {
             return field.id;
         });
     }
 
     field(fieldID: string): IField | null {
-        for (const field of this.datasource().outFields()) {
+        for (const field of this.rawDatasource().outFields()) {
             if (field.id === fieldID) {
                 return field;
             }
@@ -51,7 +51,7 @@ export class View extends PropertyExt implements IDatasource {
 
     hash(more: { [key: string]: any } = {}): string {
         return hashSum({
-            datasource: this.datasource().hash(),
+            datasource: this.rawDatasource().hash(),
             filter: this.filters().hash(),
             groupBy: this.groupBy().hash(),
             ...more
@@ -59,7 +59,7 @@ export class View extends PropertyExt implements IDatasource {
     }
 
     refresh(): Promise<void> {
-        return this.datasource().refresh().then(() => {
+        return this.rawDatasource().refresh().then(() => {
             if (this._prevHash !== this.hash()) {
                 this._prevHash = this.hash();
             }
@@ -71,7 +71,7 @@ export class View extends PropertyExt implements IDatasource {
     }
 
     inFields(): IField[] {
-        return this.datasource().outFields();
+        return this.rawDatasource().outFields();
     }
 
     outFields(): IField[] {
@@ -83,15 +83,6 @@ export class View extends PropertyExt implements IDatasource {
         const data = this.limit().pullData();
         this._total = data.length;
         return data.slice(from, from + count);
-        /*
-                return this.datasource().fetch(0, Number.MAX_VALUE).then(data => {
-                    this._sourceActivity._data = data;
-                    data = this.limit().process();
-                    this._total = data.length;
-                    return data.slice(from, from + count);
-                });
-            }
-            */
     }
 }
 View.prototype._class += " View";

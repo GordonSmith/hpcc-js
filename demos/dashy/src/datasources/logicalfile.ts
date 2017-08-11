@@ -1,10 +1,9 @@
 import { publish } from "@hpcc-js/common";
 import { Result } from "@hpcc-js/comms";
 import { hashSum } from "@hpcc-js/util";
-import { ESPResult } from "./espresult";
+import { ResultService } from "./espservice";
 
-export class LogicalFile extends ESPResult {
-    url: { (): string; (_: string): LogicalFile };
+export class LogicalFile extends ResultService {
     @publish("", "string", "Logical File Name")
     filename: { (): string; (_: string): LogicalFile };
 

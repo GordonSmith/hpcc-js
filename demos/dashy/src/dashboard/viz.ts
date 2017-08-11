@@ -5,7 +5,7 @@ import { WUResult } from "../datasources/wuresult";
 import { Model } from "../model";
 import { View } from "../views/view";
 
-export interface IActivity {
+export interface DDLViz {
     toIDatasource(): IDatasource;
     dataProps(): PropertyExt;
     vizProps(): PropertyExt;
@@ -28,7 +28,7 @@ State.prototype.publish("selection", [], "array", "State");
 
 let vizID = 0;
 
-export class Viz extends PropertyExt implements IActivity {
+export class Viz extends PropertyExt implements DDLViz {
 
     constructor(model: Model, label: string = `Viz-${++vizID}`) {
         super();
