@@ -38,12 +38,16 @@ export class Query extends Activity {
         return this;
     }
 
+    refreshMetaPromise: Promise<void>;
     refreshMeta(): Promise<void> {
-        return super.refreshMeta().then(() => {
-            return CommsQuery.attach({ baseUrl: this.url() }, this.querySet(), this.queryId());
-        }).then((query) => {
-            this._query = query;
-        });
+        if (!this.refreshMetaPromise) {
+            this.refreshMetaPromise = super.refreshMeta().then(() => {
+                return CommsQuery.attach({ baseUrl: this.url() }, this.querySet(), this.queryId());
+            }).then((query) => {
+                this._query = query;
+            });
+        }
+        return this.refreshMetaPromise;
     }
 
     filterFields(): IField[] {

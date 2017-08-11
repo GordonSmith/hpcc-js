@@ -49,8 +49,8 @@ export abstract class Activity extends PropertyExt implements IDatasource {
 
     total(): number {
         return this.pullData().length;
-
     }
+
     async fetch(from: number, count: number): Promise<any[]> {
         await this.exec();
         return this.pullData().slice(from, from + count);

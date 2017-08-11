@@ -3,10 +3,10 @@ import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Model } from "../model";
 import { DatasourceClass, DSPicker } from "./activities/dspicker";
+import { DSPicker2 } from "./activities/dspicker2";
 import { Filters } from "./activities/filter";
 import { GroupBy } from "./activities/groupby";
 import { Limit } from "./activities/limit";
-import { Query } from "./activities/query";
 import { Sort } from "./activities/sort";
 
 let viewID = 0;
@@ -23,15 +23,11 @@ export class View extends PropertyExt implements IDatasource {
         this.dataSource().monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this.dataSource());
         });
-        this.roxie(
-            new Query(this)
-                .sourceActivity(this.dataSource())
-                .url("http://192.168.3.22:8010")
-                .querySet("roxie")
-                .queryId("peopleaccounts.1")
-                .resultName("Accounts")
-        );
-        this.clientFilters(new Filters(this).sourceActivity(this.roxie()));
+        this.dataSource2(new DSPicker2(this));
+        this.dataSource2().monitor((id, newVal, oldVal) => {
+            this.broadcast(id, newVal, oldVal, this.dataSource());
+        });
+        this.clientFilters(new Filters(this).sourceActivity(this.dataSource2()));
         this.groupBy(new GroupBy(this).sourceActivity(this.clientFilters()));
         this.sort(new Sort(this).sourceActivity(this.groupBy()));
         this.limit(new Limit(this).sourceActivity(this.sort()));
@@ -96,8 +92,8 @@ export interface View {
     label(_: string): this;
     dataSource(): DSPicker;
     dataSource(_: DSPicker): this;
-    roxie(): Query;
-    roxie(_: Query): this;
+    dataSource2(): DSPicker2;
+    dataSource2(_: DSPicker2): this;
     clientFilters(): Filters;
     clientFilters(_: Filters): this;
     groupBy(): GroupBy;
@@ -109,7 +105,7 @@ export interface View {
 }
 View.prototype.publish("label", null, "string", "Label");
 View.prototype.publish("dataSource", null, "widget", "Data Source");
-View.prototype.publish("roxie", null, "widget", "Roixe");
+View.prototype.publish("dataSource2", null, "widget", "Data Source 2");
 View.prototype.publish("clientFilters", null, "widget", "Client Filters");
 View.prototype.publish("groupBy", null, "widget", "Group By");
 View.prototype.publish("sort", null, "widget", "Source Columns");
