@@ -1,13 +1,18 @@
 import { Query as CommsQuery, XSDXMLNode } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
+import { IOptimization } from "../views/activities/activity";
 import { Datasource } from "./datasource";
 import { schemaRow2IField } from "./espservice";
 
 export class Query extends Datasource {
-    _prevHash: string;
-    _query: CommsQuery;
-    _responseSchema: XSDXMLNode[] = [];
+    private _query: CommsQuery;
+    private _responseSchema: XSDXMLNode[] = [];
+    private _prevHash: string;
+
+    constructor() {
+        super();
+    }
 
     label(): string {
         return `${super.label()}\n${this.queryId()}`;
@@ -36,6 +41,19 @@ export class Query extends Datasource {
 
     outFields(): IField[] {
         return this._responseSchema.map(schemaRow2IField);
+    }
+
+    async query(opts: IOptimization): Promise<any[]> {
+        const request = {};
+        if (opts.filters) {
+            for (const filter of opts.filters) {
+                if (filter.rule === "==") {
+                    request[filter.fieldid] = filter.value;
+                }
+            }
+        }
+        const results = await this._query.submit(request);
+        return results[this.resultName()];
     }
 
     protected async _fetch(from: number, count: number): Promise<any[]> {

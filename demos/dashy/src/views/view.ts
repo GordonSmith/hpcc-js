@@ -6,14 +6,13 @@ import { DatasourceClass, DSPicker } from "./activities/dspicker";
 import { Filters } from "./activities/filter";
 import { GroupBy } from "./activities/groupby";
 import { Limit } from "./activities/limit";
+import { Query } from "./activities/query";
 import { Sort } from "./activities/sort";
 
 let viewID = 0;
 export class View extends PropertyExt implements IDatasource {
-    _source: string = "42";
     _model: Model;
     private _total = 0;
-    _prevHash;
 
     constructor(model: Model, label: string = "View") {
         super();
@@ -24,8 +23,16 @@ export class View extends PropertyExt implements IDatasource {
         this.dataSource().monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this.dataSource());
         });
-        this.filters(new Filters(this).sourceActivity(this.dataSource()));
-        this.groupBy(new GroupBy(this).sourceActivity(this.filters()));
+        this.roxie(
+            new Query(this)
+                .sourceActivity(this.dataSource())
+                .url("http://192.168.3.22:8010")
+                .querySet("roxie")
+                .queryId("peopleaccounts.1")
+                .resultName("Accounts")
+        );
+        this.clientFilters(new Filters(this).sourceActivity(this.roxie()));
+        this.groupBy(new GroupBy(this).sourceActivity(this.clientFilters()));
         this.sort(new Sort(this).sourceActivity(this.groupBy()));
         this.limit(new Limit(this).sourceActivity(this.sort()));
     }
@@ -52,18 +59,15 @@ export class View extends PropertyExt implements IDatasource {
     hash(more: { [key: string]: any } = {}): string {
         return hashSum({
             datasource: this.rawDatasource().hash(),
-            filter: this.filters().hash(),
+            filter: this.clientFilters().hash(),
             groupBy: this.groupBy().hash(),
             ...more
         });
     }
 
-    refresh(): Promise<void> {
-        return this.rawDatasource().refresh().then(() => {
-            if (this._prevHash !== this.hash()) {
-                this._prevHash = this.hash();
-            }
-        });
+    async refresh(): Promise<void> {
+        await this.rawDatasource().refresh();
+        return this.limit().refreshMeta();
     }
 
     total(): number {
@@ -92,8 +96,10 @@ export interface View {
     label(_: string): this;
     dataSource(): DSPicker;
     dataSource(_: DSPicker): this;
-    filters(): Filters;
-    filters(_: Filters): this;
+    roxie(): Query;
+    roxie(_: Query): this;
+    clientFilters(): Filters;
+    clientFilters(_: Filters): this;
     groupBy(): GroupBy;
     groupBy(_: GroupBy): this;
     sort(): Sort;
@@ -103,7 +109,8 @@ export interface View {
 }
 View.prototype.publish("label", null, "string", "Label");
 View.prototype.publish("dataSource", null, "widget", "Data Source");
-View.prototype.publish("filters", null, "widget", "Filters");
+View.prototype.publish("roxie", null, "widget", "Roixe");
+View.prototype.publish("clientFilters", null, "widget", "Client Filters");
 View.prototype.publish("groupBy", null, "widget", "Group By");
 View.prototype.publish("sort", null, "widget", "Source Columns");
 View.prototype.publish("limit", null, "widget", "Limit output");

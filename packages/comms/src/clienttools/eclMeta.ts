@@ -298,8 +298,7 @@ export function qualifiedIDBoundary(lineText: string, charPos: number, reverse: 
 class MetaParser extends SAXStackParser {
     sources: XMLNode[] = [];
 
-    endXMLNode(node: Node): XMLNode {
-        const e: XMLNode = this.stack.top()!;
+    endXMLNode(e: XMLNode) {
         switch (e.name) {
             case "Source":
                 this.sources.push(e);
@@ -307,6 +306,6 @@ class MetaParser extends SAXStackParser {
             default:
                 break;
         }
-        return super.endXMLNode(node);
+        super.endXMLNode(e);
     }
 }

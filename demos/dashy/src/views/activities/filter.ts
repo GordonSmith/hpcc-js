@@ -38,14 +38,8 @@ export class ColumnMapping extends PropertyExt {
     }
 
     localFields() {
-        return this._owner.inFields().map(field => field.label);
+        return this._owner.filterFields().map(field => field.label);
     }
-
-    /*
-    field(label: string): IField | undefined {
-        return this._owner.inFields().filter(field => field.label === label)[0];
-    }
-    */
 
     filterFields() {
         return this._owner.sourceOutFields().map(field => field.label);
@@ -90,8 +84,8 @@ ColumnMapping.prototype.publish("localField", null, "set", "Local Fields", funct
 ColumnMapping.prototype.publish("condition", "==", "set", "Filter Fields", RuleValueArr);
 
 export class Filter extends PropertyExt {
-    _view: View;
-    _owner: Filters;
+    private _view: View;
+    private _owner: Filters;
 
     constructor(owner) {
         super();
@@ -124,8 +118,8 @@ export class Filter extends PropertyExt {
         return this;
     }
 
-    inFields(): IField[] {
-        return this._view.inFields();
+    filterFields(): IField[] {
+        return this._owner.filterFields();
     }
 
     sourceViz(): Viz {
@@ -202,12 +196,15 @@ export class Filters extends Activity {
             opts.filters = [];
         }
         for (const filter of this.validFilters()) {
-            for (const mapping of filter.validMappings())
-                opts.filters.push({
-                    fieldid: mapping.localField(),
-                    value: filter.sourceSelection()[mapping.remoteField()],
-                    rule: mapping.condition()
-                });
+            const sourceSelection = filter.sourceSelection();
+            if (sourceSelection.length) {
+                for (const mapping of filter.validMappings())
+                    opts.filters.push({
+                        fieldid: mapping.localField(),
+                        value: sourceSelection[0][mapping.remoteField()],
+                        rule: mapping.condition()
+                    });
+            }
         }
         return super.exec(opts);
     }

@@ -17,8 +17,16 @@ export abstract class Activity extends PropertyExt implements IDatasource {
         return this;
     }
 
+    refreshMeta(): Promise<void> {
+        return this._sourceActivity ? this._sourceActivity.refreshMeta() : Promise.resolve();
+    }
+
     inFields(): IField[] {
         return this._sourceActivity ? this._sourceActivity.outFields() : [];
+    }
+
+    filterFields(): IField[] {
+        return this.inFields();
     }
 
     outFields(): IField[] {

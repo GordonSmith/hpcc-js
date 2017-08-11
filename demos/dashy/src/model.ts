@@ -91,7 +91,7 @@ export class Model extends PropertyExt {
 
     filteredBy(viz: Viz): Viz[] {
         return this._visualizations.filter(otherViz => {
-            const filterIDs = otherViz.view().filters().validFilters().map(filter => filter.source());
+            const filterIDs = otherViz.view().clientFilters().validFilters().map(filter => filter.source());
             return filterIDs.indexOf(viz.id()) >= 0;
         });
     }

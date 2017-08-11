@@ -138,8 +138,8 @@ class XSDParser extends SAXStackParser {
 
     xsdStack: Stack<XSDXMLNode> = new Stack<XSDXMLNode>();
 
-    startXMLNode(node: Node): XMLNode {
-        const e = super.startXMLNode(node);
+    startXMLNode(e: XMLNode) {
+        super.startXMLNode(e);
         switch (e.name) {
             case "xs:element":
                 const xsdXMLNode = new XSDXMLNode(e);
@@ -156,11 +156,9 @@ class XSDParser extends SAXStackParser {
             default:
                 break;
         }
-        return e;
     }
 
-    endXMLNode(node: Node): XMLNode {
-        const e = this.stack.top();
+    endXMLNode(e: XMLNode) {
         switch (e!.name) {
             case "xs:element":
                 const xsdXMLNode = this.xsdStack.pop();
@@ -173,21 +171,76 @@ class XSDParser extends SAXStackParser {
                 break;
             case "xs:appinfo":
                 const xsdXMLNode2 = this.xsdStack.top();
-                for (const key in e!.$) {
-                    xsdXMLNode2!.attrs[key] = e!.$[key];
+                for (const key in e.$) {
+                    xsdXMLNode2!.attrs[key] = e.$[key];
                 }
                 break;
             default:
                 if (this.simpleType) {
-                    this.simpleType.append(e!);
+                    this.simpleType.append(e);
                 }
         }
-        return super.endXMLNode(node);
+        super.endXMLNode(e);
     }
 }
 
 export function parseXSD(xml: string): XSDSchema {
     const saxParser = new XSDParser();
+    saxParser.parse(xml);
+    return saxParser.schema;
+}
+
+class XSDParser2 extends XSDParser {
+    _rootName: string;
+    schema: XSDSchema = new XSDSchema();
+    simpleType: XSDSimpleType;
+    simpleTypes: { [name: string]: XSDSimpleType } = {};
+
+    xsdStack: Stack<XSDXMLNode> = new Stack<XSDXMLNode>();
+
+    constructor(rootName: string) {
+        super();
+        this._rootName = rootName;
+    }
+
+    startXMLNode(e: XMLNode) {
+        super.startXMLNode(e);
+        switch (e.name) {
+            case "xsd:element":
+                const xsdXMLNode = new XSDXMLNode(e);
+                if (!this.schema.root && this._rootName === e.$.name) {
+                    this.schema.root = xsdXMLNode;
+                }
+                if (this.xsdStack.depth()) {
+                    this.xsdStack.top()!.append(xsdXMLNode);
+                }
+                this.xsdStack.push(xsdXMLNode);
+                break;
+            case "xsd:simpleType":
+                this.simpleType = new XSDSimpleType(e);
+                break;
+            default:
+                break;
+        }
+    }
+
+    endXMLNode(e: XMLNode) {
+        switch (e!.name) {
+            case "xsd:element":
+                const xsdXMLNode = this.xsdStack.pop()!;
+                xsdXMLNode.fix();
+                break;
+            case "xsd:simpleType":
+                break;
+            default:
+                break;
+        }
+        super.endXMLNode(e);
+    }
+}
+
+export function parseXSD2(xml: string, rootName): XSDSchema {
+    const saxParser = new XSDParser2(rootName);
     saxParser.parse(xml);
     return saxParser.schema;
 }

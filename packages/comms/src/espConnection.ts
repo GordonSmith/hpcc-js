@@ -92,7 +92,7 @@ export class ESPConnection implements IConnection {
                 serviceAction = join(this._service, action + "/json");
                 responseType = ResponseType.JSON;
                 const actionParts = action.split("/");
-                action = actionParts.pop();
+                action = actionParts.pop()!;
                 break;
             default:
                 serviceAction = join(this._service, action + ".json");

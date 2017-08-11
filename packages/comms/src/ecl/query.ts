@@ -4,7 +4,7 @@ import { EclService } from "../services/wsEcl";
 import { WorkunitsService, WUQueryDetails } from "../services/wsWorkunits";
 import { Topology } from "./topology";
 import { Workunit } from "./workunit";
-import { parseXSD, XSDSchema, XSDXMLNode } from "./xsdParser";
+import { parseXSD, parseXSD2, XSDSchema, XSDXMLNode } from "./xsdParser";
 
 export interface QueryEx extends WUQueryDetails.Response {
 }
@@ -94,7 +94,7 @@ export class Query extends StateObject<QueryEx, QueryEx> implements QueryEx {
 
     private async fetchRequestSchema(): Promise<void> {
         const response = await this._wsEcl.requestSchema(this.QuerySet, this.QueryId);
-        this._requestSchema = parseXSD(response);
+        this._requestSchema = parseXSD2(response, `${this.QueryId}Request`);
     }
 
     private async fetchResponseSchema(resultName: string): Promise<void> {
@@ -123,6 +123,11 @@ export class Query extends StateObject<QueryEx, QueryEx> implements QueryEx {
         await this.WUQueryDetails();
         this._wu = Workunit.attach(this.connection.opts(), this.Wuid);
         return this;
+    }
+
+    requestFields(): XSDXMLNode[] {
+        if (!this._requestSchema) return [];
+        return this._requestSchema.root.children();
     }
 
     fields(resultName: string): XSDXMLNode[] {

@@ -41,13 +41,14 @@ export class SAXStackParser {
     }
 
     private walkDoc(node: Node) {
-        this.startXMLNode(node);
+        const xmlNode = this._startXMLNode(node);
         if (node.attributes) {
             for (let i = 0; i < node.attributes.length; ++i) {
                 const attribute = node.attributes.item(i);
                 this.attributes(attribute.nodeName, attribute.nodeValue);
             }
         }
+        this.startXMLNode(xmlNode);
         if (node.childNodes) {
             for (let i = 0; i < node.childNodes.length; ++i) {
                 const childNode = node.childNodes.item(i);
@@ -58,7 +59,17 @@ export class SAXStackParser {
                 }
             }
         }
-        this.endXMLNode(node);
+        this.endXMLNode(this.stack.pop()!);
+    }
+
+    private _startXMLNode(node: Node): XMLNode {
+        const newNode = new XMLNode(node.nodeName);
+        if (!this.stack.depth()) {
+            this.root = newNode;
+        } else {
+            this.stack.top()!.appendChild(newNode);
+        }
+        return this.stack.push(newNode);
     }
 
     parse(xml: string) {
@@ -76,18 +87,10 @@ export class SAXStackParser {
     endDocument() {
     }
 
-    startXMLNode(node: Node): XMLNode {
-        const newNode = new XMLNode(node.nodeName);
-        if (!this.stack.depth()) {
-            this.root = newNode;
-        } else {
-            this.stack.top()!.appendChild(newNode);
-        }
-        return this.stack.push(newNode);
+    startXMLNode(node: XMLNode) {
     }
 
-    endXMLNode(_node: Node): XMLNode {
-        return this.stack.pop()!;
+    endXMLNode(node: XMLNode) {
     }
 
     attributes(key: string, val: any) {
@@ -100,9 +103,9 @@ export class SAXStackParser {
 }
 
 class XML2JSONParser extends SAXStackParser {
-    startXMLNode(node: Node): XMLNode {
-        const e = super.startXMLNode(node);
-        switch (e.name) {
+    startXMLNode(node: XMLNode) {
+        super.startXMLNode(node);
+        switch (node.name) {
             case "xs:element":
                 break;
             case "xs:simpleType":
@@ -110,12 +113,10 @@ class XML2JSONParser extends SAXStackParser {
             default:
                 break;
         }
-        return e;
     }
 
-    endXMLNode(node: Node): XMLNode {
-        const e: XMLNode = this.stack.top()!;
-        switch (e.name) {
+    endXMLNode(node: XMLNode) {
+        switch (node.name) {
             case "xs:element":
                 break;
             case "xs:simpleType":
@@ -123,7 +124,7 @@ class XML2JSONParser extends SAXStackParser {
             default:
                 break;
         }
-        return super.endXMLNode(node);
+        super.endXMLNode(node);
     }
 }
 

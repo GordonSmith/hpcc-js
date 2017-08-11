@@ -88,12 +88,19 @@ export class DSPicker extends Activity {
     }
 
     exec(opts: IOptimization = {}): Promise<void> {
-        if (this._prevHash !== this.details().hash()) {
-            this._prevHash = this.details().hash();
+        if ((this.details() as any).query) {
             delete this._data;
-            this._dataPromise = this.details().fetch(0, Number.MAX_VALUE).then(data => {
+            this._dataPromise = (this.details() as any).query(opts).then(data => {
                 this._data = data;
             });
+        } else {
+            if (this._prevHash !== this.details().hash()) {
+                this._prevHash = this.details().hash();
+                delete this._data;
+                this._dataPromise = this.details().fetch(0, Number.MAX_VALUE).then(data => {
+                    this._data = data;
+                });
+            }
         }
         return this._dataPromise;
     }
