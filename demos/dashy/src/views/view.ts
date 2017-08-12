@@ -3,7 +3,6 @@ import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Model } from "../model";
 import { Activity } from "./activities/activity";
-import { DatasourceClass, DSPicker } from "./activities/dspicker";
 import { DSPicker2 } from "./activities/dspicker2";
 import { Filters } from "./activities/filter";
 import { GroupBy } from "./activities/groupby";
@@ -20,22 +19,14 @@ export class View extends PropertyExt implements IDatasource {
         this._model = model;
         this.label(label);
         this._id = "v" + viewID++;
-        this.dataSourceOld(new DSPicker());
-        this.dataSourceOld().monitor((id, newVal, oldVal) => {
-            this.broadcast(id, newVal, oldVal, this.dataSourceOld());
-        });
         this.dataSource(new DSPicker2(this));
         this.dataSource().monitor((id, newVal, oldVal) => {
-            this.broadcast(id, newVal, oldVal, this.dataSourceOld());
+            this.broadcast(id, newVal, oldVal, this.dataSource());
         });
         this.clientFilters(new Filters(this).sourceActivity(this.dataSource()));
         this.groupBy(new GroupBy(this).sourceActivity(this.clientFilters()));
         this.sort(new Sort(this).sourceActivity(this.groupBy()));
         this.limit(new Limit(this).sourceActivity(this.sort()));
-    }
-
-    rawDatasource(): DatasourceClass {
-        return this.dataSourceOld().details();
     }
 
     columns() {
@@ -70,7 +61,7 @@ export class View extends PropertyExt implements IDatasource {
 
     hash(more: { [key: string]: any } = {}): string {
         return hashSum({
-            datasource: this.rawDatasource().hash(),
+            datasource: this.dataSource().hash(),
             filter: this.clientFilters().hash(),
             groupBy: this.groupBy().hash(),
             ...more
@@ -86,7 +77,7 @@ export class View extends PropertyExt implements IDatasource {
     }
 
     inFields(): IField[] {
-        return this.rawDatasource().outFields();
+        return this.dataSource().details().outFields();
     }
 
     outFields(): IField[] {
@@ -106,8 +97,6 @@ View.prototype._class += " View";
 export interface View {
     label(): string;
     label(_: string): this;
-    dataSourceOld(): DSPicker;
-    dataSourceOld(_: DSPicker): this;
     dataSource(): DSPicker2;
     dataSource(_: DSPicker2): this;
     clientFilters(): Filters;
@@ -120,7 +109,6 @@ export interface View {
     limit(_: Limit): this;
 }
 View.prototype.publish("label", null, "string", "Label");
-View.prototype.publish("dataSourceOld", null, "widget", "Data Source");
 View.prototype.publish("dataSource", null, "widget", "Data Source 2");
 View.prototype.publish("clientFilters", null, "widget", "Client Filters");
 View.prototype.publish("groupBy", null, "widget", "Group By");

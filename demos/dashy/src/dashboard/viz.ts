@@ -1,7 +1,6 @@
 import { MultiChart } from "@hpcc-js/chart";
 import { PropertyExt, Widget } from "@hpcc-js/common";
 import { IDatasource } from "@hpcc-js/dgrid";
-import { WUResult } from "../datasources/wuresult";
 import { Model } from "../model";
 import { View } from "../views/view";
 
@@ -104,13 +103,6 @@ Viz.prototype.publish("state", null, "widget", "State");
 export class WUResultViz extends Viz {
     constructor(model: Model, label?: string) {
         super(model, label);
-        const datasource = new WUResult();
-        model.addDatasource(datasource);
-        this.view().dataSourceOld().details(datasource);
-        datasource.monitor((id, newVal, oldVal) => {
-            this.view().broadcast(id, newVal, oldVal, datasource);
-        });
-
     }
 }
 WUResultViz.prototype._class += " WUResultViz";

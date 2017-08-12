@@ -142,7 +142,7 @@ export class Dashboard extends DockPanel {
             return id;
         }
         function createActivity(sourceID: string, viz: Viz, view: View, activity: Activity): string {
-            const surface: Surface = context.createSurface(view.id(), view.label(), { viz, view });
+            const surface: Surface = context.createSurface(view.id(), `${view.label()} [${viz.id()}]`, { viz, view });
             if (vVertices.indexOf(surface) === -1) {
                 vVertices.push(surface);
             }
@@ -207,7 +207,7 @@ export class Dashboard extends DockPanel {
         const retVal: IOutput[] = [];
         for (const viz of this.visualizations()) {
             const view = viz.view();
-            const vizDs = viz.view().rawDatasource();
+            const vizDs = viz.view().dataSource();
             if (ds.hash() === vizDs.hash()) {
                 retVal.push({
                     id: view.label(),
@@ -223,7 +223,7 @@ export class Dashboard extends DockPanel {
         const dsDedup = {};
         const retVal: IDatasource[] = [];
         for (const viz of this.visualizations()) {
-            const ds = viz.view().rawDatasource();
+            const ds = viz.view().dataSource();
             if (!dsDedup[ds.hash()]) {
                 dsDedup[ds.hash()] = true;
                 retVal.push({
@@ -248,7 +248,7 @@ export class Dashboard extends DockPanel {
                 if (filter.source() === viz.id()) {
                     const eventUpdate: IEventUpdate = {
                         visualization: updatesViz.id(),
-                        datasource: updatesViz.view().rawDatasource().id(),
+                        datasource: updatesViz.view().dataSource().id(),
                         merge: false,
                         mappings: {}
                     };
@@ -266,7 +266,7 @@ export class Dashboard extends DockPanel {
         return this.visualizations().map(viz => {
             const widget: MultiChart = viz.widget() as any;
             const view = viz.view();
-            const ds = view.rawDatasource();
+            const ds = view.dataSource();
             let sourceOutput = "";
             if (ds instanceof WUResult) {
                 sourceOutput = (ds as WUResult).resultName();
@@ -277,7 +277,7 @@ export class Dashboard extends DockPanel {
                 type: "TABLE" as VisualizationType,
                 label: view.outFields().map(field => field.id),
                 source: {
-                    id: view.rawDatasource().id(),
+                    id: view.dataSource().id(),
                     output: sourceOutput,
                     mappings: {
                         value: view.outFields().map(field => field.id)

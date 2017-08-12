@@ -88,7 +88,7 @@ export class Query extends Activity {
     hash(): string {
         return hashSum({
             source: this.sourceHash(),
-            params: this.params().map(param => param.hash())
+            params: this.request().map(param => param.hash())
         });
     }
 
@@ -97,7 +97,7 @@ export class Query extends Activity {
     }
 
     validParams() {
-        return this.params().filter(param => param.exists());
+        return this.request().filter(param => param.exists());
     }
 
     private _prevSourceHash;
@@ -112,10 +112,10 @@ export class Query extends Activity {
                 return CommsQuery.attach({ baseUrl: this.url() }, this.querySet(), this.queryId());
             }).then((query) => {
                 this._query = query;
-                const oldParams = this.params();
+                const oldParams = this.request();
                 const diffs = compare(oldParams.map(p => p.label()), this.filterFields().map(ff => ff.label));
                 const newParams = oldParams.filter(op => diffs.both.indexOf(op.label()) > 0);
-                this.params(newParams.concat(diffs.other.map(label => new Param(this).label(label))));
+                this.request(newParams.concat(diffs.other.map(label => new Param(this).label(label))));
             });
         }
         return this.refreshMetaPromise;
@@ -170,11 +170,11 @@ export interface Query {
     queryId(_: string): this;
     resultName(): string;
     resultName(_: string): this;
-    params(): Param[];
-    params(_: Param[]): this;
+    request(): Param[];
+    request(_: Param[]): this;
 }
 Query.prototype.publish("url", "", "string", "ESP Url (http://x.x.x.x:8010)");
 Query.prototype.publish("querySet", "", "string", "Query Set");
 Query.prototype.publish("queryId", "", "string", "Query ID");
 Query.prototype.publish("resultName", "", "string", "Result Name");
-Query.prototype.publish("params", [], "propertyArray", "Request Fields");
+Query.prototype.publish("request", [], "propertyArray", "Request Fields");
