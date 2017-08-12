@@ -33,8 +33,6 @@ export class DSPicker2 extends Activity {
     */
     protected _query: Query;
     _prevHash;
-    _dataPromise: Promise<void>;
-    _data: any[] = [];
 
     constructor(view: View) {
         super();
@@ -72,6 +70,14 @@ export class DSPicker2 extends Activity {
         return this.details().hash();
     }
 
+    updatedBy(): string[] {
+        return this.details().updatedBy();
+    }
+
+    label(): string {
+        return this.details().label();
+    }
+
     refreshMeta(): Promise<void> {
         return super.refreshMeta().then(() => {
             return this.details().refreshMeta();
@@ -82,26 +88,12 @@ export class DSPicker2 extends Activity {
         return this.details().outFields();
     }
 
-    pullData(): any[] {
-        return this._data;
+    exec(opts: IOptimization = {}): Promise<void> {
+        return this.details().exec(opts);
     }
 
-    exec(opts: IOptimization = {}): Promise<void> {
-        if ((this.details() as any).query) {
-            delete this._data;
-            this._dataPromise = (this.details() as any).query(opts).then(data => {
-                this._data = data;
-            });
-        } else {
-            if (this._prevHash !== this.details().hash()) {
-                this._prevHash = this.details().hash();
-                delete this._data;
-                this._dataPromise = this.details().fetch(0, Number.MAX_VALUE).then(data => {
-                    this._data = data;
-                });
-            }
-        }
-        return this._dataPromise;
+    pullData(): any[] {
+        return this.details().pullData();
     }
 }
 DSPicker2.prototype._class += " DSPicker";

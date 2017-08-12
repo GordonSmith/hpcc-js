@@ -4,7 +4,6 @@ import { hashSum } from "@hpcc-js/util";
 import { schemaRow2IField } from "../../datasources/espservice";
 import { View } from "../view";
 import { Activity, IOptimization } from "./activity";
-import { Filter } from "./filter";
 
 export class WUResult extends Activity {
     _owner: View;
@@ -22,22 +21,17 @@ export class WUResult extends Activity {
     }
 
     hash(): string {
-        return hashSum(this.validFilters().map(filter => filter.hash()));
+        return hashSum({
+            url: this.url(),
+            wuid: this.wuid(),
+            resultName: this.resultName(),
+            samples: this.samples(),
+            sampleSize: this.sampleSize()
+        });
     }
 
-    validFilters(): Filter[] {
-        return this.filter().filter(filter => filter.source());
-    }
-
-    exists(): boolean {
-        return this.validFilters().length > 0;
-    }
-
-    appendFilter(source: View, mappings: [{ remoteField: string, localField: string }]): this {
-        this.filter().push(new Filter(this)
-            .source(source.id())
-            .appendMappings(mappings));
-        return this;
+    label(): string {
+        return `${this.wuid()}\n${this.resultName()}`;
     }
 
     refreshMetaPromise: Promise<void>;
@@ -75,15 +69,6 @@ export class WUResult extends Activity {
 
     exec(opts: IOptimization = {}): Promise<void> {
         return super.exec(opts).then(() => {
-            const request = {};
-            for (const filter of this.validFilters()) {
-                const sourceSelection = filter.sourceSelection();
-                if (sourceSelection.length) {
-                    for (const mapping of filter.mappings()) {
-                        request[mapping.localField()] = sourceSelection[0][mapping.remoteField()];
-                    }
-                }
-            }
             return this.sample();
         }).then(response => {
             this._data = response;
@@ -99,7 +84,6 @@ export class WUResult extends Activity {
     total(): number {
         return this._total;
     }
-
 
     //  ---
     async fetch(from: number, count: number): Promise<any[]> {
@@ -144,12 +128,9 @@ export interface WUResult {
     samples(_: number): this;
     sampleSize(): number;
     sampleSize(_: number): this;
-    filter(): Filter[];
-    filter(_: Filter[]): this;
 }
 WUResult.prototype.publish("url", "", "string", "ESP Url (http://x.x.x.x:8010)");
 WUResult.prototype.publish("wuid", "", "string", "Workunit ID");
 WUResult.prototype.publish("resultName", "", "string", "Result Name");
 WUResult.prototype.publish("samples", 10, "number", "Number of samples");
 WUResult.prototype.publish("sampleSize", 100, "number", "Sample size");
-WUResult.prototype.publish("filter", [], "propertyArray", "Filter", null, { autoExpand: Filter });

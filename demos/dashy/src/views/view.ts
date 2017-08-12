@@ -2,6 +2,7 @@ import { PropertyExt } from "@hpcc-js/common";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Model } from "../model";
+import { Activity } from "./activities/activity";
 import { DatasourceClass, DSPicker } from "./activities/dspicker";
 import { DSPicker2 } from "./activities/dspicker2";
 import { Filters } from "./activities/filter";
@@ -19,37 +20,52 @@ export class View extends PropertyExt implements IDatasource {
         this._model = model;
         this.label(label);
         this._id = "v" + viewID++;
-        this.dataSource(new DSPicker());
+        this.dataSourceOld(new DSPicker());
+        this.dataSourceOld().monitor((id, newVal, oldVal) => {
+            this.broadcast(id, newVal, oldVal, this.dataSourceOld());
+        });
+        this.dataSource(new DSPicker2(this));
         this.dataSource().monitor((id, newVal, oldVal) => {
-            this.broadcast(id, newVal, oldVal, this.dataSource());
+            this.broadcast(id, newVal, oldVal, this.dataSourceOld());
         });
-        this.dataSource2(new DSPicker2(this));
-        this.dataSource2().monitor((id, newVal, oldVal) => {
-            this.broadcast(id, newVal, oldVal, this.dataSource());
-        });
-        this.clientFilters(new Filters(this).sourceActivity(this.dataSource2()));
+        this.clientFilters(new Filters(this).sourceActivity(this.dataSource()));
         this.groupBy(new GroupBy(this).sourceActivity(this.clientFilters()));
         this.sort(new Sort(this).sourceActivity(this.groupBy()));
         this.limit(new Limit(this).sourceActivity(this.sort()));
     }
 
     rawDatasource(): DatasourceClass {
-        return this.dataSource().details();
+        return this.dataSourceOld().details();
     }
 
     columns() {
-        return (this.rawDatasource().outFields() as IField[]).map(field => {
+        return (this.dataSource().outFields() as IField[]).map(field => {
             return field.id;
         });
     }
 
     field(fieldID: string): IField | null {
-        for (const field of this.rawDatasource().outFields()) {
+        for (const field of this.dataSource().outFields()) {
             if (field.id === fieldID) {
                 return field;
             }
         }
         return null;
+    }
+
+    private calcUpdatedBy(activity: Activity): Array<{ from: string, to: Activity }> {
+        return activity.updatedBy().map(source => {
+            return {
+                from: source,
+                to: activity
+            };
+        });
+    }
+
+    updatedBy() {
+        return this.calcUpdatedBy(this.dataSource())
+            .concat(this.calcUpdatedBy(this.clientFilters()))
+            ;
     }
 
     hash(more: { [key: string]: any } = {}): string {
@@ -61,8 +77,7 @@ export class View extends PropertyExt implements IDatasource {
         });
     }
 
-    async refresh(): Promise<void> {
-        await this.rawDatasource().refresh();
+    refresh(): Promise<void> {
         return this.limit().refreshMeta();
     }
 
@@ -78,11 +93,12 @@ export class View extends PropertyExt implements IDatasource {
         return this.limit().outFields();
     }
 
-    async fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<any[]> {
-        await this.limit().exec();
-        const data = this.limit().pullData();
-        this._total = data.length;
-        return data.slice(from, from + count);
+    fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<any[]> {
+        return this.limit().exec().then(() => {
+            const data = this.limit().pullData();
+            this._total = data.length;
+            return data.slice(from, from + count);
+        });
     }
 }
 View.prototype._class += " View";
@@ -90,10 +106,10 @@ View.prototype._class += " View";
 export interface View {
     label(): string;
     label(_: string): this;
-    dataSource(): DSPicker;
-    dataSource(_: DSPicker): this;
-    dataSource2(): DSPicker2;
-    dataSource2(_: DSPicker2): this;
+    dataSourceOld(): DSPicker;
+    dataSourceOld(_: DSPicker): this;
+    dataSource(): DSPicker2;
+    dataSource(_: DSPicker2): this;
     clientFilters(): Filters;
     clientFilters(_: Filters): this;
     groupBy(): GroupBy;
@@ -104,8 +120,8 @@ export interface View {
     limit(_: Limit): this;
 }
 View.prototype.publish("label", null, "string", "Label");
-View.prototype.publish("dataSource", null, "widget", "Data Source");
-View.prototype.publish("dataSource2", null, "widget", "Data Source 2");
+View.prototype.publish("dataSourceOld", null, "widget", "Data Source");
+View.prototype.publish("dataSource", null, "widget", "Data Source 2");
 View.prototype.publish("clientFilters", null, "widget", "Client Filters");
 View.prototype.publish("groupBy", null, "widget", "Group By");
 View.prototype.publish("sort", null, "widget", "Source Columns");

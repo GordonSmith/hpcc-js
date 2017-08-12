@@ -37,3 +37,27 @@ export function find<T>(o: T[], predicate: (value: T, index: number) => boolean)
     // 7. Return undefined.
     return undefined;
 }
+
+export interface IDifferences {
+    both: any[];
+    orig: any[];
+    other: any[];
+}
+
+export function compare(orig: any[], other: any[]): IDifferences {
+    const retVal: IDifferences = {
+        both: [],
+        orig: [],
+        other: other.slice(0)
+    };
+    for (const row of orig) {
+        const otherIdx = retVal.other.indexOf(row);
+        if (otherIdx >= 0) {
+            retVal.both.push(row);
+            retVal.other.splice(otherIdx, 1);
+        } else {
+            retVal.orig.push(row);
+        }
+    }
+    return retVal;
+}

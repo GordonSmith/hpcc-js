@@ -189,7 +189,7 @@ export class App {
             label: "Add Viz",
             execute: () => {
                 const viz = new WUResultViz(this._model);
-                (viz.view().dataSource().details() as WUResult)
+                (viz.view().dataSourceOld().details() as WUResult)
                     .url("http://192.168.3.22:8010")
                     .wuid("W20170424-070701")
                     .resultName("Result 1")

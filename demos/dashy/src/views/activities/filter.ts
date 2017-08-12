@@ -176,6 +176,10 @@ export class Filters extends Activity {
         return hashSum(this.validFilters().map(filter => filter.hash()));
     }
 
+    updatedBy(): string[] {
+        return this.validFilters().map(filter => filter.source());
+    }
+
     validFilters(): Filter[] {
         return this.filter().filter(filter => filter.source());
     }

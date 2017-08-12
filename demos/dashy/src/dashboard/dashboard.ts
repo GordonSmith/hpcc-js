@@ -140,40 +140,41 @@ export class Dashboard extends DockPanel {
             return id;
         }
 
+        const dsDedup = {};
         const lastID = {};
         for (const viz of this._visualizations) {
             const view = viz.view();
-            const ds = view.rawDatasource();
-            const firstID = createVertex("", ds.hash(), `${ds.label()}`, { viz: undefined, activity: view.rawDatasource() });
+            // const ds = view.rawDatasource();
+            const ds2 = view.dataSource();
+            dsDedup[ds2.id()] = ds2.hash();
+            const firstID = createVertex("", ds2.hash(), `${ds2.label()}`, { viz: undefined, activity: ds2 });
             let prevID = firstID;
             if (view.clientFilters().exists()) {
-                prevID = createVertex(prevID, view.id() + "_f", `${view.label()}:  Filter`, { viz, activity: view.clientFilters() });
+                prevID = createVertex(prevID, view.clientFilters().id(), `${view.label()}:  Filter`, { viz, activity: view.clientFilters() });
             }
             if (view.groupBy().exists()) {
-                prevID = createVertex(prevID, view.id() + "_gb", `${view.label()}:  GroupBy`, { viz, activity: view.groupBy() });
+                prevID = createVertex(prevID, view.groupBy().id(), `${view.label()}:  GroupBy`, { viz, activity: view.groupBy() });
             }
             if (view.sort().exists()) {
-                prevID = createVertex(prevID, view.id() + "_sb", `${view.label()}:  Sort`, { viz, activity: view.sort() });
+                prevID = createVertex(prevID, view.sort().id(), `${view.label()}:  Sort`, { viz, activity: view.sort() });
             }
             if (view.limit().exists()) {
-                prevID = createVertex(prevID, view.id() + "_l", `${view.label()}:  Limit`, { viz, activity: view.limit() });
+                prevID = createVertex(prevID, view.limit().id(), `${view.label()}:  Limit`, { viz, activity: view.limit() });
             }
             if (prevID === firstID) {
-                prevID = createVertex(prevID, view.id() + "_o", `${view.label()}:  Output`, { viz, activity: view.limit() });
+                prevID = createVertex(prevID, view.id(), `${view.label()}:  Output`, { viz, activity: view.limit() });
             }
             lastID[view.id()] = prevID;
         }
 
         for (const viz of this._visualizations) {
             const view = viz.view();
-            view.clientFilters().filter().forEach(filter => {
-                if (filter.source()) {
-                    const filterEdge: Edge = this.createEdge(lastID[this.visualization(filter.source()).view().id()], view.id() + "_f")
-                        .strokeDasharray("1,5")
-                        .text("filter")
-                        ;
-                    edges.push(filterEdge);
-                }
+            view.updatedBy().forEach(updateInfo => {
+                const filterEdge: Edge = this.createEdge(lastID[this.visualization(updateInfo.from).view().id()], dsDedup[updateInfo.to.id()] || updateInfo.to.id())
+                    .strokeDasharray("1,5")
+                    .text("filter")
+                    ;
+                edges.push(filterEdge);
             });
         }
 
