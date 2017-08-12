@@ -85,6 +85,7 @@ export class App {
     async vizChanged(activity: Viz, subActivity?: Activity) {
         if (this._currActivity === activity) {
             if (subActivity) {
+                this.loadProperties(subActivity);
                 this.loadPreview(subActivity);
             }
             return;
@@ -93,18 +94,18 @@ export class App {
             await activity.refresh();
         }
         this._currActivity = activity;
-        this.loadProperties();
+        this.loadProperties(subActivity);
         this.loadPreview(subActivity);
         this.loadDDL(true);
         this.loadLayout(true);
     }
 
-    loadProperties() {
+    loadProperties(subActivity?: Activity) {
         if (this._monitorHandle) {
             this._monitorHandle.remove();
             delete this._monitorHandle;
         }
-        const dataProps = this._currActivity ? this._currActivity.dataProps() : null;
+        const dataProps = subActivity || (this._currActivity ? this._currActivity.dataProps() : null);
         const vizProps = this._currActivity ? this._currActivity.vizProps() : null;
         const stateProps = this._currActivity ? this._currActivity.stateProps() : null;
         this._dataProperties

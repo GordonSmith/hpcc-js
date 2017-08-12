@@ -127,8 +127,8 @@ export class GroupBy extends Activity {
         return this.column().filter(groupBy => !!groupBy.label());
     }
 
-    exists() {
-        return this.validGroupBy().length;
+    exists(): boolean {
+        return this.validGroupBy().length > 0;
     }
 
     columns() {

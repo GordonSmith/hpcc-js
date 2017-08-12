@@ -32,7 +32,7 @@ export class Viz extends PropertyExt implements DDLViz {
 
     constructor(model: Model, label: string = `Viz-${++vizID}`) {
         super();
-        const view = new View(model, label);
+        const view = new View(model, `View-${vizID}`);
         model.addView(view);
         this.view(view);
         const context = this;

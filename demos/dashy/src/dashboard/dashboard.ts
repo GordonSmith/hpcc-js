@@ -7,6 +7,7 @@ import { DockPanel, WidgetAdapter } from "@hpcc-js/phosphor";
 import { Databomb } from "../datasources/databomb";
 import { WUResult } from "../datasources/wuresult";
 // import { DatasourceClass } from "../views/activities/dspicker";
+import { Activity } from "../views/activities/activity";
 import { View } from "../views/view";
 import { Viz } from "./viz";
 
@@ -86,22 +87,23 @@ export class Dashboard extends DockPanel {
                 ;
             this.subgraphMap[id] = retVal;
         }
-        retVal.title(`[${id}] - ${label}`);
+        retVal.title(`${label}`);
         retVal.getBBox(true);
         return retVal;
     }
 
-    createVertex(id: string, label: string, data: any, showID: boolean = false): Vertex {
+    createVertex(id: string, label: string, data: any, fillColor: string = "#dcf1ff"): Vertex {
         let retVal: Vertex = this.vertexMap[id];
         if (!retVal) {
             retVal = new Vertex()
                 .columns(["DS"])
                 .data([[data]])
                 .icon_shape_diameter(0)
+                .textbox_shape_colorFill(fillColor)
                 ;
             this.vertexMap[id] = retVal;
         }
-        retVal.text(showID ? `[${id}]\n${label}` : label);
+        retVal.text(label);
         retVal.getBBox(true);
         return retVal;
     }
@@ -131,13 +133,26 @@ export class Dashboard extends DockPanel {
         const edges: Edge[] = [];
 
         const context = this;
-        function createVertex(sourceID: string, id: string, label: string, data: any): string {
+        function createDatasource(sourceID: string, id: string, label: string, data: any): string {
             const retval: Vertex = context.createVertex(id, label, data);
             vVertices.push(retval);
             if (sourceID) {
                 edges.push(context.createEdge(sourceID, id));
             }
             return id;
+        }
+        function createActivity(sourceID: string, viz: Viz, view: View, activity: Activity): string {
+            const surface: Surface = context.createSurface(view.id(), view.label(), { viz, view });
+            if (vVertices.indexOf(surface) === -1) {
+                vVertices.push(surface);
+            }
+            const vertex: Vertex = context.createVertex(activity.id(), `${activity.classID()}`, { viz, view, activity }, activity.exists() ? null : "lightgray");
+            vVertices.push(vertex);
+            if (sourceID) {
+                edges.push(context.createEdge(sourceID, activity.id()));
+            }
+            hierarchy.push({ parent: surface, child: vertex });
+            return activity.id();
         }
 
         const dsDedup = {};
@@ -147,23 +162,12 @@ export class Dashboard extends DockPanel {
             // const ds = view.rawDatasource();
             const ds2 = view.dataSource();
             dsDedup[ds2.id()] = ds2.hash();
-            const firstID = createVertex("", ds2.hash(), `${ds2.label()}`, { viz: undefined, activity: ds2 });
+            const firstID = createDatasource("", ds2.hash(), `${ds2.label()}`, { viz: undefined, activity: ds2 });
             let prevID = firstID;
-            if (view.clientFilters().exists()) {
-                prevID = createVertex(prevID, view.clientFilters().id(), `${view.label()}:  Filter`, { viz, activity: view.clientFilters() });
-            }
-            if (view.groupBy().exists()) {
-                prevID = createVertex(prevID, view.groupBy().id(), `${view.label()}:  GroupBy`, { viz, activity: view.groupBy() });
-            }
-            if (view.sort().exists()) {
-                prevID = createVertex(prevID, view.sort().id(), `${view.label()}:  Sort`, { viz, activity: view.sort() });
-            }
-            if (view.limit().exists()) {
-                prevID = createVertex(prevID, view.limit().id(), `${view.label()}:  Limit`, { viz, activity: view.limit() });
-            }
-            if (prevID === firstID) {
-                prevID = createVertex(prevID, view.id(), `${view.label()}:  Output`, { viz, activity: view.limit() });
-            }
+            prevID = createActivity(prevID, viz, view, view.clientFilters());
+            prevID = createActivity(prevID, viz, view, view.groupBy());
+            prevID = createActivity(prevID, viz, view, view.sort());
+            prevID = createActivity(prevID, viz, view, view.limit());
             lastID[view.id()] = prevID;
         }
 
@@ -172,7 +176,7 @@ export class Dashboard extends DockPanel {
             view.updatedBy().forEach(updateInfo => {
                 const filterEdge: Edge = this.createEdge(lastID[this.visualization(updateInfo.from).view().id()], dsDedup[updateInfo.to.id()] || updateInfo.to.id())
                     .strokeDasharray("1,5")
-                    .text("filter")
+                    .text("updates")
                     ;
                 edges.push(filterEdge);
             });
