@@ -579,6 +579,10 @@ export class PropertyEditor extends HTMLWidget {
                 cell.append("textarea")
                     .attr("id", this.id() + "_" + param.id)
                     .classed("property-input", true)
+                    .attr("autocomplete", "off")
+                    .attr("autocorrect", "off")
+                    .attr("autocapitalize", "off")
+                    .attr("spellcheck", "false")
                     .on("change", function () {
                         context.setProperty(widget, param.id, JSON.parse(this.value));
                     })

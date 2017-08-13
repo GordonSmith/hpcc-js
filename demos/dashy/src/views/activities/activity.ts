@@ -1,12 +1,17 @@
 import { PropertyExt } from "@hpcc-js/common";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
-import { RuleType } from "./filter";
+import { hashSum } from "@hpcc-js/util";
 
-export interface IOptimization {
-    filters?: Array<{ fieldid: string, value: any, rule: RuleType }>;
+export function schemaRow2IField(row: any): IField {
+    return {
+        id: row.name,
+        label: row.name,
+        type: row.type,
+        children: (row._children && row._children.length) ? row._children.map(schemaRow2IField) : null
+    };
 }
 
-export abstract class Activity extends PropertyExt implements IDatasource {
+export abstract class Activity extends PropertyExt {
     private _sourceActivity: Activity;
 
     sourceActivity(): Activity;
@@ -17,12 +22,22 @@ export abstract class Activity extends PropertyExt implements IDatasource {
         return this;
     }
 
-    exists(): boolean {
-        return true;
+    hash(more: object = {}): string {
+        return hashSum({
+            ...more
+        });
     }
 
     refreshMeta(): Promise<void> {
         return this._sourceActivity ? this._sourceActivity.refreshMeta() : Promise.resolve();
+    }
+
+    exists(): boolean {
+        return true;
+    }
+
+    label(): string {
+        return this.id();
     }
 
     updatedBy(): string[] {
@@ -41,26 +56,38 @@ export abstract class Activity extends PropertyExt implements IDatasource {
         return this.inFields();
     }
 
-    exec(opts: IOptimization = {}): Promise<void> {
-        return this._sourceActivity ? this._sourceActivity.exec(opts) : Promise.resolve();
+    exec(): Promise<void> {
+        return this._sourceActivity ? this._sourceActivity.exec() : Promise.resolve();
     }
 
     pullData(): any[] {
         return this._sourceActivity ? this._sourceActivity.pullData() : [];
     }
+}
 
-    //  IDatasource  ---
-    abstract hash(): string;
+export class DatasourceAdapt implements IDatasource {
+    _activity: Activity;
+
+    constructor(activity: Activity) {
+        this._activity = activity;
+    }
+
+    id(): string {
+        return this._activity.id();
+    }
+    hash(): string {
+        return this._activity.hash();
+    }
     label(): string {
-        return this.id();
+        return this._activity.label();
     }
-
+    outFields(): IField[] {
+        return this._activity.outFields();
+    }
     total(): number {
-        return this.pullData().length;
+        return this._activity.pullData().length;
     }
-
-    async fetch(from: number, count: number): Promise<any[]> {
-        await this.exec();
-        return this.pullData().slice(from, from + count);
+    fetch(from: number, count: number): Promise<any[]> {
+        return Promise.resolve(this._activity.pullData().slice(from, from + count));
     }
 }

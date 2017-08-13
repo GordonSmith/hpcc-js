@@ -3,9 +3,8 @@ import { Query as CommsQuery } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { compare, hashSum } from "@hpcc-js/util";
 import { Viz } from "../../dashboard/viz";
-import { schemaRow2IField } from "../../datasources/espservice";
 import { View } from "../view";
-import { Activity, IOptimization } from "./activity";
+import { Activity, schemaRow2IField } from "./activity";
 
 export class Param extends PropertyExt {
     _view: View;
@@ -141,8 +140,8 @@ export class Query extends Activity {
         return [];
     }
 
-    exec(opts: IOptimization = {}): Promise<void> {
-        return super.exec(opts).then(() => {
+    exec(): Promise<void> {
+        return super.exec().then(() => {
             const request = {};
             for (const param of this.validParams()) {
                 const sourceSelection = param.sourceSelection();

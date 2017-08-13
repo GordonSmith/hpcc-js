@@ -26,11 +26,11 @@ export interface State {
 State.prototype.publish("selection", [], "array", "State");
 
 let vizID = 0;
-
 export class Viz extends PropertyExt implements DDLViz {
 
     constructor(model: Model, label: string = `Viz-${++vizID}`) {
         super();
+        this.label(label);
         const view = new View(model, `View-${vizID}`);
         model.addView(view);
         this.view(view);
@@ -89,6 +89,8 @@ export class Viz extends PropertyExt implements DDLViz {
 }
 Viz.prototype._class += " Viz";
 export interface Viz {
+    label(): string;
+    label(_: string): this;
     view(): View;
     view(_: View): this;
     widget(): Widget;
@@ -96,6 +98,7 @@ export interface Viz {
     state(): State;
     state(_: State): this;
 }
+Viz.prototype.publish("label", "", "string", "Label");
 Viz.prototype.publish("view", null, "widget", "Data View");
 Viz.prototype.publish("widget", null, "widget", "Visualization");
 Viz.prototype.publish("state", null, "widget", "State");

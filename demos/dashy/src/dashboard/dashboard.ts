@@ -4,10 +4,9 @@ import { IDashboard, IDatasource, IEvent, IEventUpdate, IFilter, IFilterRule, IO
 import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
 import { Persist } from "@hpcc-js/other";
 import { DockPanel, WidgetAdapter } from "@hpcc-js/phosphor";
-import { Databomb } from "../datasources/databomb";
-import { WUResult } from "../datasources/wuresult";
-// import { DatasourceClass } from "../views/activities/dspicker";
 import { Activity } from "../views/activities/activity";
+import { Databomb } from "../views/activities/databomb";
+import { WUResult } from "../views/activities/wuresult";
 import { View } from "../views/view";
 import { Viz } from "./viz";
 
@@ -54,7 +53,7 @@ export class Dashboard extends DockPanel {
         }
         const context = this;
         for (const w of added) {
-            this.addWidget(w, this.visualization(w).view().label());
+            this.addWidget(w, this.visualization(w).label());
             const wa: any = this.getWidgetAdapter(w);
             const origActivateRequest = wa.onActivateRequest;
             wa.onActivateRequest = function (msg): void {
@@ -67,7 +66,7 @@ export class Dashboard extends DockPanel {
         }
         for (const viz of updated) {
             const wa: any = this.getWidgetAdapter(viz.vizProps());
-            wa.title.label = viz.view().label();
+            wa.title.label = viz.label();
         }
         super.update(domNode, element);
     }
@@ -164,7 +163,7 @@ export class Dashboard extends DockPanel {
             dsDedup[ds2.id()] = ds2.hash();
             const firstID = createDatasource("", ds2.hash(), `${ds2.label()}`, { viz: undefined, activity: ds2 });
             let prevID = firstID;
-            prevID = createActivity(prevID, viz, view, view.clientFilters());
+            prevID = createActivity(prevID, viz, view, view.filters());
             prevID = createActivity(prevID, viz, view, view.groupBy());
             prevID = createActivity(prevID, viz, view, view.sort());
             prevID = createActivity(prevID, viz, view, view.limit());
@@ -175,6 +174,7 @@ export class Dashboard extends DockPanel {
             const view = viz.view();
             view.updatedBy().forEach(updateInfo => {
                 const filterEdge: Edge = this.createEdge(lastID[this.visualization(updateInfo.from).view().id()], dsDedup[updateInfo.to.id()] || updateInfo.to.id())
+                    .weight(10)
                     .strokeDasharray("1,5")
                     .text("updates")
                     ;
@@ -191,7 +191,7 @@ export class Dashboard extends DockPanel {
 
     createDDLFilters(view: View): IFilter[] {
         const retVal: IFilter[] = [];
-        for (const filter of view.clientFilters().validFilters()) {
+        for (const filter of view.filters().validFilters()) {
             for (const mapping of filter.validMappings()) {
                 retVal.push({
                     nullable: filter.nullable(),
@@ -244,7 +244,7 @@ export class Dashboard extends DockPanel {
         };
         const updates = retVal["click"].updates;
         for (const updatesViz of this.visualizations()) {
-            for (const filter of updatesViz.view().clientFilters().validFilters()) {
+            for (const filter of updatesViz.view().filters().validFilters()) {
                 if (filter.source() === viz.id()) {
                     const eventUpdate: IEventUpdate = {
                         visualization: updatesViz.id(),

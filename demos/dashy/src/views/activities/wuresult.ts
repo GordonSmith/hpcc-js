@@ -1,15 +1,14 @@
 import { Result, XSDXMLNode } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
-import { schemaRow2IField } from "../../datasources/espservice";
 import { View } from "../view";
-import { Activity, IOptimization } from "./activity";
+import { Activity, schemaRow2IField } from "./activity";
 
-export class WUResult extends Activity {
+export abstract class ESPResult extends Activity {
     _owner: View;
-    private _result: Result;
-    private _schema: XSDXMLNode[] = [];
-    private _total: number;
+    protected _result: Result;
+    protected _schema: XSDXMLNode[] = [];
+    protected _total: number;
     private _data: any[];
 
     constructor(owner: View) {
@@ -20,25 +19,22 @@ export class WUResult extends Activity {
         });
     }
 
-    hash(): string {
+    hash(more: object): string {
         return hashSum({
             url: this.url(),
-            wuid: this.wuid(),
-            resultName: this.resultName(),
             samples: this.samples(),
-            sampleSize: this.sampleSize()
+            sampleSize: this.sampleSize(),
+            ...more
         });
     }
 
-    label(): string {
-        return `${this.wuid()}\n${this.resultName()}`;
-    }
+    abstract _createResult(): Result;
 
     refreshMetaPromise: Promise<void>;
     refreshMeta(): Promise<void> {
         if (!this.refreshMetaPromise) {
             this.refreshMetaPromise = super.refreshMeta().then(() => {
-                this._result = new Result({ baseUrl: this.url() }, this.wuid(), this.resultName());
+                this._result = this._createResult();
                 return this._result.refresh();
             }).then(result => {
                 this._total = result.Total;
@@ -67,8 +63,8 @@ export class WUResult extends Activity {
         return [];
     }
 
-    exec(opts: IOptimization = {}): Promise<void> {
-        return super.exec(opts).then(() => {
+    exec(): Promise<void> {
+        return super.exec().then(() => {
             return this.sample();
         }).then(response => {
             this._data = response;
@@ -116,21 +112,46 @@ export class WUResult extends Activity {
         });
     }
 }
-WUResult.prototype._class += " Filters";
-export interface WUResult {
+ESPResult.prototype._class += " Filters";
+export interface ESPResult {
     url(): string;
     url(_: string): this;
-    wuid(): string;
-    wuid(_: string): this;
-    resultName(): string;
-    resultName(_: string): this;
     samples(): number;
     samples(_: number): this;
     sampleSize(): number;
     sampleSize(_: number): this;
 }
-WUResult.prototype.publish("url", "", "string", "ESP Url (http://x.x.x.x:8010)");
+ESPResult.prototype.publish("url", "", "string", "ESP Url (http://x.x.x.x:8010)");
+ESPResult.prototype.publish("samples", 10, "number", "Number of samples");
+ESPResult.prototype.publish("sampleSize", 100, "number", "Sample size");
+
+export class WUResult extends ESPResult {
+
+    constructor(owner: View) {
+        super(owner);
+    }
+
+    _createResult(): Result {
+        return new Result({ baseUrl: this.url() }, this.wuid(), this.resultName());
+    }
+
+    hash(more: object): string {
+        return super.hash({
+            wuid: this.wuid(),
+            resultName: this.resultName()
+        });
+    }
+
+    label(): string {
+        return `${this.wuid()}\n${this.resultName()}`;
+    }
+}
+WUResult.prototype._class += " Filters";
+export interface WUResult {
+    wuid(): string;
+    wuid(_: string): this;
+    resultName(): string;
+    resultName(_: string): this;
+}
 WUResult.prototype.publish("wuid", "", "string", "Workunit ID");
 WUResult.prototype.publish("resultName", "", "string", "Result Name");
-WUResult.prototype.publish("samples", 10, "number", "Number of samples");
-WUResult.prototype.publish("sampleSize", 100, "number", "Sample size");

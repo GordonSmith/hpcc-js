@@ -1,16 +1,11 @@
 import { IField } from "@hpcc-js/dgrid";
-import { Databomb } from "../../datasources/databomb";
-import { Form } from "../../datasources/form";
-import { LogicalFile } from "../../datasources/logicalfile";
-import { Query } from "../../datasources/query";
-import { WUResult } from "../../datasources/wuresult";
-import { Activity, IOptimization } from "./activity";
-
-export {
-    WUResult,
-    LogicalFile,
-    Databomb
-};
+import { View } from "../view";
+import { Activity } from "./activity";
+import { Databomb } from "./databomb";
+import { LogicalFile } from "./logicalfile";
+import { Query } from "./query";
+import { sampleData } from "./sampledata";
+import { WUResult } from "./wuresult";
 
 export enum Type {
     WURESULT = "WU Result",
@@ -20,56 +15,47 @@ export enum Type {
 }
 
 export type DatasourceType = Type.WURESULT | Type.LOGICALFILE | Type.DATABOMB | Type.QUERY;
-export type DatasourceClass = WUResult | LogicalFile | Databomb | Form | Query;
 const Types = [Type.WURESULT, Type.LOGICALFILE, Type.DATABOMB, Type.QUERY];
 
-export interface IDatasource {
-}
-
 export class DSPicker extends Activity {
-    protected _wuResult = new WUResult()
-        .url("http://192.168.3.22:8010")
-        .wuid("W20170424-070701")
-        .resultName("Result 1")
-    ;
-    protected _logicalFile = new LogicalFile()
-        .url("http://192.168.3.22:8010")
-        .filename("progguide::exampledata::keys::accounts.personid.payload")
-    ;
-    protected _databomb = new Databomb()
-        .payload([
-            { state: "AL", weight: 100 },
-            { state: "CA", weight: 100 },
-            { state: "FL", weight: 100 },
-            { state: "NY", weight: 100 }
-        ])
-    ;
-    protected _query = new Query()
-        .url("http://192.168.3.22:8010")
-        .querySet("roxie")
-        .queryId("peopleaccounts.1")
-        .resultName("Accounts")
-    ;
+    _view: View;
+    protected _wuResult;
+    protected _logicalFile;
+    protected _databomb;
+    protected _query: Query;
     _prevHash;
-    _dataPromise: Promise<void>;
-    _data: any[] = [];
 
-    constructor() {
+    constructor(view: View) {
         super();
+        this._view = view;
+        this._wuResult = new WUResult(this._view)
+            .url("http://192.168.3.22:8010")
+            .wuid("W20170424-070701")
+            .resultName("Result 1")
+            ;
+        this._logicalFile = new LogicalFile(this._view)
+            .url("http://192.168.3.22:8010")
+            .logicalFile("progguide::exampledata::keys::accounts.personid.payload")
+            ;
+        this._databomb = new Databomb(this._view)
+            .payload(sampleData)
+            ;
+        this._query = new Query(this._view)
+            .url("http://192.168.3.22:8010")
+            .querySet("roxie")
+            .queryId("peopleaccounts.1")
+            .resultName("Accounts")
+            ;
         this.details(this._wuResult);
-
         this._wuResult.monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this._wuResult);
         });
-
         this._logicalFile.monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this._logicalFile);
         });
-
         this._databomb.monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this._databomb);
         });
-
         this._query.monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this._query);
         });
@@ -79,30 +65,30 @@ export class DSPicker extends Activity {
         return this.details().hash();
     }
 
+    updatedBy(): string[] {
+        return this.details().updatedBy();
+    }
+
+    label(): string {
+        return this.details().label();
+    }
+
+    refreshMeta(): Promise<void> {
+        return super.refreshMeta().then(() => {
+            return this.details().refreshMeta();
+        });
+    }
+
     outFields(): IField[] {
         return this.details().outFields();
     }
 
-    pullData(): any[] {
-        return this._data;
+    exec(): Promise<void> {
+        return this.details().exec();
     }
 
-    exec(opts: IOptimization = {}): Promise<void> {
-        if ((this.details() as any).query) {
-            delete this._data;
-            this._dataPromise = (this.details() as any).query(opts).then(data => {
-                this._data = data;
-            });
-        } else {
-            if (this._prevHash !== this.details().hash()) {
-                this._prevHash = this.details().hash();
-                delete this._data;
-                this._dataPromise = this.details().fetch(0, Number.MAX_VALUE).then(data => {
-                    this._data = data;
-                });
-            }
-        }
-        return this._dataPromise;
+    pullData(): any[] {
+        return this.details().pullData();
     }
 }
 DSPicker.prototype._class += " DSPicker";
@@ -110,8 +96,8 @@ DSPicker.prototype._class += " DSPicker";
 export interface DSPicker {
     type(): DatasourceType;
     type(_: DatasourceType): this;
-    details(): DatasourceClass;
-    details(_: DatasourceClass): this;
+    details(): Activity;
+    details(_: Activity): this;
 }
 
 DSPicker.prototype.publish("type", Type.WURESULT, "set", "Type", Types as string[]);

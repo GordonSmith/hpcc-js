@@ -6,13 +6,8 @@ import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
 import { Dashboard } from "./dashboard/dashboard";
 import { Viz, WUResultViz } from "./dashboard/viz";
-import { Databomb } from "./datasources/databomb";
-import { Form } from "./datasources/form";
-import { LogicalFile } from "./datasources/logicalfile";
-import { Workunit } from "./datasources/workunit";
-import { WUResult } from "./datasources/wuresult";
 import { Model } from "./model";
-import { Activity } from "./views/activities/activity";
+import { Activity, DatasourceAdapt } from "./views/activities/activity";
 import { View } from "./views/view";
 
 export class App {
@@ -62,9 +57,9 @@ export class App {
             .target(placeholder)
             .addWidget(this._dashboard, "Dashboard")
             .addWidget(this._dataSplit, "Data", "split-right", this._dashboard as any)
-            .addWidget(this._vizProperties, "Viz", "tab-after", this._dataSplit)
+            .addWidget(this._vizProperties, "Widget", "tab-after", this._dataSplit)
             .addWidget(this._stateProperties, "State", "tab-after", this._vizProperties)
-            .addWidget(this._graph as any, "Model", "tab-after", this._dashboard)
+            .addWidget(this._graph as any, "Pipeline", "tab-after", this._dashboard)
             .addWidget(this._ddlEditor, "DDL", "tab-after", this._graph as any)
             .addWidget(this._layoutEditor, "Layout", "tab-after", this._ddlEditor)
             .lazyRender()
@@ -134,7 +129,7 @@ export class App {
 
     loadPreview(subActivity?: Activity) {
         this._preview
-            .datasource(subActivity || this._currActivity.toIDatasource())
+            .datasource(new DatasourceAdapt(subActivity || this._currActivity.view().limit()))
             .paging(this._currActivity instanceof View ? false : true)
             .lazyRender()
             ;
@@ -210,46 +205,6 @@ export class App {
             label: "Clear",
             execute: () => {
                 this._model.clear();
-                this.loadGraph(true);
-            }
-        });
-
-        commands.addCommand("addWU", {
-            label: "Add Workunit",
-            execute: () => {
-                this._model.addWorkunit(new Workunit());
-                this.loadGraph(true);
-            }
-        });
-
-        commands.addCommand("addWUResult", {
-            label: "Add WU Result",
-            execute: () => {
-                this._model.addDatasource(new WUResult());
-                this.loadGraph(true);
-            }
-        });
-
-        commands.addCommand("addLogicalFile", {
-            label: "Add Logical File",
-            execute: () => {
-                this._model.addDatasource(new LogicalFile());
-                this.loadGraph(true);
-            }
-        });
-
-        commands.addCommand("addDatabomb", {
-            label: "Add Databomb",
-            execute: () => {
-                this._model.addDatasource(new Databomb());
-                this.loadGraph(true);
-            }
-        });
-
-        commands.addCommand("addForm", {
-            label: "Add Form",
-            execute: () => {
-                this._model.addDatasource(new Form());
                 this.loadGraph(true);
             }
         });

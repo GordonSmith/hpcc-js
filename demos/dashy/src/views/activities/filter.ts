@@ -3,7 +3,7 @@ import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Viz } from "../../dashboard/viz";
 import { View } from "../view";
-import { Activity, IOptimization } from "./activity";
+import { Activity } from "./activity";
 
 export enum Rule {
     eq = "==",
@@ -195,22 +195,8 @@ export class Filters extends Activity {
         return this;
     }
 
-    exec(opts: IOptimization = {}): Promise<void> {
-        if (!opts.filters) {
-            opts.filters = [];
-        }
-        for (const filter of this.validFilters()) {
-            const sourceSelection = filter.sourceSelection();
-            if (sourceSelection.length) {
-                for (const mapping of filter.validMappings())
-                    opts.filters.push({
-                        fieldid: mapping.localField(),
-                        value: sourceSelection[0][mapping.remoteField()],
-                        rule: mapping.condition()
-                    });
-            }
-        }
-        return super.exec(opts);
+    exec(): Promise<void> {
+        return super.exec();
     }
 
     pullData(): any[] {
