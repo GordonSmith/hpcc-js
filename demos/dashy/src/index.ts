@@ -1,4 +1,5 @@
 ﻿import { DDLEditor, JSONEditor } from "@hpcc-js/codemirror";
+import { PropertyExt, Widget } from "@hpcc-js/common";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
 import { PropertyEditor } from "@hpcc-js/other";
@@ -12,10 +13,43 @@ import { Model } from "./model";
 import { Activity, DatasourceAdapt } from "./views/activities/activity";
 import { View } from "./views/view";
 
+export class Mutex {
+    private _locking;
+    private _locked;
+
+    constructor() {
+        this._locking = Promise.resolve();
+        this._locked = false;
+    }
+
+    isLocked() {
+        return this._locked;
+    }
+
+    lock() {
+        this._locked = true;
+        let unlockNext;
+        const willLock = new Promise(resolve => unlockNext = resolve);
+        willLock.then(() => this._locked = false);
+        const willUnlock = this._locking.then(() => unlockNext);
+        this._locking = this._locking.then(() => willLock);
+        return willUnlock;
+    }
+}
+
+export async function scopedLock(m: Mutex, func: (...params: any[]) => Promise<void>) {
+    const unlock = await this._mutex.lock();
+    try {
+        m.lock();
+        return await func();
+    } finally {
+        unlock();
+    }
+}
+
 export class App {
     _dockPanel = new DockPanel();
     _dataSplit = new SplitPanel();
-    private _currActivity: Viz;
     _monitorHandle: { remove: () => void };
     _dashboard: Dashboard = new Dashboard().on("vizActivation", (viz: Viz) => {
         console.log("Active Changed:  " + viz.dataProps().id());
@@ -28,7 +62,11 @@ export class App {
         .applyScaleOnLayout(true)
         .on("vertex_click", (row: any, col: string, sel: boolean, ext: any) => {
             const obj = row.__lparam[0];
-            this.vizChanged(obj.viz, obj.activity);
+            if (obj.activity) {
+                this.activityChanged(obj.activity);
+            } else {
+                this.vizChanged(obj.viz);
+            }
         })
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {
         })
@@ -81,60 +119,67 @@ export class App {
         });
     }
 
-    async vizChanged(activity: Viz, subActivity?: Activity) {
-        if (this._currActivity === activity) {
-            if (subActivity) {
-                this.loadProperties(subActivity);
-                this.loadPreview(subActivity);
+    private _currViz: Viz;
+    async vizChanged(viz: Viz) {
+        if (this._currViz !== viz) {
+            this._currViz = viz;
+            if (this._monitorHandle) {
+                this._monitorHandle.remove();
+                delete this._monitorHandle;
             }
-            return;
+            this.loadDataProps(viz ? viz.dataProps() : null);
+            this.loadWidgetProps(viz ? viz.vizProps() : null);
+            this.loadStateProps(viz ? viz.stateProps() : null);
+            this.loadPreview(viz.view().limit());
+            this.loadDDL(true);
+            this.loadLayout(true);
+            if (viz) {
+                this._monitorHandle = viz.monitor((id: string, newValue: any, oldValue: any) => {
+                    console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
+                    this._currViz.refresh().then(() => {
+                        this.refreshPreview(viz.view().limit());
+                        this.loadGraph(true);
+                    });
+                });
+            }
         }
-        if (activity) {
-            await activity.refresh();
-        }
-        this._currActivity = activity;
-        this.loadProperties(subActivity);
-        this.loadPreview(subActivity);
-        this.loadDDL(true);
-        this.loadLayout(true);
     }
 
-    loadProperties(subActivity?: Activity) {
-        if (this._monitorHandle) {
-            this._monitorHandle.remove();
-            delete this._monitorHandle;
+    private _currActivity: Activity;
+    async activityChanged(activity: Activity) {
+        if (this._currActivity !== activity) {
+            this._currActivity = activity;
+            this.loadDataProps(activity);
+            this.loadPreview(activity);
         }
-        const dataProps = subActivity || (this._currActivity ? this._currActivity.dataProps() : null);
-        const vizProps = this._currActivity ? this._currActivity.vizProps() : null;
-        const stateProps = this._currActivity ? this._currActivity.stateProps() : null;
+    }
+
+    loadDataProps(pe: PropertyExt) {
         this._dataProperties
-            .widget(dataProps)
+            .widget(pe)
             .render(widget => {
-                if (this._currActivity) {
-                    this._monitorHandle = this._currActivity.monitor((id: string, newValue: any, oldValue: any) => {
-                        console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
-                        this._currActivity.refresh().then(() => {
-                            this.refreshPreview(this._currActivity.view().limit());
-                            this.loadGraph(true);
-                        });
-                    });
-                }
             })
             ;
+    }
+
+    loadWidgetProps(w: Widget) {
         this._vizProperties
-            .widget(vizProps)
-            .render()
-            ;
-        this._stateProperties
-            .widget(stateProps)
+            .widget(w)
             .render()
             ;
     }
 
-    loadPreview(subActivity?: Activity) {
+    loadStateProps(pe: PropertyExt) {
+        this._stateProperties
+            .widget(pe)
+            .render()
+            ;
+    }
+
+    loadPreview(activity: Activity) {
         this._preview
-            .datasource(new DatasourceAdapt(subActivity || this._currActivity.view().limit()))
-            .paging(this._currActivity instanceof View ? false : true)
+            .datasource(new DatasourceAdapt(activity))
+            .paging(true)
             .lazyRender()
             ;
     }
@@ -194,7 +239,7 @@ export class App {
                 viz.state().monitorProperty("selection", (id, newVal, oldVal) => {
                     for (const filteredViz of this._model.filteredBy(viz)) {
                         filteredViz.refresh().then(() => {
-                            if (this._currActivity === filteredViz) {
+                            if (this._currViz === filteredViz) {
                                 this.refreshPreview(filteredViz.view().limit());
                             }
                         });
