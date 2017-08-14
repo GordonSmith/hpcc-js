@@ -5,6 +5,8 @@ import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
 import { Dashboard } from "./dashboard/dashboard";
+import { DDLAdapter } from "./dashboard/ddladapter";
+import { GraphAdapter } from "./dashboard/graphadapter";
 import { Viz, WUResultViz } from "./dashboard/viz";
 import { Model } from "./model";
 import { Activity, DatasourceAdapt } from "./views/activities/activity";
@@ -15,10 +17,12 @@ export class App {
     _dataSplit = new SplitPanel();
     private _currActivity: Viz;
     _monitorHandle: { remove: () => void };
-    _dashboard: Dashboard = new Dashboard().on("ActiveChanged", (viz: Viz, w, wa) => {
+    _dashboard: Dashboard = new Dashboard().on("vizActivation", (viz: Viz) => {
         console.log("Active Changed:  " + viz.dataProps().id());
         this.vizChanged(viz);
     });
+    _graphAdapter = new GraphAdapter(this._dashboard);
+    _ddlAdapter = new DDLAdapter(this._dashboard);
     _graph: Graph = new Graph()
         .allowDragging(false)
         .applyScaleOnLayout(true)
@@ -148,7 +152,7 @@ export class App {
     loadGraph(refresh: boolean = false) {
         this._graph
             .layout("Hierarchy")
-            .data({ ...this._dashboard.createGraph(), merge: false })
+            .data({ ...this._graphAdapter.createGraph(), merge: false })
             ;
         if (refresh && this._dockPanel.isVisible(this._graph as any)) {
             this._graph.lazyRender();
@@ -157,7 +161,7 @@ export class App {
 
     loadDDL(refresh: boolean = false) {
         this._ddlEditor
-            .ddl(this._dashboard.createDDL())
+            .ddl(this._ddlAdapter.createDDL())
             ;
         if (refresh && this._dockPanel.isVisible(this._ddlEditor as any)) {
             this._ddlEditor

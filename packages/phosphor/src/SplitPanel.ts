@@ -28,7 +28,7 @@ export class SplitPanel extends HTMLWidget {
     }
 
     addWidget(widget: SVGWidget | HTMLWidget) {
-        const wa = new WidgetAdapter(widget);
+        const wa = new WidgetAdapter(this, widget);
         this._split.addWidget(wa);
         this.content.push(wa);
         return this;

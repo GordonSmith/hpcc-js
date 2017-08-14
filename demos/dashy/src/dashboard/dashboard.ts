@@ -1,23 +1,13 @@
-import { MultiChart } from "@hpcc-js/chart";
-import { PropertyExt, Surface, Widget } from "@hpcc-js/common";
-import { IDashboard, IDatasource, IEvent, IEventUpdate, IFilter, IFilterRule, IOutput, ITableVisualization, StringStringDict, VisualizationType } from "@hpcc-js/ddl-shim";
-import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
+
+import { PropertyExt, Widget } from "@hpcc-js/common";
 import { Persist } from "@hpcc-js/other";
-import { DockPanel, WidgetAdapter } from "@hpcc-js/phosphor";
-import { Activity } from "../views/activities/activity";
-import { Databomb } from "../views/activities/databomb";
-import { WUResult } from "../views/activities/wuresult";
+import { DockPanel } from "@hpcc-js/phosphor";
 import { View } from "../views/view";
 import { Viz } from "./viz";
 
 export class Dashboard extends DockPanel {
-    private subgraphMap: { [key: string]: Surface } = {};
-    private vertexMap: { [key: string]: Vertex } = {};
-    private edgeMap: { [key: string]: Edge } = {};
-
-    protected _prevActive;
-
     private _visualizations: Viz[] = [];
+
     visualizations() {
         return [...this._visualizations];
     }
@@ -51,18 +41,8 @@ export class Dashboard extends DockPanel {
         for (const w of removed) {
             this.removeWidget(w);
         }
-        const context = this;
         for (const w of added) {
             this.addWidget(w, this.visualization(w).label());
-            const wa: any = this.getWidgetAdapter(w);
-            const origActivateRequest = wa.onActivateRequest;
-            wa.onActivateRequest = function (msg): void {
-                origActivateRequest.apply(this, arguments);
-                if (context._prevActive !== this._widget) {
-                    context._prevActive = this._widget;
-                    context.ActiveChanged(context._visualizations.filter(v => v.vizProps() === this._widget)[0], this._widget, wa);
-                }
-            };
         }
         for (const viz of updated) {
             const wa: any = this.getWidgetAdapter(viz.vizProps());
@@ -71,237 +51,22 @@ export class Dashboard extends DockPanel {
         super.update(domNode, element);
     }
 
-    ActiveChanged(v: Viz, w: Widget, wa: WidgetAdapter) {
-    }
-
-    //  Graph  ---
-    createSurface(id: string, label: string, data: any): Surface {
-        let retVal: Surface = this.subgraphMap[id];
-        if (!retVal) {
-            retVal = new Surface()
-                .classed({ subgraph: true })
-                .showIcon(false)
-                .columns(["DS"])
-                .data([[data]])
-                ;
-            this.subgraphMap[id] = retVal;
-        }
-        retVal.title(`${label}`);
-        retVal.getBBox(true);
-        return retVal;
-    }
-
-    createVertex(id: string, label: string, data: any, fillColor: string = "#dcf1ff"): Vertex {
-        let retVal: Vertex = this.vertexMap[id];
-        if (!retVal) {
-            retVal = new Vertex()
-                .columns(["DS"])
-                .data([[data]])
-                .icon_shape_diameter(0)
-                .textbox_shape_colorFill(fillColor)
-                ;
-            this.vertexMap[id] = retVal;
-        }
-        retVal.text(label);
-        retVal.getBBox(true);
-        return retVal;
-    }
-
-    createEdge(sourceID: string, targetID: string) {
-        const edgeID = `${sourceID}->${targetID}`;
-        let retVal = this.edgeMap[edgeID];
-        if (!retVal) {
-            retVal = new Edge()
-                .sourceVertex(this.vertexMap[sourceID])
-                .targetVertex(this.vertexMap[targetID])
-                ;
-            this.edgeMap[edgeID] = retVal;
-        }
-        return retVal;
-    }
-
-    createGraph(): IGraphData {
-        this.subgraphMap = {};
-        this.vertexMap = {};
-        this.edgeMap = {};
-
-        const hierarchy: Lineage[] = [];
-        const dsVertices: Widget[] = [];
-        const sgVertices: Widget[] = [];
-        const vVertices: Widget[] = [];
-        const edges: Edge[] = [];
-
-        const context = this;
-        function createDatasource(sourceID: string, id: string, label: string, data: any): string {
-            const retval: Vertex = context.createVertex(id, label, data);
-            vVertices.push(retval);
-            if (sourceID) {
-                edges.push(context.createEdge(sourceID, id));
-            }
-            return id;
-        }
-        function createActivity(sourceID: string, viz: Viz, view: View, activity: Activity): string {
-            const surface: Surface = context.createSurface(view.id(), `${view.label()} [${viz.id()}]`, { viz, view });
-            if (vVertices.indexOf(surface) === -1) {
-                vVertices.push(surface);
-            }
-            const vertex: Vertex = context.createVertex(activity.id(), `${activity.classID()}`, { viz, view, activity }, activity.exists() ? null : "lightgray");
-            vVertices.push(vertex);
-            if (sourceID) {
-                edges.push(context.createEdge(sourceID, activity.id()));
-            }
-            hierarchy.push({ parent: surface, child: vertex });
-            return activity.id();
-        }
-
-        const dsDedup = {};
-        const lastID = {};
-        for (const viz of this._visualizations) {
-            const view = viz.view();
-            // const ds = view.rawDatasource();
-            const ds2 = view.dataSource();
-            dsDedup[ds2.id()] = ds2.hash();
-            const firstID = createDatasource("", ds2.hash(), `${ds2.label()}`, { viz: undefined, activity: ds2 });
-            let prevID = firstID;
-            prevID = createActivity(prevID, viz, view, view.filters());
-            prevID = createActivity(prevID, viz, view, view.groupBy());
-            prevID = createActivity(prevID, viz, view, view.sort());
-            prevID = createActivity(prevID, viz, view, view.limit());
-            lastID[view.id()] = prevID;
-        }
-
-        for (const viz of this._visualizations) {
-            const view = viz.view();
-            view.updatedBy().forEach(updateInfo => {
-                const filterEdge: Edge = this.createEdge(lastID[this.visualization(updateInfo.from).view().id()], dsDedup[updateInfo.to.id()] || updateInfo.to.id())
-                    .weight(10)
-                    .strokeDasharray("1,5")
-                    .text("updates")
-                    ;
-                edges.push(filterEdge);
-            });
-        }
-
-        return {
-            vertices: dsVertices.concat(vVertices).concat(sgVertices),
-            edges,
-            hierarchy
-        };
-    }
-
-    createDDLFilters(view: View): IFilter[] {
-        const retVal: IFilter[] = [];
-        for (const filter of view.filters().validFilters()) {
-            for (const mapping of filter.validMappings()) {
-                retVal.push({
-                    nullable: filter.nullable(),
-                    fieldid: mapping.localField(),
-                    rule: mapping.condition() as IFilterRule
-                });
-            }
-        }
-        return retVal;
-    }
-
-    createDDLOutputs(ds: any): IOutput[] {
-        const retVal: IOutput[] = [];
-        for (const viz of this.visualizations()) {
-            const view = viz.view();
-            const vizDs = viz.view().dataSource();
-            if (ds.hash() === vizDs.hash()) {
-                retVal.push({
-                    id: view.label(),
-                    from: ds instanceof WUResult ? ds.resultName() : view.id(),
-                    filter: this.createDDLFilters(view)
-                });
-            }
-        }
-        return retVal;
-    }
-
-    createDDLDatasources(): IDatasource[] {
-        const dsDedup = {};
-        const retVal: IDatasource[] = [];
-        for (const viz of this.visualizations()) {
-            const ds = viz.view().dataSource();
-            if (!dsDedup[ds.hash()]) {
-                dsDedup[ds.hash()] = true;
-                retVal.push({
-                    id: ds.id(),
-                    databomb: ds instanceof Databomb,
-                    WUID: ds instanceof WUResult,
-                    outputs: this.createDDLOutputs(ds)
-                });
-            }
-        }
-        return retVal;
-    }
-
-    createDDLEvents(viz): { [key: string]: IEvent } {
-        const retVal: { [key: string]: IEvent } = {};
-        retVal["click"] = {
-            updates: []
-        };
-        const updates = retVal["click"].updates;
-        for (const updatesViz of this.visualizations()) {
-            for (const filter of updatesViz.view().filters().validFilters()) {
-                if (filter.source() === viz.id()) {
-                    const eventUpdate: IEventUpdate = {
-                        visualization: updatesViz.id(),
-                        datasource: updatesViz.view().dataSource().id(),
-                        merge: false,
-                        mappings: {}
-                    };
-                    updates.push(eventUpdate);
-                    for (const mapping of filter.validMappings()) {
-                        eventUpdate.mappings[mapping.remoteField()] = mapping.localField();
-                    }
-                }
-            }
-        }
-        return retVal;
-    }
-
-    createDDLVisualizations(): ITableVisualization[] {
-        return this.visualizations().map(viz => {
-            const widget: MultiChart = viz.widget() as any;
-            const view = viz.view();
-            const ds = view.dataSource();
-            let sourceOutput = "";
-            if (ds instanceof WUResult) {
-                sourceOutput = (ds as WUResult).resultName();
-            }
-            return {
-                id: viz.id(),
-                title: viz.view().label(),
-                type: "TABLE" as VisualizationType,
-                label: view.outFields().map(field => field.id),
-                source: {
-                    id: view.dataSource().id(),
-                    output: sourceOutput,
-                    mappings: {
-                        value: view.outFields().map(field => field.id)
-                    }
-                },
-                events: this.createDDLEvents(viz),
-                properties: {
-                    chartType: widget.chartType()
-                } as StringStringDict
-            } as ITableVisualization;
-        });
-    }
-
-    createDDL(): IDashboard {
-        return {
-            visualizations: this.createDDLVisualizations(),
-            datasources: this.createDDLDatasources()
-        };
-    }
-
     createLayout(): object {
         return this._visualizations.map(viz => {
             return Persist.serializeToObject(viz.widget());
         });
+    }
+
+    protected _prevActive: Widget;
+    childActivation(w: Widget) {
+        super.childActivation(w);
+        if (this._prevActive !== w) {
+            this._prevActive = w;
+            this.vizActivation(this.visualization(w));
+        }
+    }
+
+    vizActivation(viz: Viz) {
     }
 }
 Dashboard.prototype._class += " dashboard_dashboard";

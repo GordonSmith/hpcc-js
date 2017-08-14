@@ -4,24 +4,29 @@ export interface IImplementation {
     id: string;
 }
 
-export interface IWsWorkunit extends IImplementation {
+export interface IESPService extends IImplementation {
     url: string;
 }
 
-export interface IWUResult extends IWsWorkunit {
+export interface IWUResult extends IESPService {
     wuid: string;
     resultName: string;
 }
 
-export interface ILogicalFile extends IWsWorkunit {
-    name: string;
+export interface ILogicalFile extends IESPService {
+    id: string;
+}
+
+export interface IQuery extends IESPService {
+    set: string;
+    id: string;
 }
 
 export interface IDatabomb extends IImplementation {
     data: [{ [key: string]: any }];
 }
 
-export type datasource = IWUResult | ILogicalFile | IDatabomb;
+export type datasource = IWUResult | ILogicalFile | IQuery;
 
 //  DDL  ======================================================================
 export interface DDLSchema2 extends IImplementation {

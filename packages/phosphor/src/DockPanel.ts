@@ -1,10 +1,10 @@
 import { HTMLWidget, Widget } from "@hpcc-js/common";
-import { DockPanel as PDockPanel, Widget as PWidget } from "@hpcc-js/phosphor-shim";
-import { WidgetAdapter } from "./WidgetAdapter";
+import { DockPanel as PDockPanel, IMessageHandler, IMessageHook, Message, MessageLoop, Widget as PWidget } from "@hpcc-js/phosphor-shim";
+import { Msg, WidgetAdapter } from "./WidgetAdapter";
 
 import "../src/DockPanel.css";
 
-export class DockPanel extends HTMLWidget {
+export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHook {
     private _dock = new PDockPanel({ mode: "multiple-document" });
     protected content: WidgetAdapter[] = [];
 
@@ -12,6 +12,7 @@ export class DockPanel extends HTMLWidget {
         super();
         this._tag = "div";
         this._dock.id = "p" + this.id();
+        MessageLoop.installMessageHook(this, this);
     }
 
     protected getWidgetAdapter(widget: Widget): WidgetAdapter | null {
@@ -28,7 +29,7 @@ export class DockPanel extends HTMLWidget {
 
     addWidget(widget: Widget, title: string, location: PDockPanel.InsertMode = "split-right", refWidget?: Widget) {
         const addMode: PDockPanel.IAddOptions = { mode: location, ref: this.getWidgetAdapter(refWidget) };
-        const wa = new WidgetAdapter(widget);
+        const wa = new WidgetAdapter(this, widget);
         wa.title.label = title;
         wa.padding = 8;
         this._dock.addWidget(wa, addMode);
@@ -68,6 +69,25 @@ export class DockPanel extends HTMLWidget {
 
     exit(domNode, element) {
         super.exit(domNode, element);
+    }
+
+    //  Phosor Messaging  ---
+    messageHook(handler: IMessageHandler, msg: Message): boolean {
+        if (handler === this) {
+            this.processMessage(msg);
+        }
+        return true;
+    }
+
+    processMessage(msg: Message): void {
+        switch (msg.type) {
+            case "wa-activate-request":
+                this.childActivation((msg as Msg.WAActivateRequest).wa.widget);
+                break;
+        }
+    }
+
+    childActivation(w: Widget) {
     }
 }
 DockPanel.prototype._class += " phosphor_DockPanel";

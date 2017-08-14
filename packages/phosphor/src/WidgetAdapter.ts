@@ -1,18 +1,39 @@
 import { Widget as CWidget } from "@hpcc-js/common";
-import { Message, Widget as PWidget } from "@hpcc-js/phosphor-shim";
+import { ConflatableMessage, Message, MessageLoop, Widget as PWidget } from "@hpcc-js/phosphor-shim";
 import { select as d3Select } from "d3-selection";
 
 import "../src/WidgetAdapter.css";
 
+export namespace Msg {
+    export class WAActivateRequest extends ConflatableMessage {
+        private _wa: WidgetAdapter;
+
+        constructor(wa: WidgetAdapter) {
+            super("wa-activate-request");
+            this._wa = wa;
+        }
+        get wa(): WidgetAdapter {
+            return this._wa;
+        }
+
+        conflate(other: WAActivateRequest): boolean {
+            this._wa = other.wa;
+            return true;
+        }
+    }
+}
+
 export class WidgetAdapter extends PWidget {
+    protected _owner;
     protected _element;
     _widget: CWidget;
     get widget() { return this._widget; }
     lparam: any = {};
     padding: number = 0;
 
-    constructor(widget: CWidget, lparam: object = {}) {
+    constructor(owner: CWidget, widget: CWidget, lparam: object = {}) {
         super();
+        this._owner = owner;
         this._element = d3Select(this.node);
         // this.setFlag(Widget.Flag.DisallowLayout);
         this.addClass("phosphor_WidgetAdapter");
@@ -36,6 +57,7 @@ export class WidgetAdapter extends PWidget {
         this._widget
             .lazyRender()
             ;
+        MessageLoop.postMessage(this._owner, new Msg.WAActivateRequest(this));
     }
 
     protected onResize(msg: PWidget.ResizeMessage): void {
