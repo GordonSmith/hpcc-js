@@ -38,10 +38,10 @@ export class ColumnMapping extends PropertyExt {
     }
 
     localFields() {
-        return this._owner.filterFields().map(field => field.label);
+        return this._owner.inFields().map(field => field.label);
     }
 
-    filterFields() {
+    sourceOutFields() {
         return this._owner.sourceOutFields().map(field => field.label);
     }
 
@@ -79,8 +79,8 @@ export interface ColumnMapping {
     condition(): Rule;
     condition(_: Rule): this;
 }
-ColumnMapping.prototype.publish("remoteField", null, "set", "Filter Fields", function () { return this.filterFields(); }, { optional: true });
-ColumnMapping.prototype.publish("localField", null, "set", "Local Fields", function () { return this.localFields(); }, { optional: true });
+ColumnMapping.prototype.publish("remoteField", null, "set", "Filter Fields", function () { return (this as ColumnMapping).sourceOutFields(); }, { optional: true });
+ColumnMapping.prototype.publish("localField", null, "set", "Local Fields", function () { return (this as ColumnMapping).localFields(); }, { optional: true });
 ColumnMapping.prototype.publish("condition", "==", "set", "Filter Fields", RuleValueArr);
 
 export class Filter extends PropertyExt {
@@ -94,6 +94,10 @@ export class Filter extends PropertyExt {
         this.monitor((id, newVal, oldVal) => {
             this._owner.broadcast(id, newVal, oldVal, this);
         });
+    }
+
+    visualizationIDs() {
+        return this._view._dashboard.visualizationIDs();
     }
 
     hash(): string {
@@ -118,16 +122,16 @@ export class Filter extends PropertyExt {
         return this;
     }
 
-    filterFields(): IField[] {
-        return this._owner.filterFields();
+    inFields(): IField[] {
+        return this._owner.inFields();
     }
 
     sourceViz(): Viz {
-        return this._view._model.visualization(this.source());
+        return this._view._dashboard.visualization(this.source());
     }
 
     sourceOutFields(): IField[] {
-        return this.sourceViz().toIDatasource().outFields();
+        return this.sourceViz().view().outFields();
     }
 
     sourceSelection(): any[] {
@@ -157,7 +161,7 @@ export interface Filter {
     mappings(): ColumnMapping[];
     mappings(_: ColumnMapping[]): this;
 }
-Filter.prototype.publish("source", null, "set", "Datasource", function () { return this._view._model.visualizationIDs(); }, { optional: true });
+Filter.prototype.publish("source", null, "set", "Datasource", function () { return (this as Filter).visualizationIDs(); }, { optional: true });
 Filter.prototype.publish("nullable", false, "boolean", "Ignore null filters");
 Filter.prototype.publish("mappings", [], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping });
 
@@ -172,34 +176,24 @@ export class Filters extends Activity {
         });
     }
 
+    //  Activity overrides  ---
     hash(): string {
         return hashSum(this.validFilters().map(filter => filter.hash()));
-    }
-
-    updatedBy(): string[] {
-        return this.validFilters().map(filter => filter.source());
-    }
-
-    validFilters(): Filter[] {
-        return this.filter().filter(filter => filter.source());
     }
 
     exists(): boolean {
         return this.validFilters().length > 0;
     }
 
-    appendFilter(source: View, mappings: [{ remoteField: string, localField: string }]): this {
-        this.filter().push(new Filter(this)
-            .source(source.id())
-            .appendMappings(mappings));
-        return this;
+    updatedBy(): string[] {
+        return this.validFilters().map(filter => filter.source());
     }
 
     exec(): Promise<void> {
         return super.exec();
     }
 
-    pullData(): any[] {
+    pullData(): object[] {
         let data = super.pullData();
         const filters = this.validFilters();
         //  Test for null selection + nullable
@@ -209,6 +203,18 @@ export class Filters extends Activity {
         return data.filter(row => {
             return filters.every(filter => filter.rowFilter(row));
         });
+    }
+
+    //  --- --- ---
+    validFilters(): Filter[] {
+        return this.filter().filter(filter => filter.source());
+    }
+
+    appendFilter(source: View, mappings: [{ remoteField: string, localField: string }]): this {
+        this.filter().push(new Filter(this)
+            .source(source.id())
+            .appendMappings(mappings));
+        return this;
     }
 }
 Filters.prototype._class += " Filters";

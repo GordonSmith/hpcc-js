@@ -4,50 +4,10 @@ export const ddlSchema2 =
     "$schema": "http://json-schema.org/draft-04/schema#",
     "additionalProperties": false,
     "definitions": {
-        "IDatabomb": {
-            "additionalProperties": false,
-            "properties": {
-                "data": {
-                    "additionalItems": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": {
-                                },
-                                "type": "object"
-                            }
-                        ]
-                    },
-                    "items": [
-                        {
-                            "additionalProperties": {
-                            },
-                            "type": "object"
-                        }
-                    ],
-                    "minItems": 1,
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "data",
-                "id",
-                "type"
-            ],
-            "type": "object"
-        },
         "ILogicalFile": {
             "additionalProperties": false,
             "properties": {
                 "id": {
-                    "type": "string"
-                },
-                "name": {
                     "type": "string"
                 },
                 "type": {
@@ -59,7 +19,30 @@ export const ddlSchema2 =
             },
             "required": [
                 "id",
-                "name",
+                "type",
+                "url"
+            ],
+            "type": "object"
+        },
+        "IQuery": {
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "set": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "set",
                 "type",
                 "url"
             ],
@@ -105,7 +88,7 @@ export const ddlSchema2 =
                         "$ref": "#/definitions/ILogicalFile"
                     },
                     {
-                        "$ref": "#/definitions/IDatabomb"
+                        "$ref": "#/definitions/IQuery"
                     }
                 ]
             },

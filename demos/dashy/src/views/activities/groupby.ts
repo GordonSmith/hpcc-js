@@ -22,7 +22,7 @@ export class GroupByColumn extends PropertyExt {
     }
 
     columns() {
-        return this._owner.columns();
+        return this._owner.fieldIDs();
     }
 }
 GroupByColumn.prototype._class += " GroupByColumn";
@@ -31,7 +31,7 @@ export interface GroupByColumn {
     label(): string;
     label(_: string): this;
 }
-GroupByColumn.prototype.publish("label", undefined, "set", "Field", function () { return this.columns(); }, { optional: true });
+GroupByColumn.prototype.publish("label", undefined, "set", "Field", function () { return (this as GroupByColumn).columns(); }, { optional: true });
 
 //  ===========================================================================
 function localCount(leaves: any[], callback: any): number {
@@ -70,7 +70,7 @@ export class AggregateField extends PropertyExt {
     }
 
     columns() {
-        return this._owner.columns();
+        return this._owner.fieldIDs();
     }
 
     hasColumn() {
@@ -93,7 +93,7 @@ export interface AggregateField {
 }
 AggregateField.prototype.publish("label", null, "string", "Label", null, { optional: true, disable: (w: AggregateField) => !w.hasColumn() });
 AggregateField.prototype.publish("aggrType", "count", "set", "Aggregation Type", ["count", "min", "max", "sum", "mean", "median", "variance", "deviation"], { optional: true, disable: w => !w.label() });
-AggregateField.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function () { return this.columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" });
+AggregateField.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function () { return (this as AggregateField).columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" });
 
 //  ===========================================================================
 export class GroupBy extends Activity {
@@ -131,8 +131,17 @@ export class GroupBy extends Activity {
         return this.validGroupBy().length > 0;
     }
 
-    columns() {
-        return this._owner.columns();
+    fieldIDs(): string[] {
+        return this.inFields().map(field => field.id);
+    }
+
+    field(fieldID: string): IField | null {
+        for (const field of this.inFields()) {
+            if (field.id === fieldID) {
+                return field;
+            }
+        }
+        return null;
     }
 
     appendComputedFields(aggregateFields: [{ label: string, type: AggregateType, column?: string }]): this {
@@ -162,7 +171,7 @@ export class GroupBy extends Activity {
         const retVal: IField[] = [];
         const groups: GroupByColumn[] = this.validGroupBy();
         for (const groupBy of groups) {
-            const groupByField = this._owner.field(groupBy.label());
+            const groupByField = this.field(groupBy.label());
             const field: IField = {
                 id: groupBy.label(),
                 label: groupBy.label(),
@@ -202,7 +211,7 @@ export class GroupBy extends Activity {
         return retVal;
     }
 
-    pullData(): any[] {
+    pullData(): object[] {
         const data = super.pullData();
         if (data.length === 0) return data;
         const retVal = d3Nest()

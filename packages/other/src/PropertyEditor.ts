@@ -196,7 +196,7 @@ export class PropertyEditor extends HTMLWidget {
             })
             ;
 
-        const hideParamsIcon = th.append("i")
+        th.append("i")
             .attr("class", "hideParamsIcon fa")
             .on("click", function () {
                 context.hideNonWidgets(!context.hideNonWidgets()).render();

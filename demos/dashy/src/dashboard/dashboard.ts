@@ -2,26 +2,45 @@
 import { PropertyExt, Widget } from "@hpcc-js/common";
 import { Persist } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
+import { compare } from "@hpcc-js/util";
 import { View } from "../views/view";
 import { Viz } from "./viz";
 
 export class Dashboard extends DockPanel {
     private _visualizations: Viz[] = [];
+    private _nullVisualization = new Viz(this, "");
 
     visualizations() {
         return [...this._visualizations];
     }
 
     visualization(w: string | PropertyExt): Viz {
+        let retVal: Viz[];
         if (typeof w === "string") {
-            return this._visualizations.filter(viz => viz.id() === w)[0];
+            retVal = this._visualizations.filter(viz => viz.id() === w);
+        } else {
+            retVal = this._visualizations.filter(v => v.vizProps() === w);
         }
-        return this._visualizations.filter(v => v.vizProps() === w)[0];
+        if (retVal.length) {
+            return retVal[0];
+        }
+        return this._nullVisualization;
+    }
+
+    visualizationIDs() {
+        return this._visualizations.map(viz => viz.id());
     }
 
     addVisualization(viz: Viz): this {
         this._visualizations.push(viz);
         return this;
+    }
+
+    filteredBy(viz: Viz): Viz[] {
+        return this._visualizations.filter(otherViz => {
+            const filterIDs = otherViz.view().updatedBy();
+            return filterIDs.indexOf(viz.id()) >= 0;
+        });
     }
 
     views(): View[] {
@@ -34,19 +53,16 @@ export class Dashboard extends DockPanel {
 
     update(domNode, element) {
         const previous = this.widgets();
-        const current = this.visualizations().map(viz => viz.vizProps());
-        const removed = previous.filter(x => current.indexOf(x) === -1);
-        const added = current.filter(x => previous.indexOf(x) === -1);
-        const updated = this.visualizations().filter(viz => added.indexOf(viz.vizProps()) === -1);
-        for (const w of removed) {
+        const diff = compare(previous, this.visualizations().map(viz => viz.widget()));
+        for (const w of diff.removed) {
             this.removeWidget(w);
         }
-        for (const w of added) {
+        for (const w of diff.added) {
             this.addWidget(w, this.visualization(w).label());
         }
-        for (const viz of updated) {
-            const wa: any = this.getWidgetAdapter(viz.vizProps());
-            wa.title.label = viz.label();
+        for (const w of diff.unchanged) {
+            const wa: any = this.getWidgetAdapter(w);
+            wa.title.label = this.visualization(w).label();
         }
         super.update(domNode, element);
     }

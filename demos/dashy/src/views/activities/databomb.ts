@@ -28,10 +28,6 @@ export class Databomb extends Activity {
         return `Databomb`;
     }
 
-    filterFields(): IField[] {
-        return [];
-    }
-
     outFields(): IField[] {
         for (const row0 of this.payload()) {
             const retVal: IField[] = [];
@@ -53,10 +49,11 @@ export class Databomb extends Activity {
         return Promise.resolve();
     }
 
-    pullData(): any[] {
+    pullData(): object[] {
         return this.payload();
     }
 
+    //  ===
     total(): number {
         return this.payload().length;
     }

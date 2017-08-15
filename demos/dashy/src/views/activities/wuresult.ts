@@ -47,14 +47,6 @@ export abstract class ESPResult extends Activity {
         return this.refreshMetaPromise;
     }
 
-    filterFields(): IField[] {
-        if (this._result) {
-            const responseSchema = this._result.fields();
-            return responseSchema.map(schemaRow2IField);
-        }
-        return [];
-    }
-
     outFields(): IField[] {
         if (this._result) {
             const responseSchema = this._result.fields();
@@ -73,7 +65,7 @@ export abstract class ESPResult extends Activity {
         });
     }
 
-    pullData(): any[] {
+    pullData(): object[] {
         return this._data;
     }
 

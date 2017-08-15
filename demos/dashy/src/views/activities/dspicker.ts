@@ -87,7 +87,7 @@ export class DSPicker extends Activity {
         return this.details().exec();
     }
 
-    pullData(): any[] {
+    pullData(): object[] {
         return this.details().pullData();
     }
 }

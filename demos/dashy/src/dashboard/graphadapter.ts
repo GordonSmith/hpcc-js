@@ -99,6 +99,11 @@ export class GraphAdapter {
         for (const viz of this._dashboard.visualizations()) {
             const view = viz.view();
             // const ds = view.rawDatasource();
+            let prevID = "";
+            for (const activity of view.activities()) {
+                prevID = createActivity(prevID, viz, view, activity);
+            }
+            /*
             const ds2 = view.dataSource();
             dsDedup[ds2.id()] = ds2.hash();
             const firstID = createDatasource("", ds2.hash(), `${ds2.label()}`, { viz: undefined, activity: ds2 });
@@ -107,12 +112,13 @@ export class GraphAdapter {
             prevID = createActivity(prevID, viz, view, view.groupBy());
             prevID = createActivity(prevID, viz, view, view.sort());
             prevID = createActivity(prevID, viz, view, view.limit());
+        */
             lastID[view.id()] = prevID;
         }
 
         for (const viz of this._dashboard.visualizations()) {
             const view = viz.view();
-            view.updatedBy().forEach(updateInfo => {
+            view.updatedByGraph().forEach(updateInfo => {
                 const filterEdge: Edge = this.createEdge(lastID[this._dashboard.visualization(updateInfo.from).view().id()], dsDedup[updateInfo.to.id()] || updateInfo.to.id())
                     .weight(10)
                     .strokeDasharray("1,5")

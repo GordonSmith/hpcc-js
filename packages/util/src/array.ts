@@ -39,24 +39,24 @@ export function find<T>(o: T[], predicate: (value: T, index: number) => boolean)
 }
 
 export interface IDifferences {
-    both: any[];
-    orig: any[];
-    other: any[];
+    unchanged: any[];
+    removed: any[];
+    added: any[];
 }
 
-export function compare(orig: any[], other: any[]): IDifferences {
+export function compare(before: any[], after: any[]): IDifferences {
     const retVal: IDifferences = {
-        both: [],
-        orig: [],
-        other: other.slice(0)
+        unchanged: [],
+        removed: [],
+        added: after.slice(0)
     };
-    for (const row of orig) {
-        const otherIdx = retVal.other.indexOf(row);
+    for (const row of before) {
+        const otherIdx = retVal.added.indexOf(row);
         if (otherIdx >= 0) {
-            retVal.both.push(row);
-            retVal.other.splice(otherIdx, 1);
+            retVal.unchanged.push(row);
+            retVal.added.splice(otherIdx, 1);
         } else {
-            retVal.orig.push(row);
+            retVal.removed.push(row);
         }
     }
     return retVal;

@@ -8,10 +8,8 @@ import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-
 import { Dashboard } from "./dashboard/dashboard";
 import { DDLAdapter } from "./dashboard/ddladapter";
 import { GraphAdapter } from "./dashboard/graphadapter";
-import { Viz, WUResultViz } from "./dashboard/viz";
-import { Model } from "./model";
+import { Viz } from "./dashboard/viz";
 import { Activity, DatasourceAdapt } from "./views/activities/activity";
-import { View } from "./views/view";
 
 export class Mutex {
     private _locking;
@@ -52,7 +50,7 @@ export class App {
     _dataSplit = new SplitPanel();
     _monitorHandle: { remove: () => void };
     _dashboard: Dashboard = new Dashboard().on("vizActivation", (viz: Viz) => {
-        console.log("Active Changed:  " + viz.dataProps().id());
+        console.log("Active Changed:  " + viz.view().id());
         this.vizChanged(viz);
     });
     _graphAdapter = new GraphAdapter(this._dashboard);
@@ -87,8 +85,6 @@ export class App {
     _layoutEditor = new JSONEditor();
     _preview = new DatasourceTable();
 
-    _model = new Model();
-
     constructor(placeholder: string) {
         // app = this;
         this._dataSplit
@@ -110,43 +106,36 @@ export class App {
         this.initMenu();
     }
 
-    refreshPreview(datasource: Activity) {
-        datasource.exec().then(() => {
-            this._preview
-                .invalidate()
-                .lazyRender()
-                ;
-        });
+    refreshPreview() {
+        const ds = this._preview.datasource() as DatasourceAdapt;
+        if (ds) {
+            ds.exec().then(() => {
+                this._preview
+                    .invalidate()
+                    .lazyRender()
+                    ;
+            });
+        }
     }
 
     private _currViz: Viz;
-    async vizChanged(viz: Viz) {
+    vizChanged(viz: Viz) {
         if (this._currViz !== viz) {
             this._currViz = viz;
-            if (this._monitorHandle) {
-                this._monitorHandle.remove();
-                delete this._monitorHandle;
-            }
-            this.loadDataProps(viz ? viz.dataProps() : null);
-            this.loadWidgetProps(viz ? viz.vizProps() : null);
-            this.loadStateProps(viz ? viz.stateProps() : null);
-            this.loadPreview(viz.view().limit());
+            this.loadDataProps(viz.view());
+            this.loadWidgetProps(viz.widget());
+            this.loadStateProps(viz.state());
+            this.loadPreview(viz.view().last());
             this.loadDDL(true);
             this.loadLayout(true);
-            if (viz) {
-                this._monitorHandle = viz.monitor((id: string, newValue: any, oldValue: any) => {
-                    console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
-                    this._currViz.refresh().then(() => {
-                        this.refreshPreview(viz.view().limit());
-                        this.loadGraph(true);
-                    });
-                });
-            }
+        } else {
+            this.loadDataProps(viz.view());
+            this.loadPreview(viz.view().last());
         }
     }
 
     private _currActivity: Activity;
-    async activityChanged(activity: Activity) {
+    activityChanged(activity: Activity) {
         if (this._currActivity !== activity) {
             this._currActivity = activity;
             this.loadDataProps(activity);
@@ -155,9 +144,20 @@ export class App {
     }
 
     loadDataProps(pe: PropertyExt) {
+        if (this._monitorHandle) {
+            this._monitorHandle.remove();
+            delete this._monitorHandle;
+        }
         this._dataProperties
             .widget(pe)
             .render(widget => {
+                this._monitorHandle = pe.monitor((id: string, newValue: any, oldValue: any) => {
+                    console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
+                    this._currViz.refresh().then(() => {
+                        this.refreshPreview();
+                        this.loadGraph(true);
+                    });
+                });
             })
             ;
     }
@@ -206,7 +206,7 @@ export class App {
 
     loadDDL(refresh: boolean = false) {
         this._ddlEditor
-            .ddl(this._ddlAdapter.createDDL())
+            // .ddl(this._ddlAdapter.createDDL())
             ;
         if (refresh && this._dockPanel.isVisible(this._ddlEditor as any)) {
             this._ddlEditor
@@ -233,14 +233,14 @@ export class App {
         commands.addCommand("dash_add", {
             label: "Add Viz",
             execute: () => {
-                const viz = new WUResultViz(this._model);
+                const viz = new Viz(this._dashboard);
                 this._dashboard.addVisualization(viz);
-                this._model.addVisualization(viz);
+                // TODO:  Move refresh into dashboard and then dashboard should notfiy index that selection refresh is complete  ---
                 viz.state().monitorProperty("selection", (id, newVal, oldVal) => {
-                    for (const filteredViz of this._model.filteredBy(viz)) {
+                    for (const filteredViz of this._dashboard.filteredBy(viz)) {
                         filteredViz.refresh().then(() => {
                             if (this._currViz === filteredViz) {
-                                this.refreshPreview(filteredViz.view().limit());
+                                this.refreshPreview();
                             }
                         });
                     }
@@ -250,28 +250,6 @@ export class App {
         });
 
         //  Model Commands  ---
-        commands.addCommand("clear", {
-            label: "Clear",
-            execute: () => {
-                this._model.clear();
-                this.loadGraph(true);
-            }
-        });
-
-        commands.addCommand("addView", {
-            label: "Add View",
-            execute: () => {
-                this._model.addView(new View(this._model));
-                this.loadGraph(true);
-            }
-        });
-
-        commands.addCommand("remove", {
-            label: "Remove Item",
-            execute: () => {
-            }
-        });
-
         const palette = new CommandPalette({ commands });
         palette.addItem({ command: "addWUResult", category: "Notebook" });
         palette.addItem({ command: "addView", category: "Notebook" });

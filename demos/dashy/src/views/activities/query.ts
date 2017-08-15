@@ -7,8 +7,8 @@ import { View } from "../view";
 import { Activity, schemaRow2IField } from "./activity";
 
 export class Param extends PropertyExt {
-    _view: View;
-    _owner: Query;
+    private _view: View;
+    private _owner: Query;
 
     constructor(owner) {
         super();
@@ -27,16 +27,20 @@ export class Param extends PropertyExt {
         });
     }
 
+    visualizationIDs() {
+        return this._view._dashboard.visualizationIDs();
+    }
+
     sourceFields() {
         return this.sourceOutFields().map(field => field.label);
     }
 
     sourceViz(): Viz {
-        return this._view._model.visualization(this.source());
+        return this._view._dashboard.visualization(this.source());
     }
 
     sourceOutFields(): IField[] {
-        return this.sourceViz().toIDatasource().outFields();
+        return this.sourceViz().view().outFields();
     }
 
     sourceSelection(): any[] {
@@ -60,8 +64,8 @@ export interface Param {
     sourceField_exists(): boolean;
 }
 Param.prototype.publish("label", null, "string", "Label");
-Param.prototype.publish("source", null, "set", "Datasource", function () { return this._view._model.visualizationIDs(); }, { optional: true });
-Param.prototype.publish("sourceField", null, "set", "Source Fields", function () { return this.sourceFields(); }, { optional: true });
+Param.prototype.publish("source", null, "set", "Datasource", function () { return (this as Param).visualizationIDs(); }, { optional: true });
+Param.prototype.publish("sourceField", null, "set", "Source Fields", function () { return (this as Param).sourceFields(); }, { optional: true });
 
 export class Query extends Activity {
     _owner: View;
@@ -112,9 +116,9 @@ export class Query extends Activity {
             }).then((query) => {
                 this._query = query;
                 const oldParams = this.request();
-                const diffs = compare(oldParams.map(p => p.label()), this.filterFields().map(ff => ff.label));
-                const newParams = oldParams.filter(op => diffs.both.indexOf(op.label()) > 0);
-                this.request(newParams.concat(diffs.other.map(label => new Param(this).label(label))));
+                const diffs = compare(oldParams.map(p => p.label()), this.requestFields().map(ff => ff.label));
+                const newParams = oldParams.filter(op => diffs.unchanged.indexOf(op.label()) > 0);
+                this.request(newParams.concat(diffs.added.map(label => new Param(this).label(label))));
             });
         }
         return this.refreshMetaPromise;
@@ -122,14 +126,6 @@ export class Query extends Activity {
 
     updatedBy(): string[] {
         return this.validParams().map(param => param.source());
-    }
-
-    filterFields(): IField[] {
-        if (this._query) {
-            const responseSchema = this._query.requestFields();
-            return responseSchema.map(schemaRow2IField);
-        }
-        return [];
     }
 
     outFields(): IField[] {
@@ -155,8 +151,17 @@ export class Query extends Activity {
         });
     }
 
-    pullData(): any[] {
+    pullData(): object[] {
         return this._data;
+    }
+
+    //  ===
+    requestFields(): IField[] {
+        if (this._query) {
+            const responseSchema = this._query.requestFields();
+            return responseSchema.map(schemaRow2IField);
+        }
+        return [];
     }
 }
 Query.prototype._class += " Filters";
