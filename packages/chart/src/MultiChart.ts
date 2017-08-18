@@ -1,10 +1,6 @@
-import { INDChart } from "@hpcc-js/api";
+import { IGraph, INDChart } from "@hpcc-js/api";
 import { Database, HTMLWidget, Utility, Widget } from "@hpcc-js/common";
 import { map as d3Map } from "d3-collection";
-import { IGraph } from "../api/IGraph";
-import { INDChart } from "../api/INDChart";
-import { HTMLWidget } from "@hpcc-js/common";
-import { Utility } from "@hpcc-js/common";
 
 export class MultiChart extends HTMLWidget {
     _allCharts = {};
@@ -31,7 +27,6 @@ export class MultiChart extends HTMLWidget {
         this._chartTypeDefaults = {};
         this._chartTypeProperties = {};
     }
-    MultiChart.prototype.implements(IGraph.prototype);
 
     fields(): Database.Field[];
     fields(_: Database.Field[]): this;
@@ -63,34 +58,6 @@ export class MultiChart extends HTMLWidget {
         }
         return retVal;
     }
-        _.click = function (_row, _column, _selected) {
-            context.click.apply(context, arguments);
-        };
-        _.dblclick = function (_row, _column, _selected) {
-            context.dblclick.apply(context, arguments);
-        };
-            _.vertex_click = function (row, column, selected, more) {
-                context.vertex_click.apply(context, arguments);
-            };
-            _.vertex_dblclick = function (row, column, selected, more) {
-                context.vertex_dblclick.apply(context, arguments);
-            };
-            _.edge_click = function (row, column, selected, more) {
-                context.edge_click.apply(context, arguments);
-            };
-            _.edge_dblclick = function (row, column, selected, more) {
-                context.edge_dblclick.apply(context, arguments);
-            };
-        if (this._chartMonitor) {
-            this._chartMonitor.remove();
-            delete this._chartMonitor;
-        }
-        this._chartMonitor = _.monitor(function (key, newVal, oldVal) {
-            context.broadcast(key, newVal, oldVal, _);
-        });
-    }
-    return retVal;
-};
 
     hasOverlay() {
         return this.chart() && this.chart().hasOverlay();
@@ -239,15 +206,10 @@ export class MultiChart extends HTMLWidget {
         }
         return HTMLWidget.prototype.render.apply(this, arguments);
     }
-
-    click(_row, _column, _selected) {
-    }
-
-    dblclick(_row, _column, _selected) {
-    }
 }
 MultiChart.prototype._class += " chart_MultiChart";
 MultiChart.prototype.implements(INDChart.prototype);
+MultiChart.prototype.implements(IGraph.prototype);
 export interface ChartMeta {
     id: string;
     display: string;
@@ -273,6 +235,13 @@ export interface MultiChart {
     chart(_: Widget): this;
     chart_access(): Widget;
     chart_access(_: Widget): this;
+
+    click(_row, _column, _selected): void;
+    dblclick(_row, _column, _selected): void;
+    vertex_click(row, column, selected, more): void;
+    vertex_dblclick(row, column, selected, more): void;
+    edge_click(row, column, selected, more): void;
+    edge_dblclick(row, column, selected, more): void;
 }
 
 MultiChart.prototype._GraphChartTypes = [
@@ -381,6 +350,18 @@ MultiChart.prototype.chart = function (_?) {
         };
         _.dblclick = function (_row, _column, _selected) {
             context.dblclick.apply(context, arguments);
+        };
+        _.vertex_click = function (row, column, selected, more) {
+            context.vertex_click.apply(context, arguments);
+        };
+        _.vertex_dblclick = function (row, column, selected, more) {
+            context.vertex_dblclick.apply(context, arguments);
+        };
+        _.edge_click = function (row, column, selected, more) {
+            context.edge_click.apply(context, arguments);
+        };
+        _.edge_dblclick = function (row, column, selected, more) {
+            context.edge_dblclick.apply(context, arguments);
         };
         if (this._chartMonitor) {
             this._chartMonitor.remove();

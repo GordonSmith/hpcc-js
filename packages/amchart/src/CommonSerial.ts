@@ -285,7 +285,7 @@ export class CommonSerial extends HTMLWidget {
 
             this._chart.valueAxes[i].autoGridCount = yAxis.axisAutoGridCount();
 
-            var valueFormatter;
+            let valueFormatter;
             switch (yAxis.axisType()) {
                 case "time":
                     this._chart.valueAxes[i].type = "date";
@@ -294,18 +294,18 @@ export class CommonSerial extends HTMLWidget {
                     this._chart.valueAxes[i].logarithmic = false;
 
                     if (yAxis.axisTickFormat()) {
-                        valueFormatter = d3.time.format(yAxis.axisTickFormat());
+                        valueFormatter = d3TimeFormat(yAxis.axisTickFormat());
                     } else if (yAxis.axisTypeTimePattern()) {
-                        valueFormatter = d3.time.format(yAxis.axisTypeTimePattern());
+                        valueFormatter = d3TimeFormat(yAxis.axisTypeTimePattern());
                     } else {
-                        valueFormatter = function(v) { return v; };
+                        valueFormatter = function (v) { return v; };
                     }
                     break;
                 case "log":
                     this._chart.valueAxes[i].parseDates = false;
                     this._chart.valueAxes[i].logarithmic = true;
                     this._chart.valueAxes[i].type = "numeric";
-                    valueFormatter = yAxis.axisTickFormat() ? d3.format(yAxis.axisTickFormat()) : function(v) { return v; };
+                    valueFormatter = yAxis.axisTickFormat() ? d3Format(yAxis.axisTickFormat()) : function (v) { return v; };
                     break;
                 case "linear":
                 /* falls through */
@@ -313,11 +313,11 @@ export class CommonSerial extends HTMLWidget {
                     this._chart.valueAxes[i].parseDates = false;
                     this._chart.valueAxes[i].type = "numeric";
                     this._chart.valueAxes[i].logarithmic = false;
-                    valueFormatter = yAxis.axisTickFormat() ? d3.format(yAxis.axisTickFormat()) : function(v) { return v; };
+                    valueFormatter = yAxis.axisTickFormat() ? d3Format(yAxis.axisTickFormat()) : function (v) { return v; };
                     break;
             }
 
-            this._chart.valueAxes[i].labelFunction = (function(axis, formatter) {
+            this._chart.valueAxes[i].labelFunction = (function (axis, formatter) {
                 return function (v1, v2, v3) {
                     switch (axis.axisType()) {
                         case "time":

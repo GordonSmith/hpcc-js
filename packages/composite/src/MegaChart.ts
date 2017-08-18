@@ -231,9 +231,9 @@ export class MegaChart extends Border {
         this.setContent("center", this._chart);
 
         this._legend
-        .fixedSize(true)
             .targetWidget(this._chart)
             .orientation(["top", "bottom"].indexOf(this.legendPosition()) !== -1 ? "horizontal" : "vertical")
+            .fixedSize(true)
             ;
 
         this._prevLegendPosition = this.legendPosition();
@@ -288,9 +288,9 @@ export class MegaChart extends Border {
         this._chart
             .data(this.data());
 
-    if (this._chart.chartType() !== this.chartType()) {
-        this._chart.chartType(this.chartType());
-    }
+        if (this._chart.chartType() !== this.chartType()) {
+            this._chart.chartType(this.chartType());
+        }
 
         let legendPosition = this.legendPosition();
         if (this.toolbarShowLegend() && !this._legendButton.checked()) {
@@ -302,7 +302,7 @@ export class MegaChart extends Border {
             }
             this._prevLegendPosition = legendPosition;
             if (legendPosition !== "none") {
-            this._legend = new Legend().fixedSize(true).targetWidget(this.getContent("center"));
+                this._legend = new Legend().targetWidget(this.getContent("center").fixedSize(true));
                 this.setContent(legendPosition, this._legend);
                 this._legend.orientation(["top", "bottom"].indexOf(legendPosition) !== -1 ? "horizontal" : "vertical");
             }
@@ -385,25 +385,25 @@ export class MegaChart extends Border {
         if (more && more.vertex) {
             console.log("Vertex click: " + more.vertex.id());
         }
-    };
+    }
 
-    vertex_dblclick (row, col, sel, more) {
+    vertex_dblclick(row, col, sel, more) {
         if (more && more.vertex) {
             console.log("Vertex double click: " + more.vertex.id());
         }
-    };
+    }
 
     edge_click(row, col, sel, more) {
         if (more && more.edge) {
             console.log("Edge click: " + more.edge.id());
         }
-    };
+    }
 
     edge_dblclick(row, col, sel, more) {
         if (more && more.edge) {
             console.log("Edge double click: " + more.edge.id());
         }
-    };
+    }
 
     showToolbar: { (): boolean; (_: boolean): MegaChart };
     showToolbar_exists: () => boolean;

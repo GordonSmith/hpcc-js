@@ -717,8 +717,8 @@ Events.prototype.setWidget = function (widget) {
             widget["vertex_" + key] = function (row, col, selected) {
                 context.visualization.processEvent(key, context.events[key], row, col, selected);
             };
-            }
-            if (widget[key]) {
+        }
+        if (widget[key]) {
             widget[key] = function (row, col, selected) {
                 context.visualization.processEvent(key, context.events[key], row, col, selected);
             };
@@ -1531,11 +1531,11 @@ Filter.prototype._calcRequest = function (filteredRequest, request, fieldid, req
     }
 };
 
-    Filter.prototype.calcRequest = function (filteredRequest, request, fillInMissing) {
-        if (!fillInMissing && request[this.fieldid] === undefined) {
-            return;
-        }
-        var value = request[this.fieldid] === undefined ? null : request[this.fieldid];
+Filter.prototype.calcRequest = function (filteredRequest, request, fillInMissing) {
+    if (!fillInMissing && request[this.fieldid] === undefined) {
+        return;
+    }
+    const value = request[this.fieldid] === undefined ? null : request[this.fieldid];
     if (this.isRange()) {
         if (value instanceof Array && value.length === 2) {
             this._calcRequest(filteredRequest, request, this.minid, this._requestMinID, value[0]);
@@ -1757,7 +1757,7 @@ export function Datasource(marshaller, datasource: IDatasource, proxyMappings, t
             .url(datasource.URL)
             .proxyMappings(proxyMappings)
             .timeout(timeout)
-                .hipieResults(hipieResults)
+            .hipieResults(hipieResults)
             ;
     }
 }
@@ -1799,15 +1799,15 @@ Datasource.prototype.accept = function (visitor) {
     }
 };
 
-    Datasource.prototype.calcRequest = function (request, fillInMissing) {
-        var retVal = {};
+Datasource.prototype.calcRequest = function (request, fillInMissing) {
+    const retVal = {};
     this.filters.forEach(function (item) {
-            item.calcRequest(retVal, request, fillInMissing);
+        item.calcRequest(retVal, request, fillInMissing);
     });
     //  TODO - Workaround HIPIE issue where it omits filters at datasource level  ---
     this._outputArray.forEach(function (output) {
         output.filters.forEach(function (item) {
-                item.calcRequest(retVal, request, fillInMissing);
+            item.calcRequest(retVal, request, fillInMissing);
         });
     });
     return retVal;
@@ -1820,16 +1820,16 @@ Datasource.prototype.fetchData = function (request, updates) {
     transactionQueue.push(myTransactionID);
 
     let dsRequest = request;
-        dsRequest = this.calcRequest(request, this.isRoxie());
-        dsRequest.refresh = request.refresh || false;
-        if ((window as any).__hpcc_debug) {
-            console.log("fetchData:  " + JSON.stringify(updates) + "(" + JSON.stringify(request) + ")");
+    dsRequest = this.calcRequest(request, this.isRoxie());
+    dsRequest.refresh = request.refresh || false;
+    if ((window as any).__hpcc_debug) {
+        console.log("fetchData:  " + JSON.stringify(updates) + "(" + JSON.stringify(request) + ")");
+    }
+    for (const key in dsRequest) {
+        if (dsRequest[key] === undefined) {
+            delete dsRequest[key];
         }
-        for (const key in dsRequest) {
-            if (dsRequest[key] === undefined) {
-                delete dsRequest[key];
-            }
-        }
+    }
     const now = Date.now();
     this.marshaller.commsEvent(this, "request", dsRequest);
     const context = this;
@@ -1859,9 +1859,9 @@ Datasource.prototype.processResponse = function (response, request, updates) {
     for (const responseKey in response) {
         lowerResponse[responseKey.toLowerCase()] = response[responseKey];
     }
-    var promises = [];
-        for (var key in this._outputs) {
-            var from = this._outputs[key].id;
+    const promises = [];
+    for (const key in this._outputs) {
+        const from = this._outputs[key].id;
         if (Utility.exists(from, response)) {
             if (!Utility.exists(from + _CHANGED, response) || (Utility.exists(from + _CHANGED, response) && response[from + _CHANGED].length && response[from + _CHANGED][0][from + _CHANGED])) {
                 promises.push(this._outputs[key].setData(response[from], updates));

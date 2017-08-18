@@ -237,58 +237,6 @@ export class Graph extends SVGZoomWidget {
     update(domNode, element) {
         super.update(domNode, element);
         const context = this;
-            const layoutEngine = this.getLayoutEngine();
-            if (this.layout() === "ForceDirected2") {
-                this.forceLayout = layoutEngine;
-                this.forceLayout.force.on("tick", function () {
-                    layoutEngine.vertices.forEach(function (item) {
-                        if (item.fixed) {
-                            item.x = item.px;
-                            item.y = item.py;
-                        } else {
-                            item.px = item.x;
-                            item.py = item.y;
-
-                                //  Might have been cleared ---
-                                var vertex = context.graphData.node(item.id);
-                                if (vertex) {
-                            vertex
-                                .move({ x: item.x, y: item.y })
-                                ;
-                        }
-                            }
-                    });
-                    context.graphData.edgeValues().forEach(function (item) {
-                        item
-                            .points([], false, false)
-                            ;
-                    });
-                    if (context.applyScaleOnLayout()) {
-                        const vBounds = context.getVertexBounds(layoutEngine);
-                        context.shrinkToFit(vBounds);
-                    }
-                });
-                this.forceLayout.force.start();
-            } else if (layoutEngine) {
-                this.forceLayout = null;
-                context._dragging = true;
-                context.graphData.nodeValues().forEach(function (item) {
-                    const pos = layoutEngine.nodePos(item._id);
-                    item.move({ x: pos.x, y: pos.y }, transitionDuration);
-                    if (pos.width && pos.height && !item.width() && !item.height()) {
-                        item
-                            .width(pos.width)
-                            .height(pos.height)
-                            .render()
-                            ;
-                    }
-                });
-                context.graphData.edgeValues().forEach(function (item) {
-                    const points = layoutEngine.edgePoints(item);
-                    item
-                        .points(points, transitionDuration)
-                        ;
-                });
 
         //  Create  ---
         const vertexElements = this.svgV.selectAll("#" + this._id + "V > .graphVertex").data(this.graphData.nodeValues(), function (d) { return d.id(); });
@@ -619,7 +567,7 @@ export class Graph extends SVGZoomWidget {
         IGraph.prototype.vertex_click.apply(this, arguments);
     }
 
-    vertex_dblclick(_row, _col, _sel, _more) {
+    vertex_dblclick(_row, _col, _sel, _opts) {
     }
 
     vertex_contextmenu(_row, _col, _sel, _opts) {
@@ -773,16 +721,20 @@ Graph.prototype.layout = function (_?, transitionDuration?) {
                 this.forceLayout = layoutEngine;
                 this.forceLayout.force.on("tick", function () {
                     layoutEngine.vertices.forEach(function (item) {
-                        const vertex = context.graphData.node(item.id);
                         if (item.fixed) {
                             // item.x = item.px;
                             // item.y = item.py;
                         } else {
                             // item.px = item.x;
                             // item.py = item.y;
-                            vertex
-                                .move({ x: item.x, y: item.y })
-                                ;
+
+                            //  Might have been cleared ---
+                            const vertex = context.graphData.node(item.id);
+                            if (vertex) {
+                                vertex
+                                    .move({ x: item.x, y: item.y })
+                                    ;
+                            }
                         }
                     });
                     context.graphData.edgeValues().forEach(function (item) {
