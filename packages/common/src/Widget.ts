@@ -1,4 +1,4 @@
-import { event as d3Event, select as d3Select } from "d3-selection";
+import { event as d3Event, select as d3Select, Selection as d3Selection } from "d3-selection";
 import "d3-transition";
 import { Field, Grid } from "./Database";
 import { } from "./Platform";
@@ -6,6 +6,8 @@ import { PropertyExt } from "./PropertyExt";
 import { debounce } from "./Utility";
 
 import "../src/Widget.css";
+
+export type d3SelectionType = d3Selection<SVGElement, {}, HTMLElement, any>;
 
 export interface IPos {
     x: number;
@@ -441,7 +443,7 @@ export abstract class Widget extends PropertyExt {
 
     //  Render  ---
     private _prevNow = 0;
-    render(callback?) {
+    render(callback?: (w: Widget) => void) {
         if ((window as any).__hpcc_debug) {
             const now = Date.now();
             if (now - this._prevNow < 500) {
@@ -541,11 +543,11 @@ export abstract class Widget extends PropertyExt {
         this.render();
     }, 100);
 
-    enter(_domNode, _element) { }
-    preUpdate(_domNode, _element) { }
-    update(_domNode, _element) { }
-    postUpdate(_domNode, _element) { }
-    exit(_domNode, _element) { }
+    enter(_domNode: HTMLElement, _element: d3SelectionType) { }
+    preUpdate(_domNode: HTMLElement, _element: d3SelectionType) { }
+    update(_domNode: HTMLElement, _element: d3SelectionType) { }
+    postUpdate(_domNode: HTMLElement, _element: d3SelectionType) { }
+    exit(_domNode: HTMLElement, _element: d3SelectionType) { }
 
     fields(): Field[];
     fields(_: Field[]): this;

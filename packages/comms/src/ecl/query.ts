@@ -110,7 +110,7 @@ export class Query extends StateObject<QueryEx, QueryEx> implements QueryEx {
         return;
     }
 
-    submit(request: object): Promise<any[]> {
+    submit(request: object): Promise<Array<{ [key: string]: object[] }>> {
         return this._wsEcl.submit(this.QuerySet, this.QueryId, request).then(results => {
             for (const key in results) {
                 results[key] = results[key].Row;

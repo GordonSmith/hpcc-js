@@ -16,12 +16,12 @@ export enum Rule {
 }
 export type RuleType = Rule.eq | Rule.neq | Rule.gt | Rule.gte | Rule.lt | Rule.lte | Rule.contains;
 export const RuleKeyArr = Object.keys(Rule);
-export const RuleValueArr = RuleKeyArr.map(key => Rule[key]);
+export const RuleValueArr = RuleKeyArr.map((key: any) => Rule[key]);
 
 export class ColumnMapping extends PropertyExt {
     _owner: Filter;
 
-    constructor(owner) {
+    constructor(owner: Filter) {
         super();
         this._owner = owner;
         this.monitor((id, newVal, oldVal) => {
@@ -79,15 +79,15 @@ export interface ColumnMapping {
     condition(): Rule;
     condition(_: Rule): this;
 }
-ColumnMapping.prototype.publish("remoteField", null, "set", "Filter Fields", function () { return (this as ColumnMapping).sourceOutFields(); }, { optional: true });
-ColumnMapping.prototype.publish("localField", null, "set", "Local Fields", function () { return (this as ColumnMapping).localFields(); }, { optional: true });
+ColumnMapping.prototype.publish("remoteField", null, "set", "Filter Fields", function (this: ColumnMapping) { return this.sourceOutFields(); }, { optional: true });
+ColumnMapping.prototype.publish("localField", null, "set", "Local Fields", function (this: ColumnMapping) { return this.localFields(); }, { optional: true });
 ColumnMapping.prototype.publish("condition", "==", "set", "Filter Fields", RuleValueArr);
 
 export class Filter extends PropertyExt {
     private _view: View;
     private _owner: Filters;
 
-    constructor(owner) {
+    constructor(owner: Filters) {
         super();
         this._view = owner._owner;
         this._owner = owner;
@@ -161,7 +161,7 @@ export interface Filter {
     mappings(): ColumnMapping[];
     mappings(_: ColumnMapping[]): this;
 }
-Filter.prototype.publish("source", null, "set", "Datasource", function () { return (this as Filter).visualizationIDs(); }, { optional: true });
+Filter.prototype.publish("source", null, "set", "Datasource", function (this: Filter) { return this.visualizationIDs(); }, { optional: true });
 Filter.prototype.publish("nullable", false, "boolean", "Ignore null filters");
 Filter.prototype.publish("mappings", [], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping });
 

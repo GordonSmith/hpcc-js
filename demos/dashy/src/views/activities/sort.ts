@@ -32,10 +32,6 @@ export class SortColumn extends PropertyExt {
     field(label: string): IField | undefined {
         return this._view.outFields().filter(field => field.label === label)[0];
     }
-
-    sort(values) {
-        return values; // d3Aggr[this.aggrType()](values, leaf => leaf[this.aggrColumn()]);
-    }
 }
 SortColumn.prototype._class += " SortColumn";
 
@@ -45,7 +41,7 @@ export interface SortColumn {
     descending(): boolean;
     descending(_: boolean): SortColumn;
 }
-SortColumn.prototype.publish("label", null, "set", "Sort Field", function () { return this.fields(); }, { optional: true });
+SortColumn.prototype.publish("label", null, "set", "Sort Field", function (this: SortColumn) { return this.fields(); }, { optional: true });
 SortColumn.prototype.publish("descending", null, "boolean", "Sort Field");
 
 //  ===========================================================================
@@ -76,7 +72,7 @@ export class Sort extends Activity {
 
     pullData(): object[] {
         const data = super.pullData();
-        const sortByArr = [];
+        const sortByArr: Array<{ sortBy: SortColumn, sortByField: IField }> = [];
         for (const sortBy of this.column()) {
             const sortByField = sortBy.field(sortBy.label());
             if (sortByField) {
@@ -85,7 +81,7 @@ export class Sort extends Activity {
         }
 
         if (sortByArr.length) {
-            return data.sort((l, r) => {
+            return data.sort((l: any, r: any) => {
                 for (const item of sortByArr) {
                     const retVal2 = (item.sortBy.descending() ? d3Descending : d3Ascending)(l[item.sortByField.label], r[item.sortByField.label]);
                     if (retVal2 !== 0) {

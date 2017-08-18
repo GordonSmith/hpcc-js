@@ -1,5 +1,5 @@
 
-import { PropertyExt, Widget } from "@hpcc-js/common";
+import { d3SelectionType, PropertyExt, Widget } from "@hpcc-js/common";
 import { Persist } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { compare } from "@hpcc-js/util";
@@ -51,7 +51,7 @@ export class Dashboard extends DockPanel {
         return this.views().filter(view => view.id() === id)[0];
     }
 
-    update(domNode, element) {
+    update(domNode: HTMLElement, element: d3SelectionType) {
         const previous = this.widgets();
         const diff = compare(previous, this.visualizations().map(viz => viz.widget()));
         for (const w of diff.removed) {

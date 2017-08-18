@@ -19,7 +19,7 @@ export abstract class ESPResult extends Activity {
         });
     }
 
-    hash(more: object): string {
+    hash(more: object = {}): string {
         return hashSum({
             url: this.url(),
             samples: this.samples(),
@@ -30,8 +30,13 @@ export abstract class ESPResult extends Activity {
 
     abstract _createResult(): Result;
 
+    _prevHash: string;
     refreshMetaPromise: Promise<void>;
     refreshMeta(): Promise<void> {
+        if (this._prevHash !== this.hash()) {
+            this._prevHash = this.hash();
+            delete this.refreshMetaPromise;
+        }
         if (!this.refreshMetaPromise) {
             this.refreshMetaPromise = super.refreshMeta().then(() => {
                 this._result = this._createResult();

@@ -1,4 +1,4 @@
-﻿import { DDLEditor, JSONEditor } from "@hpcc-js/codemirror";
+﻿import { DDLEditor, JSEditor, JSONEditor } from "@hpcc-js/codemirror";
 import { PropertyExt, Widget } from "@hpcc-js/common";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
@@ -8,12 +8,13 @@ import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-
 import { Dashboard } from "./dashboard/dashboard";
 import { DDLAdapter } from "./dashboard/ddladapter";
 import { GraphAdapter } from "./dashboard/graphadapter";
+import { JavaScriptAdapter } from "./dashboard/javascriptadapter";
 import { Viz } from "./dashboard/viz";
 import { Activity, DatasourceAdapt } from "./views/activities/activity";
 
 export class Mutex {
-    private _locking;
-    private _locked;
+    private _locking: Promise<any>;
+    private _locked: boolean;
 
     constructor() {
         this._locking = Promise.resolve();
@@ -26,7 +27,7 @@ export class Mutex {
 
     lock() {
         this._locked = true;
-        let unlockNext;
+        let unlockNext: any;
         const willLock = new Promise(resolve => unlockNext = resolve);
         willLock.then(() => this._locked = false);
         const willUnlock = this._locking.then(() => unlockNext);
@@ -36,7 +37,7 @@ export class Mutex {
 }
 
 export async function scopedLock(m: Mutex, func: (...params: any[]) => Promise<void>) {
-    const unlock = await this._mutex.lock();
+    const unlock = await m.lock();
     try {
         m.lock();
         return await func();
@@ -46,16 +47,17 @@ export async function scopedLock(m: Mutex, func: (...params: any[]) => Promise<v
 }
 
 export class App {
-    _dockPanel = new DockPanel();
-    _dataSplit = new SplitPanel();
-    _monitorHandle: { remove: () => void };
-    _dashboard: Dashboard = new Dashboard().on("vizActivation", (viz: Viz) => {
+    private _dockPanel = new DockPanel();
+    private _dataSplit = new SplitPanel();
+    private _monitorHandle: { remove: () => void };
+    private _dashboard: Dashboard = new Dashboard().on("vizActivation", (viz: Viz) => {
         console.log("Active Changed:  " + viz.view().id());
         this.vizChanged(viz);
     });
-    _graphAdapter = new GraphAdapter(this._dashboard);
-    _ddlAdapter = new DDLAdapter(this._dashboard);
-    _graph: Graph = new Graph()
+    private _graphAdapter = new GraphAdapter(this._dashboard);
+    private _ddlAdapter = new DDLAdapter(this._dashboard);
+    private _javaScripAdapter = new JavaScriptAdapter(this._dashboard);
+    private _graph: Graph = new Graph()
         .allowDragging(false)
         .applyScaleOnLayout(true)
         .on("vertex_click", (row: any, col: string, sel: boolean, ext: any) => {
@@ -69,21 +71,22 @@ export class App {
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {
         })
     ;
-    _dataProperties: PropertyEditor = new PropertyEditor()
+    private _dataProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
         .showFields(false)
     ;
-    _vizProperties: PropertyEditor = new PropertyEditor()
+    private _vizProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
         .showFields(false)
     ;
-    _stateProperties: PropertyEditor = new PropertyEditor()
+    private _stateProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
         .showFields(false)
     ;
-    _ddlEditor = new DDLEditor();
-    _layoutEditor = new JSONEditor();
-    _preview = new DatasourceTable();
+    private _ddlEditor = new DDLEditor();
+    private _layoutEditor = new JSONEditor();
+    private _jsEditor = new JSEditor();
+    private _preview = new DatasourceTable();
 
     constructor(placeholder: string) {
         // app = this;
@@ -100,6 +103,7 @@ export class App {
             .addWidget(this._graph as any, "Pipeline", "tab-after", this._dashboard)
             .addWidget(this._ddlEditor, "DDL", "tab-after", this._graph as any)
             .addWidget(this._layoutEditor, "Layout", "tab-after", this._ddlEditor)
+            .addWidget(this._jsEditor, "JavaScript", "tab-after", this._layoutEditor)
             .lazyRender()
             ;
         //   this.loadSample();
@@ -128,6 +132,7 @@ export class App {
             this.loadPreview(viz.view().last());
             this.loadDDL(true);
             this.loadLayout(true);
+            this.loadJavaScript(true);
         } else {
             this.loadDataProps(viz.view());
             this.loadPreview(viz.view().last());
@@ -206,7 +211,7 @@ export class App {
 
     loadDDL(refresh: boolean = false) {
         this._ddlEditor
-            // .ddl(this._ddlAdapter.createDDL())
+            .ddl(this._ddlAdapter.createDDL())
             ;
         if (refresh && this._dockPanel.isVisible(this._ddlEditor as any)) {
             this._ddlEditor
@@ -221,6 +226,17 @@ export class App {
             ;
         if (refresh && this._dockPanel.isVisible(this._layoutEditor as any)) {
             this._layoutEditor
+                .lazyRender()
+                ;
+        }
+    }
+
+    loadJavaScript(refresh: boolean = false) {
+        this._jsEditor
+            .javascript(this._javaScripAdapter.createJavaScript())
+            ;
+        if (refresh && this._dockPanel.isVisible(this._layoutEditor as any)) {
+            this._jsEditor
                 .lazyRender()
                 ;
         }

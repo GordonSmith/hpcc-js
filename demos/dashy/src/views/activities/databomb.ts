@@ -60,7 +60,7 @@ export class Databomb extends Activity {
 }
 Databomb.prototype._class += " Filters";
 export interface Databomb {
-    payload(): object[];
-    payload(_: object[]): this;
+    payload(): Array<{ [key: string]: any }>;
+    payload(_: Array<{ [key: string]: any }>): this;
 }
 Databomb.prototype.publish("payload", [], "array", "ESP Url (http://x.x.x.x:8010)");

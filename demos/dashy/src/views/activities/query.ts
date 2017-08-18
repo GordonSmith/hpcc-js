@@ -10,7 +10,7 @@ export class Param extends PropertyExt {
     private _view: View;
     private _owner: Query;
 
-    constructor(owner) {
+    constructor(owner: Query) {
         super();
         this._view = owner._owner;
         this._owner = owner;
@@ -64,8 +64,8 @@ export interface Param {
     sourceField_exists(): boolean;
 }
 Param.prototype.publish("label", null, "string", "Label");
-Param.prototype.publish("source", null, "set", "Datasource", function () { return (this as Param).visualizationIDs(); }, { optional: true });
-Param.prototype.publish("sourceField", null, "set", "Source Fields", function () { return (this as Param).sourceFields(); }, { optional: true });
+Param.prototype.publish("source", null, "set", "Datasource", function (this: Param) { return this.visualizationIDs(); }, { optional: true });
+Param.prototype.publish("sourceField", null, "set", "Source Fields", function (this: Param) { return this.sourceFields(); }, { optional: true });
 
 export class Query extends Activity {
     _owner: View;
@@ -103,7 +103,7 @@ export class Query extends Activity {
         return this.request().filter(param => param.exists());
     }
 
-    private _prevSourceHash;
+    private _prevSourceHash: string;
     private refreshMetaPromise: Promise<void>;
     refreshMeta(): Promise<void> {
         if (this._prevSourceHash !== this.sourceHash()) {
@@ -138,7 +138,7 @@ export class Query extends Activity {
 
     exec(): Promise<void> {
         return super.exec().then(() => {
-            const request = {};
+            const request: { [key: string]: any } = {};
             for (const param of this.validParams()) {
                 const sourceSelection = param.sourceSelection();
                 if (sourceSelection.length) {
@@ -146,7 +146,7 @@ export class Query extends Activity {
                 }
             }
             return this._query.submit(request);
-        }).then(response => {
+        }).then((response: { [key: string]: any }) => {
             this._data = response[this.resultName()];
         });
     }

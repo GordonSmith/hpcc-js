@@ -31,14 +31,16 @@ export interface GroupByColumn {
     label(): string;
     label(_: string): this;
 }
-GroupByColumn.prototype.publish("label", undefined, "set", "Field", function () { return (this as GroupByColumn).columns(); }, { optional: true });
+GroupByColumn.prototype.publish("label", undefined, "set", "Field", function (this: GroupByColumn) { return this.columns(); }, { optional: true });
 
 //  ===========================================================================
-function localCount(leaves: any[], callback: any): number {
+type AggrFuncCallback = (item: any) => number;
+type AggrFunc = (leaves: any[], callback: AggrFuncCallback) => number;
+function localCount(leaves: any[], callback: AggrFuncCallback): number {
     return leaves.length;
 }
 
-const d3Aggr = {
+const d3Aggr: { [key: string]: AggrFunc } = {
     count: localCount,
     min: d3Min,
     max: d3Max,
@@ -77,7 +79,7 @@ export class AggregateField extends PropertyExt {
         return this.columns().length;
     }
 
-    aggregate(values) {
+    aggregate(values: Array<{ [key: string]: any }>) {
         return d3Aggr[this.aggrType() as string](values, leaf => +leaf[this.aggrColumn()]);
     }
 }
@@ -93,7 +95,7 @@ export interface AggregateField {
 }
 AggregateField.prototype.publish("label", null, "string", "Label", null, { optional: true, disable: (w: AggregateField) => !w.hasColumn() });
 AggregateField.prototype.publish("aggrType", "count", "set", "Aggregation Type", ["count", "min", "max", "sum", "mean", "median", "variance", "deviation"], { optional: true, disable: w => !w.label() });
-AggregateField.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function () { return (this as AggregateField).columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" });
+AggregateField.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function (this: AggregateField) { return this.columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" });
 
 //  ===========================================================================
 export class GroupBy extends Activity {
@@ -215,7 +217,7 @@ export class GroupBy extends Activity {
         const data = super.pullData();
         if (data.length === 0) return data;
         const retVal = d3Nest()
-            .key(row => {
+            .key((row: { [key: string]: any }) => {
                 let key = "";
                 for (const groupBy of this.column()) {
                     if (groupBy.label()) {
@@ -227,7 +229,8 @@ export class GroupBy extends Activity {
                 }
                 return key;
             })
-            .entries(data).map(row => {
+            .entries(data).map(_row => {
+                const row: { [key: string]: any } = _row;
                 delete row.key;
                 for (const groupBy of this.validGroupBy()) {
                     row[groupBy.label()] = row.values[0][groupBy.label()];

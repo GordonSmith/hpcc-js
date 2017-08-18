@@ -4,6 +4,7 @@ import { Databomb } from "../views/activities/databomb";
 import { WUResult } from "../views/activities/wuresult";
 import { View } from "../views/view";
 import { Dashboard } from "./dashboard";
+import { Viz } from "./viz";
 
 export class DDLAdapter {
     private _dashboard: Dashboard;
@@ -43,7 +44,7 @@ export class DDLAdapter {
     }
 
     createDDLDatasources(): IDatasource[] {
-        const dsDedup = {};
+        const dsDedup: { [key: string]: boolean } = {};
         const retVal: IDatasource[] = [];
         for (const viz of this._dashboard.visualizations()) {
             const ds = viz.view().dataSource();
@@ -60,7 +61,7 @@ export class DDLAdapter {
         return retVal;
     }
 
-    createDDLEvents(viz): { [key: string]: IEvent } {
+    createDDLEvents(viz: Viz): { [key: string]: IEvent } {
         const retVal: { [key: string]: IEvent } = {};
         retVal["click"] = {
             updates: []

@@ -1,4 +1,4 @@
-import { PropertyExt } from "@hpcc-js/common";
+import { IMonitorHandle, PropertyExt } from "@hpcc-js/common";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 
@@ -71,6 +71,10 @@ export class ActivityArray extends Activity {
         this._activities = _;
         return this;
     }
+}
+ActivityArray.prototype._class += " ActivityArray";
+
+export class ActivitySequence extends ActivityArray {
 
     first(): Activity {
         const retVal = this.activities();
@@ -110,7 +114,63 @@ export class ActivityArray extends Activity {
         return this.last().outFields();
     }
 }
-ActivityArray.prototype._class += " ActivityArray";
+ActivitySequence.prototype._class += " ActivitySequence";
+
+export class ActivitySelection extends ActivityArray {
+    private _selection: Activity;
+    private _monitorHandle: IMonitorHandle;
+
+    selection(): Activity;
+    selection(_: Activity): this;
+    selection(_?: Activity): Activity | this {
+        if (_ === undefined) return this._selection;
+        if (this._monitorHandle) {
+            this._monitorHandle.remove();
+        }
+        this._selection = _;
+        this._monitorHandle = _.monitor((id, newVal, oldVal) => {
+            this.broadcast(id, newVal, oldVal, _);
+        });
+        return this;
+    }
+
+    //  Activity overrides ---
+    hash(more: { [key: string]: any } = {}): string {
+        return hashSum({
+            selection: this.selection().hash(),
+            ...more
+        });
+    }
+
+    label(): string {
+        return this.selection().label();
+    }
+
+    refreshMeta(): Promise<void> {
+        return this.selection().refreshMeta();
+    }
+
+    updatedBy(): string[] {
+        return this.selection().updatedBy();
+    }
+
+    inFields(): IField[] {
+        return this.selection().inFields();
+    }
+
+    outFields(): IField[] {
+        return this.selection().outFields();
+    }
+
+    exec(): Promise<void> {
+        return this.selection().exec();
+    }
+
+    pullData(): object[] {
+        return this.selection().pullData();
+    }
+}
+ActivitySelection.prototype._class += " ActivitySelection";
 
 export class DatasourceAdapt implements IDatasource {
     _activity: Activity;

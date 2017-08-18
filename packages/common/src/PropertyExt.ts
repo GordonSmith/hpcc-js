@@ -59,17 +59,38 @@ function isPrivate(obj, key) {
     return obj[__private_ + key];
 }
 
-class Meta {
+export type PublishTypes = "any" | "number" | "boolean" | "string" | "set" | "array" | "object" | "widget" | "widgetArray" | "propertyArray" | "html-color";
+export interface IPublishExt {
+    override?: boolean;
+    disable?: (w) => boolean;
+    optional?: boolean;
+    tags?: string[];
+    autoExpand?;
+    render?: boolean;
+    icons?: string[];
+    editor_input?: (context, widget, cell, param) => void;
+    saveButton?: string;
+    saveButtonID?: string;
+    number?: any;
+    //  Amcharts - really needed?
+    min?: number;
+    max?: number;
+    step?: number;
+    inputType?: string;
+    internal?: boolean;
+}
+
+export class Meta {
     id;
     type;
     origDefaultValue;
     defaultValue;
     description;
     set;
-    ext;
+    ext: IPublishExt;
     checkedAssign;
 
-    constructor(id, defaultValue, type, description, set, ext) {
+    constructor(id, defaultValue, type, description, set, ext?: IPublishExt) {
         ext = ext || {};
         this.id = id;
         this.type = type;
@@ -180,9 +201,9 @@ class MetaProxy {
     proxy;
     method;
     defaultValue;
-    ext;
+    ext: IPublishExt;
 
-    constructor(id, proxy, method, defaultValue, ext?) {
+    constructor(id, proxy, method, defaultValue, ext?: IPublishExt) {
         this.id = id;
         this.type = "proxy";
         this.proxy = proxy;
@@ -192,24 +213,8 @@ class MetaProxy {
     }
 }
 
-export type PublishTypes = "any" | "number" | "boolean" | "string" | "set" | "array" | "object" | "widget" | "widgetArray" | "propertyArray" | "html-color";
-export interface IPublishExt {
-    override?: boolean;
-    disable?: (w) => boolean;
-    optional?: boolean;
-    tags?: string[];
-    autoExpand?;
-    render?: boolean;
-    icons?: string[];
-    editor_input?: (context, widget, cell, param) => void;
-    saveButton?: string;
-    saveButtonID?: string;
-    number?: any;
-    //  Amcharts - really needed?
-    min?: number;
-    max?: number;
-    step?: number;
-    inputType?: string;
+export interface IMonitorHandle {
+    remove(): void;
 }
 
 let propExtID = 0;
@@ -245,7 +250,7 @@ export class PropertyExt extends Class {
     }
 
     // Publish Properties  ---
-    publishedProperties(includePrivate = false, expandProxies = false) {
+    publishedProperties(includePrivate = false, expandProxies = false): Meta[] {
         const retVal = [];
         const protoStack = [];
         let __proto__ = Object.getPrototypeOf(this);
@@ -305,9 +310,9 @@ export class PropertyExt extends Class {
         exceptionsArr = (exceptionsArr || []).map(function (id) { return __meta_ + id; });
         for (const key in this) {
             if (isMeta(key)) {
-                const isPrivate = !privateArr.length || (privateArr.length && privateArr.indexOf(key) >= 0);
+                const isPrivateItem = !privateArr.length || (privateArr.length && privateArr.indexOf(key) >= 0);
                 const isException = exceptionsArr.indexOf(key) >= 0;
-                if (isPrivate && !isException) {
+                if (isPrivateItem && !isException) {
                     this[__private_ + key] = true;
                 }
             }
@@ -468,7 +473,7 @@ export class PropertyExt extends Class {
         };
     }
 
-    monitorProperty(propID: string, func: (id: string, newVal: any, oldVal: any) => void): { remove: () => void } {
+    monitorProperty(propID: string, func: (id: string, newVal: any, oldVal: any) => void): IMonitorHandle {
         const meta = this.publishedProperty(propID);
         switch (meta.type) {
             case "proxy":

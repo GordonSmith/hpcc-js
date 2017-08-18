@@ -1,6 +1,7 @@
 import { Surface, Widget } from "@hpcc-js/common";
 import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
 import { Activity } from "../views/activities/activity";
+import { DSPicker } from "../views/activities/dspicker";
 import { View } from "../views/view";
 import { Dashboard } from "./dashboard";
 import { Viz } from "./viz";
@@ -94,38 +95,31 @@ export class GraphAdapter {
             return activity.id();
         }
 
-        const dsDedup = {};
-        const lastID = {};
+        const lastID: { [key: string]: string } = {};
         for (const viz of this._dashboard.visualizations()) {
             const view = viz.view();
-            // const ds = view.rawDatasource();
             let prevID = "";
             for (const activity of view.activities()) {
-                prevID = createActivity(prevID, viz, view, activity);
+                if (activity instanceof DSPicker) {
+                    //  Hack to common up datasoures outside of view  ---
+                    prevID = createDatasource(prevID, activity.hash(), `${activity.label()}`, { viz: undefined, activity });
+                } else {
+                    prevID = createActivity(prevID, viz, view, activity);
+                }
             }
-            /*
-            const ds2 = view.dataSource();
-            dsDedup[ds2.id()] = ds2.hash();
-            const firstID = createDatasource("", ds2.hash(), `${ds2.label()}`, { viz: undefined, activity: ds2 });
-            let prevID = firstID;
-            prevID = createActivity(prevID, viz, view, view.filters());
-            prevID = createActivity(prevID, viz, view, view.groupBy());
-            prevID = createActivity(prevID, viz, view, view.sort());
-            prevID = createActivity(prevID, viz, view, view.limit());
-        */
             lastID[view.id()] = prevID;
         }
 
         for (const viz of this._dashboard.visualizations()) {
             const view = viz.view();
-            view.updatedByGraph().forEach(updateInfo => {
-                const filterEdge: Edge = this.createEdge(lastID[this._dashboard.visualization(updateInfo.from).view().id()], dsDedup[updateInfo.to.id()] || updateInfo.to.id())
+            for (const updateInfo of view.updatedByGraph()) {
+                const filterEdge: Edge = this.createEdge(lastID[this._dashboard.visualization(updateInfo.from).view().id()], updateInfo.to instanceof DSPicker ? updateInfo.to.hash() : updateInfo.to.id())
                     .weight(10)
                     .strokeDasharray("1,5")
                     .text("updates")
                     ;
                 edges.push(filterEdge);
-            });
+            }
         }
 
         return {
