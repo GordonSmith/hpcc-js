@@ -1,5 +1,5 @@
-import { MultiChart } from "@hpcc-js/chart";
 import { PropertyExt, Widget } from "@hpcc-js/common";
+import { ChartPanel, MegaChart } from "@hpcc-js/composite";
 import { find } from "@hpcc-js/util";
 import { Dashboard } from "../dashboard/dashboard";
 import { View } from "../views/view";
@@ -40,7 +40,9 @@ export class Viz extends PropertyExt {
         // model.addView(view);
         this.view(view);
         const context = this;
-        const widget = new MultiChart()
+        // const widget = new MegaChart()
+        const widget = new ChartPanel()
+            .title(label)
             .chartType("TABLE")
             .on("click", function (row: object, col: string, sel: boolean) {
                 context.state().selection(sel ? [row] : []);

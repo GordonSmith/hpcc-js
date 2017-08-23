@@ -434,12 +434,12 @@ export class MegaChart extends Border {
     legendPosition: { (): string; (_: string): MegaChart };
     legendPosition_exists: () => boolean;
 
-    title: { (): string; (_: string): Text };
+    title: { (): string; (_: string): MegaChart };
     title_exists: () => boolean;
 
-    domainAxisTitle: { (): string; (_: string): Text };
+    domainAxisTitle: { (): string; (_: string): MegaChart };
     domainAxisTitle_exists: () => boolean;
-    valueAxisTitle: { (): string; (_: string): Text };
+    valueAxisTitle: { (): string; (_: string): MegaChart };
     valueAxisTitle_exists: () => boolean;
 
     chartType: { (): string; (_: string): MegaChart };

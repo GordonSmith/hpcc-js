@@ -1,1 +1,1 @@
-export { h, Component, render } from "preact"; 
+export { h, Component, render } from "preact";

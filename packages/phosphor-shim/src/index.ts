@@ -1,6 +1,6 @@
 export { CommandRegistry } from "@phosphor/commands";
 export { ConflatableMessage, IMessageHandler, IMessageHook, Message, MessageLoop } from "@phosphor/messaging";
-export { CommandPalette, ContextMenu, DockPanel, SplitPanel, Menu, MenuBar, Widget } from "@phosphor/widgets";
+export { BoxPanel, CommandPalette, ContextMenu, DockPanel, SplitPanel, Menu, MenuBar, Widget } from "@phosphor/widgets";
 
 import "@phosphor/widgets/style/widget.css";
 

@@ -7,7 +7,7 @@ import { debounce } from "./Utility";
 
 import "../src/Widget.css";
 
-export type d3SelectionType = d3Selection<SVGElement, {}, HTMLElement, any>;
+export type d3SelectionType = d3Selection<SVGElement | HTMLElement, {}, SVGElement | HTMLElement, any>;
 
 export interface IPos {
     x: number;
@@ -503,7 +503,7 @@ export abstract class Widget extends PropertyExt {
                     case "widget":
                         const widget = this[meta.id]();
                         if (widget) {
-                            widgets.push(this[meta.id]());
+                            widgets.push(widget);
                         }
                         break;
                     case "widgetArray":

@@ -195,7 +195,7 @@ export class MultiChart extends HTMLWidget {
         HTMLWidget.prototype.exit.apply(this, arguments);
     }
 
-    render(_callback) {
+    render(_callback?) {
         if (this.chartType() && (!this.chart() || (this.chart().classID() !== this._allCharts[this.chartType()].widgetClass))) {
             const context = this;
             const args = arguments;

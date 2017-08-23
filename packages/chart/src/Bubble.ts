@@ -47,8 +47,8 @@ export class Bubble extends SVGWidget {
             ;
     }
 
-    update(_domNode, element) {
-        SVGWidget.prototype.update.apply(this, arguments);
+    update(domNode, element) {
+        super.update.apply(domNode, element);
         const context = this;
 
         this._palette = this._palette.switch(this.paletteID());
@@ -64,10 +64,7 @@ export class Bubble extends SVGWidget {
             ;
         this.d3Pack(root);
 
-        const node = element.selectAll(".node")
-            .data(root.children, function (d) {
-                return d.data[0];
-            });
+        const node = element.selectAll(".node").data(root.children || [], d => d.data[0]);
 
         //  Enter  ---
         node.enter().append("g")

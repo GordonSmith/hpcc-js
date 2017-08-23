@@ -203,19 +203,19 @@ export class SVGZoomWidget extends SVGWidget {
             })
             ;
         if (this.zoomable() && this.zoomToolbar()) {
-            this._buttonToFit
+            this._buttonMinus
                 .x(this.width() - iconDiameter / 2 - 4)
-                .y(iconDiameter / 2 + 4)
+                .y(this.height() - iconDiameter / 2 - 4)
                 .render()
                 ;
             this._buttonPlus
                 .x(this.width() - iconDiameter / 2 - 4)
-                .y(this._buttonToFit.y() + 4 + iconDiameter)
+                .y(this._buttonMinus.y() - iconDiameter)
                 .render()
                 ;
-            this._buttonMinus
+            this._buttonToFit
                 .x(this.width() - iconDiameter / 2 - 4)
-                .y(this._buttonPlus.y() + iconDiameter)
+                .y(this._buttonPlus.y() - iconDiameter - 4)
                 .render()
                 ;
         }

@@ -196,14 +196,14 @@ export class Meta {
 }
 
 class MetaProxy {
-    id;
+    id: string;
     type;
     proxy;
     method;
     defaultValue;
     ext: IPublishExt;
 
-    constructor(id, proxy, method, defaultValue, ext?: IPublishExt) {
+    constructor(id: string, proxy, method, defaultValue, ext?: IPublishExt) {
         this.id = id;
         this.type = "proxy";
         this.proxy = proxy;
@@ -435,7 +435,7 @@ export class PropertyExt extends Class {
         }
     }
 
-    publishProxy(id, proxy, method?, defaultValue?) {
+    publishProxy(id: string, proxy, method?, defaultValue?) {
         method = method || id;
         if (this[__meta_ + id] !== undefined) {
             throw new Error(id + " is already published.");

@@ -1,0 +1,17 @@
+.composite_ChartPanel{
+    background-color: white;
+ }
+ 
+ .composite_ChartPanel .phosphor_WidgetAdapter.title {
+     border:0px;
+     min-height: 34px;
+ } 
+ 
+ .composite_ChartPanel .phosphor_WidgetAdapter.legend {
+     min-width: 64px;
+     max-width: 240px;
+ }
+ 
+ .composite_ChartPanel .p-SplitPanel-handle {
+     background-color: whitesmoke;
+ }
