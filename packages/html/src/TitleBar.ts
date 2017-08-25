@@ -75,36 +75,48 @@ export class Spacer extends Item {
 }
 
 export class TitleBar extends JSXWidget {
+    _divMain: d3SelectionType;
+    _divIconBar: d3SelectionType;
+    _divTitle: d3SelectionType;
+
     constructor() {
         super();
     }
 
+    enter(domNode, element) {
+        super.enter(domNode, element);
+        this._divMain = element.append("div")
+            .attr("class", "main")
+            ;
+        this._divIconBar = this._divMain.append<HTMLElement>("div")
+            .attr("class", "icon-bar")
+            ;
+        this._divTitle = this._divMain.append<HTMLElement>("div")
+            .attr("class", "title")
+            ;
+    }
     update(domNode, element) {
-        const jsx = <div class="main">
-            <div class="icon-bar"></div>
-            <div class="title">{this.title()}</div>
-        </div>;
-        this.jsxRender(jsx, domNode);
-        const icons = element.select("div.icon-bar").selectAll(".icon-bar-item").data(this.buttons());
+        super.update(domNode, element);
+
+        this._divTitle.text(this.title());
+
+        const icons = this._divIconBar.selectAll(".icon-bar-item").data(this.buttons());
         icons.enter().append("div")
             .attr("class", "icon-bar-item")
-            //            .attr("href", "#")
             .each(function (d: Item) {
                 d.target(this);
-                // d.enter(this);
             })
             .merge(icons)
             .each(function (d: Item) {
                 d.render();
-                // d.update(this);
             })
             ;
         icons.exit()
             .each(function (d: Item) {
                 d.target(null);
-                // d.exit(this);
             })
-            .remove();
+            .remove()
+            ;
         icons.order();
     }
 }

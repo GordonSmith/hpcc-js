@@ -11,10 +11,13 @@ lib-test-*/
 dist/
 lib*
 build
+packages/**/.vs*
 packages/amchart/images
 packages/common/font-awesome
 packages/**/yarn.lock
 test/**/yarn.lock
+tests/**/.vs*
+util/**/.vs*
 *.log
 Web.config
 nbproject
@@ -23,5 +26,4 @@ docx
 lib-es6/
 lib-test/
 lib-umd/
-tmp/.vs*
 *.log

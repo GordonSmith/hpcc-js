@@ -1,9 +1,9 @@
 import { MultiChart } from "@hpcc-js/chart";
 import { HTMLWidget, Widget } from "@hpcc-js/common";
-import { Button, IClickHandler, Item, Spacer, TitleBar, ToggleButton } from "@hpcc-js/html";
 import { Legend2 } from "@hpcc-js/other";
 import { WidgetAdapter } from "@hpcc-js/phosphor";
 import { BoxPanel as PBoxPanel, Widget as PWidget } from "@hpcc-js/phosphor-shim";
+import { Button, IClickHandler, Item, Spacer, TitleBar, ToggleButton } from "./TitleBar";
 
 import "../src/ChartPanel.css";
 
