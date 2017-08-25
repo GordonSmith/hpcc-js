@@ -81,9 +81,10 @@
                 legacyRequire(["test/DataFactory", "src/composite/ChartPanel"], function (DataFactory, ChartPanel) {
                     callback(new ChartPanel()
                         .title("Hello and Welcome!")
+                        .description("This is a sample column chart with a legend...")
                         // .description("Sample description for the chart being displayed...")
-                        .columns(DataFactory.TwoD.subjects.columns)
-                        .data(DataFactory.TwoD.subjects.data)
+                        .columns(DataFactory.ND.subjects.columns)
+                        .data(DataFactory.ND.subjects.data)
                     );
                 });
             }

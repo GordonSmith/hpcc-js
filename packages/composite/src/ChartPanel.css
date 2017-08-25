@@ -7,9 +7,24 @@
      min-height: 34px;
  } 
  
- .composite_ChartPanel .phosphor_WidgetAdapter.legend {
-     min-width: 64px;
-     max-width: 240px;
+ .composite_ChartPanel .phosphor_WidgetAdapter.chart {
+    border:0px;
+}
+
+.composite_ChartPanel .phosphor_WidgetAdapter.description {
+    border:0px;
+} 
+
+.composite_ChartPanel .phosphor_WidgetAdapter.description .common_HTMLWidget p {
+    line-height: normal;
+    font-style: italic;
+    font-size: 12px;
+    min-height:0px;
+    max-height:100000px;
+} 
+
+.composite_ChartPanel .phosphor_WidgetAdapter.legend {
+    border:0px;
  }
  
  .composite_ChartPanel .p-SplitPanel-handle {

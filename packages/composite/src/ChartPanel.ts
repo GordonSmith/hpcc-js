@@ -1,25 +1,58 @@
 import { MultiChart } from "@hpcc-js/chart";
-import { HTMLWidget, Text, Widget } from "@hpcc-js/common";
+import { HTMLWidget, Widget } from "@hpcc-js/common";
 import { Button, IClickHandler, Item, Spacer, TitleBar, ToggleButton } from "@hpcc-js/html";
+import { Legend2 } from "@hpcc-js/other";
 import { WidgetAdapter } from "@hpcc-js/phosphor";
-import { BoxPanel as PBoxPanel, SplitPanel as PSplitPanel, Widget as PWidget } from "@hpcc-js/phosphor-shim";
+import { BoxPanel as PBoxPanel, Widget as PWidget } from "@hpcc-js/phosphor-shim";
 
 import "../src/ChartPanel.css";
 
+class Summary extends HTMLWidget {
+
+    constructor() {
+        super();
+    }
+
+    enter(domNode, element) {
+        super.enter(domNode, element);
+        element.append("p");
+    }
+
+    update(domNode, element) {
+        super.update(domNode, element);
+        element.select("p").text(this.text());
+    }
+}
+interface Summary {
+    text(): string;
+    text(_: string): this;
+}
+Summary.prototype.publish("text", "", "string");
+
 export class ChartPanel extends HTMLWidget implements IClickHandler {
-    private _titleSplit = new PBoxPanel({ direction: "top-to-bottom" });
-    private _legendSplit = new PSplitPanel({ orientation: "horizontal" });
-    private _titleBar = new TitleBar();
-    private _toggleLegend: ToggleButton = new ToggleButton(this, "fa-info").selected(false);
+    private _outerSplit = new PBoxPanel({ direction: "top-to-bottom" });
+    private _bottomSplit = new PBoxPanel({ direction: "left-to-right" });
+    private _rightSplit = new PBoxPanel({ direction: "top-to-bottom" });
+
+    private _toggleLegend: ToggleButton = new ToggleButton(this, "fa-info").selected(true);
     private _buttonDownload: Button = new Button(this, "fa-download");
-    private _legendWA = new WidgetAdapter(this, new Text().text("Legend"));
+    private _titleBar = new TitleBar();
+    private _titleWA = new WidgetAdapter(this, this._titleBar);
+
     private _chart = new MultiChart().chartType("COLUMN");
+    private _chartWA = new WidgetAdapter(this, this._chart);
+
+    private _description = new Summary();
+    private _descriptionWA = new WidgetAdapter(this, this._description);
+
+    private _legend = new Legend2();
+    private _legendWA = new WidgetAdapter(this, this._legend);
 
     constructor() {
         super();
         this._tag = "div";
-        this._titleSplit.id = "t" + this.id();
-        this._legendSplit.id = "l" + this.id();
+        this._outerSplit.id = "t" + this.id();
+        this._bottomSplit.id = "l" + this.id();
         this._titleBar.buttons([this._buttonDownload, new Spacer(this), this._toggleLegend]);
         this.multiChart(this._chart);
 
@@ -69,21 +102,32 @@ export class ChartPanel extends HTMLWidget implements IClickHandler {
     enter(domNode, element) {
         super.enter(domNode, element);
 
-        const titleWA = new WidgetAdapter(this, this._titleBar);
-        titleWA.addClass("title");
+        this._titleWA.addClass("title");
+        this._chartWA.addClass("chart");
+        this._descriptionWA.addClass("description");
         this._legendWA.addClass("legend");
-        const chartWA = new WidgetAdapter(this, this._chart);
-        chartWA.addClass("chart");
 
-        PBoxPanel.setStretch(titleWA, 0);
-        PBoxPanel.setStretch(this._legendSplit, 1);
+        PBoxPanel.setStretch(this._titleWA, 0);
+        PBoxPanel.setStretch(this._bottomSplit, 1);
+        PBoxPanel.setStretch(this._rightSplit, 0);
+        PBoxPanel.setStretch(this._chartWA, 1);
+        PBoxPanel.setStretch(this._descriptionWA, 0);
+        PBoxPanel.setStretch(this._legendWA, 1);
 
-        this._legendSplit.addWidget(chartWA);
+        this._rightSplit.addWidget(this._descriptionWA);
+        this._rightSplit.addWidget(this._legendWA);
 
-        this._titleSplit.addWidget(titleWA);
-        this._titleSplit.addWidget(this._legendSplit);
+        this._bottomSplit.addWidget(this._chartWA);
+        this._bottomSplit.addWidget(this._rightSplit);
 
-        PWidget.attach(this._titleSplit, domNode);
+        this._outerSplit.addWidget(this._titleWA);
+        this._outerSplit.addWidget(this._bottomSplit);
+
+        PWidget.attach(this._outerSplit, domNode);
+
+        this._legend
+            .targetWidget(this._chart)
+            ;
     }
 
     update(domNode, element) {
@@ -92,7 +136,9 @@ export class ChartPanel extends HTMLWidget implements IClickHandler {
             .style("width", this.width() + "px")
             .style("height", this.height() + "px")
             ;
-        this._titleSplit.update();
+        this._rightSplit.fit();
+        //        this._outerSplit.update();
+        this._legend.dataFamily(this._chart.getChartDataFamily());
     }
 
     exit(domNode, element) {
@@ -104,9 +150,9 @@ export class ChartPanel extends HTMLWidget implements IClickHandler {
         switch (src) {
             case this._toggleLegend:
                 if (this._toggleLegend.selected()) {
-                    this._legendSplit.addWidget(this._legendWA);
+                    this._bottomSplit.addWidget(this._rightSplit);
                 } else {
-                    this._legendWA.parent = null;
+                    this._rightSplit.parent = null;
                 }
                 break;
         }
@@ -154,4 +200,5 @@ export interface ChartPanel {
     multiChart(_: Widget): this;
 }
 ChartPanel.prototype.publishProxy("title", "_titleBar");
+ChartPanel.prototype.publishProxy("description", "_description", "text");
 ChartPanel.prototype.publish("multiChart", null, "widget", "Multi Chart");

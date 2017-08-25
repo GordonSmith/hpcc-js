@@ -74,10 +74,12 @@ export abstract class ITooltip extends Widget {
 
     tooltipUpdate() {
         let classed = this.tooltip.attr("class");
-        classed = classed.split(" notick").join("") + (this.tooltipTick() ? "" : " notick") + (this.tooltipStyle() === "none" ? " hidden" : "");
-        this.tooltip
-            .attr("class", classed)
-            ;
+        if (classed) {
+            classed = classed.split(" notick").join("") + (this.tooltipTick() ? "" : " notick") + (this.tooltipStyle() === "none" ? " hidden" : "");
+            this.tooltip
+                .attr("class", classed)
+                ;
+        }
     }
 
     tooltipExit() {
