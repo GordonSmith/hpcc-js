@@ -87,13 +87,14 @@ export class TitleBar extends HTMLWidget {
         this._divMain = element.append("div")
             .attr("class", "main")
             ;
-        this._divIconBar = this._divMain.append<HTMLElement>("div")
-            .attr("class", "icon-bar")
-            ;
         this._divTitle = this._divMain.append<HTMLElement>("div")
             .attr("class", "title")
             ;
+        this._divIconBar = this._divMain.append<HTMLElement>("div")
+            .attr("class", "icon-bar")
+            ;
     }
+
     update(domNode, element) {
         super.update(domNode, element);
 

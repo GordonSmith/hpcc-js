@@ -2,7 +2,7 @@ import { Palette, SVGWidget, Widget } from "@hpcc-js/common";
 import { format as d3Format } from "d3-format";
 import { scaleOrdinal as d3ScaleOrdinal } from "d3-scale";
 import { symbol as d3Symbol, symbolCircle as d3SymbolCircle } from "d3-shape";
-import { legendColor as d3LegendColor } from "d3-svg-legend";
+import { legendColor as d3LegendColor, Orientation } from "d3-svg-legend";
 
 export class Legend2 extends SVGWidget {
     _targetWidget: Widget;
@@ -118,6 +118,8 @@ export class Legend2 extends SVGWidget {
             .shape("path", d3Symbol().type(d3SymbolCircle).size(150)())
             .shapePadding(10)
             .shapeRadius(10)
+            .orient(this.orientation())
+            .title(this.title())
             .scale(ordinal);
 
         this._g.call(legendOrdinal);
@@ -151,12 +153,14 @@ export class Legend2 extends SVGWidget {
 Legend2.prototype._class += " other_Legend";
 
 export interface Legend2 {
+    title(): string;
+    title(_: string): this;
+    orientation(): Orientation;
+    orientation(_: Orientation): this;
+    orientation_exists: () => boolean;
     dataFamily(): string;
     dataFamily(_: string): this;
     dataFamily_exists: () => boolean;
-    orientation(): string;
-    orientation(_: string): this;
-    orientation_exists: () => boolean;
     rainbowFormat(): string;
     rainbowFormat(_: string): this;
     rainbowFormat_exists: () => boolean;
@@ -164,7 +168,8 @@ export interface Legend2 {
     rainbowBins(_: number): this;
     rainbowBins_exists: () => boolean;
 }
-Legend2.prototype.publish("dataFamily", "ND", "set", "Type of data", ["1D", "2D", "ND", "map", "any"], { tags: ["Private"] });
+Legend2.prototype.publish("title", "", "string", "Title");
 Legend2.prototype.publish("orientation", "vertical", "set", "Orientation of Legend rows", ["vertical", "horizontal"], { tags: ["Private"] });
+Legend2.prototype.publish("dataFamily", "ND", "set", "Type of data", ["1D", "2D", "ND", "map", "any"], { tags: ["Private"] });
 Legend2.prototype.publish("rainbowFormat", ",", "string", "Rainbow number formatting", null, { tags: ["Private"], optional: true, disable: w => !w.isRainbow() });
 Legend2.prototype.publish("rainbowBins", 8, "number", "Number of rainbow bins", null, { tags: ["Private"], disable: w => !w.isRainbow() });

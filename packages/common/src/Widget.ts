@@ -19,6 +19,13 @@ export interface ISize {
     height: number;
 }
 
+export interface BBox {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
 let widgetID = 0;
 export abstract class Widget extends PropertyExt {
     _idSeed: string;
@@ -428,6 +435,15 @@ export abstract class Widget extends PropertyExt {
             }
             this._prevPos = newPos;
         }
+    }
+
+    getBBox(refresh = false, round = false): BBox {
+        return {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0
+        };
     }
 
     element() {

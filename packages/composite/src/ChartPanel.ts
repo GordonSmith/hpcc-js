@@ -1,8 +1,7 @@
 import { MultiChart } from "@hpcc-js/chart";
 import { HTMLWidget, Widget } from "@hpcc-js/common";
+import { Border2 } from "@hpcc-js/layout";
 import { Legend2 } from "@hpcc-js/other";
-import { WidgetAdapter } from "@hpcc-js/phosphor";
-import { BoxPanel as PBoxPanel, Widget as PWidget } from "@hpcc-js/phosphor-shim";
 import { Button, IClickHandler, Item, Spacer, TitleBar, ToggleButton } from "./TitleBar";
 
 import "../src/ChartPanel.css";
@@ -29,30 +28,22 @@ interface Summary {
 }
 Summary.prototype.publish("text", "", "string");
 
-export class ChartPanel extends HTMLWidget implements IClickHandler {
-    private _outerSplit = new PBoxPanel({ direction: "top-to-bottom" });
-    private _bottomSplit = new PBoxPanel({ direction: "left-to-right" });
-    private _rightSplit = new PBoxPanel({ direction: "top-to-bottom" });
+export class ChartPanel extends Border2 implements IClickHandler {
 
     private _toggleLegend: ToggleButton = new ToggleButton(this, "fa-info").selected(true);
     private _buttonDownload: Button = new Button(this, "fa-download");
+
     private _titleBar = new TitleBar();
-    private _titleWA = new WidgetAdapter(this, this._titleBar);
 
     private _chart = new MultiChart().chartType("COLUMN");
-    private _chartWA = new WidgetAdapter(this, this._chart);
 
     private _description = new Summary();
-    private _descriptionWA = new WidgetAdapter(this, this._description);
 
     private _legend = new Legend2();
-    private _legendWA = new WidgetAdapter(this, this._legend);
 
     constructor() {
         super();
         this._tag = "div";
-        this._outerSplit.id = "t" + this.id();
-        this._bottomSplit.id = "l" + this.id();
         this._titleBar.buttons([this._buttonDownload, new Spacer(this), this._toggleLegend]);
         this.multiChart(this._chart);
 
@@ -102,43 +93,19 @@ export class ChartPanel extends HTMLWidget implements IClickHandler {
     enter(domNode, element) {
         super.enter(domNode, element);
 
-        this._titleWA.addClass("title");
-        this._chartWA.addClass("chart");
-        this._descriptionWA.addClass("description");
-        this._legendWA.addClass("legend");
-
-        PBoxPanel.setStretch(this._titleWA, 0);
-        PBoxPanel.setStretch(this._bottomSplit, 1);
-        PBoxPanel.setStretch(this._rightSplit, 0);
-        PBoxPanel.setStretch(this._chartWA, 1);
-        PBoxPanel.setStretch(this._descriptionWA, 0);
-        PBoxPanel.setStretch(this._legendWA, 1);
-
-        this._rightSplit.addWidget(this._descriptionWA);
-        this._rightSplit.addWidget(this._legendWA);
-
-        this._bottomSplit.addWidget(this._chartWA);
-        this._bottomSplit.addWidget(this._rightSplit);
-
-        this._outerSplit.addWidget(this._titleWA);
-        this._outerSplit.addWidget(this._bottomSplit);
-
-        PWidget.attach(this._outerSplit, domNode);
+        this.top(this._titleBar);
+        this.center(this._chart);
+        this.right(this._legend);
 
         this._legend
             .targetWidget(this._chart)
+            .orientation("vertical")
+            .title("")
             ;
     }
 
     update(domNode, element) {
         super.update(domNode, element);
-        element.select(".p-Widget")
-            .style("width", this.width() + "px")
-            .style("height", this.height() + "px")
-            ;
-        this._rightSplit.fit();
-        //        this._outerSplit.update();
-        this._legend.dataFamily(this._chart.getChartDataFamily());
     }
 
     exit(domNode, element) {
@@ -150,10 +117,11 @@ export class ChartPanel extends HTMLWidget implements IClickHandler {
         switch (src) {
             case this._toggleLegend:
                 if (this._toggleLegend.selected()) {
-                    this._bottomSplit.addWidget(this._rightSplit);
+                    this._legend.visible(true);
                 } else {
-                    this._rightSplit.parent = null;
+                    this._legend.visible(false);
                 }
+                this.render();
                 break;
         }
     }

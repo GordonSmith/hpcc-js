@@ -1,21 +1,21 @@
-.composite_ChartPanel > .body {
+.layout_Border2 > .body {
     margin: 0;
     padding: 0;
     display: flex;
     flex-flow: row;
 }
 
-.composite_ChartPanel > .body > article {
+.layout_Border2 > .body > center {
     flex: 3 1 60%;
     order: 2;
 }
 
-.composite_ChartPanel > .body > nav {
+.layout_Border2 > .body > lhs {
     flex: 1 6 20%;
     order: 1;
 }
 
-.composite_ChartPanel > .body > aside {
+.layout_Border2 > .body > rhs {
     margin-left: 4px;
     flex: 1 6 20%;
     order: 3;
