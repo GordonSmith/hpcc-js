@@ -12,9 +12,6 @@ export class GroupByColumn extends PropertyExt {
     constructor(owner: GroupBy) {
         super();
         this._owner = owner;
-        this.monitor((id, newVal, oldVal) => {
-            this._owner.broadcast(id, newVal, oldVal, this);
-        });
     }
 
     hash(): string {
@@ -58,9 +55,6 @@ export class AggregateField extends PropertyExt {
     constructor(owner: GroupBy) {
         super();
         this._owner = owner;
-        this.monitor((id, newVal, oldVal) => {
-            this._owner.broadcast(id, newVal, oldVal, this);
-        });
     }
 
     hash(): string {
@@ -104,9 +98,6 @@ export class GroupBy extends Activity {
     constructor(owner: View) {
         super();
         this._owner = owner;
-        this.monitor((id, newVal, oldVal) => {
-            this._owner.broadcast(id, newVal, oldVal, this);
-        });
     }
 
     hash(): string {

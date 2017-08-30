@@ -3,14 +3,51 @@ import { format as d3Format } from "d3-format";
 import { scaleOrdinal as d3ScaleOrdinal } from "d3-scale";
 import { symbol as d3Symbol, symbolCircle as d3SymbolCircle } from "d3-shape";
 import { legendColor as d3LegendColor, Orientation } from "d3-svg-legend";
+import { ChartPanel } from "./ChartPanel";
 
-export class Legend2 extends SVGWidget {
+export class Legend extends SVGWidget {
+    _owner: ChartPanel;
     _targetWidget: Widget;
     _targetWidgetMonitor;
+    _legendOrdinal;
+    _disabled: string[] = [];
 
-    constructor() {
+    constructor(owner: ChartPanel) {
         super();
+        this._owner = owner;
         this._drawStartPos = "origin";
+
+        const context = this;
+        this._legendOrdinal = d3LegendColor()
+            .shape("path", d3Symbol().type(d3SymbolCircle).size(150)())
+            .shapePadding(10)
+            .shapeRadius(10)
+            .on("cellclick", function (d) {
+                context.onClick(d, this);
+            })
+            .on("cellover", (d) => {
+            })
+            .on("cellout", (d) => {
+            })
+            ;
+    }
+
+    isDisabled(d: string): boolean {
+        return this._disabled.indexOf(d) >= 0;
+    }
+
+    filteredColumns(): string[] {
+        return this.columns().filter(d => !this.isDisabled(d));
+    }
+
+    filteredData(): any[][] {
+        const disabledCols: { [key: number]: boolean } = {};
+        this.columns().forEach((col, idx) => {
+            disabledCols[idx] = this.isDisabled(col);
+        });
+        return this.data().map(row => {
+            return row.filter((cell, idx) => !disabledCols[idx]);
+        });
     }
 
     isRainbow() {
@@ -81,13 +118,19 @@ export class Legend2 extends SVGWidget {
                 case "ordinal":
                     switch (this.dataFamily()) {
                         case "2D":
-                            dataArr = this._targetWidget.data().map(function (n) {
+                            dataArr = this.data().map(function (n) {
                                 return [palette(n[0]), n[0]];
                             }, this);
                             break;
                         case "ND":
-                            const widgetColumns = this._targetWidget.columns();
+                            const widgetColumns = this.columns();
                             dataArr = widgetColumns.filter(function (n, i) { return i > 0; }).map(function (n) {
+                                return [palette(n), n];
+                            }, this);
+                            break;
+                        default:
+                            const widgetColumns2 = this.columns();
+                            dataArr = widgetColumns2.map(function (n) {
                                 return [palette(n), n];
                             }, this);
                             break;
@@ -114,27 +157,53 @@ export class Legend2 extends SVGWidget {
             .domain(dataArr.map(row => row[1]))
             .range(dataArr.map(row => row[0]));
 
-        const legendOrdinal = d3LegendColor()
-            .shape("path", d3Symbol().type(d3SymbolCircle).size(150)())
-            .shapePadding(10)
-            .shapeRadius(10)
+        this._legendOrdinal
             .orient(this.orientation())
             .title(this.title())
-            .scale(ordinal);
+            .scale(ordinal)
+            ;
+        this._g.call(this._legendOrdinal);
 
-        this._g.call(legendOrdinal);
+        this.updateDisabled(element, dataArr);
+
         const bbox = this.getBBox(true, true);
         this._g.attr("transform", `translate(${this.width() / 2 - bbox.width / 2 + 5},${this.height() / 2 - bbox.height / 2})`);
+    }
+
+    updateDisabled(element, dataArr) {
+        element
+            .style("cursor", "pointer")
+            .selectAll("path.swatch").filter((d, i) => i < dataArr.length)
+            .style("stroke", (d, i) => dataArr[i][0])
+            .style("fill", (d, i) => this._disabled.indexOf(d) < 0 ? dataArr[i][0] : "white")
+            ;
     }
 
     exit(domNode, element) {
         super.exit.apply(domNode, element);
     }
 
-    onClick(rowData, rowIdx) {
+    onClick(d, domNode) {
+        const palette = this.getPalette();
+        switch (palette.type()) {
+            case "ordinal":
+                switch (this.dataFamily()) {
+                    case "2D":
+                        break;
+                    case "ND":
+                        const disabledIdx = this._disabled.indexOf(d);
+                        if (disabledIdx < 0) {
+                            this._disabled.push(d);
+                        } else {
+                            this._disabled.splice(disabledIdx, 1);
+                        }
+                        this._owner.render();
+                        break;
+                }
+                break;
+        }
         console.log("Legend onClick method");
-        console.log("rowData: " + rowData);
-        console.log("rowIdx: " + rowIdx);
+        console.log("d: " + d);
     }
 
     onDblClick(rowData, rowIdx) {
@@ -150,9 +219,9 @@ export class Legend2 extends SVGWidget {
     }
 
 }
-Legend2.prototype._class += " other_Legend";
+Legend.prototype._class += " composite_Legend";
 
-export interface Legend2 {
+export interface Legend {
     title(): string;
     title(_: string): this;
     orientation(): Orientation;
@@ -168,8 +237,8 @@ export interface Legend2 {
     rainbowBins(_: number): this;
     rainbowBins_exists: () => boolean;
 }
-Legend2.prototype.publish("title", "", "string", "Title");
-Legend2.prototype.publish("orientation", "vertical", "set", "Orientation of Legend rows", ["vertical", "horizontal"], { tags: ["Private"] });
-Legend2.prototype.publish("dataFamily", "ND", "set", "Type of data", ["1D", "2D", "ND", "map", "any"], { tags: ["Private"] });
-Legend2.prototype.publish("rainbowFormat", ",", "string", "Rainbow number formatting", null, { tags: ["Private"], optional: true, disable: w => !w.isRainbow() });
-Legend2.prototype.publish("rainbowBins", 8, "number", "Number of rainbow bins", null, { tags: ["Private"], disable: w => !w.isRainbow() });
+Legend.prototype.publish("title", "", "string", "Title");
+Legend.prototype.publish("orientation", "vertical", "set", "Orientation of Legend rows", ["vertical", "horizontal"], { tags: ["Private"] });
+Legend.prototype.publish("dataFamily", "ND", "set", "Type of data", ["1D", "2D", "ND", "map", "any"], { tags: ["Private"] });
+Legend.prototype.publish("rainbowFormat", ",", "string", "Rainbow number formatting", null, { tags: ["Private"], optional: true, disable: w => !w.isRainbow() });
+Legend.prototype.publish("rainbowBins", 8, "number", "Number of rainbow bins", null, { tags: ["Private"], disable: w => !w.isRainbow() });

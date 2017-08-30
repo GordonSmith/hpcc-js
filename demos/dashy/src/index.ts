@@ -49,9 +49,7 @@ export async function scopedLock(m: Mutex, func: (...params: any[]) => Promise<v
 export class App {
     private _dockPanel = new DockPanel();
     private _dataSplit = new SplitPanel();
-    private _monitorHandle: { remove: () => void };
     private _dashboard: Dashboard = new Dashboard().on("vizActivation", (viz: Viz) => {
-        console.log("Active Changed:  " + viz.view().id());
         this.vizChanged(viz);
     });
     private _graphAdapter = new GraphAdapter(this._dashboard);
@@ -108,6 +106,14 @@ export class App {
             ;
         //   this.loadSample();
         this.initMenu();
+        this._dataProperties.monitor((id: string, newValue: any, oldValue: any, source: PropertyExt) => {
+            if (source !== this._dataProperties) {
+                this._currViz.refresh().then(() => {
+                    this.refreshPreview();
+                    this.loadGraph(true);
+                });
+            }
+        });
     }
 
     refreshPreview() {
@@ -149,21 +155,9 @@ export class App {
     }
 
     loadDataProps(pe: PropertyExt) {
-        if (this._monitorHandle) {
-            this._monitorHandle.remove();
-            delete this._monitorHandle;
-        }
         this._dataProperties
             .widget(pe)
-            .render(widget => {
-                this._monitorHandle = pe.monitor((id: string, newValue: any, oldValue: any) => {
-                    console.log(`monitor(${id}, ${newValue}, ${oldValue})`);
-                    this._currViz.refresh().then(() => {
-                        this.refreshPreview();
-                        this.loadGraph(true);
-                    });
-                });
-            })
+            .render()
             ;
     }
 
@@ -262,6 +256,9 @@ export class App {
                     }
                 });
                 this.loadDashboard();
+                viz.refresh().then(() => {
+                    this.vizChanged(viz);
+                });
             }
         });
 

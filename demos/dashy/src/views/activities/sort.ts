@@ -13,9 +13,6 @@ export class SortColumn extends PropertyExt {
         super();
         this._view = owner._owner;
         this._owner = owner;
-        this.monitor((id, newVal, oldVal) => {
-            this._owner.broadcast(id, newVal, oldVal, this);
-        });
     }
 
     hash(): string {
@@ -51,9 +48,6 @@ export class Sort extends Activity {
     constructor(owner: View) {
         super();
         this._owner = owner;
-        this.monitor((id, newVal, oldVal) => {
-            this._owner.broadcast(id, newVal, oldVal, this);
-        });
     }
 
     hash(): string {

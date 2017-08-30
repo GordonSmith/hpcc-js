@@ -528,23 +528,30 @@ export class PropertyEditor extends HTMLWidget {
     }
 
     setProperty(widget, id, value) {
-        //  With PropertyExt not all "widgets" have a render, if not use parents render...
+        //  With PropertyExt not all "widgets" have a render, if not use top most render...
+        let topWidget: Widget;
+        let topPropEditor: Widget;
         let propEditor: PropertyEditor = this;
+        let oldValue;
         while (propEditor && widget) {
             if (propEditor === this) {
+                oldValue = widget[id]();
                 widget[id](value);
             }
-
-            if (widget._parentElement) {
-                const tmpPE = propEditor;
-                widget.render(function () {
-                    tmpPE.render();
-                });
-                propEditor = null;
-            } else {
-                propEditor = propEditor.parentPropertyEditor();
-                widget = propEditor ? propEditor.widget() : null;
+            if (propEditor) {
+                topPropEditor = propEditor;
+                const w: PropertyExt = propEditor.widget();
+                if (w instanceof Widget) {
+                    topWidget = w;
+                }
             }
+            propEditor = propEditor.parentPropertyEditor();
+        }
+        if (topWidget) {
+            topWidget.render();
+        }
+        if (topPropEditor) {
+            topPropEditor.broadcast(id, value, oldValue, widget);
         }
     }
 

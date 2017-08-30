@@ -514,7 +514,7 @@ export class PropertyExt extends Class {
             for (const idx in this._watchArr) {
                 const monitor = this._watchArr[idx];
                 if ((monitor.propertyID === undefined || monitor.propertyID === key) && monitor.callback) {
-                    console.log(`${this.classID()}->broadcast(${key}, ${newVal}, ${oldVal})`);
+                    // console.log(`${this.classID()}->broadcast(${key}, ${newVal}, ${oldVal})`);
                     setTimeout(function (monitor2) {
                         monitor2.callback(key, newVal, oldVal, source);
                     }, 0, monitor);

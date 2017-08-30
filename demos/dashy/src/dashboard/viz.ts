@@ -51,9 +51,11 @@ export class Viz extends PropertyExt {
         this.widget(widget);
         this.state(new State());
 
+        /*
         view.monitor(async () => {
             this.refresh();
         });
+        */
     }
 
     dataProps(): PropertyExt {

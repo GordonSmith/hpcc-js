@@ -1,7 +1,7 @@
 import { MultiChart } from "@hpcc-js/chart";
-import { HTMLWidget, Widget } from "@hpcc-js/common";
+import { HTMLWidget, Utility, Widget } from "@hpcc-js/common";
 import { Border2 } from "@hpcc-js/layout";
-import { Legend2 } from "@hpcc-js/other";
+import { Legend } from "./Legend";
 import { Button, IClickHandler, Item, Spacer, TitleBar, ToggleButton } from "./TitleBar";
 
 import "../src/ChartPanel.css";
@@ -37,9 +37,7 @@ export class ChartPanel extends Border2 implements IClickHandler {
 
     private _chart = new MultiChart().chartType("COLUMN");
 
-    private _description = new Summary();
-
-    private _legend = new Legend2();
+    private _legend = new Legend(this);
 
     constructor() {
         super();
@@ -80,13 +78,18 @@ export class ChartPanel extends Border2 implements IClickHandler {
     columns(_: string[], asDefault?: boolean): this;
     columns(_?: string[], asDefault?: boolean): string[] | this {
         if (!arguments.length) return this._chart.columns();
-        this._chart.columns(_, asDefault);
+        this._legend.columns(_, asDefault);
         return this;
     }
 
     data(_?) {
         if (!arguments.length) return this._chart.data();
-        this._chart.data(_);
+        this._legend.data(_);
+        return this;
+    }
+
+    downloadCSV() {
+        Utility.downloadBlob("CSV", this._chart.export("CSV"));
         return this;
     }
 
@@ -104,7 +107,22 @@ export class ChartPanel extends Border2 implements IClickHandler {
             ;
     }
 
+    private _prevChartDataFamily;
     update(domNode, element) {
+        this._chart
+            .columns(this._legend.filteredColumns())
+            .data(this._legend.filteredData())
+            ;
+        if (this._prevChartDataFamily !== this._chart.getChartDataFamily()) {
+            this._prevChartDataFamily = this._chart.getChartDataFamily();
+            switch (this._prevChartDataFamily) {
+                case "any":
+                    this._toggleLegend.selected(false);
+                    this._legend.visible(false);
+                    break;
+            }
+        }
+        this._legend.dataFamily(this._chart.getChartDataFamily());
         super.update(domNode, element);
     }
 
@@ -115,6 +133,9 @@ export class ChartPanel extends Border2 implements IClickHandler {
     // IClickHandler  ---
     titleBarClick(src: Item, d, idx: number, groups): void {
         switch (src) {
+            case this._buttonDownload:
+                this.downloadCSV();
+                break;
             case this._toggleLegend:
                 if (this._toggleLegend.selected()) {
                     this._legend.visible(true);
@@ -167,6 +188,6 @@ export interface ChartPanel {
     multiChart(): Widget;
     multiChart(_: Widget): this;
 }
+ChartPanel.prototype.publishReset();
 ChartPanel.prototype.publishProxy("title", "_titleBar");
-ChartPanel.prototype.publishProxy("description", "_description", "text");
 ChartPanel.prototype.publish("multiChart", null, "widget", "Multi Chart");

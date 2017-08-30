@@ -24,9 +24,6 @@ export class ColumnMapping extends PropertyExt {
     constructor(owner: Filter) {
         super();
         this._owner = owner;
-        this.monitor((id, newVal, oldVal) => {
-            this._owner.broadcast(id, newVal, oldVal, this);
-        });
     }
 
     hash() {
@@ -91,9 +88,6 @@ export class Filter extends PropertyExt {
         super();
         this._view = owner._owner;
         this._owner = owner;
-        this.monitor((id, newVal, oldVal) => {
-            this._owner.broadcast(id, newVal, oldVal, this);
-        });
     }
 
     visualizationIDs() {
@@ -171,9 +165,6 @@ export class Filters extends Activity {
     constructor(owner: View) {
         super();
         this._owner = owner;
-        this.monitor((id, newVal, oldVal) => {
-            this._owner.broadcast(id, newVal, oldVal, this);
-        });
     }
 
     //  Activity overrides  ---

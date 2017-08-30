@@ -40,8 +40,8 @@ export class MultiChart extends HTMLWidget {
     }
 
     columns(): string[];
-    columns(_, asDefault): this;
-    columns(_?, asDefault?) {
+    columns(_, asDefault?: boolean): this;
+    columns(_?, asDefault?: boolean) {
         const retVal = HTMLWidget.prototype.columns.apply(this, arguments);
         if (this.chart()) {
             if (!arguments.length) return this.chart().columns();

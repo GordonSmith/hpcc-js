@@ -14,9 +14,6 @@ export abstract class ESPResult extends Activity {
     constructor(owner: View) {
         super();
         this._owner = owner;
-        this.monitor((id, newVal, oldVal) => {
-            this._owner.broadcast(id, newVal, oldVal, this);
-        });
     }
 
     hash(more: object = {}): string {

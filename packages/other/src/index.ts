@@ -7,7 +7,6 @@ export * from "./ESP";
 export * from "./HeatMap";
 export * from "./Html";
 export * from "./Legend";
-export * from "./Legend2";
 export * from "./MorphText";
 export * from "./NestedTable";
 export * from "./Opportunity";
