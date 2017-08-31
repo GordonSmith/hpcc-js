@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/ddl-shim",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "hpcc-js DDL parser",
   "main": "dist/ddl-shim.js",
   "types": "lib/index.d.ts",
@@ -20,10 +20,10 @@
     "tslib": "^1.7.1"
   },
   "devDependencies": {
+    "extract-text-webpack-plugin": "^2.1.0",
     "rimraf": "^2.6.1",
     "typescript": "^2.4.2",
     "typescript-json-schema": "^0.14.0",
-    "extract-text-webpack-plugin": "^2.1.0",
     "webpack": "^2.6.1"
   },
   "repository": {
