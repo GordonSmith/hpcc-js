@@ -108,7 +108,7 @@ export class Meta {
                 this.checkedAssign = function (_) {
                     const options = typeof set === "function" ? set.call(this) : set;
                     if (!options || options.indexOf(_) < 0) {
-                        console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                        console.error("Invalid value for '" + this.classID() + "." + id + "':  " + _ + " expected " + type);
                     }
                     return _;
                 };
@@ -122,7 +122,7 @@ export class Meta {
                         d.style.color = _;
                         // Element's style.color will be reverted to litmus or set to "" if an invalid color is given
                         if (d.style.color === litmus || d.style.color === "") {
-                            console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                            console.error("Invalid value for '" + this.classID() + "." + id + "':  " + _ + " expected " + type);
                         }
                     }
                     return _;
@@ -146,7 +146,7 @@ export class Meta {
             case "array":
                 this.checkedAssign = function (_) {
                     if (!(_ instanceof Array)) {
-                        console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                        console.error("Invalid value for '" + this.classID() + "." + id + "':  " + _ + " expected " + type);
                     }
                     return _;
                 };
@@ -154,7 +154,7 @@ export class Meta {
             case "object":
                 this.checkedAssign = function (_) {
                     if (!(_ instanceof Object)) {
-                        console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                        console.error("Invalid value for '" + this.classID() + "." + id + "':  " + _ + " expected " + type);
                     }
                     return _;
                 };
@@ -162,7 +162,7 @@ export class Meta {
             case "widget":
                 this.checkedAssign = function (_) {
                     if (!_._class || _._class.indexOf("common_PropertyExt") < 0) {
-                        console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                        console.error("Invalid value for '" + this.classID() + "." + id + "':  " + _ + " expected " + type);
                     }
                     return _;
                 };
@@ -170,7 +170,7 @@ export class Meta {
             case "widgetArray":
                 this.checkedAssign = function (_) {
                     if (_.some(function (row) { return (!row._class || row._class.indexOf("common_Widget") < 0); })) {
-                        console.error("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                        console.error("Invalid value for '" + this.classID() + "." + id + "':  " + _ + " expected " + type);
                     }
                     return _;
                 };
@@ -178,7 +178,7 @@ export class Meta {
             case "propertyArray":
                 this.checkedAssign = function (_) {
                     if (_.some(function (row) { return !row.publishedProperties; })) {
-                        console.log("Invalid value for '" + id + "':  " + _ + " expected " + type);
+                        console.log("Invalid value for '" + this.classID() + "." + id + "':  " + _ + " expected " + type);
                     }
                     return _;
                 };
@@ -186,7 +186,7 @@ export class Meta {
             default:
                 this.checkedAssign = function (_) {
                     if ((window as any).__hpcc_debug) {
-                        console.error("Unchecked property type for '" + id + "':  " + _ + " expected " + type);
+                        console.error("Unchecked property type for '" + this.classID() + "." + id + "':  " + _ + " expected " + type);
                     }
                     return _;
                 };
@@ -319,7 +319,7 @@ export class PropertyExt extends Class {
         }
     }
     static prevClassID: string = "";
-    publish(id, defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}) {
+    publish(id, defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}): void {
         if (GEN_PUB_STUBS) {
             if (PropertyExt.prevClassID !== (this as any).constructor.name) {
                 PropertyExt.prevClassID = (this as any).constructor.name;
@@ -346,27 +346,35 @@ export class PropertyExt extends Class {
         if (meta.ext.internal) {
             this[__private_ + id] = true;
         }
-        this[id + "_access"] = function (_) {
-            if (!arguments.length) {
+        Object.defineProperty(this, "_" + id, {
+            // tslint:disable-next-line:object-literal-shorthand
+            set: function (_) {
+                if (_ === undefined) {
+                    _ = null;
+                } else if (_ === "" && meta.ext.optional) {
+                    _ = null;
+                } else if (_ !== null) {
+                    _ = meta.checkedAssign.call(this, _);
+                }
+                this.broadcast(id, _, this[__prop_ + id]);
+                if (_ === null) {
+                    delete this[__prop_ + id];
+                } else {
+                    this[__prop_ + id] = _;
+                }
+            },
+            // tslint:disable-next-line:object-literal-shorthand
+            get: function () {
                 if (this[id + "_disabled"]()) return this[id + "_default"]();
                 return this[__prop_ + id] !== undefined ? this[__prop_ + id] : this[id + "_default"]();
-            }
-            if (_ === undefined) {
-                _ = null;
-            } else if (_ === "" && meta.ext.optional) {
-                _ = null;
-            } else if (_ !== null) {
-                _ = meta.checkedAssign.call(this, _);
-            }
-            this.broadcast(id, _, this[__prop_ + id]);
-            if (_ === null) {
-                delete this[__prop_ + id];
-            } else {
-                this[__prop_ + id] = _;
-            }
+            },
+            configurable: true
+        });
+        this[id] = function (_) {
+            if (!arguments.length) return this["_" + id];
+            this["_" + id] = _;
             return this;
         };
-        this[id] = this[id + "_access"];
         this[id + "_disabled"] = function () {
             return ext && ext.disable ? !!ext.disable(this) : false;
         };
@@ -508,7 +516,7 @@ export class PropertyExt extends Class {
         };
     }
 
-    broadcast(key, newVal, oldVal, source) {
+    broadcast(key, newVal, oldVal, source?) {
         source = source || this;
         if (!deepEqual(newVal, oldVal)) {
             for (const idx in this._watchArr) {
@@ -564,10 +572,10 @@ export function publish(defaultValue, type?: PublishTypes, description?: string,
         target.publish(key, defaultValue, type, description, set, ext);
     };
 }
+export type publish<T, U> = ((_: U) => T) & (() => U);
 
-export function publish2(methodID: string, defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}) {
-    // tslint:disable-next-line:ban-types
-    return function (target: Function) {
-        target.prototype.publish(methodID, defaultValue, type, description, set, ext);
+export function publishProxy(proxy: string, method?: string, defaultValue?) {
+    return function (target: any, key: string) {
+        target.publishProxy(key, proxy, method, defaultValue);
     };
 }

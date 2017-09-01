@@ -618,12 +618,12 @@ export class Grid extends PropertyExt {
         this.jsonObj(d3TsvParse(_));
         return this;
     }
-
-    fields(): Field[];
-    fields(_: Field[], clone?: boolean): this;
-    fields(_?: Field[], clone?: boolean): Field[] | this { return this; } //  Overriden below
 }
 Grid.prototype._class += " common_Database.Grid";
+export interface Grid {
+    fields(): Field[];
+    fields(_: Field[], clone?: boolean): this;
+}
 
 Grid.prototype.publish("fields", [], "propertyArray", "Fields");
 const fieldsOrig = Grid.prototype.fields;

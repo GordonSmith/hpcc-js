@@ -38,7 +38,7 @@ export class DSPicker extends ActivitySelection {
             new Query(this._view)
                 .url("http://192.168.3.22:8010")
                 .querySet("roxie")
-                .queryId("peopleaccounts.1")
+                .queryId("peopleaccounts.2")
                 .resultName("Accounts")
         ]);
         this.type(Type.WURESULT);
