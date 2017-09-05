@@ -56,6 +56,22 @@ describe("test/esp/ecl/Workunit", function () {
         });
     });
 
+    describe.only("Syntax Error", function () {
+        it("eclSubmit", function () {
+            return Workunit.submit({ baseUrl: ESP_URL, userID: "userID", password: "pw" }, "hthor", "'Hello and Welcome!';\nSome Error;\n123;").then((wu) => {
+                return wu.watchUntilComplete();
+            }).then((wu) => {
+                expect(wu.isFailed()).to.be.true;
+                expect(wu.ErrorCount).to.be.greaterThan(0);
+                expect(wu.eclExceptions().length).to.be.greaterThan(0);
+                return wu;
+            }).then((wu) => {
+                return wu.delete();
+            });
+        });
+
+    });
+
     if (!isTravis()) {
         describe.skip("WUDetails", function () {
             const wu = Workunit.attach({ baseUrl: ESP_URL }, WUID);

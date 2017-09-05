@@ -63,12 +63,6 @@ export class Border2 extends HTMLWidget {
         this._tag = "div";
     }
 
-    top = Border2.prototype.publish<this, Widget>("top", null, "widget", "Top Widget");
-    left = Border2.prototype.publish<this, Widget>("left", null, "widget", "Left Widget");
-    center = Border2.prototype.publish<this, Widget>("center", null, "widget", "Center Widget");
-    right = Border2.prototype.publish<this, Widget>("right", null, "widget", "Right Widget");
-    bottom = Border2.prototype.publish<this, Widget>("bottom", null, "widget", "Bottom Widget");
-
     enter(domNode, element) {
         super.enter(domNode, element);
 
@@ -111,7 +105,7 @@ export class Border2 extends HTMLWidget {
     }
 }
 Border2.prototype._class += " layout_Border2";
-/*
+
 export interface Border2 {
     top(): Widget;
     top(_: Widget): this;
@@ -129,4 +123,3 @@ Border2.prototype.publish("left", null, "widget", "Left Widget");
 Border2.prototype.publish("center", null, "widget", "Center Widget");
 Border2.prototype.publish("right", null, "widget", "Right Widget");
 Border2.prototype.publish("bottom", null, "widget", "Bottom Widget");
-*/

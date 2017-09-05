@@ -405,7 +405,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
     }
 
     refresh(full: boolean = false): Promise<Workunit> {
-        const refreshPromise: Promise<WsWorkunits.WUInfo.Response | WsWorkunits.WUQuery.Response> = full ? this.WUInfo() : this.WUQuery();
+        const refreshPromise: Promise<WsWorkunits.WUInfo.Response | WsWorkunits.WUQuery.Response> = full ? this.WUInfo({ IncludeExceptions: true }) : this.WUQuery();
         const debugPromise = this.debugStatus();
         return Promise.all([
             refreshPromise,
@@ -413,6 +413,10 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
         ]).then(() => {
             return this;
         });
+    }
+
+    eclExceptions(): WsWorkunits.WUInfo.ECLException[] {
+        return this.Exceptions.ECLException;
     }
 
     fetchResults(): Promise<Result[]> {

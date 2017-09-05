@@ -62,6 +62,7 @@ export class Result extends StateObject<ECLResultEx & DFUQuery.DFULogicalFile, E
         } else {
             this.set({
                 Wuid: wuidOrLogicalFile,
+                ResultName: eclResultOrResultName.Name,
                 ResultViews: resultViews,
                 ...eclResultOrResultName
             });

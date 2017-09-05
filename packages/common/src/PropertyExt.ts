@@ -45,10 +45,10 @@ function deepEqual(a, b) {
     return false;
 }
 
-const GEN_PUB_STUBS: boolean = false;
 const __meta_ = "__meta_";
 const __private_ = "__private_";
-const __prop_ = "__prop_";
+const __prop_ = "_";
+const __prop_data_ = "__prop_";
 const __default_ = "__default_";
 
 function isMeta(key) {
@@ -319,25 +319,9 @@ export class PropertyExt extends Class {
         }
     }
     static prevClassID: string = "";
-    publish(id, defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}): void {
-        if (GEN_PUB_STUBS) {
-            if (PropertyExt.prevClassID !== (this as any).constructor.name) {
-                PropertyExt.prevClassID = (this as any).constructor.name;
-                console.log(`//  ${PropertyExt.prevClassID}  ---`);
-            }
-            let jsType: string = type;
-            switch (type) {
-                case "set":
-                case "html-color":
-                    jsType = "string";
-                    break;
-                case "array":
-                case "widgetArray":
-                case "propertyArray":
-                    jsType = "any[]";
-                    break;
-            }
-            console.log(`${id}: {(): ${jsType};(_: ${jsType}): ${PropertyExt.prevClassID}};\n${id}_exists: () => boolean;`);
+    publish(id: string, defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}): void {
+        if (id.indexOf("_") === 0) {
+            id = id.slice(1);
         }
         if (this[__meta_ + id] !== undefined && !ext.override) {
             throw new Error(id + " is already published.");
@@ -346,7 +330,7 @@ export class PropertyExt extends Class {
         if (meta.ext.internal) {
             this[__private_ + id] = true;
         }
-        Object.defineProperty(this, "_" + id, {
+        Object.defineProperty(this, __prop_ + id, {
             // tslint:disable-next-line:object-literal-shorthand
             set: function (_) {
                 if (_ === undefined) {
@@ -356,36 +340,39 @@ export class PropertyExt extends Class {
                 } else if (_ !== null) {
                     _ = meta.checkedAssign.call(this, _);
                 }
-                this.broadcast(id, _, this[__prop_ + id]);
+                this.broadcast(id, _, this[__prop_data_ + id]);
                 if (_ === null) {
-                    delete this[__prop_ + id];
+                    delete this[__prop_data_ + id];
                 } else {
-                    this[__prop_ + id] = _;
+                    this[__prop_data_ + id] = _;
                 }
             },
             // tslint:disable-next-line:object-literal-shorthand
             get: function () {
                 if (this[id + "_disabled"]()) return this[id + "_default"]();
-                return this[__prop_ + id] !== undefined ? this[__prop_ + id] : this[id + "_default"]();
+                return this[__prop_data_ + id] !== undefined ? this[__prop_data_ + id] : this[id + "_default"]();
             },
             configurable: true
         });
-        this[id] = function (_) {
-            if (!arguments.length) return this["_" + id];
-            this["_" + id] = _;
-            return this;
-        };
+        if (this[id]) {
+        } else {
+            this[id] = function (_) {
+                if (!arguments.length) return this[__prop_ + id];
+                this[__prop_ + id] = _;
+                return this;
+            };
+        }
         this[id + "_disabled"] = function () {
             return ext && ext.disable ? !!ext.disable(this) : false;
         };
         this[id + "_modified"] = function () {
             if (type === "propertyArray") {
-                return this[__prop_ + id].length > (ext.autoExpand ? 1 : 0);
+                return this[__prop_data_ + id].length > (ext.autoExpand ? 1 : 0);
             }
-            return this[__prop_ + id] !== undefined;
+            return this[__prop_data_ + id] !== undefined;
         };
         this[id + "_exists"] = function () {
-            return this[__prop_ + id] !== undefined || this[id + "_default"]() !== undefined;
+            return this[__prop_data_ + id] !== undefined || this[id + "_default"]() !== undefined;
         };
         this[id + "_default"] = function (_) {
             if (!arguments.length) return this[__default_ + id] !== undefined ? this[__default_ + id] : meta.defaultValue;
@@ -402,13 +389,13 @@ export class PropertyExt extends Class {
         this[id + "_reset"] = function () {
             switch (type) {
                 case "widget":
-                    if (this[__prop_ + id]) {
-                        this[__prop_ + id].target(null);
+                    if (this[__prop_data_ + id]) {
+                        this[__prop_data_ + id].target(null);
                     }
                     break;
                 case "widgetArray":
-                    if (this[__prop_ + id]) {
-                        this[__prop_ + id].forEach(function (widget) {
+                    if (this[__prop_data_ + id]) {
+                        this[__prop_data_ + id].forEach(function (widget) {
                             widget.target(null);
                         });
                     }
@@ -422,7 +409,7 @@ export class PropertyExt extends Class {
                     this[__default_ + id] = this[id + "_default"]().map(function (row) { return row; });
                     break;
             }
-            delete this[__prop_ + id];
+            delete this[__prop_data_ + id];
             return this;
         };
         this[id + "_options"] = function () {
@@ -438,7 +425,7 @@ export class PropertyExt extends Class {
         for (const key in WidgetType.prototype) {
             if (key.indexOf("__meta") === 0) {
                 const publishItem = WidgetType.prototype[key];
-                this.publishProxy(prefix + __prop_ + publishItem.id, id, publishItem.method || publishItem.id);
+                this.publishProxy(prefix + __prop_data_ + publishItem.id, id, publishItem.method || publishItem.id);
             }
         }
     }
@@ -569,6 +556,7 @@ PropertyExt.prototype._class += " common_PropertyExt";
 
 export function publish(defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}) {
     return function (target: any, key: string) {
+        if (!key) throw new Error("???");
         target.publish(key, defaultValue, type, description, set, ext);
     };
 }
