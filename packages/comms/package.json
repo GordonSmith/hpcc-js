@@ -26,7 +26,8 @@
     "request": "^2.81.0",
     "safe-buffer": "^5.0.1",
     "tslib": "^1.7.1",
-    "xmldom": "^0.1.27"
+    "xmldom": "^0.1.27",
+    "tmp": "^0.0.33"
   },
   "devDependencies": {
     "@hpcc-js/bundle": "^0.0.9",
