@@ -45,6 +45,7 @@ function deepEqual(a, b) {
     return false;
 }
 
+const GEN_PUB_STUBS: boolean = false;
 const __meta_ = "__meta_";
 const __private_ = "__private_";
 const __prop_ = "_";
@@ -320,6 +321,25 @@ export class PropertyExt extends Class {
     }
     static prevClassID: string = "";
     publish(id: string, defaultValue, type?: PublishTypes, description?: string, set?: string[] | (() => string[]) | IPublishExt, ext: IPublishExt = {}): void {
+        if (GEN_PUB_STUBS) {
+            if (PropertyExt.prevClassID !== (this as any).constructor.name) {
+                PropertyExt.prevClassID = (this as any).constructor.name;
+                console.log(`//  ${PropertyExt.prevClassID}  ---`);
+            }
+            let jsType: string = type;
+            switch (type) {
+                case "set":
+                case "html-color":
+                    jsType = "string";
+                    break;
+                case "array":
+                case "widgetArray":
+                case "propertyArray":
+                    jsType = "any[]";
+                    break;
+            }
+            console.log(`${id}: {(): ${jsType};(_: ${jsType}): ${PropertyExt.prevClassID}};\n${id}_exists: () => boolean;`);
+        }
         if (id.indexOf("_") === 0) {
             id = id.slice(1);
         }

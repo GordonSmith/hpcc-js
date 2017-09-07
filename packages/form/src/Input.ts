@@ -88,6 +88,7 @@ export class Input extends HTMLWidget {
 
     type: { (): string; (_: string): Input };
     type_exists: () => boolean;
+    type_default: { (): string; (_: string): Input };
     inlineLabel: { (): string; (_: string): Input };
     inlineLabel_exists: () => boolean;
 

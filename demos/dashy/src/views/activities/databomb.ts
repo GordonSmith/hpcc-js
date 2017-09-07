@@ -1,9 +1,13 @@
+import { publish } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
 import { View } from "../view";
 import { Activity } from "./activity";
 
 export class Databomb extends Activity {
-    _owner: View;
+    private _owner: View;
+
+    @publish([], "array", "Databomb array")
+    payload: publish<this, object[]>;
 
     constructor(owner: View) {
         super();
@@ -26,7 +30,8 @@ export class Databomb extends Activity {
     }
 
     outFields(): IField[] {
-        for (const row0 of this.payload()) {
+        let row0: any;
+        for (row0 of this.payload()) {
             const retVal: IField[] = [];
             for (const key in row0) {
                 retVal.push(
@@ -56,8 +61,59 @@ export class Databomb extends Activity {
     }
 }
 Databomb.prototype._class += " Filters";
-export interface Databomb {
-    payload(): Array<{ [key: string]: any }>;
-    payload(_: Array<{ [key: string]: any }>): this;
+
+export class Form extends Activity {
+    private _owner: View;
+
+    @publish([], "object", "Form object")
+    payload: publish<this, object>;
+
+    constructor(owner: View) {
+        super();
+        this._owner = owner;
+    }
+
+    hash(more: object): string {
+        return super.hash({
+            payload: this.payload(),
+            ...more
+        });
+    }
+
+    refreshMeta(): Promise<void> {
+        return Promise.resolve();
+    }
+
+    label(): string {
+        return "Form";
+    }
+
+    outFields(): IField[] {
+        const retVal: IField[] = [];
+        const row0: any = this.payload();
+        for (const key in row0) {
+            retVal.push(
+                {
+                    id: key,
+                    label: key,
+                    type: typeof row0[key],
+                    children: null
+                });
+        }
+        return retVal;
+    }
+
+    exec(): Promise<void> {
+        return Promise.resolve();
+    }
+
+    pullData(): object[] {
+        return [this.payload()];
+    }
+
+    //  ===
+    total(): number {
+        return 1;
+    }
 }
-Databomb.prototype.publish("payload", [], "array", "ESP Url (http://x.x.x.x:8010)");
+Form.prototype._class += " Filters";

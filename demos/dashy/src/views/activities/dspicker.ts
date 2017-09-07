@@ -1,23 +1,55 @@
+import { publish } from "@hpcc-js/common";
 import { View } from "../view";
 import { Activity, ActivitySelection } from "./activity";
-import { Databomb } from "./databomb";
+import { Databomb, Form } from "./databomb";
 import { LogicalFile } from "./logicalfile";
-import { Query } from "./query";
+import { HipieService, RoxieService } from "./roxie";
 import { sampleData } from "./sampledata";
 import { WUResult } from "./wuresult";
 
 export enum Type {
     WURESULT = "WU Result",
     LOGICALFILE = "Logical File",
+    ROXIE = "Roxie Service",
     DATABOMB = "Databomb",
-    QUERY = "Query"
+    FORM = "Form",
+    HIPIE = "HIPIE Service"
 }
-
-export type DatasourceType = Type.WURESULT | Type.LOGICALFILE | Type.DATABOMB | Type.QUERY;
-const Types = [Type.WURESULT, Type.LOGICALFILE, Type.DATABOMB, Type.QUERY];
+const Types: string[] = [Type.WURESULT, Type.LOGICALFILE, Type.ROXIE, Type.DATABOMB, Type.FORM, Type.HIPIE];
 
 export class DSPicker extends ActivitySelection {
     private _view: View;
+
+    @publish(Type.WURESULT, "set", "Type", Types as string[])
+    _type: Type;
+    type(_?: Type): Type | this {
+        if (!arguments.length) return this._type;
+        this._type = _;
+        switch (_) {
+            case Type.WURESULT:
+                this.selection(this.activities()[0]);
+                break;
+            case Type.LOGICALFILE:
+                this.selection(this.activities()[1]);
+                break;
+            case Type.ROXIE:
+                this.selection(this.activities()[2]);
+                break;
+            case Type.DATABOMB:
+                this.selection(this.activities()[3]);
+                break;
+            case Type.FORM:
+                this.selection(this.activities()[4]);
+                break;
+            case Type.HIPIE:
+                this.selection(this.activities()[5]);
+                break;
+        }
+        this.details(this.selection());
+        return this;
+    }
+    @publish(null, "widget", "Data Source")
+    details: publish<this, Activity>;
 
     constructor(view: View) {
         super();
@@ -32,47 +64,20 @@ export class DSPicker extends ActivitySelection {
                 .url("http://192.168.3.22:8010")
                 .logicalFile("progguide::exampledata::keys::accounts.personid.payload")
             ,
-            new Databomb(this._view)
-                .payload(sampleData)
-            ,
-            new Query(this._view)
+            new RoxieService(this._view)
                 .url("http://192.168.3.22:8010")
                 .querySet("roxie")
                 .queryId("peopleaccounts.2")
-                .resultName("Accounts")
+                .resultName("Accounts"),
+            new Databomb(this._view)
+                .payload(sampleData)
+            ,
+            new Form(this._view)
+                .payload({})
+            ,
+            new HipieService(this._view)
         ]);
         this.type(Type.WURESULT);
     }
 }
 DSPicker.prototype._class += " DSPicker";
-export interface DSPicker {
-    type(): DatasourceType;
-    type(_: DatasourceType): this;
-    details(): Activity;
-    details(_: Activity): this;
-}
-DSPicker.prototype.publish("type", Type.WURESULT, "set", "Type", Types as string[]);
-DSPicker.prototype.publish("details", null, "widget", "Data Source");
-
-const _origType = DSPicker.prototype.type;
-DSPicker.prototype.type = function (this: DSPicker, _?: DatasourceType) {
-    const retVal = _origType.apply(this, arguments);
-    if (arguments.length) {
-        switch (_) {
-            case Type.WURESULT:
-                this.selection(this.activities()[0]);
-                break;
-            case Type.LOGICALFILE:
-                this.selection(this.activities()[1]);
-                break;
-            case Type.DATABOMB:
-                this.selection(this.activities()[2]);
-                break;
-            case Type.QUERY:
-                this.selection(this.activities()[3]);
-                break;
-        }
-        this.details(this.selection());
-    }
-    return retVal;
-};

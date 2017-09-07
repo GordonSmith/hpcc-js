@@ -4,6 +4,7 @@ import { Persist } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { compare } from "@hpcc-js/util";
 import { View } from "../views/view";
+import { DDLReader } from "./ddlreader";
 import { Viz } from "./viz";
 
 export class Dashboard extends DockPanel {
@@ -58,7 +59,7 @@ export class Dashboard extends DockPanel {
             this.removeWidget(w);
         }
         for (const w of diff.added) {
-            this.addWidget(w, this.visualization(w).label());
+            this.addWidget(w, this.visualization(w).label(), "split-bottom");
         }
         for (const w of diff.unchanged) {
             const wa: any = this.getWidgetAdapter(w);
@@ -86,6 +87,10 @@ export class Dashboard extends DockPanel {
     }
 
     vizActivation(viz: Viz) {
+    }
+
+    restoreDDL(url: string, ddlObj: any) {
+        const ddl = new DDLReader(this, url, ddlObj);
     }
 }
 Dashboard.prototype._class += " dashboard_dashboard";

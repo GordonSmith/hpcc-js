@@ -1,5 +1,5 @@
-import { PropertyExt } from "@hpcc-js/common";
-import { Query as CommsQuery } from "@hpcc-js/comms";
+import { PropertyExt, publish } from "@hpcc-js/common";
+import { Query as CommsQuery, RequestType } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { compare, hashSum } from "@hpcc-js/util";
 import { Viz } from "../../dashboard/viz";
@@ -8,9 +8,19 @@ import { Activity, schemaRow2IField } from "./activity";
 
 export class Param extends PropertyExt {
     private _view: View;
-    private _owner: Query;
+    private _owner: RoxieService;
 
-    constructor(owner: Query) {
+    @publish(null, "string", "Label")
+    label: publish<this, string>;
+    label_exists: () => boolean;
+    @publish(null, "set", "Datasource", function (this: Param) { return this.visualizationIDs(); }, { optional: true })
+    source: publish<this, string>;
+    source_exists: () => boolean;
+    @publish(null, "set", "Source Fields", function (this: Param) { return this.sourceFields(); }, { optional: true })
+    sourceField: publish<this, string>;
+    sourceField_exists: () => boolean;
+
+    constructor(owner: RoxieService) {
         super();
         this._view = owner._owner;
         this._owner = owner;
@@ -49,25 +59,22 @@ export class Param extends PropertyExt {
     }
 }
 Param.prototype._class += " ColumnMapping";
-export interface Param {
-    label(): string;
-    label(_: string): this;
-    label_exists(): boolean;
-    source(): string;
-    source(_: string): this;
-    source_exists(): boolean;
-    sourceField(): string;
-    sourceField(_: string): this;
-    sourceField_exists(): boolean;
-}
-Param.prototype.publish("label", null, "string", "Label");
-Param.prototype.publish("source", null, "set", "Datasource", function (this: Param) { return this.visualizationIDs(); }, { optional: true });
-Param.prototype.publish("sourceField", null, "set", "Source Fields", function (this: Param) { return this.sourceFields(); }, { optional: true });
 
-export class Query extends Activity {
+export class RoxieService extends Activity {
     _owner: View;
     private _query: CommsQuery;
-    private _data: any[];
+    private _data: any[] = [];
+
+    @publish("", "string", "ESP Url (http://x.x.x.x:8010)")
+    url: publish<this, string>;
+    @publish("", "string", "Query Set")
+    querySet: publish<this, string>;
+    @publish("", "string", "Query ID")
+    queryId: publish<this, string>;
+    @publish("", "string", "Result Name")
+    resultName: publish<this, string>;
+    @publish([], "propertyArray", "Request Fields")
+    request: publish<this, Param[]>;
 
     constructor(owner: View) {
         super();
@@ -97,6 +104,20 @@ export class Query extends Activity {
         return this.request().filter(param => param.exists());
     }
 
+    fullUrl(_: string): this {
+        // "http://10.241.100.157:8002/WsEcl/submit/query/roxie/carmigjx_govbisgsavi.Ins4621360_Service_00000006/json",
+        const parts = _.split("/WsEcl/submit/query/");
+        if (parts.length < 2) throw new Error(`Invalid roxie URL:  ${_}`);
+        const urlParts = parts[0].split(":");
+        if (urlParts.length < 3) throw new Error(`Invalid roxie URL:  ${_}`);
+        this.url(`${urlParts[0]}:${urlParts[1]}:${urlParts[2] === "18002" ? "18010" : "8010"}`);
+        const roxieParts = parts[1].split("/");
+        if (roxieParts.length < 2) throw new Error(`Invalid roxie URL:  ${_}`);
+        this.querySet(roxieParts[0]);
+        this.queryId(roxieParts[1]);
+        return this;
+    }
+
     private _prevSourceHash: string;
     private refreshMetaPromise: Promise<void>;
     refreshMeta(): Promise<void> {
@@ -106,7 +127,7 @@ export class Query extends Activity {
         }
         if (!this.refreshMetaPromise) {
             this.refreshMetaPromise = super.refreshMeta().then(() => {
-                return CommsQuery.attach({ baseUrl: this.url() }, this.querySet(), this.queryId());
+                return CommsQuery.attach({ baseUrl: this.url(), type: RequestType.JSONP }, this.querySet(), this.queryId());
             }).then((query) => {
                 this._query = query;
                 const oldParams = this.request();
@@ -158,21 +179,7 @@ export class Query extends Activity {
         return [];
     }
 }
-Query.prototype._class += " Filters";
-export interface Query {
-    url(): string;
-    url(_: string): this;
-    querySet(): string;
-    querySet(_: string): this;
-    queryId(): string;
-    queryId(_: string): this;
-    resultName(): string;
-    resultName(_: string): this;
-    request(): Param[];
-    request(_: Param[]): this;
+RoxieService.prototype._class += " Filters";
+
+export class HipieService extends RoxieService {
 }
-Query.prototype.publish("url", "", "string", "ESP Url (http://x.x.x.x:8010)");
-Query.prototype.publish("querySet", "", "string", "Query Set");
-Query.prototype.publish("queryId", "", "string", "Query ID");
-Query.prototype.publish("resultName", "", "string", "Result Name");
-Query.prototype.publish("request", [], "propertyArray", "Request Fields");

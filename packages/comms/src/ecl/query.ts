@@ -1,4 +1,4 @@
-import { Cache, StateObject } from "@hpcc-js/util";
+import { AsyncCache, StateObject } from "@hpcc-js/util";
 import { IConnection, IOptions } from "../connection";
 import { EclService } from "../services/wsEcl";
 import { WorkunitsService, WUQueryDetails } from "../services/wsWorkunits";
@@ -9,10 +9,10 @@ import { parseXSD, parseXSD2, XSDSchema, XSDXMLNode } from "./xsdParser";
 export interface QueryEx extends WUQueryDetails.Response {
 }
 
-class QueryCache extends Cache<QueryEx, Query> {
+class QueryCache extends AsyncCache<QueryEx, Query> {
     constructor() {
         super((obj) => {
-            return Cache.hash([obj.QueryId, obj.QuerySet]);
+            return AsyncCache.hash([obj.QueryId, obj.QuerySet]);
         });
     }
 }
@@ -71,14 +71,12 @@ export class Query extends StateObject<QueryEx, QueryEx> implements QueryEx {
 
     static async attach(optsConnection: IOptions | IConnection, querySet: string, queryId: string): Promise<Query> {
         let newQuery: Query | undefined;
-        const retVal: Query = _queries.get({ QuerySet: querySet, QueryId: queryId } as WUQueryDetails.Response, () => {
+        const retVal: Query = await _queries.get({ QuerySet: querySet, QueryId: queryId } as WUQueryDetails.Response, async () => {
             newQuery = new Query(optsConnection, querySet, queryId);
-            return newQuery;
-        });
-        if (newQuery) {
             await Promise.all([newQuery.refresh(), newQuery.resolveWsEcl()]);
             await Promise.all([newQuery.fetchRequestSchema(), newQuery.fetchResponseSchemas()]);
-        }
+            return newQuery;
+        });
         return retVal;
     }
 

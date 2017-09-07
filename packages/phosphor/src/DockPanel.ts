@@ -4,7 +4,7 @@ import { Msg, WidgetAdapter } from "./WidgetAdapter";
 
 import "../src/DockPanel.css";
 
-export class DockPanelBase extends HTMLWidget implements IMessageHandler, IMessageHook {
+export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHook {
     private _dock = new PDockPanel({ mode: "multiple-document" });
     protected content: WidgetAdapter[] = [];
 
@@ -90,9 +90,9 @@ export class DockPanelBase extends HTMLWidget implements IMessageHandler, IMessa
     childActivation(w: Widget) {
     }
 }
-DockPanelBase.prototype._class += " phosphor_DockPanel";
-export interface DockPanelBase {
+DockPanel.prototype._class += " phosphor_DockPanel";
+export interface DockPanel {
     layout(): object;
     layout(_: object): this;
 }
-DockPanelBase.prototype.publish("layout", "", "object");
+DockPanel.prototype.publish("layout", "", "object");

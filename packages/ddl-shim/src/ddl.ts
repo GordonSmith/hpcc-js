@@ -131,18 +131,22 @@ export interface IChoroSource extends ISource {
 
 //  Visualization  ============================================================
 export type VisualizationType = "PIE" | "LINE" | "BAR" | "TABLE" | "CHORO" | "GRAPH" | "HEAT_MAP" | "SLIDER" | "FORM" | "2DCHART" | "WORD_CLOUD" | "BUBBLE";
-export type VisualizationFieldType = "bool" | "boolean" | "integer" | "unsigned" | "float" | "double" | "date" | "time" | "geohash" | "dataset" | "visualization";
+export type VisualizationFieldDataType = "bool" | "boolean" | "integer" | "unsigned" | "float" | "double" | "date" | "time" | "geohash" | "dataset" | "visualization";
+export type VisualizationFieldType = VisualizationFieldDataType | "range";
+export type VisualizationFieldFuncitonType = "SUM" | "AVE" | "MIN" | "MAX" | "SCALE";
 
 export interface IVisualizationField {
     id: any;
-    label?: string;
     properties: {
-        type: VisualizationFieldType;
-        charttype: string;
         label: string;
-        enumvals: string[];
-        default: string;
-        localVisualizationID: string;
+        datatype: VisualizationFieldDataType;
+        default: any[];
+        function?: VisualizationFieldFuncitonType;
+        params?: {
+            param1: string;
+            param2: string;
+        }
+        type: VisualizationFieldType;
     };
 }
 
@@ -216,16 +220,15 @@ export interface IDashboard {
     label?: string;
     primary?: boolean;
     visualizations: IAnyVisualization[];
+}
+
+export interface IDDL {
+    dashboards: IDashboard[];
     datasources: IDatasource[];
 }
 
-export interface Simple {
-    id: string;
-}
-
 //  DDL  ======================================================================
-export type DDLSchema = IDashboard[];
-// export type DDLSchema = Simple;
+export type DDLSchema = IDDL;
 
 //  Helpers  ==================================================================
 export type IAnyChoroMapping = IChoroUSStateMapping | IChoroUSCountyMapping | IChoroGeohashMapping;

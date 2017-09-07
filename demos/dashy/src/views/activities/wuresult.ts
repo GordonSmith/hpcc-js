@@ -1,3 +1,4 @@
+import { publish } from "@hpcc-js/common";
 import { Result, XSDXMLNode } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
@@ -10,6 +11,13 @@ export abstract class ESPResult extends Activity {
     protected _schema: XSDXMLNode[] = [];
     protected _total: number;
     private _data: any[];
+
+    @publish("", "string", "ESP Url (http://x.x.x.x:8010)")
+    url: publish<this, string>;
+    @publish(10, "number", "Number of samples")
+    samples: publish<this, number>;
+    @publish(100, "number", "Sample size")
+    sampleSize: publish<this, number>;
 
     constructor(owner: View) {
         super();
@@ -57,14 +65,20 @@ export abstract class ESPResult extends Activity {
         return [];
     }
 
+    private _prevExecHash: string;
     exec(): Promise<void> {
-        return super.exec().then(() => {
-            return this.sample();
-        }).then(response => {
-            this._data = response;
-        }).catch(e => {
-            this._data = [];
-        });
+        if (this._prevExecHash !== this.hash()) {
+            this._prevExecHash = this.hash();
+            return super.exec().then(() => {
+                return this.sample();
+            }).then(response => {
+                this._data = response;
+            }).catch(e => {
+                this._data = [];
+            });
+        } else {
+            return Promise.resolve();
+        }
     }
 
     pullData(): object[] {
@@ -107,19 +121,13 @@ export abstract class ESPResult extends Activity {
     }
 }
 ESPResult.prototype._class += " Filters";
-export interface ESPResult {
-    url(): string;
-    url(_: string): this;
-    samples(): number;
-    samples(_: number): this;
-    sampleSize(): number;
-    sampleSize(_: number): this;
-}
-ESPResult.prototype.publish("url", "", "string", "ESP Url (http://x.x.x.x:8010)");
-ESPResult.prototype.publish("samples", 10, "number", "Number of samples");
-ESPResult.prototype.publish("sampleSize", 100, "number", "Sample size");
 
 export class WUResult extends ESPResult {
+
+    @publish("", "string", "Workunit ID")
+    wuid: publish<this, string>;
+    @publish("", "string", "Result Name")
+    resultName: publish<this, string>;
 
     constructor(owner: View) {
         super(owner);
@@ -139,13 +147,27 @@ export class WUResult extends ESPResult {
     label(): string {
         return `${this.wuid()}\n${this.resultName()}`;
     }
+
+    fullUrl(_: string): this {
+        // "http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL"
+        const parts = _.split("/WsWorkunits/WUResult.json?");
+        if (parts.length < 2) throw new Error(`Invalid roxie URL:  ${_}`);
+        this.url(parts[0]);
+        const wuParts = parts[1].split("&");
+        for (const arg of wuParts) {
+            const argParts = arg.split("=");
+            if (argParts.length >= 2) {
+                switch (argParts[0]) {
+                    case "Wuid":
+                        this.wuid(argParts[1]);
+                        break;
+                    case "ResultName":
+                        this.resultName(argParts[1]);
+                        break;
+                }
+            }
+        }
+        return this;
+    }
 }
 WUResult.prototype._class += " Filters";
-export interface WUResult {
-    wuid(): string;
-    wuid(_: string): this;
-    resultName(): string;
-    resultName(_: string): this;
-}
-WUResult.prototype.publish("wuid", "", "string", "Workunit ID");
-WUResult.prototype.publish("resultName", "", "string", "Result Name");

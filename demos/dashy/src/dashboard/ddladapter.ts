@@ -1,5 +1,5 @@
 import { MultiChart } from "@hpcc-js/chart";
-import { IDashboard, IDatasource, IEvent, IEventUpdate, IFilter, IFilterRule, IOutput, ITableVisualization, StringStringDict, VisualizationType } from "@hpcc-js/ddl-shim";
+import { IDashboard, IDatasource, IDDL, IEvent, IEventUpdate, IFilter, IFilterRule, IOutput, ITableVisualization, StringStringDict, VisualizationType } from "@hpcc-js/ddl-shim";
 import { Databomb } from "../views/activities/databomb";
 import { WUResult } from "../views/activities/wuresult";
 import { View } from "../views/view";
@@ -115,9 +115,11 @@ export class DDLAdapter {
         });
     }
 
-    createDDL(): IDashboard {
+    createDDL(): IDDL {
         return {
-            visualizations: this.createDDLVisualizations(),
+            dashboards: [{
+                visualizations: this.createDDLVisualizations(),
+            }],
             datasources: this.createDDLDatasources()
         };
     }

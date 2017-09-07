@@ -1,35 +1,66 @@
+import { publish } from "@hpcc-js/common";
 import { Dashboard } from "../dashboard/dashboard";
 import { Activity, ActivitySequence } from "./activities/activity";
-import { DSPicker } from "./activities/dspicker";
+import { DSPicker, Type } from "./activities/dspicker";
 import { Filters } from "./activities/filter";
 import { GroupBy } from "./activities/groupby";
 import { Limit } from "./activities/limit";
+import { Project } from "./activities/project";
 import { Sort } from "./activities/sort";
+
+export { Type as DatasourceType };
 
 let viewID = 0;
 export class View extends ActivitySequence {
     _dashboard: Dashboard;
 
+    @publish(null, "widget", "Data Source 2")
+    dataSource: publish<this, DSPicker>;
+    @publish(null, "widget", "Client Filters")
+    filters: publish<this, Filters>;
+    @publish(null, "widget", "Project")
+    project: publish<this, Project>;
+    @publish(null, "widget", "Group By")
+    groupBy: publish<this, GroupBy>;
+    @publish(null, "widget", "Source Columns")
+    sort: publish<this, Sort>;
+    @publish(null, "widget", "Mappings")
+    mappings: publish<this, Project>;
+    @publish(null, "widget", "Limit output")
+    limit: publish<this, Limit>;
+
     constructor(model: Dashboard, label: string = "View2") {
         super();
         this._dashboard = model;
-        this.label(label);
+        //        this.label(label);
         this._id = "v" + viewID++;
         this.dataSource(new DSPicker(this));
         this.dataSource().monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this.dataSource());
         });
-        this.filters(new Filters(this).sourceActivity(this.dataSource()));
-        this.groupBy(new GroupBy(this).sourceActivity(this.filters()));
-        this.sort(new Sort(this).sourceActivity(this.groupBy()));
-        this.limit(new Limit(this).sourceActivity(this.sort()));
+        this.filters(new Filters(this));
+        this.project(new Project(this));
+        this.groupBy(new GroupBy(this));
+        this.sort(new Sort(this));
+        this.limit(new Limit(this));
+        this.mappings(new Project(this));
         this.activities([
             this.dataSource(),
             this.filters(),
+            this.project(),
             this.groupBy(),
             this.sort(),
-            this.limit()
+            this.limit(),
+            this.mappings()
         ]);
+
+        let prevActivity: Activity;
+        for (const activity of this.activities()) {
+            if (prevActivity) {
+                activity.sourceActivity(prevActivity);
+            }
+            prevActivity = activity;
+        }
     }
 
     private calcUpdatedGraph(activity: Activity): Array<{ from: string, to: Activity }> {
@@ -56,23 +87,3 @@ export class View extends ActivitySequence {
         });
     }
 }
-export interface View {
-    label(): string;
-    label(_: string): this;
-    dataSource(): DSPicker;
-    dataSource(_: DSPicker): this;
-    filters(): Filters;
-    filters(_: Filters): this;
-    groupBy(): GroupBy;
-    groupBy(_: GroupBy): this;
-    sort(): Sort;
-    sort(_: Sort): this;
-    limit(): Limit;
-    limit(_: Limit): this;
-}
-View.prototype.publish("label", null, "string", "Label");
-View.prototype.publish("dataSource", null, "widget", "Data Source 2");
-View.prototype.publish("filters", null, "widget", "Client Filters");
-View.prototype.publish("groupBy", null, "widget", "Group By");
-View.prototype.publish("sort", null, "widget", "Source Columns");
-View.prototype.publish("limit", null, "widget", "Limit output");

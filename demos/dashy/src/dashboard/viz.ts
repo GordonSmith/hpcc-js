@@ -2,7 +2,10 @@ import { PropertyExt, Widget } from "@hpcc-js/common";
 import { ChartPanel, MegaChart } from "@hpcc-js/composite";
 import { find } from "@hpcc-js/util";
 import { Dashboard } from "../dashboard/dashboard";
+import { Type } from "../views/activities/dspicker";
 import { View } from "../views/view";
+
+export { Type as DatasourceType };
 
 export class State extends PropertyExt {
 
@@ -100,8 +103,8 @@ export interface Viz {
     label(_: string): this;
     view(): View;
     view(_: View): this;
-    widget(): Widget;
-    widget(_: Widget): this;
+    widget(): ChartPanel;
+    widget(_: ChartPanel): this;
     state(): State;
     state(_: State): this;
 }

@@ -1,4 +1,4 @@
-import { PropertyExt } from "@hpcc-js/common";
+import { PropertyExt, publish } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { ascending as d3Ascending, descending as d3Descending } from "d3-array";
@@ -6,8 +6,13 @@ import { View } from "../view";
 import { Activity } from "./activity";
 
 export class SortColumn extends PropertyExt {
-    _view: View;
-    _owner: Sort;
+    private _view: View;
+    private _owner: Sort;
+
+    @publish(null, "set", "Sort Field", function (this: SortColumn) { return this.fieldIDs(); }, { optional: true })
+    fieldID: publish<this, string>;
+    @publish(null, "boolean", "Sort Field")
+    descending: publish<this, boolean>;
 
     constructor(owner: Sort) {
         super();
@@ -17,29 +22,22 @@ export class SortColumn extends PropertyExt {
 
     hash(): string {
         return hashSum({
-            sortColumn: this.label(),
+            sortColumn: this.fieldID(),
             descending: this.descending()
         });
     }
 
-    fields(): string[] {
-        return this._view.outFields().map(field => field.label);
+    fieldIDs() {
+        return this._owner.fieldIDs();
     }
 
-    field(label: string): IField | undefined {
-        return this._view.outFields().filter(field => field.label === label)[0];
+    field(id: string): IField | undefined {
+        return this._view.inFields().filter(field =>
+            field.id === id
+        )[0];
     }
 }
 SortColumn.prototype._class += " SortColumn";
-
-export interface SortColumn {
-    label(): string;
-    label(_: string): SortColumn;
-    descending(): boolean;
-    descending(_: boolean): SortColumn;
-}
-SortColumn.prototype.publish("label", null, "set", "Sort Field", function (this: SortColumn) { return this.fields(); }, { optional: true });
-SortColumn.prototype.publish("descending", null, "boolean", "Sort Field");
 
 //  ===========================================================================
 export class Sort extends Activity {
@@ -57,27 +55,31 @@ export class Sort extends Activity {
     }
 
     validSortBy(): SortColumn[] {
-        return this.column().filter(sortBy => sortBy.label());
+        return this.column().filter(sortBy => sortBy.fieldID());
     }
 
     exists(): boolean {
         return this.validSortBy().length > 0;
     }
 
+    fieldIDs(): string[] {
+        return this.inFields().map(field => field.id);
+    }
+
     pullData(): object[] {
         const data = super.pullData();
-        const sortByArr: Array<{ sortBy: SortColumn, sortByField: IField }> = [];
-        for (const sortBy of this.column()) {
-            const sortByField = sortBy.field(sortBy.label());
-            if (sortByField) {
-                sortByArr.push({ sortBy, sortByField });
-            }
+        const sortByArr: Array<{ descending: boolean, id: string }> = [];
+        for (const sortBy of this.validSortBy()) {
+            sortByArr.push({
+                descending: sortBy.descending(),
+                id: sortBy.fieldID()
+            });
         }
 
         if (sortByArr.length) {
             return data.sort((l: any, r: any) => {
                 for (const item of sortByArr) {
-                    const retVal2 = (item.sortBy.descending() ? d3Descending : d3Ascending)(l[item.sortByField.label], r[item.sortByField.label]);
+                    const retVal2 = (item.descending ? d3Descending : d3Ascending)(l[item.id], r[item.id]);
                     if (retVal2 !== 0) {
                         return retVal2;
                     }
@@ -88,7 +90,6 @@ export class Sort extends Activity {
         }
         return data;
     }
-
 }
 Sort.prototype._class += " Sort";
 

@@ -106,7 +106,7 @@ export class Filter extends PropertyExt {
         return this.mappings().filter(mapping => !!mapping.localField() && !!mapping.remoteField());
     }
 
-    appendMappings(mappings: [{ remoteField: string, localField: string }]): this {
+    appendMappings(mappings: Array<{ remoteField: string, localField: string }>): this {
         for (const mapping of mappings) {
             this.mappings().push(new ColumnMapping(this)
                 .remoteField(mapping.remoteField)
@@ -201,7 +201,7 @@ export class Filters extends Activity {
         return this.filter().filter(filter => filter.source());
     }
 
-    appendFilter(source: View, mappings: [{ remoteField: string, localField: string }]): this {
+    appendFilter(source: Viz, mappings: Array<{ remoteField: string, localField: string }>): this {
         this.filter().push(new Filter(this)
             .source(source.id())
             .appendMappings(mappings));

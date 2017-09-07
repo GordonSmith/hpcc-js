@@ -74,6 +74,18 @@ export class ChartPanel extends Border2 implements IClickHandler {
         return this;
     }
 
+    chartTypeDefaults(_?) {
+        if (!arguments.length) return this._chart.chartTypeDefaults();
+        this._chart.chartTypeDefaults(_);
+        return this;
+    }
+
+    chartTypeProperties(_?) {
+        if (!arguments.length) return this._chart.chartTypeProperties();
+        this._chart.chartTypeProperties(_);
+        return this;
+    }
+
     columns(): string[];
     columns(_: string[], asDefault?: boolean): this;
     columns(_?: string[], asDefault?: boolean): string[] | this {

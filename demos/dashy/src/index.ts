@@ -10,6 +10,7 @@ import { DDLAdapter } from "./dashboard/ddladapter";
 import { GraphAdapter } from "./dashboard/graphadapter";
 import { JavaScriptAdapter } from "./dashboard/javascriptadapter";
 import { Viz } from "./dashboard/viz";
+import { ddl } from "./sampleddl";
 import { Activity, DatasourceAdapt } from "./views/activities/activity";
 
 export class Mutex {
@@ -104,13 +105,11 @@ export class App {
             .addWidget(this._jsEditor, "JavaScript", "tab-after", this._layoutEditor)
             .lazyRender()
             ;
-        //   this.loadSample();
         this.initMenu();
         this._dataProperties.monitor((id: string, newValue: any, oldValue: any, source: PropertyExt) => {
             if (source !== this._dataProperties) {
                 this._currViz.refresh().then(() => {
                     this.refreshPreview();
-                    this.loadGraph(true);
                 });
             }
         });
@@ -134,6 +133,7 @@ export class App {
             this._currViz = viz;
             this.loadDataProps(viz.view());
             this.loadWidgetProps(viz.widget());
+            this.loadGraph(true);
             this.loadStateProps(viz.state());
             this.loadPreview(viz.view().last());
             this.loadDDL(true);
@@ -262,6 +262,17 @@ export class App {
             }
         });
 
+        commands.addCommand("dash_add_ddl", {
+            label: "Add DDL",
+            execute: () => {
+                this._dashboard.restoreDDL("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", ddl);
+                this.loadDashboard();
+                for (const viz of this._dashboard.visualizations()) {
+                    viz.refresh();
+                }
+            }
+        });
+
         //  Model Commands  ---
         const palette = new CommandPalette({ commands });
         palette.addItem({ command: "addWUResult", category: "Notebook" });
@@ -272,15 +283,7 @@ export class App {
         const contextMenu = new ContextMenu({ commands });
 
         contextMenu.addItem({ command: "dash_add", selector: `#${this._dashboard.id()}` });
-
-        contextMenu.addItem({ command: "clear", selector: ".graph_Graph > .zoomBackground" });
-        contextMenu.addItem({ command: "addWU", selector: ".graph_Graph > .zoomBackground" });
-        contextMenu.addItem({ command: "addWUResult", selector: ".graph_Graph > .zoomBackground" });
-        contextMenu.addItem({ command: "addLogicalFile", selector: ".graph_Graph > .zoomBackground" });
-        contextMenu.addItem({ command: "addDatabomb", selector: ".graph_Graph > .zoomBackground" });
-        contextMenu.addItem({ command: "addForm", selector: ".graph_Graph > .zoomBackground" });
-        contextMenu.addItem({ command: "addView", selector: ".graph_Graph > .zoomBackground" });
-        contextMenu.addItem({ command: "remove", selector: ".graph_Vertex" });
+        contextMenu.addItem({ command: "dash_add_ddl", selector: `#${this._dashboard.id()}` });
 
         document.addEventListener("contextmenu", (event: MouseEvent) => {
             if (contextMenu.open(event)) {
@@ -294,4 +297,5 @@ export class App {
             .resize({ width, height })
             .lazyRender();
     }
+
 }

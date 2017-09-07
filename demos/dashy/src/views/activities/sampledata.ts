@@ -1,4 +1,4 @@
-export const sampleData = [
+export const sampleData: object[] = [
     {
         "State": "CT",
         "Covered Entity Type": "Health Plan",
