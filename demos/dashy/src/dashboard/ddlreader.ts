@@ -1,3 +1,4 @@
+import { ChartPanel } from "@hpcc-js/composite";
 import * as DDL from "@hpcc-js/ddl-shim";
 import { CheckBox, Form, Input, InputRange, Radio, TextArea } from "@hpcc-js/form";
 import { Form as DBForm } from "../views/activities/databomb";
@@ -52,8 +53,11 @@ export class DDLReader {
         (viz.view().dataSource().details() as DBForm).payload(payload);
         const form = new Form()
             .inputs(inputs)
+            .on("click", function (row: object) {
+                viz.state().selection([row]);
+            })
             ;
-        viz.widget(new Form().inputs(inputs) as any);
+        viz.widget(form);
     }
 
     line(ddlVisualization: DDL.ILineVisualization, viz: Viz) {
@@ -72,7 +76,7 @@ export class DDLReader {
             .trim(mappingFields.length > 0)
             .computedFields(mappingFields)
             ;
-        viz.widget().chartType(ddlVisualization.properties.charttype || "COLUMN");
+        (viz.widget() as ChartPanel).chartType(ddlVisualization.properties.charttype || "COLUMN");
     }
 
     table(ddlVisualization: DDL.ITableVisualization, viz: Viz) {
@@ -91,7 +95,7 @@ export class DDLReader {
             .trim(mappingFields.length > 0)
             .computedFields(mappingFields)
             ;
-        viz.widget().chartType(ddlVisualization.properties.charttype || "TABLE");
+        (viz.widget() as ChartPanel).chartType(ddlVisualization.properties.charttype || "TABLE");
     }
 
     visualizationPre(ddlVisualization: DDL.IAnyVisualization) {
@@ -107,9 +111,10 @@ export class DDLReader {
             }
         });
         this._vizzies[ddlVisualization.id] = viz;
-        viz.widget()
-            .title(ddlVisualization.title)
-            ;
+        const w = viz.widget();
+        if (w instanceof ChartPanel) {
+            w.title(ddlVisualization.title);
+        }
         const projectFields: ComputedField[] = [];
         const groupByColumns: GroupByColumn[] = [];
         const groupByFields: AggregateField[] = [];

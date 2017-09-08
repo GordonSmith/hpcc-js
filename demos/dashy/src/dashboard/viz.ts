@@ -1,5 +1,6 @@
-import { PropertyExt, Widget } from "@hpcc-js/common";
+import { PropertyExt, publish, Widget } from "@hpcc-js/common";
 import { ChartPanel, MegaChart } from "@hpcc-js/composite";
+import { Form } from "@hpcc-js/form";
 import { find } from "@hpcc-js/util";
 import { Dashboard } from "../dashboard/dashboard";
 import { Type } from "../views/activities/dspicker";
@@ -35,6 +36,15 @@ State.prototype.publish("selection", [], "array", "State");
 
 let vizID = 0;
 export class Viz extends PropertyExt {
+
+    @publish("", "string", "Label")
+    label: publish<this, string>;
+    @publish(null, "widget", "Data View")
+    view: publish<this, View>;
+    @publish(null, "widget", "Visualization")
+    widget: publish<this, ChartPanel | Form>;
+    @publish(null, "widget", "State")
+    state: publish<this, State>;
 
     constructor(model: Dashboard, label: string = `Viz-${++vizID}`) {
         super();
@@ -98,17 +108,3 @@ export class Viz extends PropertyExt {
     }
 }
 Viz.prototype._class += " Viz";
-export interface Viz {
-    label(): string;
-    label(_: string): this;
-    view(): View;
-    view(_: View): this;
-    widget(): ChartPanel;
-    widget(_: ChartPanel): this;
-    state(): State;
-    state(_: State): this;
-}
-Viz.prototype.publish("label", "", "string", "Label");
-Viz.prototype.publish("view", null, "widget", "Data View");
-Viz.prototype.publish("widget", null, "widget", "Visualization");
-Viz.prototype.publish("state", null, "widget", "State");

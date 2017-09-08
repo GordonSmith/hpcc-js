@@ -690,7 +690,7 @@ alphanum-sort@^1.0.1, alphanum-sort@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/alphanum-sort/-/alphanum-sort-1.0.2.tgz#97a1119649b211ad33691d9f9f486a8ec9fbe0a3"
 
-amcharts3@amcharts/amcharts3#3.18.0, "amcharts3@github:amcharts/amcharts3#3.18.0":
+amcharts3@amcharts/amcharts3#3.18.0:
   version "3.18.0"
   resolved "https://codeload.github.com/amcharts/amcharts3/tar.gz/5cf36c53d76d7e08d2e6ad7980a3794adbf2b519"
 
@@ -2031,7 +2031,7 @@ d3-timer@1, d3-timer@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.6.tgz#4044bf15d7025c06ce7d1149f73cd07b54dbd784"
 
-d3-tip@GordonSmith/d3-tip#vJSNEXT, "d3-tip@github:GordonSmith/d3-tip#vJSNEXT":
+d3-tip@GordonSmith/d3-tip#vJSNEXT:
   version "0.8.0-alpha.1"
   resolved "https://codeload.github.com/GordonSmith/d3-tip/tar.gz/ab6bb995e06a9e9c27e10d9a70458264c5cf939f"
   dependencies:
@@ -5737,9 +5737,9 @@ typescript@2.3.4:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.4.tgz#3d38321828231e434f287514959c37a82b629f42"
 
-typescript@^2.4.2:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
+typescript@^2.5.2:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.5.2.tgz#038a95f7d9bbb420b1bf35ba31d4c5c1dd3ffe34"
 
 typescript@~2.1.5:
   version "2.1.6"

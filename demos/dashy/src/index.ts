@@ -96,11 +96,11 @@ export class App {
         this._dockPanel
             .target(placeholder)
             .addWidget(this._dashboard, "Dashboard")
-            .addWidget(this._dataSplit, "Data", "split-right", this._dashboard as any)
+            .addWidget(this._dataSplit, "Data", "split-right", this._dashboard)
             .addWidget(this._vizProperties, "Widget", "tab-after", this._dataSplit)
             .addWidget(this._stateProperties, "State", "tab-after", this._vizProperties)
-            .addWidget(this._graph as any, "Pipeline", "tab-after", this._dashboard)
-            .addWidget(this._ddlEditor, "DDL", "tab-after", this._graph as any)
+            .addWidget(this._graph as any, "Pipeline", "tab-after", this._dashboard)    //  TODO Fix Graph Declaration  ---
+            .addWidget(this._ddlEditor, "DDL", "tab-after", this._graph as any)         //  TODO Fix Graph Declaration  ---
             .addWidget(this._layoutEditor, "Layout", "tab-after", this._ddlEditor)
             .addWidget(this._jsEditor, "JavaScript", "tab-after", this._layoutEditor)
             .lazyRender()

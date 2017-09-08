@@ -1,5 +1,5 @@
 import { MultiChart } from "@hpcc-js/chart";
-import { HTMLWidget, Utility, Widget } from "@hpcc-js/common";
+import { HTMLWidget, publish, publishProxy, Utility, Widget } from "@hpcc-js/common";
 import { Border2 } from "@hpcc-js/layout";
 import { Legend } from "./Legend";
 import { Button, IClickHandler, Item, Spacer, TitleBar, ToggleButton } from "./TitleBar";
@@ -38,6 +38,11 @@ export class ChartPanel extends Border2 implements IClickHandler {
     private _chart = new MultiChart().chartType("COLUMN");
 
     private _legend = new Legend(this);
+
+    @publishProxy("_titleBar", undefined, undefined, { reset: true })
+    title: publish<this, string>;
+    @publish(null, "widget", "Multi Chart")
+    multiChart: publish<this, Widget>;
 
     constructor() {
         super();
@@ -193,13 +198,3 @@ export class ChartPanel extends Border2 implements IClickHandler {
     }
 }
 ChartPanel.prototype._class += " composite_ChartPanel";
-
-export interface ChartPanel {
-    title(): string;
-    title(_: string): this;
-    multiChart(): Widget;
-    multiChart(_: Widget): this;
-}
-ChartPanel.prototype.publishReset();
-ChartPanel.prototype.publishProxy("title", "_titleBar");
-ChartPanel.prototype.publish("multiChart", null, "widget", "Multi Chart");

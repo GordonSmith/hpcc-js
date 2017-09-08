@@ -2,6 +2,7 @@
 export const ddlSchema =  
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
+    "additionalProperties": false,
     "definitions": {
         "ChoroColor": {
             "enum": [
@@ -227,12 +228,6 @@ export const ddlSchema =
         "IDashboard": {
             "additionalProperties": false,
             "properties": {
-                "datasources": {
-                    "items": {
-                        "$ref": "#/definitions/IDatasource"
-                    },
-                    "type": "array"
-                },
                 "enable": {
                     "type": "string"
                 },
@@ -275,7 +270,6 @@ export const ddlSchema =
                 }
             },
             "required": [
-                "datasources",
                 "visualizations"
             ],
             "type": "object"
@@ -1056,40 +1050,47 @@ export const ddlSchema =
             "properties": {
                 "id": {
                 },
-                "label": {
-                    "type": "string"
-                },
                 "properties": {
                     "additionalProperties": false,
                     "properties": {
-                        "charttype": {
-                            "type": "string"
+                        "datatype": {
+                            "$ref": "#/definitions/VisualizationFieldDataType"
                         },
                         "default": {
-                            "type": "string"
-                        },
-                        "enumvals": {
                             "items": {
-                                "type": "string"
                             },
                             "type": "array"
+                        },
+                        "function": {
+                            "$ref": "#/definitions/VisualizationFieldFuncitonType"
                         },
                         "label": {
                             "type": "string"
                         },
-                        "localVisualizationID": {
-                            "type": "string"
+                        "params": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "param1": {
+                                    "type": "string"
+                                },
+                                "param2": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "param1",
+                                "param2"
+                            ],
+                            "type": "object"
                         },
                         "type": {
                             "$ref": "#/definitions/VisualizationFieldType"
                         }
                     },
                     "required": [
-                        "charttype",
+                        "datatype",
                         "default",
-                        "enumvals",
                         "label",
-                        "localVisualizationID",
                         "type"
                     ],
                     "type": "object"
@@ -1122,6 +1123,32 @@ export const ddlSchema =
             ],
             "type": "object"
         },
+        "VisualizationFieldDataType": {
+            "enum": [
+                "bool",
+                "boolean",
+                "dataset",
+                "date",
+                "double",
+                "float",
+                "geohash",
+                "integer",
+                "time",
+                "unsigned",
+                "visualization"
+            ],
+            "type": "string"
+        },
+        "VisualizationFieldFuncitonType": {
+            "enum": [
+                "AVE",
+                "MAX",
+                "MIN",
+                "SCALE",
+                "SUM"
+            ],
+            "type": "string"
+        },
         "VisualizationFieldType": {
             "enum": [
                 "bool",
@@ -1132,6 +1159,7 @@ export const ddlSchema =
                 "float",
                 "geohash",
                 "integer",
+                "range",
                 "time",
                 "unsigned",
                 "visualization"
@@ -1156,10 +1184,25 @@ export const ddlSchema =
             "type": "string"
         }
     },
-    "items": {
-        "$ref": "#/definitions/IDashboard"
+    "properties": {
+        "dashboards": {
+            "items": {
+                "$ref": "#/definitions/IDashboard"
+            },
+            "type": "array"
+        },
+        "datasources": {
+            "items": {
+                "$ref": "#/definitions/IDatasource"
+            },
+            "type": "array"
+        }
     },
-    "type": "array"
+    "required": [
+        "dashboards",
+        "datasources"
+    ],
+    "type": "object"
 }
 
 ; 

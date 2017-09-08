@@ -1,4 +1,5 @@
 import { MultiChart } from "@hpcc-js/chart";
+import { ChartPanel } from "@hpcc-js/composite";
 import { IDashboard, IDatasource, IDDL, IEvent, IEventUpdate, IFilter, IFilterRule, IOutput, ITableVisualization, StringStringDict, VisualizationType } from "@hpcc-js/ddl-shim";
 import { Databomb } from "../views/activities/databomb";
 import { WUResult } from "../views/activities/wuresult";
@@ -88,7 +89,7 @@ export class DDLAdapter {
 
     createDDLVisualizations(): ITableVisualization[] {
         return this._dashboard.visualizations().map(viz => {
-            const widget: MultiChart = viz.widget() as any;
+            const widget = viz.widget();
             const view = viz.view();
             const ds = view.dataSource();
             let sourceOutput = "";
@@ -109,7 +110,7 @@ export class DDLAdapter {
                 },
                 events: this.createDDLEvents(viz),
                 properties: {
-                    chartType: widget.chartType()
+                    chartType: widget instanceof ChartPanel ? widget.chartType() : ""
                 } as StringStringDict
             } as ITableVisualization;
         });
