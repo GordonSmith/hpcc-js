@@ -1,4 +1,5 @@
-import { Widget as CWidget } from "@hpcc-js/common";
+import { Widget as Widget } from "@hpcc-js/common";
+import { Persist } from "@hpcc-js/other";
 import { ConflatableMessage, Message, MessageLoop, Widget as PWidget } from "@hpcc-js/phosphor-shim";
 import { select as d3Select } from "d3-selection";
 
@@ -26,12 +27,13 @@ export namespace Msg {
 export class WidgetAdapter extends PWidget {
     protected _owner;
     protected _element;
-    _widget: CWidget;
+    private _widget: Widget;
     get widget() { return this._widget; }
+    private _widgetLayout: object;
     lparam: any = {};
     padding: number = 0;
 
-    constructor(owner: CWidget, widget: CWidget, lparam: object = {}) {
+    constructor(owner?: Widget, widget?: Widget | object, lparam: object = {}) {
         super();
         this._owner = owner;
         this._element = d3Select(this.node);
@@ -42,9 +44,13 @@ export class WidgetAdapter extends PWidget {
         this.title.closable = false;
         this.title.caption = `Long description for: ${name}`;
 
-        this._widget = widget
-            .target(this.node)
-            ;
+        if (widget instanceof Widget) {
+            this._widget = widget
+                .target(this.node)
+                ;
+        } else {
+            this._widgetLayout = widget;
+        }
         this.lparam = lparam;
     }
 
@@ -54,10 +60,14 @@ export class WidgetAdapter extends PWidget {
 
     protected onActivateRequest(msg: Message): void {
         super.onActivateRequest(msg);
-        this._widget
-            .lazyRender()
-            ;
-        MessageLoop.postMessage(this._owner, new Msg.WAActivateRequest(this));
+        if (this._widget) {
+            this._widget
+                .lazyRender()
+                ;
+        }
+        if (this._owner) {
+            MessageLoop.postMessage(this._owner, new Msg.WAActivateRequest(this));
+        }
     }
 
     protected onResize(msg: PWidget.ResizeMessage): void {
@@ -68,10 +78,25 @@ export class WidgetAdapter extends PWidget {
                 .style("width", msg.width + "px")
                 .style("height", msg.height + "px")
                 ;
-            this._widget
-                .resize({ width: msg.width - this.padding * 2 - 2, height: msg.height - this.padding * 2 - 2 })
-                .lazyRender()
-                ;
+            if (this._widget) {
+                this._widget
+                    .resize({ width: msg.width - this.padding * 2 - 2, height: msg.height - this.padding * 2 - 2 })
+                    .lazyRender()
+                    ;
+            } else if (this._widgetLayout) {
+                Persist.create(this._widgetLayout).then((widget: Widget) => {
+                    delete this._widgetLayout;
+                    this._widget = widget;
+                    this._widget
+                        .target(this.node)
+                        .resize({ width: msg.width - this.padding * 2 - 2, height: msg.height - this.padding * 2 - 2 })
+                        .lazyRender()
+                        ;
+                    if (this._widget["title"]) {
+                        this.title.label = this._widget["title"]();
+                    }
+                });
+            }
         }
     }
 }

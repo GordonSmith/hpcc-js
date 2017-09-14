@@ -25,7 +25,7 @@
     "@hpcc-js/graph": "^0.0.38",
     "@hpcc-js/layout": "^0.0.37",
     "@hpcc-js/other": "^0.0.37",
-    "d3-collection": "^1.0.3",
+    "d3-collection": "^1.0.4",
     "tslib": "^1.7.1"
   },
   "devDependencies": {

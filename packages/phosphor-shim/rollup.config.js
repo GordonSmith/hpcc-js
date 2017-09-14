@@ -21,7 +21,8 @@ export default {
         }),
         commonjs({
             namedExports: {
-                "@phosphor/widgets": ["BoxPanel", "CommandRegistry", "Message", "CommandPalette", "ContextMenu", "DockPanel", "SplitPanel", "Menu", "MenuBar", "Widget"]
+                "@phosphor/algorithm": ["each"],
+                "@phosphor/widgets": ["BoxPanel", "CommandRegistry", "CommandPalette", "ContextMenu", "DockLayout", "DockPanel", "Message", "Menu", "MenuBar", "SplitPanel", "TabBar", "Widget"]
             },
             ignore: ['crypto']
         }),

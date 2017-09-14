@@ -70,3 +70,23 @@ export function deepMixin(dest: any = {}, ...sources: any[]): any {
 export function deepMixinT<T>(dest: Partial<T> = {}, ...sources: Array<Partial<T>>): T {
     return deepMixin(dest, ...sources);
 }
+
+/**
+ * safeStingify - JSONsimilar to .stringify, except ignores circular references.
+ * Usage:  safeStingify(object);
+ *
+ * @param obj - any object.
+ */
+export function safeStringify(obj: object) {
+    const cache: any[] = [];
+    return JSON.stringify(obj, function (key, value) {
+        if (typeof value === "object" && value !== null) {
+            if (cache.indexOf(value) !== -1) {
+                return;
+            }
+
+            cache.push(value);
+        }
+        return value;
+    });
+}

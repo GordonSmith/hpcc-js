@@ -85,6 +85,7 @@ export class App {
     private _ddlEditor = new DDLEditor();
     private _layoutEditor = new JSONEditor();
     private _jsEditor = new JSEditor();
+    private _clone: Dashboard = new Dashboard();
     private _preview = new DatasourceTable();
 
     constructor(placeholder: string) {
@@ -102,7 +103,7 @@ export class App {
             .addWidget(this._graph as any, "Pipeline", "tab-after", this._dashboard)    //  TODO Fix Graph Declaration  ---
             .addWidget(this._ddlEditor, "DDL", "tab-after", this._graph as any)         //  TODO Fix Graph Declaration  ---
             .addWidget(this._layoutEditor, "Layout", "tab-after", this._ddlEditor)
-            .addWidget(this._jsEditor, "JavaScript", "tab-after", this._layoutEditor)
+            .addWidget(this._clone, "Clone", "tab-after", this._layoutEditor)
             .lazyRender()
             ;
         this.initMenu();
@@ -138,7 +139,7 @@ export class App {
             this.loadPreview(viz.view().last());
             this.loadDDL(true);
             this.loadLayout(true);
-            this.loadJavaScript(true);
+            this.loadClone(true);
         } else {
             this.loadDataProps(viz.view());
             this.loadPreview(viz.view().last());
@@ -216,7 +217,7 @@ export class App {
 
     loadLayout(refresh: boolean = false) {
         this._layoutEditor
-            .json(this._dashboard.createLayout())
+            .json(this._dashboard.save())
             ;
         if (refresh && this._dockPanel.isVisible(this._layoutEditor as any)) {
             this._layoutEditor
@@ -225,12 +226,10 @@ export class App {
         }
     }
 
-    loadJavaScript(refresh: boolean = false) {
-        this._jsEditor
-            .javascript(this._javaScripAdapter.createJavaScript())
-            ;
+    loadClone(refresh: boolean = false) {
+        this._clone.restore(this._dashboard.save());
         if (refresh && this._dockPanel.isVisible(this._layoutEditor as any)) {
-            this._jsEditor
+            this._clone
                 .lazyRender()
                 ;
         }

@@ -12,7 +12,7 @@ const tpl =
     "</head>" +
     "<body style='padding:0px; margin:0px; overflow:hidden'><div id='placeholder' style='width:100%; height:100vh'></div><script>" +
     "   require(['src/other/Persist'], function (Persist) {\n" +
-    "       Persist.create({STATE}, function(widget) {\n" +
+    "       Persist.create({STATE}).then(function(widget) {\n" +
     "           widget\n" +
     "               .target('placeholder')\n" +
     "               .ddlUrl('{DDL}')\n" +

@@ -35,7 +35,7 @@ export class ChartPanel extends Border2 implements IClickHandler {
 
     private _titleBar = new TitleBar();
 
-    private _chart = new MultiChart().chartType("COLUMN");
+    private _multiChart = new MultiChart(); // .chartType("COLUMN");
 
     private _legend = new Legend(this);
 
@@ -48,25 +48,25 @@ export class ChartPanel extends Border2 implements IClickHandler {
         super();
         this._tag = "div";
         this._titleBar.buttons([this._buttonDownload, new Spacer(this), this._toggleLegend]);
-        this.multiChart(this._chart);
+        this.multiChart(this._multiChart);
 
         const context = this;
-        this._chart.click = function () {
+        this._multiChart.click = function () {
             context.click.apply(context, arguments);
         };
-        this._chart.dblclick = function () {
+        this._multiChart.dblclick = function () {
             context.dblclick.apply(context, arguments);
         };
-        this._chart.vertex_click = function () {
+        this._multiChart.vertex_click = function () {
             context.vertex_click.apply(context, arguments);
         };
-        this._chart.vertex_dblclick = function () {
+        this._multiChart.vertex_dblclick = function () {
             context.vertex_dblclick.apply(context, arguments);
         };
-        this._chart.edge_click = function () {
+        this._multiChart.edge_click = function () {
             context.edge_click.apply(context, arguments);
         };
-        this._chart.edge_dblclick = function () {
+        this._multiChart.edge_dblclick = function () {
             context.edge_dblclick.apply(context, arguments);
         };
     }
@@ -74,39 +74,39 @@ export class ChartPanel extends Border2 implements IClickHandler {
     chartType(): string;
     chartType(_: string): this;
     chartType(_?: string): string | this {
-        if (!arguments.length) return this._chart.chartType();
-        this._chart.chartType(_);
+        if (!arguments.length) return this._multiChart.chartType();
+        this._multiChart.chartType(_);
         return this;
     }
 
     chartTypeDefaults(_?) {
-        if (!arguments.length) return this._chart.chartTypeDefaults();
-        this._chart.chartTypeDefaults(_);
+        if (!arguments.length) return this._multiChart.chartTypeDefaults();
+        this._multiChart.chartTypeDefaults(_);
         return this;
     }
 
     chartTypeProperties(_?) {
-        if (!arguments.length) return this._chart.chartTypeProperties();
-        this._chart.chartTypeProperties(_);
+        if (!arguments.length) return this._multiChart.chartTypeProperties();
+        this._multiChart.chartTypeProperties(_);
         return this;
     }
 
     columns(): string[];
     columns(_: string[], asDefault?: boolean): this;
     columns(_?: string[], asDefault?: boolean): string[] | this {
-        if (!arguments.length) return this._chart.columns();
+        if (!arguments.length) return this._multiChart.columns();
         this._legend.columns(_, asDefault);
         return this;
     }
 
     data(_?) {
-        if (!arguments.length) return this._chart.data();
+        if (!arguments.length) return this._multiChart.data();
         this._legend.data(_);
         return this;
     }
 
     downloadCSV() {
-        Utility.downloadBlob("CSV", this._chart.export("CSV"));
+        Utility.downloadBlob("CSV", this._multiChart.export("CSV"));
         return this;
     }
 
@@ -114,11 +114,11 @@ export class ChartPanel extends Border2 implements IClickHandler {
         super.enter(domNode, element);
 
         this.top(this._titleBar);
-        this.center(this._chart);
+        this.center(this._multiChart);
         this.right(this._legend);
 
         this._legend
-            .targetWidget(this._chart)
+            .targetWidget(this._multiChart)
             .orientation("vertical")
             .title("")
             ;
@@ -126,12 +126,12 @@ export class ChartPanel extends Border2 implements IClickHandler {
 
     private _prevChartDataFamily;
     update(domNode, element) {
-        this._chart
+        this._multiChart
             .columns(this._legend.filteredColumns())
             .data(this._legend.filteredData())
             ;
-        if (this._prevChartDataFamily !== this._chart.getChartDataFamily()) {
-            this._prevChartDataFamily = this._chart.getChartDataFamily();
+        if (this._prevChartDataFamily !== this._multiChart.getChartDataFamily()) {
+            this._prevChartDataFamily = this._multiChart.getChartDataFamily();
             switch (this._prevChartDataFamily) {
                 case "any":
                     this._toggleLegend.selected(false);
@@ -139,7 +139,7 @@ export class ChartPanel extends Border2 implements IClickHandler {
                     break;
             }
         }
-        this._legend.dataFamily(this._chart.getChartDataFamily());
+        this._legend.dataFamily(this._multiChart.getChartDataFamily());
         super.update(domNode, element);
     }
 

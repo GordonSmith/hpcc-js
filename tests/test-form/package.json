@@ -7,7 +7,7 @@
     "@hpcc-js/form": "^0.0.27",
     "@hpcc-js/sample-data": "^0.0.25",
     "chai": "^4.0.0",
-    "es6-promise": "^4.1.0",
+    "es6-promise": "^4.1.1",
     "mocha": "^3.4.2",
     "simulate-event": "^1.4.0"
   },

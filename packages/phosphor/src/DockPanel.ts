@@ -1,5 +1,6 @@
 import { HTMLWidget, Widget } from "@hpcc-js/common";
-import { DockPanel as PDockPanel, IMessageHandler, IMessageHook, Message, MessageLoop, Widget as PWidget } from "@hpcc-js/phosphor-shim";
+import { DockPanel as PhosphorDockPanel, IMessageHandler, IMessageHook, Message, MessageLoop, Widget as PWidget } from "@hpcc-js/phosphor-shim";
+import { PDockPanel } from "./PDockPanel";
 import { Msg, WidgetAdapter } from "./WidgetAdapter";
 
 import "../src/DockPanel.css";
@@ -27,13 +28,14 @@ export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHo
         return retVal;
     }
 
-    addWidget(widget: Widget, title: string, location: PDockPanel.InsertMode = "split-right", refWidget?: Widget) {
-        const addMode: PDockPanel.IAddOptions = { mode: location, ref: this.getWidgetAdapter(refWidget) };
+    addWidget(widget: Widget, title: string, location: PhosphorDockPanel.InsertMode = "split-right", refWidget?: Widget) {
+        const addMode: PhosphorDockPanel.IAddOptions = { mode: location, ref: this.getWidgetAdapter(refWidget) };
         const wa = new WidgetAdapter(this, widget);
         wa.title.label = title;
         wa.padding = 8;
         this._dock.addWidget(wa, addMode);
         this.content.push(wa);
+        this._dock.tabsMovable = false;
         return this;
     }
 
@@ -50,7 +52,15 @@ export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHo
     }
 
     widgets(): Widget[] {
-        return this.content.map(wa => wa._widget);
+        return this.content.map(wa => wa.widget);
+    }
+
+    layout(): object;
+    layout(_: object): this;
+    layout(_?: object): object | this {
+        if (!arguments.length) return this._dock.saveLayout();
+        this._dock.restoreLayout(_ as any);
+        return this;
     }
 
     enter(domNode, element) {
@@ -91,8 +101,3 @@ export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHo
     }
 }
 DockPanel.prototype._class += " phosphor_DockPanel";
-export interface DockPanel {
-    layout(): object;
-    layout(_: object): this;
-}
-DockPanel.prototype.publish("layout", "", "object");

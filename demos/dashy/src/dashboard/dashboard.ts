@@ -68,13 +68,12 @@ export class Dashboard extends DockPanel {
         super.update(domNode, element);
     }
 
-    createLayout(): object {
-        return {
-            layout: this.layout(),
-            visualizations: this._visualizations.map(viz => {
-                return Persist.serializeToObject(viz.widget());
-            })
-        };
+    save(): object {
+        return this.layout();
+    }
+
+    restore(obj: object) {
+        this.layout(obj);
     }
 
     protected _prevActive: Widget;

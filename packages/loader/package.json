@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@hpcc-js/requirejs-shim": "^0.0.32",
-    "es6-promise": "^4.1.0",
+    "es6-promise": "^4.1.1",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
