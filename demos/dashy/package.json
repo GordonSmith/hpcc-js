@@ -14,6 +14,7 @@
     "@hpcc-js/dgrid": "^0.0.38",
     "@hpcc-js/form": "^0.0.37",
     "@hpcc-js/graph": "^0.0.38",
+    "@hpcc-js/marshaller": "^0.0.38",
     "@hpcc-js/other": "^0.0.37",
     "@hpcc-js/phosphor": "^0.0.37",
     "@hpcc-js/phosphor-shim": "^0.0.33",

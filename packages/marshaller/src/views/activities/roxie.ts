@@ -10,15 +10,15 @@ export class Param extends PropertyExt {
     private _view: View;
     private _owner: RoxieService;
 
-    @publish(null, "string", "Label")
-    label: publish<this, string>;
-    label_exists: () => boolean;
     @publish(null, "set", "Datasource", function (this: Param) { return this.visualizationIDs(); }, { optional: true })
     source: publish<this, string>;
     source_exists: () => boolean;
-    @publish(null, "set", "Source Fields", function (this: Param) { return this.sourceFields(); }, { optional: true })
-    sourceField: publish<this, string>;
-    sourceField_exists: () => boolean;
+    @publish(null, "set", "Source Field", function (this: Param) { return this.sourceFields(); }, { optional: true })
+    remoteField: publish<this, string>;
+    remoteField_exists: () => boolean;
+    @publish(null, "string", "Label")  //  TODO Add ReadOnly
+    localField: publish<this, string>;
+    localField_exists: () => boolean;
 
     constructor(owner: RoxieService) {
         super();
@@ -28,9 +28,9 @@ export class Param extends PropertyExt {
 
     hash() {
         return hashSum({
-            label: this.label(),
+            label: this.localField(),
             source: this.source(),
-            sourceField: this.sourceField(),
+            sourceField: this.remoteField(),
         });
     }
 
@@ -55,7 +55,7 @@ export class Param extends PropertyExt {
     }
 
     exists(): boolean {
-        return this.label_exists() && this.source_exists() && this.sourceField_exists();
+        return this.localField_exists() && this.source_exists() && this.remoteField_exists();
     }
 }
 Param.prototype._class += " ColumnMapping";
@@ -131,9 +131,9 @@ export class RoxieService extends Activity {
             }).then((query) => {
                 this._query = query;
                 const oldParams = this.request();
-                const diffs = compare(oldParams.map(p => p.label()), this.requestFields().map(ff => ff.label));
-                const newParams = oldParams.filter(op => diffs.unchanged.indexOf(op.label()) > 0);
-                this.request(newParams.concat(diffs.added.map(label => new Param(this).label(label))));
+                const diffs = compare(oldParams.map(p => p.localField()), this.requestFields().map(ff => ff.label));
+                const newParams = oldParams.filter(op => diffs.unchanged.indexOf(op.localField()) > 0);
+                this.request(newParams.concat(diffs.added.map(label => new Param(this).localField(label))));
             });
         }
         return this.refreshMetaPromise;
@@ -157,7 +157,7 @@ export class RoxieService extends Activity {
             for (const param of this.validParams()) {
                 const sourceSelection = param.sourceSelection();
                 if (sourceSelection.length) {
-                    request[param.label()] = sourceSelection[0][param.sourceField()];
+                    request[param.localField()] = sourceSelection[0][param.remoteField()];
                 }
             }
             return this._query.submit(request);

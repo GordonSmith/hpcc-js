@@ -10,7 +10,6 @@ import { Sort } from "./activities/sort";
 
 export { Type as DatasourceType };
 
-let viewID = 0;
 export class View extends ActivitySequence {
     _dashboard: Dashboard;
 
@@ -29,11 +28,10 @@ export class View extends ActivitySequence {
     @publish(null, "widget", "Limit output")
     limit: publish<this, Limit>;
 
-    constructor(model: Dashboard, label: string = "View2") {
+    constructor(model: Dashboard, viewID: string) {
         super();
         this._dashboard = model;
-        //        this.label(label);
-        this._id = "v" + viewID++;
+        this._id = viewID;
         this.dataSource(new DSPicker(this));
         this.dataSource().monitor((id, newVal, oldVal) => {
             this.broadcast(id, newVal, oldVal, this.dataSource());

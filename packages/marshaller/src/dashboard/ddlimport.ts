@@ -1,8 +1,7 @@
 import { ChartPanel } from "@hpcc-js/composite";
 import * as DDL from "@hpcc-js/ddl-shim";
-import { CheckBox, Form, Input, InputRange, Radio, TextArea } from "@hpcc-js/form";
+import { Form, Input } from "@hpcc-js/form";
 import { Form as DBForm } from "../views/activities/databomb";
-import { Filter } from "../views/activities/filter";
 import { AggregateField, GroupByColumn } from "../views/activities/groupby";
 import { ComputedField } from "../views/activities/project";
 import { HipieService } from "../views/activities/roxie";
@@ -10,7 +9,7 @@ import { WUResult } from "../views/activities/wuresult";
 import { Dashboard } from "./dashboard";
 import { DatasourceType, Viz } from "./viz";
 
-export class DDLReader {
+export class DDLImport {
     _owner: Dashboard;
     _url: string;
     _datasources: { [key: string]: DDL.IDatasource } = {};

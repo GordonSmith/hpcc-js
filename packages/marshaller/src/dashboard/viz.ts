@@ -1,5 +1,5 @@
 import { PropertyExt, publish, Widget } from "@hpcc-js/common";
-import { ChartPanel, MegaChart } from "@hpcc-js/composite";
+import { ChartPanel } from "@hpcc-js/composite";
 import { Form } from "@hpcc-js/form";
 import { find } from "@hpcc-js/util";
 import { Dashboard } from "../dashboard/dashboard";
@@ -48,8 +48,9 @@ export class Viz extends PropertyExt {
 
     constructor(model: Dashboard, label: string = `Viz-${++vizID}`) {
         super();
+        this._id = `viz-${vizID}`;
         this.label(label);
-        const view = new View(model, `View-${vizID}`);
+        const view = new View(model, `view-${vizID}`);
         // model.addView(view);
         this.view(view);
         const context = this;

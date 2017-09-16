@@ -1,8 +1,9 @@
 import * as Ajv from "ajv";
 export * from "./ddl";
-export * from "./ddl2";
+import * as  DDL2 from "./ddl2";
+export { DDL2 };
+import { ddl2Schema } from "./ddl2Schema";
 import { ddlSchema } from "./ddlSchema";
-import { ddlSchema2 } from "./ddlSchema2";
 
 export interface Response {
     success: boolean;
@@ -20,7 +21,7 @@ export function validate(ddl: object): Response {
 export function validate2(ddl: object): Response {
     const ajv = new Ajv();
     return {
-        success: ajv.validate(ddlSchema2, ddl),
+        success: ajv.validate(ddl2Schema, ddl),
         errors: ajv.errors
     };
 }

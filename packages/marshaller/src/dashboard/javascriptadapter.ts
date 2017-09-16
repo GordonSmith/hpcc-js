@@ -14,6 +14,7 @@ export class JavaScriptAdapter {
         const viz0 = new Viz(dashboard)
             .label(viz.label())
             ;
+        viz0;
     }
 
     createDashboard() {

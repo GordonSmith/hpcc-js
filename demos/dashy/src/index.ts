@@ -2,16 +2,11 @@
 import { PropertyExt, Widget } from "@hpcc-js/common";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
+import { Activity, Dashboard, DatasourceAdapt, DDLAdapter, GraphAdapter, JavaScriptAdapter, Viz } from "@hpcc-js/marshaller";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
-import { Dashboard } from "./dashboard/dashboard";
-import { DDLAdapter } from "./dashboard/ddladapter";
-import { GraphAdapter } from "./dashboard/graphadapter";
-import { JavaScriptAdapter } from "./dashboard/javascriptadapter";
-import { Viz } from "./dashboard/viz";
 import { ddl } from "./sampleddl";
-import { Activity, DatasourceAdapt } from "./views/activities/activity";
 
 export class Mutex {
     private _locking: Promise<any>;
@@ -137,9 +132,9 @@ export class App {
             this.loadGraph(true);
             this.loadStateProps(viz.state());
             this.loadPreview(viz.view().last());
-            this.loadDDL(true);
+            // this.loadDDL(true);
             this.loadLayout(true);
-            this.loadClone(true);
+            // this.loadClone(true);
         } else {
             this.loadDataProps(viz.view());
             this.loadPreview(viz.view().last());

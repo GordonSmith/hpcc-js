@@ -1,11 +1,16 @@
 
 import { d3SelectionType, PropertyExt, Widget } from "@hpcc-js/common";
-import { Persist } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { compare } from "@hpcc-js/util";
 import { View } from "../views/view";
-import { DDLReader } from "./ddlreader";
+import { DDL2, DDLAdapter } from "./ddl";
+import { DDLImport } from "./ddlimport";
 import { Viz } from "./viz";
+
+export interface IPersist {
+    ddl: DDL2.Schema;
+    layout: any;
+}
 
 export class Dashboard extends DockPanel {
     private _visualizations: Viz[] = [];
@@ -68,12 +73,16 @@ export class Dashboard extends DockPanel {
         super.update(domNode, element);
     }
 
-    save(): object {
-        return this.layout();
+    save(): IPersist {
+        const ddlAdapter = new DDLAdapter(this);
+        return {
+            ddl: ddlAdapter.write(),
+            layout: {}// this.layout()
+        };
     }
 
-    restore(obj: object) {
-        this.layout(obj);
+    restore(obj: IPersist) {
+        this.layout(obj.layout);
     }
 
     protected _prevActive: Widget;
@@ -89,7 +98,8 @@ export class Dashboard extends DockPanel {
     }
 
     restoreDDL(url: string, ddlObj: any) {
-        const ddl = new DDLReader(this, url, ddlObj);
+        const ddl = new DDLImport(this, url, ddlObj);
+        ddl;
     }
 }
 Dashboard.prototype._class += " dashboard_dashboard";

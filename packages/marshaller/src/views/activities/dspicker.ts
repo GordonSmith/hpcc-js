@@ -17,6 +17,7 @@ export enum Type {
 }
 const Types: string[] = [Type.WURESULT, Type.LOGICALFILE, Type.ROXIE, Type.DATABOMB, Type.FORM, Type.HIPIE];
 
+let dsPickerID = 0;
 export class DSPicker extends ActivitySelection {
     private _view: View;
 
@@ -53,6 +54,7 @@ export class DSPicker extends ActivitySelection {
 
     constructor(view: View) {
         super();
+        this._id = `ds-${++dsPickerID}`;
         this._view = view;
         this.activities([
             new WUResult(this._view)
