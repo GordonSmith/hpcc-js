@@ -1,7 +1,9 @@
 export type RowType = { [key: string]: any; };
 
-//  Activities  ================================================================
+//  Datasources  ==============================================================
 export type IDatasourceType = "wuresult" | "logicalfile" | "form" | "databomb" | "roxieservice" | "hipieservice";
+export type DatasourceType = IWUResult | ILogicalFile | IForm | IDatabomb | IRoxieService | IHipieService;
+
 export interface IDatasource {
     type: IDatasourceType;
     id: string;
@@ -22,10 +24,17 @@ export interface ILogicalFile extends IESPService {
     logicalFile: string;
 }
 
+export interface IRequestField {
+    source: string;
+    remoteFieldID: string;
+    localFieldID: string;
+}
+
 export interface IRoxieService extends IESPService {
     type: "roxieservice";
     querySet: string;
     queryID: string;
+    request: IRequestField[];
 }
 
 export interface IField {
@@ -48,21 +57,33 @@ export interface IHipieService extends IDatasource {
     type: "hipieservice";
 }
 
-export type DatasourceType = IWUResult | ILogicalFile | IForm | IDatabomb | IRoxieService | IHipieService;
+//  Activities  ===============================================================
+export type IActivityType = "filter" | "project" | "groupby" | "sort" | "limit";
+export type ActivityType = IFilter | IProject | IGroupBy | ISort | ILimit;
 
-//  View  ================================================================
+export interface IActivity {
+    type: IActivityType;
+}
+
+//  Filter  ===================================================================
 export interface IMapping {
     remoteFieldID: string;
     localFieldID: string;
     condition: "==" | "!=" | ">" | ">=" | "<" | "<=" | "contains";
 }
 
-export interface IFilter {
+export interface IFilterCondition {
     viewID: string;
     nullable: boolean;
     mappings: IMapping[];
 }
 
+export interface IFilter extends IActivity {
+    type: "filter";
+    conditions: IFilterCondition[];
+}
+
+//  Project  ==================================================================
 export interface IScale {
     fieldID: string;
     type: "scale";
@@ -77,8 +98,14 @@ export interface ICalculated {
     param2: string;
 }
 
-export type ProjectType = IScale | ICalculated;
+export type TransformationType = IScale | ICalculated;
 
+export interface IProject extends IActivity {
+    type: "project";
+    transformations: TransformationType[];
+}
+
+//  GroupBy  ==================================================================
 export interface IAggregate {
     type: "min" | "max" | "sum" | "mean" | "variance" | "deviation";
     fieldID: string;
@@ -90,35 +117,43 @@ export interface ICount {
 
 export type AggregateType = IAggregate | ICount;
 
-export interface IGroupBy {
+export interface IGroupBy extends IActivity {
+    type: "groupby";
     fields: string[];
     aggregates: AggregateType[];
 }
 
-export interface ISort {
+//  Sort  =====================================================================
+export interface ISortCondition {
     fieldID: string;
     descending: boolean;
 }
 
-export interface ILimit {
+export interface ISort extends IActivity {
+    type: "sort";
+    conditions: ISortCondition[];
+}
+
+//  Limit  ====================================================================
+export interface ILimit extends IActivity {
+    type: "limit";
     limit: number;
 }
 
-export type ActivityType = IFilter | ProjectType | IGroupBy | ISort | ILimit;
-
+//  View  =====================================================================
 export interface IView {
     id: string;
-    activities: ActivityType[];
-    datasourceID: string;
-    filters?: IFilter[];
-    preProject?: ProjectType[];
-    groupBy?: IGroupBy;
-    sort?: ISort[];
-    limit?: number;
+    datasource: DatasourceType;
+    filter: IFilter;
+    computed: IProject;
+    groupBy: IGroupBy;
+    sort: ISort;
+    limit: ILimit;
+    mappings: IProject;
 }
 
 //  DDL  ======================================================================
 export interface Schema {
     datasources: DatasourceType[];
-    views: IView[];
+    dataviews: IView[];
 }

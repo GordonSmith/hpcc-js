@@ -1,16 +1,14 @@
-// import { ChartPanel } from "@hpcc-js/composite";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { Databomb, Form } from "../views/activities/databomb";
 import { Filters } from "../views/activities/filter";
 import { GroupBy } from "../views/activities/groupby";
+import { Limit } from "../views/activities/limit";
 import { LogicalFile } from "../views/activities/logicalfile";
 import { Project } from "../views/activities/project";
 import { RoxieService } from "../views/activities/roxie";
 import { Sort } from "../views/activities/sort";
 import { WUResult } from "../views/activities/wuresult";
-// import { View } from "../views/view";
 import { Dashboard } from "./dashboard";
-// import { Viz } from "./viz";
 
 export { DDL2 };
 
@@ -109,7 +107,7 @@ export class DDLAdapter {
     }
     */
 
-    writeDDLDatasource(ds): DDL2.DatasourceType {
+    writeDatasource(ds): DDL2.DatasourceType {
         const dsDetails = ds.details();
         if (dsDetails instanceof WUResult) {
             const ddl: DDL2.IWUResult = {
@@ -155,62 +153,79 @@ export class DDLAdapter {
                 url: dsDetails.url(),
                 querySet: dsDetails.querySet(),
                 queryID: dsDetails.queryId(),
+                request: dsDetails.request().map((rf): DDL2.IRequestField => {
+                    return {
+                        source: rf.source(),
+                        remoteFieldID: rf.remoteField(),
+                        localFieldID: rf.localField()
+                    };
+                })
             };
             return ddl;
         }
         return undefined;
     }
 
-    writeDDLDatasources(): DDL2.DatasourceType[] {
+    writeDatasources(): DDL2.DatasourceType[] {
         const retVal: DDL2.DatasourceType[] = [];
         for (const viz of this._dashboard.visualizations()) {
             const ds = viz.view().dataSource();
             if (!this._dsDedup[ds.hash()]) {
                 this._dsDedup[ds.hash()] = ds.id();
-                retVal.push(this.writeDDLDatasource(ds));
+                retVal.push(this.writeDatasource(ds));
             }
         }
         return retVal;
     }
 
-    writeFilters(filters: Filters): DDL2.IFilter[] {
-        return filters.validFilters().map(filter => {
-            return {
-                viewID: filter.source(),
-                nullable: filter.nullable(),
-                mappings: filter.validMappings().map(mapping => {
-                    return {
-                        remoteFieldID: mapping.remoteField(),
-                        localFieldID: mapping.localField(),
-                        condition: mapping.condition()
-                    } as DDL2.IMapping;
-                })
-            } as DDL2.IFilter;
-        });
+    writeFilters(filters: Filters): DDL2.IFilter {
+        if (!filters.exists()) return undefined;
+        return {
+            type: "filter",
+            conditions: filters.validFilters().map((filter): DDL2.IFilterCondition => {
+                return {
+                    viewID: filter.source(),
+                    nullable: filter.nullable(),
+                    mappings: filter.validMappings().map((mapping): DDL2.IMapping => {
+                        return {
+                            remoteFieldID: mapping.remoteField(),
+                            localFieldID: mapping.localField(),
+                            condition: mapping.condition()
+                        };
+                    })
+                };
+            })
+        };
     }
 
-    writePreProject(project: Project): DDL2.ProjectType[] {
-        return project.validComputedFields().map(cf => {
-            if (cf.type() === "scale") {
-                return {
-                    fieldID: cf.label(),
-                    type: "scale" as any,
-                    param1: cf.column1(),
-                    factor: cf.constValue()
-                };
-            } else {
-                return {
-                    fieldID: cf.label(),
-                    type: cf.type() as any,
-                    param1: cf.column1(),
-                    param2: cf.column2()
-                };
-            }
-        });
+    writeProject(project: Project): DDL2.IProject {
+        if (!project.exists()) return undefined;
+        return {
+            type: "project",
+            transformations: project.validComputedFields().map((cf): DDL2.TransformationType => {
+                if (cf.type() === "scale") {
+                    return {
+                        fieldID: cf.label(),
+                        type: "scale" as any,
+                        param1: cf.column1(),
+                        factor: cf.constValue()
+                    };
+                } else {
+                    return {
+                        fieldID: cf.label(),
+                        type: cf.type() as any,
+                        param1: cf.column1(),
+                        param2: cf.column2()
+                    };
+                }
+            })
+        };
     }
 
     writeGroupBys(gb: GroupBy): DDL2.IGroupBy {
+        if (!gb.exists()) return undefined;
         return {
+            type: "groupby",
             fields: gb.validGroupBy().map(col => col.label()),
             aggregates: gb.validComputedFields().map((cf): DDL2.AggregateType => {
                 if (cf.aggrType() === "count") {
@@ -226,30 +241,39 @@ export class DDLAdapter {
         };
     }
 
-    writeSort(sort: Sort): DDL2.ISort[] {
-        return sort.validSortBy().map((sortBy): DDL2.ISort => {
-            return {
-                fieldID: sortBy.fieldID(),
-                descending: sortBy.descending()
-            };
-        });
+    writeSort(sort: Sort): DDL2.ISort {
+        if (!sort.exists()) return undefined;
+        return {
+            type: "sort",
+            conditions: sort.validSortBy().map((sortBy): DDL2.ISortCondition => {
+                return {
+                    fieldID: sortBy.fieldID(),
+                    descending: sortBy.descending()
+                };
+            })
+        };
+    }
+
+    writeLimit(limit: Limit): DDL2.ILimit {
+        if (!limit.exists()) return undefined;
+        return {
+            type: "limit",
+            limit: limit.rows()
+        };
     }
 
     writeDDLViews(): DDL2.IView[] {
         return this._dashboard.visualizations().map(viz => {
-            const ds = viz.view().dataSource();
-            const filters = this.writeFilters(viz.view().filters());
-            const preProject = this.writePreProject(viz.view().project());
-            const groupBy = this.writeGroupBys(viz.view().groupBy());
-            const sort = this.writeSort(viz.view().sort());
+            const v = viz.view();
             return {
                 id: viz.id(),
-                datasourceID: this._dsDedup[ds.hash()],
-                filters: filters.length ? filters : undefined,
-                preProject: preProject.length ? preProject : undefined,
-                groupBy: (groupBy.fields.length && groupBy.aggregates.length) ? groupBy : undefined,
-                sort: sort.length ? sort : undefined,
-                limit: viz.view().limit().rows()
+                datasource: this.writeDatasource(v.dataSource()),
+                filter: this.writeFilters(v.filters()),
+                computed: this.writeProject(v.project()),
+                groupBy: this.writeGroupBys(v.groupBy()),
+                sort: this.writeSort(v.sort()),
+                limit: this.writeLimit(v.limit()),
+                mappings: this.writeProject(v.mappings())
             };
         });
     }
@@ -257,8 +281,8 @@ export class DDLAdapter {
     write(): DDL2.Schema {
         this._dsDedup = {};
         return {
-            datasources: this.writeDDLDatasources(),
-            views: this.writeDDLViews()
+            datasources: this.writeDatasources(),
+            dataviews: this.writeDDLViews()
         };
     }
 }
