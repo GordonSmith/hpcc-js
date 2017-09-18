@@ -1,7 +1,7 @@
 import { publish } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
-import { View } from "../view";
 import { Activity } from "./activity";
+import { View } from "./view";
 
 export class Databomb extends Activity {
     private _owner: View;

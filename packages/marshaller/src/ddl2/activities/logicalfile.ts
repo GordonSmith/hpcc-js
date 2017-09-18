@@ -1,5 +1,5 @@
 import { Result } from "@hpcc-js/comms";
-import { View } from "../view";
+import { View } from "./view";
 import { ESPResult } from "./wuresult";
 
 export class LogicalFile extends ESPResult {

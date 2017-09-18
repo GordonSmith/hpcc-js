@@ -1,25 +1,20 @@
-import { PropertyExt } from "@hpcc-js/common";
+import { PropertyExt, publish } from "@hpcc-js/common";
+import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
-import { Viz } from "../../dashboard/viz";
-import { View } from "../view";
+import { Viz } from "../viz";
 import { Activity } from "./activity";
-
-export enum Rule {
-    eq = "==",
-    neq = "!=",
-    gt = ">",
-    gte = ">=",
-    lt = "<",
-    lte = "<=",
-    contains = "contains"
-}
-export type RuleType = Rule.eq | Rule.neq | Rule.gt | Rule.gte | Rule.lt | Rule.lte | Rule.contains;
-export const RuleKeyArr = Object.keys(Rule);
-export const RuleValueArr = RuleKeyArr.map((key: any) => Rule[key]);
+import { View } from "./view";
 
 export class ColumnMapping extends PropertyExt {
     _owner: Filter;
+
+    @publish(null, "set", "Filter Fields", function (this: ColumnMapping) { return this.sourceOutFields(); }, { optional: true })
+    remoteField: publish<this, string>;
+    @publish(null, "set", "Local Fields", function (this: ColumnMapping) { return this.localFields(); }, { optional: true })
+    localField: publish<this, string>;
+    @publish("==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "contains"])
+    condition: publish<this, DDL2.IMappingConditionType>;
 
     constructor(owner: Filter) {
         super();
@@ -46,19 +41,19 @@ export class ColumnMapping extends PropertyExt {
         const lf = this.localField();
         const rf = this.remoteField();
         switch (this.condition()) {
-            case Rule.eq:
+            case "==":
                 return (localRow) => localRow[lf] === filterSelection[0][rf];
-            case Rule.neq:
+            case "!=":
                 return (localRow) => localRow[lf] !== filterSelection[0][rf];
-            case Rule.lt:
+            case "<":
                 return (localRow) => localRow[lf] < filterSelection[0][rf];
-            case Rule.lte:
+            case "<=":
                 return (localRow) => localRow[lf] <= filterSelection[0][rf];
-            case Rule.gt:
+            case ">":
                 return (localRow) => localRow[lf] > filterSelection[0][rf];
-            case Rule.gte:
+            case ">=":
                 return (localRow) => localRow[lf] >= filterSelection[0][rf];
-            case Rule.contains:
+            case "contains":
                 return (localRow) => filterSelection.some(fsRow => localRow[lf] === fsRow[rf]);
         }
     }
@@ -68,21 +63,17 @@ export class ColumnMapping extends PropertyExt {
     }
 }
 ColumnMapping.prototype._class += " ColumnMapping";
-export interface ColumnMapping {
-    remoteField(): string;
-    remoteField(_: string): this;
-    localField(): string;
-    localField(_: string): this;
-    condition(): Rule;
-    condition(_: Rule): this;
-}
-ColumnMapping.prototype.publish("remoteField", null, "set", "Filter Fields", function (this: ColumnMapping) { return this.sourceOutFields(); }, { optional: true });
-ColumnMapping.prototype.publish("localField", null, "set", "Local Fields", function (this: ColumnMapping) { return this.localFields(); }, { optional: true });
-ColumnMapping.prototype.publish("condition", "==", "set", "Filter Fields", RuleValueArr);
 
 export class Filter extends PropertyExt {
     private _view: View;
     private _owner: Filters;
+
+    @publish(null, "set", "Datasource", function (this: Filter) { return this.visualizationIDs(); }, { optional: true })
+    source: publish<this, string>;
+    @publish(false, "boolean", "Ignore null filters")
+    nullable: publish<this, boolean>;
+    @publish([], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping })
+    mappings: publish<this, ColumnMapping[]>;
 
     constructor(owner: Filters) {
         super();
@@ -145,22 +136,13 @@ export class Filter extends PropertyExt {
         return validMappings.every(mapping => mapping.doFilter(row, this.sourceSelection()));
     }
 }
-
 Filter.prototype._class += " Filter";
-export interface Filter {
-    source(): string;
-    source(_: string): this;
-    nullable(): boolean;
-    nullable(_: boolean): this;
-    mappings(): ColumnMapping[];
-    mappings(_: ColumnMapping[]): this;
-}
-Filter.prototype.publish("source", null, "set", "Datasource", function (this: Filter) { return this.visualizationIDs(); }, { optional: true });
-Filter.prototype.publish("nullable", false, "boolean", "Ignore null filters");
-Filter.prototype.publish("mappings", [], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping });
 
 export class Filters extends Activity {
     _owner: View;
+
+    @publish([], "propertyArray", "Filter", null, { autoExpand: Filter })
+    filter: publish<this, Filter[]>;
 
     constructor(owner: View) {
         super();
@@ -209,8 +191,3 @@ export class Filters extends Activity {
     }
 }
 Filters.prototype._class += " Filters";
-export interface Filters {
-    filter(): Filter[];
-    filter(_: Filter[]): this;
-}
-Filters.prototype.publish("filter", [], "propertyArray", "Filter", null, { autoExpand: Filter });

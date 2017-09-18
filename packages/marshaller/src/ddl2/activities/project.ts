@@ -1,8 +1,8 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
-import { View } from "../view";
 import { Activity } from "./activity";
+import { View } from "./view";
 
 export type ComputedType = "=" | "*" | "/" | "+" | "-" | "scale";
 export class ComputedField extends PropertyExt {

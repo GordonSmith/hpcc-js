@@ -1,12 +1,9 @@
-import { PropertyExt, publish, Widget } from "@hpcc-js/common";
+import { PropertyExt, publish, publishProxy, Widget } from "@hpcc-js/common";
 import { ChartPanel } from "@hpcc-js/composite";
 import { Form } from "@hpcc-js/form";
 import { find } from "@hpcc-js/util";
-import { Dashboard } from "../dashboard/dashboard";
-import { Type } from "../views/activities/dspicker";
-import { View } from "../views/view";
-
-export { Type as DatasourceType };
+import { View } from "./activities/view";
+import { Dashboard } from "./dashboard";
 
 export class State extends PropertyExt {
 
@@ -36,9 +33,10 @@ State.prototype.publish("selection", [], "array", "State");
 
 let vizID = 0;
 export class Viz extends PropertyExt {
+    private _chartPanel: ChartPanel = new ChartPanel();
 
-    @publish("", "string", "Label")
-    label: publish<this, string>;
+    @publishProxy("_chartPanel")
+    title: publish<this, string>;
     @publish(null, "widget", "Data View")
     view: publish<this, View>;
     @publish(null, "widget", "Visualization")
@@ -46,30 +44,21 @@ export class Viz extends PropertyExt {
     @publish(null, "widget", "State")
     state: publish<this, State>;
 
-    constructor(model: Dashboard, label: string = `Viz-${++vizID}`) {
+    constructor(model: Dashboard) {
         super();
+        vizID++;
         this._id = `viz-${vizID}`;
-        this.label(label);
         const view = new View(model, `view-${vizID}`);
-        // model.addView(view);
         this.view(view);
-        const context = this;
-        // const widget = new MegaChart()
-        const widget = new ChartPanel()
-            .title(label)
+        this._chartPanel
+            .title(this.id())
             .chartType("TABLE")
-            .on("click", function (row: object, col: string, sel: boolean) {
-                context.state().selection(sel ? [row] : []);
+            .on("click", (row: object, col: string, sel: boolean) => {
+                this.state().selection(sel ? [row] : []);
             })
             ;
-        this.widget(widget);
+        this.widget(this._chartPanel);
         this.state(new State());
-
-        /*
-        view.monitor(async () => {
-            this.refresh();
-        });
-        */
     }
 
     dataProps(): PropertyExt {

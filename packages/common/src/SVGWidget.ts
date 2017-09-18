@@ -2,7 +2,7 @@ import { select as d3Select } from "d3-selection";
 import { svgMarkerGlitch } from "./Platform";
 import { Transition } from "./Transition";
 import { debounce } from "./Utility";
-import { Widget } from "./Widget";
+import { ISize, Widget } from "./Widget";
 
 const lerp = function (point, that, t) {
     //  From https://github.com/thelonious/js-intersections
@@ -118,7 +118,9 @@ export class SVGWidget extends Widget {
         return retVal;
     }
 
-    size(_?) {
+    size(): ISize;
+    size(_): this;
+    size(_?): ISize | this {
         const retVal = super.size.apply(this, arguments);
         if (arguments.length) {
             this._boundingBox = null;

@@ -1,5 +1,5 @@
 ﻿import { IGraph } from "@hpcc-js/api";
-import { Platform, SVGZoomWidget, Utility, Widget } from "@hpcc-js/common";
+import { ISize, Platform, SVGZoomWidget, Utility, Widget } from "@hpcc-js/common";
 import { drag as d3Drag } from "d3-drag";
 import { event as d3Event, select as d3Select } from "d3-selection";
 import { Edge } from "./Edge";
@@ -57,7 +57,9 @@ export class Graph extends SVGZoomWidget {
         return { x: 0, y: 0 };
     }
 
-    size(_) {
+    size(): ISize;
+    size(_): this;
+    size(_?): ISize | this {
         const retVal = super.size.apply(this, arguments);
         return retVal;
     }

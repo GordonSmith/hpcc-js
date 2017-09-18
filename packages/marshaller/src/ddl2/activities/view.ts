@@ -1,14 +1,12 @@
 import { publish } from "@hpcc-js/common";
-import { Dashboard } from "../dashboard/dashboard";
-import { Activity, ActivitySequence } from "./activities/activity";
-import { DSPicker, Type } from "./activities/dspicker";
-import { Filters } from "./activities/filter";
-import { GroupBy } from "./activities/groupby";
-import { Limit } from "./activities/limit";
-import { Project } from "./activities/project";
-import { Sort } from "./activities/sort";
-
-export { Type as DatasourceType };
+import { Dashboard } from "../dashboard";
+import { Activity, ActivitySequence } from "./activity";
+import { DSPicker } from "./dspicker";
+import { Filters } from "./filter";
+import { GroupBy } from "./groupby";
+import { Limit } from "./limit";
+import { Project } from "./project";
+import { Sort } from "./sort";
 
 export class View extends ActivitySequence {
     _dashboard: Dashboard;

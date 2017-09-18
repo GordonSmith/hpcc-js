@@ -1,8 +1,8 @@
 
-import { d3SelectionType, PropertyExt, Widget } from "@hpcc-js/common";
+import { d3SelectionType, PropertyExt, publish, Widget } from "@hpcc-js/common";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { compare } from "@hpcc-js/util";
-import { View } from "../views/view";
+import { View } from "./activities/view";
 import { DDL2, DDLAdapter } from "./ddl";
 import { DDLImport } from "./ddlimport";
 import { Viz } from "./viz";
@@ -12,9 +12,23 @@ export interface IPersist {
     layout: any;
 }
 
+export class Test extends PropertyExt {
+    @publish([], "widgetArray")
+    visualizations: publish<this, Viz[]>;
+}
+
 export class Dashboard extends DockPanel {
     private _visualizations: Viz[] = [];
-    private _nullVisualization = new Viz(this, "");
+    private _nullVisualization = new Viz(this);
+
+    test(): Test {
+        return new Test().visualizations(this.visualizations());
+    }
+
+    clear() {
+        this._visualizations = [];
+        this.render();
+    }
 
     visualizations() {
         return [...this._visualizations];
@@ -39,6 +53,15 @@ export class Dashboard extends DockPanel {
 
     addVisualization(viz: Viz): this {
         this._visualizations.push(viz);
+        viz.state().monitorProperty("selection", (id, newVal, oldVal) => {
+            const promises: Array<Promise<void>> = [];
+            for (const filteredViz of this.filteredBy(viz)) {
+                promises.push(filteredViz.refresh());
+            }
+            Promise.all(promises).then(() => {
+                this.vizStateChanged(viz);
+            });
+        });
         return this;
     }
 
@@ -64,11 +87,11 @@ export class Dashboard extends DockPanel {
             this.removeWidget(w);
         }
         for (const w of diff.added) {
-            this.addWidget(w, this.visualization(w).label(), "split-bottom");
+            this.addWidget(w, this.visualization(w).title(), "split-bottom");
         }
         for (const w of diff.unchanged) {
             const wa: any = this.getWidgetAdapter(w);
-            wa.title.label = this.visualization(w).label();
+            wa.title.label = this.visualization(w).title();
         }
         super.update(domNode, element);
     }
@@ -81,17 +104,17 @@ export class Dashboard extends DockPanel {
         };
     }
 
-    restore(obj: IPersist) {
+    restore(obj: IPersist): this {
+        this.clear();
+        const ddlAdapter = new DDLAdapter(this);
+        ddlAdapter.read(obj.ddl);
         this.layout(obj.layout);
+        return this;
     }
 
-    protected _prevActive: Widget;
     childActivation(w: Widget) {
         super.childActivation(w);
-        if (this._prevActive !== w) {
-            this._prevActive = w;
-            this.vizActivation(this.visualization(w));
-        }
+        this.vizActivation(this.visualization(w));
     }
 
     vizActivation(viz: Viz) {
@@ -100,6 +123,10 @@ export class Dashboard extends DockPanel {
     restoreDDL(url: string, ddlObj: any) {
         const ddl = new DDLImport(this, url, ddlObj);
         ddl;
+    }
+
+    //  Events  ---
+    vizStateChanged(viz: Viz) {
     }
 }
 Dashboard.prototype._class += " dashboard_dashboard";

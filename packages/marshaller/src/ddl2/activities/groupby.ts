@@ -3,8 +3,8 @@ import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "d3-array";
 import { nest as d3Nest } from "d3-collection";
-import { View } from "../view";
 import { Activity } from "./activity";
+import { View } from "./view";
 
 export class GroupByColumn extends PropertyExt {
     _owner: GroupBy;

@@ -1,5 +1,5 @@
 import { I2DChart, ITooltip } from "@hpcc-js/api";
-import { FAChar, SVGWidget, Text, Utility } from "@hpcc-js/common";
+import { FAChar, ISize, SVGWidget, Text, Utility } from "@hpcc-js/common";
 import { hierarchy as d3Hierarchy, pack as d3Pack } from "d3-hierarchy";
 import { select as d3Select } from "d3-selection";
 import "d3-transition";
@@ -26,7 +26,9 @@ export class Bubble extends SVGWidget {
             ;
     }
 
-    size(_) {
+    size(): ISize;
+    size(_): this;
+    size(_?): ISize | this {
         const retVal = SVGWidget.prototype.size.apply(this, arguments);
         if (arguments.length) {
             this.d3Pack

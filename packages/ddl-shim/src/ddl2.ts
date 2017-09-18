@@ -66,10 +66,11 @@ export interface IActivity {
 }
 
 //  Filter  ===================================================================
+export type IMappingConditionType = "==" | "!=" | ">" | ">=" | "<" | "<=" | "contains";
 export interface IMapping {
     remoteFieldID: string;
     localFieldID: string;
-    condition: "==" | "!=" | ">" | ">=" | "<" | "<=" | "contains";
+    condition: IMappingConditionType;
 }
 
 export interface IFilterCondition {

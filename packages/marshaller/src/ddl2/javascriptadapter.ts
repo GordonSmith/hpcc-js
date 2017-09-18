@@ -12,7 +12,7 @@ export class JavaScriptAdapter {
     dummy(viz: Viz) {
         const dashboard = new Dashboard();
         const viz0 = new Viz(dashboard)
-            .label(viz.label())
+            .title(viz.title())
             ;
         viz0;
     }

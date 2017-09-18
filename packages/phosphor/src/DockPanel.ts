@@ -89,14 +89,18 @@ export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHo
         return true;
     }
 
+    _prevActive: Widget;
     processMessage(msg: Message): void {
         switch (msg.type) {
             case "wa-activate-request":
-                this.childActivation((msg as Msg.WAActivateRequest).wa.widget);
+                const widget = (msg as Msg.WAActivateRequest).wa.widget;
+                if (this._prevActive !== widget) {
+                    this._prevActive = widget;
+                    this.childActivation(widget);
+                }
                 break;
         }
     }
-
     childActivation(w: Widget) {
     }
 }

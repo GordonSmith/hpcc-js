@@ -626,7 +626,7 @@ export class PropertyEditor extends HTMLWidget {
                 element.property("checked", val);
                 break;
             case "set":
-                const options = element.selectAll("option").data(widget[param.id + "_options"]() as string[]);
+                const options = element.selectAll("option").data(widget[param.id + "_options"]());
                 options.enter().append("option")
                     .merge(options)
                     .attr("value", d => d)

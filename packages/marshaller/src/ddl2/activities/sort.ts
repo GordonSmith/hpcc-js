@@ -2,8 +2,8 @@ import { PropertyExt, publish } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { ascending as d3Ascending, descending as d3Descending } from "d3-array";
-import { View } from "../view";
 import { Activity } from "./activity";
+import { View } from "./view";
 
 export class SortColumn extends PropertyExt {
     private _view: View;

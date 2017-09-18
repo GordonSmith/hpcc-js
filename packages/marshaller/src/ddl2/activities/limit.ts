@@ -1,6 +1,6 @@
 import { hashSum } from "@hpcc-js/util";
-import { View } from "../view";
 import { Activity } from "./activity";
+import { View } from "./view";
 
 export class Limit extends Activity {
     _owner: View;

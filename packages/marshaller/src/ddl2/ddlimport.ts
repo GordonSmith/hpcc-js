@@ -1,13 +1,13 @@
 import { ChartPanel } from "@hpcc-js/composite";
 import * as DDL from "@hpcc-js/ddl-shim";
 import { Form, Input } from "@hpcc-js/form";
-import { Form as DBForm } from "../views/activities/databomb";
-import { AggregateField, GroupByColumn } from "../views/activities/groupby";
-import { ComputedField } from "../views/activities/project";
-import { HipieService } from "../views/activities/roxie";
-import { WUResult } from "../views/activities/wuresult";
+import { Form as DBForm } from "./activities/databomb";
+import { AggregateField, GroupByColumn } from "./activities/groupby";
+import { ComputedField } from "./activities/project";
+import { HipieService } from "./activities/roxie";
+import { WUResult } from "./activities/wuresult";
 import { Dashboard } from "./dashboard";
-import { DatasourceType, Viz } from "./viz";
+import { Viz } from "./viz";
 
 export class DDLImport {
     _owner: Dashboard;
@@ -35,7 +35,7 @@ export class DDLImport {
     }
 
     form(ddlVisualization: DDL.IVisualization, viz: Viz) {
-        viz.view().dataSource().type(DatasourceType.FORM);
+        viz.view().dataSource().type("form");
         const payload: any = {};
         const inputs: Input[] = [];
         for (const field of ddlVisualization.fields) {
@@ -99,7 +99,7 @@ export class DDLImport {
 
     visualizationPre(ddlVisualization: DDL.IAnyVisualization) {
         this._visualizations[ddlVisualization.id] = ddlVisualization;
-        const viz = new Viz(this._owner).label(ddlVisualization.title);
+        const viz = new Viz(this._owner).title(ddlVisualization.title);
         viz.state().monitorProperty("selection", (id, newVal, oldVal) => {
             for (const filteredViz of this._owner.filteredBy(viz)) {
                 filteredViz.refresh().then(() => {
@@ -217,15 +217,15 @@ export class DDLImport {
             for (const ddlNotify of ddlOP.notify) {
                 const vizDS = this._vizzies[ddlNotify].view().dataSource();
                 if (ddlDS.WUID) {
-                    vizDS.type(DatasourceType.WURESULT);
+                    vizDS.type("wuresult");
                     (vizDS.details() as WUResult)
                         .fullUrl(this._url)
                         .resultName(ddlOP.from)
                         ;
                 } else if (ddlDS.databomb) {
-                    vizDS.type(DatasourceType.DATABOMB);
+                    vizDS.type("databomb");
                 } else {
-                    vizDS.type(DatasourceType.HIPIE);
+                    vizDS.type("hipieservice");
                     (vizDS.details() as HipieService)
                         .fullUrl(ddlDS.URL)
                         .resultName(ddlOP.from)

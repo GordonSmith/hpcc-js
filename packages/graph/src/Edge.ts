@@ -1,4 +1,4 @@
-import { Platform, SVGWidget, TextBox } from "@hpcc-js/common";
+import { Platform, SVGWidget, TextBox, Widget } from "@hpcc-js/common";
 import { curveBundle as d3CurveBundle, line as d3Line } from "d3-shape";
 import { Vertex } from "./Vertex";
 
@@ -10,8 +10,8 @@ export class Edge extends SVGWidget {
     protected _strokeDasharray: number[];
     protected _hidden: boolean;
     protected _textBox: TextBox;
-    protected _sourceVertex: Vertex;
-    protected _targetVertex: Vertex;
+    protected _sourceVertex: Widget;
+    protected _targetVertex: Widget;
     protected _elementPath;
     protected _tooltipElement;
     protected _graphID;
@@ -35,17 +35,17 @@ export class Edge extends SVGWidget {
         return this;
     }
 
-    sourceVertex(): Vertex;
-    sourceVertex(_: Vertex): Edge;
-    sourceVertex(_?: Vertex): Vertex | Edge {
+    sourceVertex(): Widget;
+    sourceVertex(_: Widget): Edge;
+    sourceVertex(_?: Widget): Widget | Edge {
         if (!arguments.length) return this._sourceVertex;
         this._sourceVertex = _;
         return this;
     }
 
-    targetVertex(): Vertex;
-    targetVertex(_: Vertex): Edge;
-    targetVertex(_?: Vertex): Vertex | Edge {
+    targetVertex(): Widget;
+    targetVertex(_: Widget): Edge;
+    targetVertex(_?: Widget): Widget | Edge {
         if (!arguments.length) return this._targetVertex;
         this._targetVertex = _;
         return this;

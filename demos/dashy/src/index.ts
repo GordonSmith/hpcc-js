@@ -45,9 +45,18 @@ export async function scopedLock(m: Mutex, func: (...params: any[]) => Promise<v
 export class App {
     private _dockPanel = new DockPanel();
     private _dataSplit = new SplitPanel();
-    private _dashboard: Dashboard = new Dashboard().on("vizActivation", (viz: Viz) => {
-        this.vizChanged(viz);
-    });
+    private _dashboard: Dashboard = new Dashboard()
+        .on("vizActivation", (viz: Viz) => {
+            this.vizChanged(viz);
+        })
+        .on("vizStateChanged", (viz: Viz) => {
+            for (const filteredViz of this._dashboard.filteredBy(viz)) {
+                if (this._currViz === filteredViz) {
+                    this.refreshPreview();
+                }
+            }
+        })
+    ;
     private _graphAdapter = new GraphAdapter(this._dashboard);
     private _ddlAdapter = new DDLAdapter(this._dashboard);
     private _javaScripAdapter = new JavaScriptAdapter(this._dashboard);
@@ -78,7 +87,6 @@ export class App {
         .showFields(false)
     ;
     private _ddlEditor = new DDLEditor();
-    private _layoutEditor = new JSONEditor();
     private _jsEditor = new JSEditor();
     private _clone: Dashboard = new Dashboard();
     private _preview = new DatasourceTable();
@@ -97,8 +105,25 @@ export class App {
             .addWidget(this._stateProperties, "State", "tab-after", this._vizProperties)
             .addWidget(this._graph as any, "Pipeline", "tab-after", this._dashboard)    //  TODO Fix Graph Declaration  ---
             .addWidget(this._ddlEditor, "DDL", "tab-after", this._graph as any)         //  TODO Fix Graph Declaration  ---
-            .addWidget(this._layoutEditor, "Layout", "tab-after", this._ddlEditor)
-            .addWidget(this._clone, "Clone", "tab-after", this._layoutEditor)
+            .addWidget(this._clone, "Clone", "tab-after", this._ddlEditor)
+            .on("childActivation", (w: Widget) => {
+                switch (w) {
+                    case this._dashboard:
+                        delete this._currActivity;
+                        this.loadDataProps(this._dashboard.test());
+                        break;
+                    case this._graph:
+                        this.loadGraph(true);
+                        break;
+                    case this._ddlEditor:
+                        this.loadDDL(true);
+                        break;
+                    case this._clone:
+                        this.loadClone();
+                        this.loadDataProps(this._clone.test());
+                        break;
+                }
+            })
             .lazyRender()
             ;
         this.initMenu();
@@ -129,12 +154,8 @@ export class App {
             this._currViz = viz;
             this.loadDataProps(viz.view());
             this.loadWidgetProps(viz.widget());
-            this.loadGraph(true);
             this.loadStateProps(viz.state());
             this.loadPreview(viz.view().last());
-            // this.loadDDL(true);
-            this.loadLayout(true);
-            // this.loadClone(true);
         } else {
             this.loadDataProps(viz.view());
             this.loadPreview(viz.view().last());
@@ -201,7 +222,7 @@ export class App {
 
     loadDDL(refresh: boolean = false) {
         this._ddlEditor
-            .ddl(this._ddlAdapter.createDDL())
+            .ddl(this._ddlAdapter.write())
             ;
         if (refresh && this._dockPanel.isVisible(this._ddlEditor as any)) {
             this._ddlEditor
@@ -210,24 +231,11 @@ export class App {
         }
     }
 
-    loadLayout(refresh: boolean = false) {
-        this._layoutEditor
-            .json(this._dashboard.save())
-            ;
-        if (refresh && this._dockPanel.isVisible(this._layoutEditor as any)) {
-            this._layoutEditor
-                .lazyRender()
-                ;
-        }
-    }
-
-    loadClone(refresh: boolean = false) {
+    loadClone() {
         this._clone.restore(this._dashboard.save());
-        if (refresh && this._dockPanel.isVisible(this._layoutEditor as any)) {
-            this._clone
-                .lazyRender()
-                ;
-        }
+        Promise.all(this._clone.visualizations().map(viz => viz.refresh())).then(() => {
+            this._clone.lazyRender();
+        });
     }
 
     initMenu() {
@@ -239,16 +247,6 @@ export class App {
             execute: () => {
                 const viz = new Viz(this._dashboard);
                 this._dashboard.addVisualization(viz);
-                // TODO:  Move refresh into dashboard and then dashboard should notfiy index that selection refresh is complete  ---
-                viz.state().monitorProperty("selection", (id, newVal, oldVal) => {
-                    for (const filteredViz of this._dashboard.filteredBy(viz)) {
-                        filteredViz.refresh().then(() => {
-                            if (this._currViz === filteredViz) {
-                                this.refreshPreview();
-                            }
-                        });
-                    }
-                });
                 this.loadDashboard();
                 viz.refresh().then(() => {
                     this.vizChanged(viz);

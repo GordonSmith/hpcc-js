@@ -2,8 +2,8 @@ import { publish } from "@hpcc-js/common";
 import { Result, XSDXMLNode } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
-import { View } from "../view";
 import { Activity, schemaRow2IField } from "./activity";
+import { View } from "./view";
 
 export abstract class ESPResult extends Activity {
     _owner: View;
