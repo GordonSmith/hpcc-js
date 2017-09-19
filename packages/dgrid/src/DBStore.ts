@@ -151,7 +151,6 @@ export class DBStore {
                 className: "resultGridCell",
                 sortable: true
             };
-            console.log(field.type());
             switch (field.type()) {
                 case "nested":
                     column.children = this.db2Columns(field.children(), prefix + label + "_");

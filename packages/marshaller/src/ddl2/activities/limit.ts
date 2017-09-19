@@ -1,9 +1,14 @@
+import { publish } from "@hpcc-js/common";
 import { hashSum } from "@hpcc-js/util";
 import { Activity } from "./activity";
 import { View } from "./view";
 
 export class Limit extends Activity {
     _owner: View;
+
+    @publish(undefined, "number", "Limit output")
+    rows: publish<this, number | undefined>;
+    rows_exists: () => boolean;
 
     constructor(owner: View) {
         super();
@@ -29,10 +34,3 @@ export class Limit extends Activity {
     }
 }
 Limit.prototype._class += " Limit";
-
-export interface Limit {
-    rows(): number | undefined;
-    rows(_: number | undefined): this;
-    rows_exists: () => boolean;
-}
-Limit.prototype.publish("rows", undefined, "number", "Limit output");

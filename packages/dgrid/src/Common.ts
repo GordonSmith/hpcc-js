@@ -60,7 +60,6 @@ export class Common extends HTMLWidget {
     }
 
     click(row, col, sel) {
-        console.log(row, col, sel);
     }
 }
 Common.prototype._class += " dgrid_Common";

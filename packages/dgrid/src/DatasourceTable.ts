@@ -37,7 +37,6 @@ export class DatasourceTable extends Common {
     }
 
     click(row, col, sel) {
-        console.log(row, col, sel);
     }
 }
 DatasourceTable.prototype._class += " dgrid_DatasourceTable";

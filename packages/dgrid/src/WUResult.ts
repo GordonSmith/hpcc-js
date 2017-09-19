@@ -60,7 +60,6 @@ export class WUResult extends Common {
     }
 
     click(row, col, sel) {
-        console.log(row, col, sel);
     }
 }
 WUResult.prototype._class += " dgrid_WUResult";

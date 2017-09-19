@@ -7,7 +7,6 @@ import "../src/DockPanel.css";
 
 export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHook {
     private _dock = new PDockPanel({ mode: "multiple-document" });
-    protected content: WidgetAdapter[] = [];
 
     constructor() {
         super();
@@ -18,7 +17,7 @@ export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHo
 
     protected getWidgetAdapter(widget: Widget): WidgetAdapter | null {
         let retVal = null;
-        this.content.some(wa => {
+        this._dock.content().some(wa => {
             if (wa.widget === widget) {
                 retVal = wa;
                 return true;
@@ -34,7 +33,7 @@ export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHo
         wa.title.label = title;
         wa.padding = 8;
         this._dock.addWidget(wa, addMode);
-        this.content.push(wa);
+        this._dock.appendContent(wa);
         this._dock.tabsMovable = false;
         return this;
     }
@@ -52,7 +51,7 @@ export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHo
     }
 
     widgets(): Widget[] {
-        return this.content.map(wa => wa.widget);
+        return this._dock.content().map(wa => wa.widget);
     }
 
     layout(): object;

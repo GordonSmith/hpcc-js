@@ -108,11 +108,13 @@ export interface IProject extends IActivity {
 
 //  GroupBy  ==================================================================
 export interface IAggregate {
+    label: string;
     type: "min" | "max" | "sum" | "mean" | "variance" | "deviation";
     fieldID: string;
 }
 
 export interface ICount {
+    label: string;
     type: "count";
 }
 
@@ -145,12 +147,12 @@ export interface ILimit extends IActivity {
 export interface IView {
     id: string;
     datasource: DatasourceType;
-    filter: IFilter;
-    computed: IProject;
-    groupBy: IGroupBy;
-    sort: ISort;
-    limit: ILimit;
-    mappings: IProject;
+    filter?: IFilter;
+    computed?: IProject;
+    groupBy?: IGroupBy;
+    sort?: ISort;
+    limit?: ILimit;
+    mappings?: IProject;
 }
 
 //  DDL  ======================================================================

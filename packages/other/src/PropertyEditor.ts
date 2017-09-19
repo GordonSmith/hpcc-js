@@ -629,8 +629,8 @@ export class PropertyEditor extends HTMLWidget {
                 const options = element.selectAll("option").data(widget[param.id + "_options"]());
                 options.enter().append("option")
                     .merge(options)
-                    .attr("value", d => d)
-                    .text(d => d)
+                    .attr("value", d => d as any)
+                    .text(d => d as any)
                     ;
                 options.exit().remove();
                 element.property("value", val);

@@ -1,6 +1,5 @@
 import { Platform, SVGWidget, TextBox, Widget } from "@hpcc-js/common";
 import { curveBundle as d3CurveBundle, line as d3Line } from "d3-shape";
-import { Vertex } from "./Vertex";
 
 import "../src/Edge.css";
 

@@ -43,6 +43,9 @@ SortColumn.prototype._class += " SortColumn";
 export class Sort extends Activity {
     _owner: View;
 
+    @publish([], "propertyArray", "Source Columns", null, { autoExpand: SortColumn })
+    column: publish<this, SortColumn[]>;
+
     constructor(owner: View) {
         super();
         this._owner = owner;
@@ -92,9 +95,3 @@ export class Sort extends Activity {
     }
 }
 Sort.prototype._class += " Sort";
-
-export interface Sort {
-    column(): SortColumn[];
-    column(_: SortColumn[]): this;
-}
-Sort.prototype.publish("column", [], "propertyArray", "Source Columns", null, { autoExpand: SortColumn });

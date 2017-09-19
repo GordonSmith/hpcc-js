@@ -1,5 +1,5 @@
 import { MultiChart } from "@hpcc-js/chart";
-import { HTMLWidget, publish, publishProxy, Utility, Widget } from "@hpcc-js/common";
+import { HTMLWidget, publish, publishProxy, Utility } from "@hpcc-js/common";
 import { Border2 } from "@hpcc-js/layout";
 import { Legend } from "./Legend";
 import { Button, IClickHandler, Item, Spacer, TitleBar, ToggleButton } from "./TitleBar";
@@ -35,40 +35,47 @@ export class ChartPanel extends Border2 implements IClickHandler {
 
     private _titleBar = new TitleBar();
 
-    private _multiChart = new MultiChart(); // .chartType("COLUMN");
-
     private _legend = new Legend(this);
 
     @publishProxy("_titleBar", undefined, undefined, { reset: true })
     title: publish<this, string>;
     @publish(null, "widget", "Multi Chart")
-    multiChart: publish<this, Widget>;
+    _multiChart: MultiChart;
+    multiChart(): MultiChart;
+    multiChart(_: MultiChart): this;
+    multiChart(_?: MultiChart): MultiChart | this {
+        if (!arguments.length) return this._multiChart;
+        this._multiChart = _;
+        const _multiChart: any = _;
+
+        const context = this;
+        _multiChart.click = function () {
+            context.click.apply(context, arguments);
+        };
+        _multiChart.dblclick = function () {
+            context.dblclick.apply(context, arguments);
+        };
+        _multiChart.vertex_click = function () {
+            context.vertex_click.apply(context, arguments);
+        };
+        _multiChart.vertex_dblclick = function () {
+            context.vertex_dblclick.apply(context, arguments);
+        };
+        _multiChart.edge_click = function () {
+            context.edge_click.apply(context, arguments);
+        };
+        _multiChart.edge_dblclick = function () {
+            context.edge_dblclick.apply(context, arguments);
+        };
+
+        return this;
+    }
 
     constructor() {
         super();
         this._tag = "div";
         this._titleBar.buttons([this._buttonDownload, new Spacer(this), this._toggleLegend]);
-        this.multiChart(this._multiChart);
-
-        const context = this;
-        this._multiChart.click = function () {
-            context.click.apply(context, arguments);
-        };
-        this._multiChart.dblclick = function () {
-            context.dblclick.apply(context, arguments);
-        };
-        this._multiChart.vertex_click = function () {
-            context.vertex_click.apply(context, arguments);
-        };
-        this._multiChart.vertex_dblclick = function () {
-            context.vertex_dblclick.apply(context, arguments);
-        };
-        this._multiChart.edge_click = function () {
-            context.edge_click.apply(context, arguments);
-        };
-        this._multiChart.edge_dblclick = function () {
-            context.edge_dblclick.apply(context, arguments);
-        };
+        this.multiChart(new MultiChart());
     }
 
     chartType(): string;

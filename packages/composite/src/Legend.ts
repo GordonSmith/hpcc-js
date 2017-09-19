@@ -64,17 +64,19 @@ export class Legend extends SVGWidget {
             this._targetWidgetMonitor.remove();
             delete this._targetWidgetMonitor;
         }
-        const context = this;
-        this._targetWidgetMonitor = this._targetWidget.monitor(function (key, newProp, oldProp, source) {
-            switch (key) {
-                case "chart":
-                case "columns":
-                case "data":
-                case "paletteID":
-                    context.lazyRender();
-                    break;
-            }
-        });
+        if (this._targetWidget) {
+            const context = this;
+            this._targetWidgetMonitor = this._targetWidget.monitor(function (key, newProp, oldProp, source) {
+                switch (key) {
+                    case "chart":
+                    case "columns":
+                    case "data":
+                    case "paletteID":
+                        context.lazyRender();
+                        break;
+                }
+            });
+        }
         return this;
     }
 

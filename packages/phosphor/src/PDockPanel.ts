@@ -26,6 +26,9 @@ export class PDockPanel extends DockPanel {
         each(this.tabBars(), tabbar => tabbar.tabsMovable = value);
     }
 
+    private _content: WidgetAdapter[];
+    private _contentMap: { [key: string]: WidgetAdapter };
+
     constructor(options: DockPanel.IOptions = {}) {
         options.renderer = options.renderer || new PRenderer();
         super(options);
@@ -33,25 +36,43 @@ export class PDockPanel extends DockPanel {
             this["_renderer"]._owner = this;
         }
         this._tabsMovable = true;
+        this._content = [];
+        this._contentMap = {};
     }
 
-    static createPDockPanel(options: DockPanel.IOptions = {}) {
-        //  This works, but would be preferable to be able to do it in the constructor.
-        const renderer = new PRenderer();
-        const retVal = new PDockPanel({ renderer });
-        renderer._owner = retVal;
-        return retVal;
+    appendContent(wa: WidgetAdapter) {
+        this._content.push(wa);
+        this._contentMap[wa.widget.id()] = wa;
+    }
+
+    content(): WidgetAdapter[] {
+        return this._content;
     }
 
     serializeWidget(widget: Widget): object {
         if (widget instanceof WidgetAdapter) {
-            return Persist.serializeToObject(widget.widget);
+            try {
+                return Persist.serializeToObject(widget.widget);
+            } catch (e) {
+                return {
+                    exception: {
+                        message: e.message,
+                        stack: e.stack
+                    }
+                };
+            }
         }
         return null;
     }
 
-    deserializeWidget(layout: object): WidgetAdapter {
-        return new WidgetAdapter(undefined, layout);
+    deserializeWidget(layout: any): WidgetAdapter {
+        let wa: WidgetAdapter = this._contentMap[layout.__id];
+        if (wa) {
+            Persist.deserializeFromObject(wa.widget, layout);
+        } else {
+            wa = new WidgetAdapter(undefined, layout);
+        }
+        return wa;
     }
 
     serializeITabAreaConfig(config: DockLayout.ITabAreaConfig, deserialize: boolean): DockLayout.ITabAreaConfig {

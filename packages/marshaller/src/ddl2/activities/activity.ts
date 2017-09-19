@@ -57,7 +57,7 @@ export abstract class Activity extends PropertyExt {
     }
 
     pullData(): object[] {
-        return this._sourceActivity ? this._sourceActivity.pullData() : [];
+        return this._sourceActivity ? this._sourceActivity.pullData() || [] : [];
     }
 }
 

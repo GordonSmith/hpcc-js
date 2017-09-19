@@ -40,7 +40,20 @@ export class Viz extends PropertyExt {
     @publish(null, "widget", "Data View")
     view: publish<this, View>;
     @publish(null, "widget", "Visualization")
-    widget: publish<this, ChartPanel | Form>;
+    _widget: ChartPanel | Form;
+    widget(): ChartPanel | Form;
+    widget(_: ChartPanel | Form): this;
+    widget(_?: ChartPanel | Form): ChartPanel | Form | this {
+        if (!arguments.length) return this._widget;
+        this._widget = _;
+        this._widget
+            .id(this.id())
+            .on("click", (row: object, col: string, sel: boolean) => {
+                this.state().selection(sel ? [row] : []);
+            })
+            ;
+        return this;
+    }
     @publish(null, "widget", "State")
     state: publish<this, State>;
 
@@ -53,12 +66,19 @@ export class Viz extends PropertyExt {
         this._chartPanel
             .title(this.id())
             .chartType("TABLE")
-            .on("click", (row: object, col: string, sel: boolean) => {
-                this.state().selection(sel ? [row] : []);
-            })
             ;
         this.widget(this._chartPanel);
         this.state(new State());
+    }
+
+    id(): string;
+    id(_: string): this;
+    id(_?: string): string | this {
+        const retVal = super.id.apply(this, arguments);
+        if (arguments.length) {
+            this._chartPanel.id(_);
+        }
+        return retVal;
     }
 
     dataProps(): PropertyExt {

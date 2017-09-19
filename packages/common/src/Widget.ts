@@ -555,6 +555,14 @@ export abstract class Widget extends PropertyExt {
         return this;
     }
 
+    renderPromise(): Promise<Widget> {
+        return new Promise((resolve, reject) => {
+            this.render((w: Widget) => {
+                resolve(w);
+            });
+        });
+    }
+
     lazyRender = debounce(function () {
         this.render();
     }, 100);

@@ -23,7 +23,6 @@ export class Table extends Common {
     }
 
     click(row, col, sel) {
-        console.log(row, col, sel);
     }
 }
 Table.prototype._class += " dgrid_Table";

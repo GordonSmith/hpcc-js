@@ -1,4 +1,4 @@
-import { PropertyExt } from "@hpcc-js/common";
+import { PropertyExt, publish } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "d3-array";
@@ -8,6 +8,9 @@ import { View } from "./view";
 
 export class GroupByColumn extends PropertyExt {
     _owner: GroupBy;
+
+    @publish(undefined, "set", "Field", function (this: GroupByColumn) { return this.columns(); }, { optional: true })
+    label: publish<this, string>;
 
     constructor(owner: GroupBy) {
         super();
@@ -23,12 +26,6 @@ export class GroupByColumn extends PropertyExt {
     }
 }
 GroupByColumn.prototype._class += " GroupByColumn";
-
-export interface GroupByColumn {
-    label(): string;
-    label(_: string): this;
-}
-GroupByColumn.prototype.publish("label", undefined, "set", "Field", function (this: GroupByColumn) { return this.columns(); }, { optional: true });
 
 //  ===========================================================================
 type AggrFuncCallback = (item: any) => number;
@@ -51,6 +48,13 @@ const d3Aggr: { [key: string]: AggrFunc } = {
 export type AggregateType = "count" | "min" | "max" | "sum" | "mean" | "median" | "variance" | "deviation";
 export class AggregateField extends PropertyExt {
     _owner: GroupBy;
+
+    @publish(null, "string", "Label", null, { optional: true, disable: (w: AggregateField) => !w.hasColumn() })
+    label: publish<this, string>;
+    @publish("count", "set", "Aggregation Type", ["count", "min", "max", "sum", "mean", "median", "variance", "deviation"], { optional: true, disable: w => !w.label() })
+    aggrType: publish<this, AggregateType>;
+    @publish(null, "set", "Aggregation Field", function (this: AggregateField) { return this.columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" })
+    aggrColumn: publish<this, string>;
 
     constructor(owner: GroupBy) {
         super();
@@ -79,21 +83,18 @@ export class AggregateField extends PropertyExt {
 }
 AggregateField.prototype._class += " AggregateField";
 
-export interface AggregateField {
-    label(): string;
-    label(_: string): this;
-    aggrType(): AggregateType;
-    aggrType(_: AggregateType): this;
-    aggrColumn(): string;
-    aggrColumn(_: string): this;
-}
-AggregateField.prototype.publish("label", null, "string", "Label", null, { optional: true, disable: (w: AggregateField) => !w.hasColumn() });
-AggregateField.prototype.publish("aggrType", "count", "set", "Aggregation Type", ["count", "min", "max", "sum", "mean", "median", "variance", "deviation"], { optional: true, disable: w => !w.label() });
-AggregateField.prototype.publish("aggrColumn", null, "set", "Aggregation Field", function (this: AggregateField) { return this.columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" });
-
 //  ===========================================================================
 export class GroupBy extends Activity {
     _owner: View;
+
+    @publish([], "propertyArray", "Source Columns", null, { autoExpand: GroupByColumn })
+    column: publish<this, GroupByColumn[]>;
+    @publish([], "propertyArray", "Computed Fields", null, { autoExpand: AggregateField })
+    computedFields: publish<this, AggregateField[]>;
+    @publish(false, "boolean", "Show details")
+    details: publish<this, boolean>;
+    @publish(false, "boolean", "Show groupBy fileds in details")
+    fullDetails: publish<this, boolean>;
 
     constructor(owner: View) {
         super();
@@ -168,7 +169,7 @@ export class GroupBy extends Activity {
             const field: IField = {
                 id: groupBy.label(),
                 label: groupBy.label(),
-                type: groupByField.type,
+                type: groupByField ? groupByField.type : undefined,
                 children: null
             };
             retVal.push(field);
@@ -238,18 +239,3 @@ export class GroupBy extends Activity {
     }
 }
 GroupBy.prototype._class += " GroupBy";
-
-export interface GroupBy {
-    column(): GroupByColumn[];
-    column(_: GroupByColumn[]): this;
-    computedFields(): AggregateField[];
-    computedFields(_: AggregateField[]): this;
-    details(): boolean;
-    details(_: boolean): this;
-    fullDetails(): boolean;
-    fullDetails(_: boolean): this;
-}
-GroupBy.prototype.publish("column", [], "propertyArray", "Source Columns", null, { autoExpand: GroupByColumn });
-GroupBy.prototype.publish("computedFields", [], "propertyArray", "Computed Fields", null, { autoExpand: AggregateField });
-GroupBy.prototype.publish("details", false, "boolean", "Show details");
-GroupBy.prototype.publish("fullDetails", false, "boolean", "Show groupBy fileds in details");

@@ -80,7 +80,7 @@ export class Dashboard extends DockPanel {
         return this.views().filter(view => view.id() === id)[0];
     }
 
-    update(domNode: HTMLElement, element: d3SelectionType) {
+    syncWidgets() {
         const previous = this.widgets();
         const diff = compare(previous, this.visualizations().map(viz => viz.widget()));
         for (const w of diff.removed) {
@@ -93,21 +93,42 @@ export class Dashboard extends DockPanel {
             const wa: any = this.getWidgetAdapter(w);
             wa.title.label = this.visualization(w).title();
         }
+    }
+
+    update(domNode: HTMLElement, element: d3SelectionType) {
+        this.syncWidgets();
         super.update(domNode, element);
     }
 
-    save(): IPersist {
+    ddl(): DDL2.Schema;
+    ddl(_: DDL2.Schema): this;
+    ddl(_?: DDL2.Schema): DDL2.Schema | this {
         const ddlAdapter = new DDLAdapter(this);
+        if (!arguments.length) return ddlAdapter.write();
+        ddlAdapter.read(_);
+        return this;
+    }
+
+    /*
+    layout(): object;
+    layout(_: object): this;
+    layout(_?: object): object | this {
+        if (!arguments.length) return super.layout();
+        super.layout(_);
+        return this;
+    }
+    */
+
+    save(): IPersist {
         return {
-            ddl: ddlAdapter.write(),
-            layout: {}// this.layout()
+            ddl: this.ddl(),
+            layout: this.layout()
         };
     }
 
-    restore(obj: IPersist): this {
+    async restore(obj: IPersist): Promise<this> {
         this.clear();
-        const ddlAdapter = new DDLAdapter(this);
-        ddlAdapter.read(obj.ddl);
+        this.ddl(obj.ddl);
         this.layout(obj.layout);
         return this;
     }

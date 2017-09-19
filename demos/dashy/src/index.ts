@@ -2,7 +2,7 @@
 import { PropertyExt, Widget } from "@hpcc-js/common";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
-import { Activity, Dashboard, DatasourceAdapt, DDLAdapter, GraphAdapter, JavaScriptAdapter, Viz } from "@hpcc-js/marshaller";
+import { Activity, Dashboard, DatasourceAdapt, GraphAdapter, JavaScriptAdapter, Viz } from "@hpcc-js/marshaller";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
@@ -58,7 +58,6 @@ export class App {
         })
     ;
     private _graphAdapter = new GraphAdapter(this._dashboard);
-    private _ddlAdapter = new DDLAdapter(this._dashboard);
     private _javaScripAdapter = new JavaScriptAdapter(this._dashboard);
     private _graph: Graph = new Graph()
         .allowDragging(false)
@@ -87,6 +86,7 @@ export class App {
         .showFields(false)
     ;
     private _ddlEditor = new DDLEditor();
+    private _layoutEditor = new JSONEditor();
     private _jsEditor = new JSEditor();
     private _clone: Dashboard = new Dashboard();
     private _preview = new DatasourceTable();
@@ -105,7 +105,8 @@ export class App {
             .addWidget(this._stateProperties, "State", "tab-after", this._vizProperties)
             .addWidget(this._graph as any, "Pipeline", "tab-after", this._dashboard)    //  TODO Fix Graph Declaration  ---
             .addWidget(this._ddlEditor, "DDL", "tab-after", this._graph as any)         //  TODO Fix Graph Declaration  ---
-            .addWidget(this._clone, "Clone", "tab-after", this._ddlEditor)
+            .addWidget(this._layoutEditor, "Layout", "tab-after", this._ddlEditor)
+            .addWidget(this._clone, "Clone", "tab-after", this._layoutEditor)
             .on("childActivation", (w: Widget) => {
                 switch (w) {
                     case this._dashboard:
@@ -117,6 +118,9 @@ export class App {
                         break;
                     case this._ddlEditor:
                         this.loadDDL(true);
+                        break;
+                    case this._layoutEditor:
+                        this.loadLayout(true);
                         break;
                     case this._clone:
                         this.loadClone();
@@ -222,10 +226,21 @@ export class App {
 
     loadDDL(refresh: boolean = false) {
         this._ddlEditor
-            .ddl(this._ddlAdapter.write())
+            .ddl(this._dashboard.ddl())
             ;
         if (refresh && this._dockPanel.isVisible(this._ddlEditor as any)) {
             this._ddlEditor
+                .lazyRender()
+                ;
+        }
+    }
+
+    loadLayout(refresh: boolean = false) {
+        this._layoutEditor
+            .json(this._dashboard.layout())
+            ;
+        if (refresh && this._dockPanel.isVisible(this._layoutEditor as any)) {
+            this._layoutEditor
                 .lazyRender()
                 ;
         }
@@ -265,6 +280,13 @@ export class App {
             }
         });
 
+        commands.addCommand("dash_clear", {
+            label: "Clear",
+            execute: () => {
+                this._dashboard.clear();
+            }
+        });
+
         //  Model Commands  ---
         const palette = new CommandPalette({ commands });
         palette.addItem({ command: "addWUResult", category: "Notebook" });
@@ -276,6 +298,7 @@ export class App {
 
         contextMenu.addItem({ command: "dash_add", selector: `#${this._dashboard.id()}` });
         contextMenu.addItem({ command: "dash_add_ddl", selector: `#${this._dashboard.id()}` });
+        contextMenu.addItem({ command: "dash_clear", selector: `#${this._dashboard.id()}` });
 
         document.addEventListener("contextmenu", (event: MouseEvent) => {
             if (contextMenu.open(event)) {

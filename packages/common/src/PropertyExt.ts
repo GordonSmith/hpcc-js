@@ -388,7 +388,7 @@ export class PropertyExt extends Class {
         };
         this[id + "_modified"] = function () {
             if (type === "propertyArray") {
-                return this[__prop_data_ + id].length > (ext.autoExpand ? 1 : 0);
+                return this[__prop_data_ + id] && (this[__prop_data_ + id].length > (ext.autoExpand ? 1 : 0));
             }
             return this[__prop_data_ + id] !== undefined;
         };
