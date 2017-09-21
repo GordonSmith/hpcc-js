@@ -52,6 +52,11 @@ export abstract class Activity extends PropertyExt {
         return this.inFields();
     }
 
+    localFields(): IField[] {
+        const inFields = this.inFields();
+        return this.outFields().filter(field => inFields.indexOf(field) < 0);
+    }
+
     exec(): Promise<void> {
         return this._sourceActivity ? this._sourceActivity.exec() : Promise.resolve();
     }

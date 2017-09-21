@@ -1,6 +1,5 @@
 import { PropertyExt, publish, publishProxy, Widget } from "@hpcc-js/common";
 import { ChartPanel } from "@hpcc-js/composite";
-import { Form } from "@hpcc-js/form";
 import { find } from "@hpcc-js/util";
 import { View } from "./activities/view";
 import { Dashboard } from "./dashboard";
@@ -40,10 +39,10 @@ export class Viz extends PropertyExt {
     @publish(null, "widget", "Data View")
     view: publish<this, View>;
     @publish(null, "widget", "Visualization")
-    _widget: ChartPanel | Form;
-    widget(): ChartPanel | Form;
-    widget(_: ChartPanel | Form): this;
-    widget(_?: ChartPanel | Form): ChartPanel | Form | this {
+    _widget: ChartPanel;
+    widget(): ChartPanel;
+    widget(_: ChartPanel): this;
+    widget(_?: ChartPanel): ChartPanel | this {
         if (!arguments.length) return this._widget;
         this._widget = _;
         this._widget

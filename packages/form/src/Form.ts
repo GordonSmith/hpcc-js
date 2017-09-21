@@ -102,7 +102,7 @@ export class Form extends HTMLWidget {
         })) {
             return;
         }
-        this.click(isValid ? this.values() : null);
+        this.click(isValid ? this.values() : null, null, isValid);
     }
 
     clear() {
@@ -268,7 +268,7 @@ export class Form extends HTMLWidget {
         HTMLWidget.prototype.exit.apply(this, arguments);
     }
 
-    click(row) {
+    click(row, col, sel) {
         console.log("Clicked Submit: " + JSON.stringify(row));
     }
 

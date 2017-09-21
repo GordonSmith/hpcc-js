@@ -4,9 +4,17 @@ export type RowType = { [key: string]: any; };
 export type IDatasourceType = "wuresult" | "logicalfile" | "form" | "databomb" | "roxieservice" | "hipieservice";
 export type DatasourceType = IWUResult | ILogicalFile | IForm | IDatabomb | IRoxieService | IHipieService;
 
+export interface IField {
+    id: string;
+    type: string;
+    default: any;
+    children?: IField[];
+}
+
 export interface IDatasource {
     type: IDatasourceType;
     id: string;
+    fields: IField[];
 }
 
 export interface IESPService extends IDatasource {
@@ -37,15 +45,8 @@ export interface IRoxieService extends IESPService {
     request: IRequestField[];
 }
 
-export interface IField {
-    id: string;
-    type: "boolean" | "number" | "string";
-    default: any;
-}
-
 export interface IForm extends IDatasource {
     type: "form";
-    fields: IField[];
 }
 
 export interface IDatabomb extends IDatasource {
@@ -104,6 +105,7 @@ export type TransformationType = IScale | ICalculated;
 export interface IProject extends IActivity {
     type: "project";
     transformations: TransformationType[];
+    fields: IField[];
 }
 
 //  GroupBy  ==================================================================
@@ -122,8 +124,9 @@ export type AggregateType = IAggregate | ICount;
 
 export interface IGroupBy extends IActivity {
     type: "groupby";
-    fields: string[];
+    groupByIDs: string[];
     aggregates: AggregateType[];
+    fields: IField[];
 }
 
 //  Sort  =====================================================================

@@ -1,4 +1,5 @@
 import { DDL2 } from "@hpcc-js/ddl-shim";
+import { IField } from "@hpcc-js/dgrid";
 import { Databomb, Form } from "./activities/databomb";
 import { DSPicker } from "./activities/dspicker";
 import { ColumnMapping, Filter, Filters } from "./activities/filter";
@@ -30,7 +31,8 @@ export class DDLAdapter {
                 id: ds.id(),
                 url: dsDetails.url(),
                 wuid: dsDetails.wuid(),
-                resultName: dsDetails.resultName()
+                resultName: dsDetails.resultName(),
+                fields: this.writeFields(dsDetails.localFields())
             };
             return ddl;
         } else if (dsDetails instanceof LogicalFile) {
@@ -38,7 +40,8 @@ export class DDLAdapter {
                 type: "logicalfile",
                 id: ds.id(),
                 url: dsDetails.url(),
-                logicalFile: dsDetails.logicalFile()
+                logicalFile: dsDetails.logicalFile(),
+                fields: this.writeFields(dsDetails.localFields())
             };
             return ddl;
         } else if (dsDetails instanceof Form) {
@@ -58,7 +61,8 @@ export class DDLAdapter {
             const ddl: DDL2.IDatabomb = {
                 type: "databomb",
                 id: ds.id(),
-                data: []
+                data: [],
+                fields: this.writeFields(dsDetails.localFields())
             };
             return ddl;
         } else if (dsDetails instanceof RoxieService) {
@@ -74,7 +78,8 @@ export class DDLAdapter {
                         remoteFieldID: rf.remoteFieldID(),
                         localFieldID: rf.localFieldID()
                     };
-                })
+                }),
+                fields: this.writeFields(dsDetails.localFields())
             };
             return ddl;
         }
@@ -151,6 +156,20 @@ export class DDLAdapter {
         return retVal;
     }
 
+    writeFields(fields: IField[]): DDL2.IField[] {
+        return fields.map(field => {
+            const retVal: DDL2.IField = {
+                id: field.id,
+                type: field.type as any,  //  TODO Align DGrid field type and DDL2 field type
+                default: undefined
+            };
+            if (field.children && field.children.length) {
+                retVal.children = this.writeFields(field.children);
+            }
+            return retVal;
+        });
+    }
+
     writeFilters(filters: Filters): DDL2.IFilter {
         if (!filters.exists()) return undefined;
         return {
@@ -212,7 +231,8 @@ export class DDLAdapter {
                         param2: cf.column2()
                     };
                 }
-            })
+            }),
+            fields: this.writeFields(project.localFields())
         };
     }
 
@@ -243,7 +263,7 @@ export class DDLAdapter {
         if (!gb.exists()) return undefined;
         return {
             type: "groupby",
-            fields: gb.validGroupBy().map(col => col.label()),
+            groupByIDs: gb.validGroupBy().map(col => col.label()),
             aggregates: gb.validComputedFields().map((cf): DDL2.AggregateType => {
                 if (cf.aggrType() === "count") {
                     return {
@@ -256,14 +276,15 @@ export class DDLAdapter {
                     type: cf.aggrType() as any,
                     fieldID: cf.aggrColumn()
                 };
-            })
+            }),
+            fields: this.writeFields(gb.localFields())
         };
     }
 
     readGroupBy(ddlGB: DDL2.IGroupBy, gb: GroupBy): this {
         if (ddlGB) {
             gb
-                .column(ddlGB.fields.map(field => {
+                .column(ddlGB.groupByIDs.map(field => {
                     return new GroupByColumn(gb).label(field);
                 }))
                 .computedFields(ddlGB.aggregates.map(aggregate => {

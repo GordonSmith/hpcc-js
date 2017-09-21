@@ -1,6 +1,5 @@
-import { MultiChart } from "@hpcc-js/chart";
 import { Class, Database, Utility, Widget } from "@hpcc-js/common";
-// import { IAnyVisualization, IDashboard, IDatasource, IOutput, ITableVisualization, StringStringDict, VisualizationType } from "@hpcc-js/ddl-shim";
+import { MultiChart } from "@hpcc-js/composite";
 import { IDatasource, IFilter } from "@hpcc-js/ddl-shim";
 import { Comms, Table } from "@hpcc-js/other";
 import { map as d3Map } from "d3-collection";

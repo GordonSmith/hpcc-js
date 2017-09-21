@@ -56,7 +56,7 @@ export class DDLImport {
                 viz.state().selection([row]);
             })
             ;
-        viz.widget(form);
+        viz.widget().multiChart().chart(form);
     }
 
     line(ddlVisualization: DDL.ILineVisualization, viz: Viz) {

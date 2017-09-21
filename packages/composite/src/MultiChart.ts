@@ -207,7 +207,7 @@ export class MultiChart extends HTMLWidget {
         return HTMLWidget.prototype.render.apply(this, arguments);
     }
 }
-MultiChart.prototype._class += " chart_MultiChart";
+MultiChart.prototype._class += " composite_MultiChart";
 MultiChart.prototype.implements(INDChart.prototype);
 MultiChart.prototype.implements(IGraph.prototype);
 export interface ChartMeta {
@@ -217,7 +217,7 @@ export interface ChartMeta {
     widgetPath?: string;
 }
 export interface MultiChart {
-    _GraphChartTypes: ChartMeta[];
+    _otherChartTypes: ChartMeta[];
     _1DChartTypes: ChartMeta[];
     _2DChartTypes: ChartMeta[];
     _NDChartTypes: ChartMeta[];
@@ -244,8 +244,9 @@ export interface MultiChart {
     edge_dblclick(row, column, selected, more): void;
 }
 
-MultiChart.prototype._GraphChartTypes = [
-    { id: "GRAPH", display: "Graph", widgetClass: "graph_Graph" }
+MultiChart.prototype._otherChartTypes = [
+    { id: "GRAPH", display: "Graph", widgetClass: "graph_Graph" },
+    { id: "FORM", display: "Form", widgetClass: "form_Form" }
 ].map(function (item: any) { item.family = "GRAPH"; return item; });
 MultiChart.prototype._1DChartTypes = [
     { id: "C3_GAUGE", display: "Gauge (C3)", widgetClass: "c3chart_Gauge" }
@@ -314,7 +315,7 @@ MultiChart.prototype._anyChartTypes = [
     { id: "TABLE_GMAP_PINLINE", display: "Table driven Google Map (pins/lines)", widgetClass: "map_GMapPinLine" }
 ].map(function (item: any) { item.family = "any"; return item; });
 MultiChart.prototype._allChartTypes =
-    MultiChart.prototype._GraphChartTypes.concat(
+    MultiChart.prototype._otherChartTypes.concat(
         MultiChart.prototype._1DChartTypes.concat(
             MultiChart.prototype._2DChartTypes.concat(
                 MultiChart.prototype._NDChartTypes.concat(
