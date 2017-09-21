@@ -10,7 +10,7 @@ export class SVGZoomWidget extends SVGWidget {
 
     protected _renderElement;
 
-    private _zoom;
+    private _currZoom;
     protected _zoomScale = 1;
     protected _zoomTranslate = [0, 0];
     private _zoomGrab;
@@ -31,7 +31,7 @@ export class SVGZoomWidget extends SVGWidget {
     constructor() {
         super();
 
-        this._zoom = d3Zoom()
+        this._currZoom = d3Zoom()
             .scaleExtent([0.05, 20])
             .on("zoom end", (evt) => {
                 this.onZoomed();
@@ -48,7 +48,7 @@ export class SVGZoomWidget extends SVGWidget {
     }
 
     zoomExtent(range): void {
-        this._zoom.scaleExtent(range);
+        this._currZoom.scaleExtent(range);
     }
 
     zoomTo(translate, scale, transitionDuration = 250) {
@@ -57,7 +57,7 @@ export class SVGZoomWidget extends SVGWidget {
         transitionDuration = transitionDuration === undefined ? this.zoomDuration() : transitionDuration;
 
         this.element().transition().duration(transitionDuration)
-            .call(this._zoom.transform, d3ZoomIdentity.translate(translate[0], translate[1]).scale(scale))
+            .call(this._currZoom.transform, d3ZoomIdentity.translate(translate[0], translate[1]).scale(scale))
             ;
     }
 
@@ -138,13 +138,13 @@ export class SVGZoomWidget extends SVGWidget {
                         ;
                     element.select(".selection").remove();
                     element.selectAll(".handle").remove();
-                    element.call(this._zoom);
+                    element.call(this._currZoom);
                 }
             })
             ;
         if (this._prevZoomable !== this.zoomable()) {
             if (this.zoomable()) {
-                element.call(this._zoom);
+                element.call(this._currZoom);
             } else {
                 element.on(".zoom", null);
             }
@@ -183,7 +183,7 @@ export class SVGZoomWidget extends SVGWidget {
                     .paddingPercent((1 - faCharHeight / iconDiameter) * 100)
                     .on("click", function () {
                         context.element().transition()
-                            .call(context._zoom.scaleBy, 1.33)
+                            .call(context._currZoom.scaleBy, 1.33)
                             ;
                     })
                     ;
@@ -195,7 +195,7 @@ export class SVGZoomWidget extends SVGWidget {
                     .paddingPercent((1 - faCharHeight / iconDiameter) * 100)
                     .on("click", function () {
                         context.element().transition()
-                            .call(context._zoom.scaleBy, 1 / 1.33)
+                            .call(context._currZoom.scaleBy, 1 / 1.33)
                             ;
                     })
                     ;
