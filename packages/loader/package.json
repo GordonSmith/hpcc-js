@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/loader",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "description": "hpcc-js - Loader",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -23,7 +23,7 @@
     "tslib": "^1.7.1"
   },
   "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.9",
+    "@hpcc-js/bundle": "^0.0.10",
     "rimraf": "^2.6.1",
     "rollup": "^0.45.2",
     "rollup-watch": "^4.0.0",
