@@ -119,6 +119,7 @@ export class Project extends Activity {
     outFields(): IField[] {
         if (!this.exists()) return super.outFields();
         const retVal: IField[] = [];
+        const retValMap: { [key: string]: boolean } = {};
         for (const cf of this.computedFields()) {
             if (cf.label()) {
                 const computedField: IField = {
@@ -128,16 +129,16 @@ export class Project extends Activity {
                     children: null
                 };
                 retVal.push(computedField);
+                retValMap[computedField.id] = true;
             }
         }
-        return this.trim() ? retVal : retVal.concat(super.outFields());
+        return this.trim() ? retVal : retVal.concat(super.outFields().filter(field => !retValMap[field.id]));
     }
 
     pullData(): object[] {
         const data = super.pullData();
-        if (data.length === 0) return data;
         return data.map((row: any) => {
-            const retVal = this.trim() ? {} : row;
+            const retVal = this.trim() ? {} : { ...row };
             for (const cf of this.computedFields()) {
                 if (cf.label()) {
                     retVal[cf.label()] = cf.compute(row);
