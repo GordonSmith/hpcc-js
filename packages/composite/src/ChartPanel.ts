@@ -41,7 +41,8 @@ export class ChartPanel extends Border2 implements IClickHandler {
     title: publish<this, string>;
     @publish(null, "widget", "Multi Chart")
     _multiChart: MultiChart;
-    //    multiChart: publish<this, MultiChart>;
+    multiChart(): MultiChart;
+    multiChart(_: MultiChart): this;
     multiChart(_?: MultiChart): MultiChart | this {
         if (!arguments.length) return this._multiChart;
         this._multiChart = _;

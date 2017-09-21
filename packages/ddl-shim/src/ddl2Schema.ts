@@ -93,6 +93,12 @@ export const ddl2Schema =
                     },
                     "type": "array"
                 },
+                "fields": {
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    },
+                    "type": "array"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -105,6 +111,7 @@ export const ddl2Schema =
             },
             "required": [
                 "data",
+                "fields",
                 "id",
                 "type"
             ],
@@ -113,17 +120,18 @@ export const ddl2Schema =
         "IField": {
             "additionalProperties": false,
             "properties": {
+                "children": {
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    },
+                    "type": "array"
+                },
                 "default": {
                 },
                 "id": {
                     "type": "string"
                 },
                 "type": {
-                    "enum": [
-                        "boolean",
-                        "number",
-                        "string"
-                    ],
                     "type": "string"
                 }
             },
@@ -223,6 +231,12 @@ export const ddl2Schema =
                 },
                 "fields": {
                     "items": {
+                        "$ref": "#/definitions/IField"
+                    },
+                    "type": "array"
+                },
+                "groupByIDs": {
+                    "items": {
                         "type": "string"
                     },
                     "type": "array"
@@ -237,6 +251,7 @@ export const ddl2Schema =
             "required": [
                 "aggregates",
                 "fields",
+                "groupByIDs",
                 "type"
             ],
             "type": "object"
@@ -244,6 +259,12 @@ export const ddl2Schema =
         "IHipieService": {
             "additionalProperties": false,
             "properties": {
+                "fields": {
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    },
+                    "type": "array"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -255,6 +276,7 @@ export const ddl2Schema =
                 }
             },
             "required": [
+                "fields",
                 "id",
                 "type"
             ],
@@ -282,6 +304,12 @@ export const ddl2Schema =
         "ILogicalFile": {
             "additionalProperties": false,
             "properties": {
+                "fields": {
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    },
+                    "type": "array"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -299,6 +327,7 @@ export const ddl2Schema =
                 }
             },
             "required": [
+                "fields",
                 "id",
                 "logicalFile",
                 "type",
@@ -341,6 +370,12 @@ export const ddl2Schema =
         "IProject": {
             "additionalProperties": false,
             "properties": {
+                "fields": {
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    },
+                    "type": "array"
+                },
                 "transformations": {
                     "items": {
                         "anyOf": [
@@ -362,6 +397,7 @@ export const ddl2Schema =
                 }
             },
             "required": [
+                "fields",
                 "transformations",
                 "type"
             ],
@@ -390,6 +426,12 @@ export const ddl2Schema =
         "IRoxieService": {
             "additionalProperties": false,
             "properties": {
+                "fields": {
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    },
+                    "type": "array"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -416,6 +458,7 @@ export const ddl2Schema =
                 }
             },
             "required": [
+                "fields",
                 "id",
                 "queryID",
                 "querySet",
@@ -546,6 +589,12 @@ export const ddl2Schema =
         "IWUResult": {
             "additionalProperties": false,
             "properties": {
+                "fields": {
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    },
+                    "type": "array"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -566,6 +615,7 @@ export const ddl2Schema =
                 }
             },
             "required": [
+                "fields",
                 "id",
                 "resultName",
                 "type",
