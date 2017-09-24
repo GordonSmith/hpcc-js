@@ -11,6 +11,8 @@ export function schemaRow2IField(row: any): IField {
     };
 }
 
+export type ReferencedFields = { [activityID: string]: string[] };
+
 export abstract class Activity extends PropertyExt {
     private _sourceActivity: Activity;
 
@@ -53,8 +55,43 @@ export abstract class Activity extends PropertyExt {
     }
 
     localFields(): IField[] {
-        const inFields = this.inFields();
-        return this.outFields().filter(field => inFields.indexOf(field) < 0);
+        const inFieldIDs = this.inFields().map(field => field.id);
+        return this.outFields().filter(field => inFieldIDs.indexOf(field.id) < 0);
+    }
+
+    fieldOrigin(fieldID: string): Activity | null {
+        if (this.localFields().filter(field => field.id === fieldID).length) {
+            return this;
+        } else if (this.sourceActivity()) {
+            return this.sourceActivity().fieldOrigin(fieldID);
+        }
+        return null;
+    }
+
+    resolveFields(refs: ReferencedFields, fieldIDs: string[]) {
+        for (const fieldID of fieldIDs) {
+            const fieldOrigin = this.fieldOrigin(fieldID);
+            if (fieldOrigin) {
+                if (!refs[fieldOrigin.id()]) {
+                    refs[fieldOrigin.id()] = [];
+                }
+                if (refs[fieldOrigin.id()].indexOf(fieldID) < 0) {
+                    refs[fieldOrigin.id()].push(fieldID);
+                }
+            }
+        }
+    }
+
+    resolveInFields(refs: ReferencedFields, fieldIDs: string[]) {
+        if (this.sourceActivity()) {
+            this.sourceActivity().resolveFields(refs, fieldIDs);
+        }
+    }
+
+    referencedFields(refs: ReferencedFields): void {
+        if (this.sourceActivity()) {
+            this.sourceActivity().referencedFields(refs);
+        }
     }
 
     exec(): Promise<void> {
@@ -118,6 +155,26 @@ export class ActivitySequence extends ActivityArray {
     outFields(): IField[] {
         return this.last().outFields();
     }
+
+    localFields(): IField[] {
+        return this.last().localFields();
+    }
+
+    fieldOrigin(fieldID: string): Activity | null {
+        return this.last().fieldOrigin(fieldID);
+    }
+
+    referencedFields(refs: ReferencedFields) {
+        this.last().referencedFields(refs);
+    }
+
+    resolveInFields(refs: ReferencedFields, fieldIDs: string[]) {
+        this.last().resolveInFields(refs, fieldIDs);
+    }
+
+    resolveFields(refs: ReferencedFields, fieldIDs: string[]) {
+        this.last().resolveFields(refs, fieldIDs);
+    }
 }
 ActivitySequence.prototype._class += " ActivitySequence";
 
@@ -165,6 +222,26 @@ export class ActivitySelection extends ActivityArray {
 
     outFields(): IField[] {
         return this.selection().outFields();
+    }
+
+    localFields(): IField[] {
+        return this.selection().localFields();
+    }
+
+    fieldOrigin(fieldID: string): Activity | null {
+        return this.selection().fieldOrigin(fieldID);
+    }
+
+    referencedFields(refs: ReferencedFields) {
+        this.selection().referencedFields(refs);
+    }
+
+    resolveInFields(refs: ReferencedFields, fieldIDs: string[]) {
+        this.selection().resolveInFields(refs, fieldIDs);
+    }
+
+    resolveFields(refs: ReferencedFields, fieldIDs: string[]) {
+        this.selection().resolveFields(refs, fieldIDs);
     }
 
     exec(): Promise<void> {

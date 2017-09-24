@@ -3,7 +3,7 @@ import { Query as CommsQuery, RequestType } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { compare, hashSum } from "@hpcc-js/util";
 import { Viz } from "../viz";
-import { Activity, schemaRow2IField } from "./activity";
+import { Activity, ReferencedFields, schemaRow2IField } from "./activity";
 import { View } from "./view";
 
 export class Param extends PropertyExt {
@@ -105,6 +105,17 @@ export class RoxieService extends Activity {
 
     label(): string {
         return `${this.queryID()}\n${this.resultName()}`;
+    }
+
+    referencedFields(refs: ReferencedFields): void {
+        super.referencedFields(refs);
+        const localFieldIDs: string[] = [];
+        for (const param of this.validParams()) {
+            const filterSource = param.sourceViz().view();
+            localFieldIDs.push(param.localFieldID());
+            filterSource.resolveFields(refs, [param.remoteFieldID()]);
+        }
+        super.resolveFields(refs, localFieldIDs);
     }
 
     validParams() {

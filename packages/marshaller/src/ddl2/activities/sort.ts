@@ -2,7 +2,7 @@ import { PropertyExt, publish } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { ascending as d3Ascending, descending as d3Descending } from "d3-array";
-import { Activity } from "./activity";
+import { Activity, ReferencedFields } from "./activity";
 import { View } from "./view";
 
 export class SortColumn extends PropertyExt {
@@ -55,6 +55,11 @@ export class Sort extends Activity {
         return hashSum({
             Sort: this.column().map(sb => sb.hash())
         });
+    }
+
+    referencedFields(refs: ReferencedFields): void {
+        super.referencedFields(refs);
+        super.resolveInFields(refs, this.validSortBy().map(sortBy => sortBy.fieldID()));
     }
 
     validSortBy(): SortColumn[] {

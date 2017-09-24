@@ -1,7 +1,7 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
-import { Activity } from "./activity";
+import { Activity, ReferencedFields } from "./activity";
 import { View } from "./view";
 
 export type ComputedType = "=" | "*" | "/" | "+" | "-" | "scale";
@@ -133,6 +133,18 @@ export class Project extends Activity {
             }
         }
         return this.trim() ? retVal : retVal.concat(super.outFields().filter(field => !retValMap[field.id]));
+    }
+
+    referencedFields(refs: ReferencedFields): void {
+        super.referencedFields(refs);
+        const fieldIDs: string[] = [];
+        for (const cf of this.validComputedFields()) {
+            fieldIDs.push(cf.column1());
+            if (cf.column2()) {
+                fieldIDs.push(cf.column2());
+            }
+        }
+        super.resolveInFields(refs, fieldIDs);
     }
 
     pullData(): object[] {

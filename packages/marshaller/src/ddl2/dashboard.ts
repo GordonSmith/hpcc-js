@@ -130,6 +130,7 @@ export class Dashboard extends DockPanel {
         this.clear();
         this.ddl(obj.ddl);
         this.layout(obj.layout);
+        await Promise.all(this.visualizations().map(viz => viz.refresh()));
         return this;
     }
 

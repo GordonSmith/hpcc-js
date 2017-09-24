@@ -1,5 +1,6 @@
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
+import { ReferencedFields } from "./activities/activity";
 import { Databomb, Form } from "./activities/databomb";
 import { DSPicker } from "./activities/dspicker";
 import { ColumnMapping, Filter, Filters } from "./activities/filter";
@@ -17,13 +18,13 @@ export { DDL2 };
 
 export class DDLAdapter {
     private _dashboard: Dashboard;
-    private _dsDedup: { [key: string]: string };
+    private _dsDedup: { [key: string]: DDL2.DatasourceType };
 
     constructor(dashboard: Dashboard) {
         this._dashboard = dashboard;
     }
 
-    writeDatasource(ds): DDL2.DatasourceType {
+    writeDatasource(ds, refs: ReferencedFields): DDL2.DatasourceType {
         const dsDetails = ds.details();
         if (dsDetails instanceof WUResult) {
             const ddl: DDL2.IWUResult = {
@@ -32,7 +33,7 @@ export class DDLAdapter {
                 url: dsDetails.url(),
                 wuid: dsDetails.wuid(),
                 resultName: dsDetails.resultName(),
-                fields: this.writeFields(dsDetails.localFields())
+                fields: this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0))
             };
             return ddl;
         } else if (dsDetails instanceof LogicalFile) {
@@ -41,7 +42,7 @@ export class DDLAdapter {
                 id: ds.id(),
                 url: dsDetails.url(),
                 logicalFile: dsDetails.logicalFile(),
-                fields: this.writeFields(dsDetails.localFields())
+                fields: this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0))
             };
             return ddl;
         } else if (dsDetails instanceof Form) {
@@ -62,7 +63,7 @@ export class DDLAdapter {
                 type: "databomb",
                 id: ds.id(),
                 data: [],
-                fields: this.writeFields(dsDetails.localFields())
+                fields: this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0))
             };
             return ddl;
         } else if (dsDetails instanceof RoxieService) {
@@ -72,14 +73,8 @@ export class DDLAdapter {
                 url: dsDetails.url(),
                 querySet: dsDetails.querySet(),
                 queryID: dsDetails.queryID(),
-                request: dsDetails.request().map((rf): DDL2.IRequestField => {
-                    return {
-                        source: rf.source(),
-                        remoteFieldID: rf.remoteFieldID(),
-                        localFieldID: rf.localFieldID()
-                    };
-                }),
-                fields: this.writeFields(dsDetails.localFields())
+                resultName: dsDetails.resultName(),
+                fields: this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0))
             };
             return ddl;
         }
@@ -132,13 +127,6 @@ export class DDLAdapter {
                 .url(ddlDS.url)
                 .querySet(ddlDS.querySet)
                 .queryID(ddlDS.queryID)
-                .request(ddlDS.request.map((rf) => {
-                    return new Param(dsDetails)
-                        .source(rf.source)
-                        .remoteFieldID(rf.remoteFieldID)
-                        .localFieldID(rf.localFieldID)
-                        ;
-                }))
                 ;
         }
         return this;
@@ -149,8 +137,9 @@ export class DDLAdapter {
         for (const viz of this._dashboard.visualizations()) {
             const ds = viz.view().dataSource();
             if (!this._dsDedup[ds.hash()]) {
-                this._dsDedup[ds.hash()] = ds.id();
-                retVal.push(this.writeDatasource(ds));
+                const ddlDataSource = this.writeDatasource(ds, {});
+                this._dsDedup[ds.hash()] = ddlDataSource;
+                retVal.push(ddlDataSource);
             }
         }
         return retVal;
@@ -231,8 +220,7 @@ export class DDLAdapter {
                         param2: cf.column2()
                     };
                 }
-            }),
-            fields: this.writeFields(project.localFields())
+            })
         };
     }
 
@@ -276,8 +264,7 @@ export class DDLAdapter {
                     type: cf.aggrType() as any,
                     fieldID: cf.aggrColumn()
                 };
-            }),
-            fields: this.writeFields(gb.localFields())
+            })
         };
     }
 
@@ -342,12 +329,54 @@ export class DDLAdapter {
         return this;
     }
 
-    writeDDLViews(): DDL2.IView[] {
+    writeDatasourceRef(ds: DSPicker, refs: ReferencedFields): DDL2.IRoxieServiceRef | DDL2.IDatasourceRef {
+        const dsDetails = ds.details();
+        if (dsDetails instanceof RoxieService) {
+            return {
+                id: this._dsDedup[ds.hash()].id,
+                fields: this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0)),
+                request: dsDetails.request().map((rf): DDL2.IRequestField => {
+                    return {
+                        source: rf.source(),
+                        remoteFieldID: rf.remoteFieldID(),
+                        localFieldID: rf.localFieldID()
+                    };
+                })
+            };
+        } else {
+            return {
+                id: this._dsDedup[ds.hash()].id,
+                fields: this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0))
+            };
+        }
+    }
+
+    readDatasourceRef(ddlDSRef: DDL2.IRoxieServiceRef | DDL2.IDatasourceRef, ds: DSPicker): this {
+        const ddlDS = this._dsDedup[ddlDSRef.id];
+        this.readDatasource(ddlDS, ds);
+        const dsDetails = ds.details();
+        if (dsDetails instanceof RoxieService && DDL2.isIRoxieServiceRef(ddlDSRef)) {
+            dsDetails.request(ddlDSRef.request.map(rf => {
+                return new Param(dsDetails)
+                    .source(rf.source)
+                    .remoteFieldID(rf.remoteFieldID)
+                    .localFieldID(rf.localFieldID)
+                    ;
+            }));
+        }
+        return this;
+    }
+
+    writeDDLViews(refs: ReferencedFields): DDL2.IView[] {
+        for (const viz of this._dashboard.visualizations()) {
+            viz.view().referencedFields(refs);
+        }
         return this._dashboard.visualizations().map(viz => {
             const view = viz.view();
-            return {
+            const ds = view.dataSource();
+            const retVal = {
                 id: viz.id(),
-                datasource: this.writeDatasource(view.dataSource()),
+                datasource: this.writeDatasourceRef(ds, refs),
                 filter: this.writeFilters(view.filters()),
                 computed: this.writeProject(view.project()),
                 groupBy: this.writeGroupBy(view.groupBy()),
@@ -355,6 +384,13 @@ export class DDLAdapter {
                 limit: this.writeLimit(view.limit()),
                 mappings: this.writeProject(view.mappings())
             };
+            const ddlDatasource = this._dsDedup[ds.hash()];
+            for (const field of retVal.datasource.fields) {
+                if (ddlDatasource.fields.filter(ddlField => ddlField.id === field.id).length === 0) {
+                    ddlDatasource.fields.push(field);
+                }
+            }
+            return retVal;
         });
     }
 
@@ -363,7 +399,7 @@ export class DDLAdapter {
             const viz = new Viz(this._dashboard).id(ddlView.id).title(ddlView.id);
             this._dashboard.addVisualization(viz);
             const view = viz.view();
-            this.readDatasource(ddlView.datasource, view.dataSource())
+            this.readDatasourceRef(ddlView.datasource, view.dataSource())
                 .readFilters(ddlView.filter, view.filters())
                 .readProject(ddlView.computed, view.project())
                 .readGroupBy(ddlView.groupBy, view.groupBy())
@@ -377,13 +413,19 @@ export class DDLAdapter {
 
     write(): DDL2.Schema {
         this._dsDedup = {};
-        return {
+        const refs = {};
+        const retVal = {
             datasources: this.writeDatasources(),
-            dataviews: this.writeDDLViews(),
+            dataviews: this.writeDDLViews(refs)
         };
+        return retVal;
     }
 
     read(ddl: DDL2.Schema) {
+        this._dsDedup = {};
+        for (const ds of ddl.datasources) {
+            this._dsDedup[ds.id] = ds;
+        }
         this.readDDLViews(ddl.dataviews);
     }
 }

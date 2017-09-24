@@ -3,7 +3,7 @@ import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "d3-array";
 import { nest as d3Nest } from "d3-collection";
-import { Activity } from "./activity";
+import { Activity, ReferencedFields } from "./activity";
 import { View } from "./view";
 
 export class GroupByColumn extends PropertyExt {
@@ -203,6 +203,20 @@ export class GroupBy extends Activity {
             }));
         }
         return retVal;
+    }
+
+    referencedFields(refs: ReferencedFields): void {
+        super.referencedFields(refs);
+        const fieldIDs: string[] = [];
+        for (const gb of this.validGroupBy()) {
+            fieldIDs.push(gb.label());
+        }
+        for (const cf of this.validComputedFields()) {
+            if (cf.aggrColumn()) {
+                fieldIDs.push(cf.aggrColumn());
+            }
+        }
+        super.resolveInFields(refs, fieldIDs);
     }
 
     pullData(): object[] {

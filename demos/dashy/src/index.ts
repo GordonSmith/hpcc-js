@@ -110,8 +110,7 @@ export class App {
             .on("childActivation", (w: Widget) => {
                 switch (w) {
                     case this._dashboard:
-                        delete this._currActivity;
-                        this.loadDataProps(this._dashboard.test());
+                        this.vizChanged(this._currViz, true);
                         break;
                     case this._graph:
                         this.loadGraph(true);
@@ -153,8 +152,9 @@ export class App {
     }
 
     private _currViz: Viz;
-    vizChanged(viz: Viz) {
-        if (this._currViz !== viz) {
+    vizChanged(viz: Viz, force: boolean = false) {
+        if (!viz) return;
+        if (this._currViz !== viz || viz) {
             this._currViz = viz;
             this.loadDataProps(viz.view());
             this.loadWidgetProps(viz.widget());
@@ -167,8 +167,9 @@ export class App {
     }
 
     private _currActivity: Activity;
-    activityChanged(activity: Activity) {
-        if (this._currActivity !== activity) {
+    activityChanged(activity: Activity, force: boolean = false) {
+        if (!activity) return;
+        if (this._currActivity !== activity || force) {
             this._currActivity = activity;
             this.loadDataProps(activity);
             this.loadPreview(activity);
@@ -246,11 +247,9 @@ export class App {
         }
     }
 
-    loadClone() {
-        this._clone.restore(this._dashboard.save());
-        Promise.all(this._clone.visualizations().map(viz => viz.refresh())).then(() => {
-            this._clone.lazyRender();
-        });
+    async loadClone() {
+        await this._clone.restore(this._dashboard.save());
+        this._clone.lazyRender();
     }
 
     initMenu() {

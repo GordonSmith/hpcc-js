@@ -117,6 +117,25 @@ export const ddl2Schema =
             ],
             "type": "object"
         },
+        "IDatasourceRef": {
+            "additionalProperties": false,
+            "properties": {
+                "fields": {
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    },
+                    "type": "array"
+                },
+                "id": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "fields",
+                "id"
+            ],
+            "type": "object"
+        },
         "IField": {
             "additionalProperties": false,
             "properties": {
@@ -229,12 +248,6 @@ export const ddl2Schema =
                     },
                     "type": "array"
                 },
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
                 "groupByIDs": {
                     "items": {
                         "type": "string"
@@ -250,7 +263,6 @@ export const ddl2Schema =
             },
             "required": [
                 "aggregates",
-                "fields",
                 "groupByIDs",
                 "type"
             ],
@@ -370,12 +382,6 @@ export const ddl2Schema =
         "IProject": {
             "additionalProperties": false,
             "properties": {
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
                 "transformations": {
                     "items": {
                         "anyOf": [
@@ -397,7 +403,6 @@ export const ddl2Schema =
                 }
             },
             "required": [
-                "fields",
                 "transformations",
                 "type"
             ],
@@ -441,11 +446,8 @@ export const ddl2Schema =
                 "querySet": {
                     "type": "string"
                 },
-                "request": {
-                    "items": {
-                        "$ref": "#/definitions/IRequestField"
-                    },
-                    "type": "array"
+                "resultName": {
+                    "type": "string"
                 },
                 "type": {
                     "enum": [
@@ -462,9 +464,35 @@ export const ddl2Schema =
                 "id",
                 "queryID",
                 "querySet",
-                "request",
+                "resultName",
                 "type",
                 "url"
+            ],
+            "type": "object"
+        },
+        "IRoxieServiceRef": {
+            "additionalProperties": false,
+            "properties": {
+                "fields": {
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    },
+                    "type": "array"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "request": {
+                    "items": {
+                        "$ref": "#/definitions/IRequestField"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "fields",
+                "id",
+                "request"
             ],
             "type": "object"
         },
@@ -542,22 +570,10 @@ export const ddl2Schema =
                 "datasource": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/IWUResult"
+                            "$ref": "#/definitions/IDatasourceRef"
                         },
                         {
-                            "$ref": "#/definitions/ILogicalFile"
-                        },
-                        {
-                            "$ref": "#/definitions/IForm"
-                        },
-                        {
-                            "$ref": "#/definitions/IDatabomb"
-                        },
-                        {
-                            "$ref": "#/definitions/IRoxieService"
-                        },
-                        {
-                            "$ref": "#/definitions/IHipieService"
+                            "$ref": "#/definitions/IRoxieServiceRef"
                         }
                     ]
                 },

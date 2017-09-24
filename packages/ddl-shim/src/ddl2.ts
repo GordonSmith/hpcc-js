@@ -17,6 +17,11 @@ export interface IDatasource {
     fields: IField[];
 }
 
+export interface IDatasourceRef {
+    id: string;
+    fields: IField[];
+}
+
 export interface IESPService extends IDatasource {
     url: string;
 }
@@ -32,17 +37,25 @@ export interface ILogicalFile extends IESPService {
     logicalFile: string;
 }
 
+export interface IRoxieService extends IESPService {
+    type: "roxieservice";
+    querySet: string;
+    queryID: string;
+    resultName: string;
+}
+
 export interface IRequestField {
     source: string;
     remoteFieldID: string;
     localFieldID: string;
 }
 
-export interface IRoxieService extends IESPService {
-    type: "roxieservice";
-    querySet: string;
-    queryID: string;
+export interface IRoxieServiceRef extends IDatasourceRef {
     request: IRequestField[];
+}
+
+export function isIRoxieServiceRef(ref: IDatasourceRef | IRoxieServiceRef): ref is IRoxieServiceRef {
+    return (ref as IRoxieServiceRef).request !== undefined;
 }
 
 export interface IForm extends IDatasource {
@@ -105,7 +118,6 @@ export type TransformationType = IScale | ICalculated;
 export interface IProject extends IActivity {
     type: "project";
     transformations: TransformationType[];
-    fields: IField[];
 }
 
 //  GroupBy  ==================================================================
@@ -126,7 +138,6 @@ export interface IGroupBy extends IActivity {
     type: "groupby";
     groupByIDs: string[];
     aggregates: AggregateType[];
-    fields: IField[];
 }
 
 //  Sort  =====================================================================
@@ -149,7 +160,7 @@ export interface ILimit extends IActivity {
 //  View  =====================================================================
 export interface IView {
     id: string;
-    datasource: DatasourceType;
+    datasource: IDatasourceRef | IRoxieServiceRef;
     filter?: IFilter;
     computed?: IProject;
     groupBy?: IGroupBy;

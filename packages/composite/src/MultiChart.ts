@@ -247,7 +247,7 @@ export interface MultiChart {
 MultiChart.prototype._otherChartTypes = [
     { id: "GRAPH", display: "Graph", widgetClass: "graph_Graph" },
     { id: "FORM", display: "Form", widgetClass: "form_Form" }
-].map(function (item: any) { item.family = "GRAPH"; return item; });
+].map(function (item: any) { item.family = "other"; return item; });
 MultiChart.prototype._1DChartTypes = [
     { id: "C3_GAUGE", display: "Gauge (C3)", widgetClass: "c3chart_Gauge" }
 ].map(function (item: any) { item.family = "1D"; return item; });

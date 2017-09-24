@@ -60,7 +60,7 @@ export class GraphAdapter {
             this.vertexMap[id] = retVal;
             this.vertices.push(retVal);
         }
-        retVal.text(label);
+        retVal.text(`${label} - ${id}`);
         retVal.getBBox(true);
         return retVal;
     }

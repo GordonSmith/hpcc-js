@@ -3,7 +3,7 @@ import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Viz } from "../viz";
-import { Activity } from "./activity";
+import { Activity, ReferencedFields } from "./activity";
 import { View } from "./view";
 
 export class ColumnMapping extends PropertyExt {
@@ -160,6 +160,21 @@ export class Filters extends Activity {
 
     updatedBy(): string[] {
         return this.validFilters().map(filter => filter.source());
+    }
+
+    referencedFields(refs: ReferencedFields): void {
+        super.referencedFields(refs);
+        const localFieldIDs: string[] = [];
+        for (const filter of this.validFilters()) {
+            const filterSource = filter.sourceViz().view();
+            const remoteFieldIDs: string[] = [];
+            for (const mapping of filter.validMappings()) {
+                localFieldIDs.push(mapping.localField());
+                remoteFieldIDs.push(mapping.remoteField());
+            }
+            filterSource.resolveFields(refs, remoteFieldIDs);
+        }
+        super.resolveInFields(refs, localFieldIDs);
     }
 
     exec(): Promise<void> {
