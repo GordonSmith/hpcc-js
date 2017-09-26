@@ -64,7 +64,6 @@ export interface IForm extends IDatasource {
 
 export interface IDatabomb extends IDatasource {
     type: "databomb";
-    data: RowType[];
 }
 
 export interface IHipieService extends IDatasource {

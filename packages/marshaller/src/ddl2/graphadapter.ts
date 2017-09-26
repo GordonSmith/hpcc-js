@@ -2,7 +2,7 @@ import { Surface, Widget } from "@hpcc-js/common";
 import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
 import { Activity } from "./activities/activity";
 import { DSPicker } from "./activities/dspicker";
-import { RoxieService } from "./activities/roxie";
+import { RoxieRequest } from "./activities/roxie";
 import { View } from "./activities/view";
 import { WUResult } from "./activities/wuresult";
 import { Dashboard } from "./dashboard";
@@ -60,7 +60,8 @@ export class GraphAdapter {
             this.vertexMap[id] = retVal;
             this.vertices.push(retVal);
         }
-        retVal.text(`${label} - ${id}`);
+        // retVal.text(`${label} - ${id}`);
+        retVal.text(`${label}`);
         retVal.getBBox(true);
         return retVal;
     }
@@ -79,7 +80,7 @@ export class GraphAdapter {
         return retVal;
     }
 
-    roxieServiceID(dsDetails: RoxieService) {
+    roxieServiceID(dsDetails: RoxieRequest) {
         return `${dsDetails.url()}/${dsDetails.querySet()}/${dsDetails.queryID()}`;
     }
 
@@ -97,8 +98,8 @@ export class GraphAdapter {
             }
             this.hierarchy.push({ parent: surface, child: vertex });
             return id;
-        } else if (dsDetails instanceof RoxieService) {
-            const surfaceID = `${dsDetails.url()}/${dsDetails.querySet()}}`;
+        } else if (dsDetails instanceof RoxieRequest) {
+            const surfaceID = `${dsDetails.url()}/${dsDetails.querySet()}`;
             const surface: Surface = this.createSurface(surfaceID, dsDetails.querySet(), { viz, view });
             const roxieID = this.roxieServiceID(dsDetails);
             this.hierarchy.push({
@@ -155,7 +156,7 @@ export class GraphAdapter {
         for (const viz of this._dashboard.visualizations()) {
             const view = viz.view();
             for (const updateInfo of view.updatedByGraph()) {
-                this.createEdge(lastID[this._dashboard.visualization(updateInfo.from).view().id()], updateInfo.to instanceof DSPicker ? this.roxieServiceID(updateInfo.to.details() as RoxieService) : updateInfo.to.id())
+                this.createEdge(lastID[this._dashboard.visualization(updateInfo.from).view().id()], updateInfo.to instanceof DSPicker ? this.roxieServiceID(updateInfo.to.details() as RoxieRequest) : updateInfo.to.id())
                     .weight(10)
                     .strokeDasharray("1,5")
                     .text("updates")

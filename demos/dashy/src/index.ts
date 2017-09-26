@@ -47,7 +47,7 @@ export class App {
     private _dataSplit = new SplitPanel();
     private _dashboard: Dashboard = new Dashboard()
         .on("vizActivation", (viz: Viz) => {
-            this.vizChanged(viz);
+            this.selectionChanged(viz);
         })
         .on("vizStateChanged", (viz: Viz) => {
             for (const filteredViz of this._dashboard.filteredBy(viz)) {
@@ -64,11 +64,7 @@ export class App {
         .applyScaleOnLayout(true)
         .on("vertex_click", (row: any, col: string, sel: boolean, ext: any) => {
             const obj = row.__lparam[0];
-            if (obj.activity) {
-                this.activityChanged(obj.activity);
-            } else {
-                this.vizChanged(obj.viz);
-            }
+            this.selectionChanged(obj.viz, obj.activity);
         })
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {
         })
@@ -110,7 +106,7 @@ export class App {
             .on("childActivation", (w: Widget) => {
                 switch (w) {
                     case this._dashboard:
-                        this.vizChanged(this._currViz, true);
+                        this.selectionChanged(this._currViz);
                         break;
                     case this._graph:
                         this.loadGraph(true);
@@ -131,10 +127,25 @@ export class App {
             ;
         this.initMenu();
         this._dataProperties.monitor((id: string, newValue: any, oldValue: any, source: PropertyExt) => {
-            if (source !== this._dataProperties) {
+            if (source !== this._dataProperties && this._currViz) {
                 this._currViz.refresh().then(() => {
                     this.refreshPreview();
                 });
+                switch (this._dockPanel.active()) {
+                    case this._dashboard:
+                        break;
+                    case this._graph:
+                        this.loadGraph(true);
+                        break;
+                    case this._ddlEditor:
+                        this.loadDDL(true);
+                        break;
+                    case this._layoutEditor:
+                        this.loadLayout(true);
+                        break;
+                    case this._clone:
+                        break;
+                }
             }
         });
     }
@@ -151,29 +162,20 @@ export class App {
         }
     }
 
-    private _currViz: Viz;
-    vizChanged(viz: Viz, force: boolean = false) {
-        if (!viz) return;
-        if (this._currViz !== viz || viz) {
-            this._currViz = viz;
+    private _currViz: Viz | undefined;
+    private _currActivity: Activity | undefined;
+    selectionChanged(viz?: Viz, activity?: Activity) {
+        if (activity && (this._currActivity !== activity)) {
+            this.loadDataProps(activity);
+            this.loadPreview(activity);
+        } else if (viz && (this._currViz !== viz || this._currActivity !== activity)) {
             this.loadDataProps(viz.view());
             this.loadWidgetProps(viz.widget());
             this.loadStateProps(viz.state());
             this.loadPreview(viz.view().last());
-        } else {
-            this.loadDataProps(viz.view());
-            this.loadPreview(viz.view().last());
         }
-    }
-
-    private _currActivity: Activity;
-    activityChanged(activity: Activity, force: boolean = false) {
-        if (!activity) return;
-        if (this._currActivity !== activity || force) {
-            this._currActivity = activity;
-            this.loadDataProps(activity);
-            this.loadPreview(activity);
-        }
+        this._currViz = viz;
+        this._currActivity = activity;
     }
 
     loadDataProps(pe: PropertyExt) {
@@ -263,7 +265,7 @@ export class App {
                 this._dashboard.addVisualization(viz);
                 this.loadDashboard();
                 viz.refresh().then(() => {
-                    this.vizChanged(viz);
+                    this.selectionChanged(viz);
                 });
             }
         });

@@ -4,7 +4,7 @@ import { Form, Input } from "@hpcc-js/form";
 import { Form as DBForm } from "./activities/databomb";
 import { AggregateField, GroupByColumn } from "./activities/groupby";
 import { ComputedField } from "./activities/project";
-import { HipieService } from "./activities/roxie";
+import { HipieRequest } from "./activities/roxie";
 import { WUResult } from "./activities/wuresult";
 import { Dashboard } from "./dashboard";
 import { Viz } from "./viz";
@@ -226,7 +226,7 @@ export class DDLImport {
                     vizDS.type("databomb");
                 } else {
                     vizDS.type("hipieservice");
-                    (vizDS.details() as HipieService)
+                    (vizDS.details() as HipieRequest)
                         .fullUrl(ddlDS.URL)
                         .resultName(ddlOP.from)
                         ;

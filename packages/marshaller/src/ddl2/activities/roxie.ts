@@ -1,4 +1,4 @@
-import { PropertyExt, publish } from "@hpcc-js/common";
+import { PropertyExt, publish, publishProxy } from "@hpcc-js/common";
 import { Query as CommsQuery, RequestType } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { compare, hashSum } from "@hpcc-js/util";
@@ -8,7 +8,7 @@ import { View } from "./view";
 
 export class Param extends PropertyExt {
     private _view: View;
-    private _owner: RoxieService;
+    private _owner: RoxieRequest;
 
     @publish(null, "set", "Datasource", function (this: Param) { return this.visualizationIDs(); }, { optional: true })
     source: publish<this, string>;
@@ -20,7 +20,7 @@ export class Param extends PropertyExt {
     localFieldID: publish<this, string>;
     localFieldID_exists: () => boolean;
 
-    constructor(owner: RoxieService) {
+    constructor(owner: RoxieRequest) {
         super();
         this._view = owner._owner;
         this._owner = owner;
@@ -60,10 +60,9 @@ export class Param extends PropertyExt {
 }
 Param.prototype._class += " ColumnMapping";
 
-export class RoxieService extends Activity {
-    _owner: View;
+export class RoxieService extends PropertyExt {
+    _owner: RoxieRequest;
     private _query: CommsQuery;
-    private _data: any[] = [];
 
     @publish("", "string", "ESP Url (http://x.x.x.x:8010)")
     url: publish<this, string>;
@@ -71,24 +70,13 @@ export class RoxieService extends Activity {
     querySet: publish<this, string>;
     @publish("", "string", "Query ID")
     queryID: publish<this, string>;
-    @publish("", "string", "Result Name")
-    resultName: publish<this, string>;
-    @publish([], "propertyArray", "Request Fields")
-    _request: Param[];
-    request(): Param[];
-    request(_: Param[]): this;
-    request(_?: Param[]): Param[] | this {
-        if (!arguments.length) return this._request;
-        this._request = _;
-        return this;
-    }
 
-    constructor(owner: View) {
+    constructor(owner: RoxieRequest) {
         super();
         this._owner = owner;
     }
 
-    sourceHash(): string {
+    hash(): string {
         return hashSum({
             url: this.url(),
             querySet: this.querySet(),
@@ -96,30 +84,8 @@ export class RoxieService extends Activity {
         });
     }
 
-    hash(): string {
-        return hashSum({
-            source: this.sourceHash(),
-            params: this.request().map(param => param.hash())
-        });
-    }
-
     label(): string {
-        return `${this.queryID()}\n${this.resultName()}`;
-    }
-
-    referencedFields(refs: ReferencedFields): void {
-        super.referencedFields(refs);
-        const localFieldIDs: string[] = [];
-        for (const param of this.validParams()) {
-            const filterSource = param.sourceViz().view();
-            localFieldIDs.push(param.localFieldID());
-            filterSource.resolveFields(refs, [param.remoteFieldID()]);
-        }
-        super.resolveFields(refs, localFieldIDs);
-    }
-
-    validParams() {
-        return this.request().filter(param => param.exists());
+        return this.queryID();
     }
 
     fullUrl(_: string): this {
@@ -139,22 +105,105 @@ export class RoxieService extends Activity {
     private _prevSourceHash: string;
     private refreshMetaPromise: Promise<void>;
     refreshMeta(): Promise<void> {
-        if (this._prevSourceHash !== this.sourceHash()) {
-            this._prevSourceHash = this.sourceHash();
+        if (this._prevSourceHash !== this.hash()) {
+            this._prevSourceHash = this.hash();
             delete this.refreshMetaPromise;
         }
         if (!this.refreshMetaPromise) {
-            this.refreshMetaPromise = super.refreshMeta().then(() => {
-                return CommsQuery.attach({ baseUrl: this.url(), type: RequestType.JSONP }, this.querySet(), this.queryID());
-            }).then((query) => {
+            this.refreshMetaPromise = CommsQuery.attach({ baseUrl: this.url(), type: RequestType.JSONP }, this.querySet(), this.queryID()).then((query) => {
                 this._query = query;
-                const oldParams = this.request();
-                const diffs = compare(oldParams.map(p => p.localFieldID()), this.requestFields().map(ff => ff.label));
-                const newParams = oldParams.filter(op => diffs.unchanged.indexOf(op.localFieldID()) >= 0);
-                this.request(newParams.concat(diffs.added.map(label => new Param(this).localFieldID(label))));
             });
         }
         return this.refreshMetaPromise;
+    }
+
+    outFields(resultName: string): IField[] {
+        if (this._query) {
+            const responseSchema = this._query.fields(resultName);
+            return responseSchema.map(schemaRow2IField);
+        }
+        return [];
+    }
+
+    submit(request: { [key: string]: any }): Promise<{ [key: string]: any }> {
+        return this._query.submit(request);
+    }
+
+    requestFields(): IField[] {
+        if (this._query) {
+            const responseSchema = this._query.requestFields();
+            return responseSchema.map(schemaRow2IField);
+        }
+        return [];
+    }
+}
+RoxieService.prototype._class += " RoxieService";
+
+export class RoxieRequest extends Activity {
+    _owner: View;
+    protected _roxieService = new RoxieService(this);
+    private _data: any[] = [];
+
+    @publishProxy("_roxieService")
+    url: publish<this, string>;
+    @publishProxy("_roxieService")
+    querySet: publish<this, string>;
+    @publishProxy("_roxieService")
+    queryID: publish<this, string>;
+    @publish("", "string", "Result Name")
+    resultName: publish<this, string>;
+    @publish([], "propertyArray", "Request Fields")
+    _request: Param[];
+    request(): Param[];
+    request(_: Param[]): this;
+    request(_?: Param[]): Param[] | this {
+        if (!arguments.length) return this._request;
+        this._request = _;
+        return this;
+    }
+
+    constructor(owner: View) {
+        super();
+        this._owner = owner;
+    }
+
+    sourceHash(): string {
+        return this._roxieService.hash();
+    }
+
+    hash(): string {
+        return hashSum({
+            source: this.sourceHash(),
+            params: this.request().map(param => param.hash())
+        });
+    }
+
+    label(): string {
+        return `${this._roxieService.label()}\n${this.resultName()}`;
+    }
+
+    referencedFields(refs: ReferencedFields): void {
+        super.referencedFields(refs);
+        const localFieldIDs: string[] = [];
+        for (const param of this.validParams()) {
+            const filterSource = param.sourceViz().view();
+            localFieldIDs.push(param.localFieldID());
+            filterSource.resolveFields(refs, [param.remoteFieldID()]);
+        }
+        super.resolveFields(refs, localFieldIDs);
+    }
+
+    validParams() {
+        return this.request().filter(param => param.exists());
+    }
+
+    refreshMeta(): Promise<void> {
+        return this._roxieService.refreshMeta().then(() => {
+            const oldParams = this.request();
+            const diffs = compare(oldParams.map(p => p.localFieldID()), this._roxieService.requestFields().map(ff => ff.label));
+            const newParams = oldParams.filter(op => diffs.unchanged.indexOf(op.localFieldID()) >= 0);
+            this.request(newParams.concat(diffs.added.map(label => new Param(this).localFieldID(label))));
+        });
     }
 
     updatedBy(): string[] {
@@ -162,11 +211,7 @@ export class RoxieService extends Activity {
     }
 
     outFields(): IField[] {
-        if (this._query) {
-            const responseSchema = this._query.fields(this.resultName());
-            return responseSchema.map(schemaRow2IField);
-        }
-        return [];
+        return this._roxieService.outFields(this.resultName());
     }
 
     exec(): Promise<void> {
@@ -178,7 +223,7 @@ export class RoxieService extends Activity {
                     request[param.localFieldID()] = sourceSelection[0][param.remoteFieldID()];
                 }
             }
-            return this._query.submit(request);
+            return this._roxieService.submit(request);
         }).then((response: { [key: string]: any }) => {
             this._data = response[this.resultName()];
         });
@@ -187,17 +232,12 @@ export class RoxieService extends Activity {
     pullData(): object[] {
         return this._data;
     }
-
-    //  ===
-    requestFields(): IField[] {
-        if (this._query) {
-            const responseSchema = this._query.requestFields();
-            return responseSchema.map(schemaRow2IField);
-        }
-        return [];
-    }
 }
-RoxieService.prototype._class += " Filters";
+RoxieRequest.prototype._class += " RoxieRequest";
 
-export class HipieService extends RoxieService {
+export class HipieRequest extends RoxieRequest {
+    fullUrl(_: string): this {
+        this._roxieService.fullUrl(_);
+        return this;
+    }
 }

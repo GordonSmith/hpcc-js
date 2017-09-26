@@ -1,4 +1,5 @@
 import { IMonitorHandle, PropertyExt } from "@hpcc-js/common";
+import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 
@@ -21,6 +22,13 @@ export abstract class Activity extends PropertyExt {
     sourceActivity(_?: Activity): Activity | this {
         if (!arguments.length) return this._sourceActivity;
         this._sourceActivity = _;
+        return this;
+    }
+
+    datasource(): DDL2.IDatasource | null;
+    datasource(_?: DDL2.IDatasource): this;
+    datasource(_?: DDL2.IDatasource): DDL2.IDatasource | null | this {
+        if (!arguments.length) return null;
         return this;
     }
 

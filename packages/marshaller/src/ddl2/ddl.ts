@@ -8,7 +8,7 @@ import { AggregateField, GroupBy, GroupByColumn } from "./activities/groupby";
 import { Limit } from "./activities/limit";
 import { LogicalFile } from "./activities/logicalfile";
 import { ComputedField, Project } from "./activities/project";
-import { Param, RoxieService } from "./activities/roxie";
+import { Param, RoxieRequest } from "./activities/roxie";
 import { Sort, SortColumn } from "./activities/sort";
 import { WUResult } from "./activities/wuresult";
 import { Dashboard } from "./dashboard";
@@ -62,11 +62,10 @@ export class DDLAdapter {
             const ddl: DDL2.IDatabomb = {
                 type: "databomb",
                 id: ds.id(),
-                data: [],
                 fields: this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0))
             };
             return ddl;
-        } else if (dsDetails instanceof RoxieService) {
+        } else if (dsDetails instanceof RoxieRequest) {
             const ddl: DDL2.IRoxieService = {
                 type: "roxieservice",
                 id: ds.id(),
@@ -119,9 +118,7 @@ export class DDLAdapter {
             }
             dsDetails.payload(payload);
         } else if (dsDetails instanceof Databomb) {
-            const ddlDS = _ddlDS as DDL2.IDatabomb;
-            dsDetails.payload(ddlDS.data);
-        } else if (dsDetails instanceof RoxieService) {
+        } else if (dsDetails instanceof RoxieRequest) {
             const ddlDS = _ddlDS as DDL2.IRoxieService;
             dsDetails
                 .url(ddlDS.url)
@@ -331,7 +328,7 @@ export class DDLAdapter {
 
     writeDatasourceRef(ds: DSPicker, refs: ReferencedFields): DDL2.IRoxieServiceRef | DDL2.IDatasourceRef {
         const dsDetails = ds.details();
-        if (dsDetails instanceof RoxieService) {
+        if (dsDetails instanceof RoxieRequest) {
             return {
                 id: this._dsDedup[ds.hash()].id,
                 fields: this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0)),
@@ -355,7 +352,7 @@ export class DDLAdapter {
         const ddlDS = this._dsDedup[ddlDSRef.id];
         this.readDatasource(ddlDS, ds);
         const dsDetails = ds.details();
-        if (dsDetails instanceof RoxieService && DDL2.isIRoxieServiceRef(ddlDSRef)) {
+        if (dsDetails instanceof RoxieRequest && DDL2.isIRoxieServiceRef(ddlDSRef)) {
             dsDetails.request(ddlDSRef.request.map(rf => {
                 return new Param(dsDetails)
                     .source(rf.source)

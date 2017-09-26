@@ -3,7 +3,7 @@ import { DDL2 } from "@hpcc-js/ddl-shim";
 import { Activity, ActivitySelection } from "./activity";
 import { Databomb, Form } from "./databomb";
 import { LogicalFile } from "./logicalfile";
-import { HipieService, RoxieService } from "./roxie";
+import { HipieRequest, RoxieRequest } from "./roxie";
 import { sampleData } from "./sampledata";
 import { View } from "./view";
 import { WUResult } from "./wuresult";
@@ -57,7 +57,7 @@ export class DSPicker extends ActivitySelection {
                 .url("http://192.168.3.22:8010")
                 .logicalFile("progguide::exampledata::keys::accounts.personid.payload")
             ,
-            new RoxieService(this._view)
+            new RoxieRequest(this._view)
                 .url("http://192.168.3.22:8010")
                 .querySet("roxie")
                 .queryID("peopleaccounts.3")
@@ -68,7 +68,7 @@ export class DSPicker extends ActivitySelection {
             new Form(this._view)
                 .payload({})
             ,
-            new HipieService(this._view)
+            new HipieRequest(this._view)
         ]);
         this.type("wuresult");
     }

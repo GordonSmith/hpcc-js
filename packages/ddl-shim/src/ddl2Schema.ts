@@ -85,14 +85,6 @@ export const ddl2Schema =
         "IDatabomb": {
             "additionalProperties": false,
             "properties": {
-                "data": {
-                    "items": {
-                        "additionalProperties": {
-                        },
-                        "type": "object"
-                    },
-                    "type": "array"
-                },
                 "fields": {
                     "items": {
                         "$ref": "#/definitions/IField"
@@ -110,7 +102,6 @@ export const ddl2Schema =
                 }
             },
             "required": [
-                "data",
                 "fields",
                 "id",
                 "type"

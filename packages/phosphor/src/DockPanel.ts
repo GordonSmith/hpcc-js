@@ -100,7 +100,13 @@ export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHo
                 break;
         }
     }
+
     childActivation(w: Widget) {
+    }
+
+    active(): Widget {
+        return this._prevActive;
+
     }
 }
 DockPanel.prototype._class += " phosphor_DockPanel";

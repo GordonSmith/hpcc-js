@@ -8,7 +8,7 @@
         "sourceMap": true,
         "declaration": true,
         "noEmitOnError": false,
-        "strictNullChecks": false,
+        "strictNullChecks": true,
         "importHelpers": true,
         "experimentalDecorators": true,
         "downlevelIteration": true,
