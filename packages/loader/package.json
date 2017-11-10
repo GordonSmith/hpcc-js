@@ -2,35 +2,45 @@
   "name": "@hpcc-js/loader",
   "version": "0.0.50",
   "description": "hpcc-js - Loader",
-  "main": "lib/index.js",
-  "module": "lib-es6/index.js",
+  "main": "build/loader.js",
+  "module": "lib/index",
+  "unpkg": "build/loader.min.js",
   "types": "lib/index.d.ts",
-  "unpkg": "dist/loader.min.js",
   "files": [
+    "build/*",
     "lib/*",
-    "lib-es6/*",
-    "src/*.css",
-    "dist/*"
+    "src/*.css"
   ],
   "scripts": {
-    "clean": "rimraf lib* && rimraf dist*",
-    "build": "tsc",
-    "build-es6": "tsc --module esnext --outDir ./lib-es6",
-    "bundle": "node ./node_modules/@hpcc-js/bundle/lib/rollup",
+    "clean": "rimraf lib* && rimraf build",
+    "compile": "tsc --module esnext --outDir ./lib",
+    "compile-watch": "npm run compile -- -w",
+    "compile-umd": "tsc",
+    "bundle": "rollup -c",
+    "bundle-watch": "npm run bundle -- -w",
+    "minimize": "uglifyjs build/loader.js -c -m --source-map -o build/loader.min.js",
+    "build": "npm run compile && npm run bundle",
+    "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
+    "lint": "tslint --project . src/**/*.ts",
     "docs": "typedoc --options tdoptions.json ."
   },
-  "dependencies": {
-    "@hpcc-js/requirejs-shim": "^0.0.37",
-    "es6-promise": "4.1.1",
-    "tslib": "1.8.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@hpcc-js/bundle": "^0.0.15",
+    "@hpcc-js/requirejs-shim": "^0.0.37",
+    "tslint": "5.8.0",
+    "concurrently": "3.5.0",
     "rimraf": "2.6.1",
-    "rollup": "0.51.2",
-    "rollup-watch": "4.0.0",
+    "rollup": "0.51.3",
+    "rollup-plugin-postcss": "0.5.5",
+    "rollup-plugin-sourcemaps": "0.4.2",
+    "rollup-plugin-node-resolve": "3.0.0",
+    "rollup-plugin-commonjs": "8.2.6",
     "typedoc": "0.7.1",
-    "typescript": "2.6.1"
+    "typescript": "2.6.1",
+    "uglify-js": "3.1.8",
+    "es6-promise": "4.1.1",
+    "tslib": "1.8.0"
   },
   "repository": {
     "type": "git",

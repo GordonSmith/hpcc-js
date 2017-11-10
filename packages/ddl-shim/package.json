@@ -3,23 +3,34 @@
   "version": "0.0.15",
   "description": "hpcc-js DDL parser",
   "main": "dist/ddl-shim.js",
+  "module": "lib/index",
+  "unpkg": "build/ddl-shim.min.js",
   "types": "lib/index.d.ts",
-  "scripts": {
-    "clean": "rimraf ./src/ddl*Schema*.ts && rimraf ./lib* && rimraf ./dist*",
-    "build-util": "tsc -p ./tsconfig-util.json",
-    "generate": "node ./lib-util/createSchema.js",
-    "build": "npm run build-util && npm run generate && tsc -p . && webpack"
-  },
   "files": [
-    "dist/**/*"
+    "build/*",
+    "lib/*",
+    "src/*.css"
   ],
+  "scripts": {
+    "clean": "rimraf ./src/ddl*Schema*.ts && rimraf lib* && rimraf build",
+    "compile": "tsc --module esnext --outDir ./lib",
+    "compile-watch": "npm run compile -- -w",
+    "compile-util": "tsc -p ./tsconfig-util.json",
+    "generate": "node ./lib-util/createSchema.js",
+    "bundle": "webpack",
+    "bundle-watch": "webpack -w",
+    "build": "npm run compile-util && npm run generate && npm run compile && npm run bundle",
+    "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
+    "lint": "tslint --project . src/**/*.ts",
+    "docs": "typedoc --options tdoptions.json ."
+  },
   "dependencies": {
     "ajv": "4.11.3",
     "reflect-metadata": "0.1.10",
     "tslib": "1.8.0"
   },
   "devDependencies": {
-    "@types/node": "6.0.90",
+    "@types/node": "8.0.51",
     "extract-text-webpack-plugin": "2.1.0",
     "rimraf": "2.6.1",
     "typescript-json-schema": "0.18.0",

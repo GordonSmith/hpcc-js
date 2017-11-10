@@ -3,17 +3,24 @@ import * as Persist from "./Persist";
 
 import "../src/ThemeEditor.css";
 
+//  Polyfill for IE in file:// mode  ----
+const _localStorage = localStorage || {
+    getItem(id: string): any {
+        return undefined;
+    }
+};
+
 const getThemes = function (idx?) {
     if (typeof ((window as any).g_defaultThemes) === "function") {
         (window as any).g_defaultThemes(idx);
     }
-    return JSON.parse(localStorage.getItem("themeEditorThemes") || "{}");
+    return JSON.parse(_localStorage.getItem("themeEditorThemes") || "{}");
 };
 const getSerials = function (idx?) {
     if (typeof ((window as any).g_defaultSerials) === "function") {
         (window as any).g_defaultSerials(idx);
     }
-    return JSON.parse(localStorage.getItem("themeEditorSerials") || "{}");
+    return JSON.parse(_localStorage.getItem("themeEditorSerials") || "{}");
 };
 const getThemeNames = function (idx?) {
     const loadedThemes = getThemes();

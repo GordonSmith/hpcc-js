@@ -2,15 +2,14 @@
   "name": "@hpcc-js/c3-shim",
   "version": "0.0.36",
   "description": "hpcc-js - c3 shim",
-  "main": "dist/c3-shim.js",
-  "module": "dist/c3-shim.es6.js",
-  "types": "dist/index.d.ts",
+  "main": "build/c3-shim.js",
+  "module": "build/c3-shim.es6",
   "files": [
     "dist/**/*"
   ],
   "scripts": {
-    "build": "webpack",
-    "clean": "rimraf dist* && rimraf tmp"
+    "clean": "rimraf build",
+    "build": "webpack"
   },
   "dependencies": {
     "c3": "0.4.13"

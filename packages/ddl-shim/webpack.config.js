@@ -5,8 +5,8 @@ var path = require("path");
 module.exports = {
     entry: "./lib/index.js",
     output: {
-        path: path.resolve(__dirname, 'dist/'),
-        publicPath: "dist/",
+        path: path.resolve(__dirname, 'build/'),
+        publicPath: "build/",
         filename: "ddl-shim.js",
         libraryTarget: "umd",
         library: "@hpcc-js/ddl-shim"

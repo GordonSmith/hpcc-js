@@ -3,8 +3,8 @@
   "name": "@hpcc-js/test-comms",
   "version": "0.0.26",
   "dependencies": {
-    "@hpcc-js/comms": "^0.0.45",
-    "@hpcc-js/util": "^0.0.42",
+    "@hpcc-js/comms": "*",
+    "@hpcc-js/util": "*",
     "chai": "4.0.0",
     "es6-promise": "4.1.1",
     "mocha": "3.4.2"
@@ -12,24 +12,21 @@
   "devDependencies": {
     "@types/chai": "3.5.2",
     "@types/mocha": "2.2.41",
-    "karma": "1.7.0",
-    "karma-chrome-launcher": "2.1.1",
-    "karma-firefox-launcher": "1.0.1",
-    "karma-ie-launcher": "1.0.0",
-    "karma-mocha": "1.3.0",
-    "karma-mocha-reporter": "2.2.3",
+    "css-loader": "0.26.1",
+    "file-loader": "1.1.5",
+    "mocha-chrome": "1.0.1",
     "rimraf": "2.6.1",
     "source-map-loader": "0.2.1",
     "typescript": "2.6.1",
     "webpack": "3.8.1"
   },
   "scripts": {
-    "build": "tsc && webpack",
-    "clean": "rimraf build && rimraf lib && rimraf 0*",
-    "test": "npm run test:node && npm run test:firefox",
-    "test:node": "./node_modules/.bin/mocha build/index.spec.js --reporter spec",
-    "test:chrome": "karma start --browsers=Chrome",
-    "test:firefox": "karma start --browsers=Firefox",
-    "test:ie": "karma start --browsers=IE"
+    "clean": "rimraf build && rimraf lib",
+    "compile": "tsc",
+    "bundle": "webpack",
+    "build": "npm run compile && npm run bundle",
+    "test": "npm run test:node && npm run test:chrome",
+    "test:node": "./node_modules/.bin/mocha lib/index.spec.js --reporter spec",
+    "test:chrome": "mocha-chrome --chrome-flags \"[\\\"--allow-file-access-from-files\\\"]\" ./test.html"
   }
 }

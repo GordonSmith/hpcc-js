@@ -2,31 +2,39 @@
   "name": "@hpcc-js/preact-shim",
   "version": "0.0.38",
   "description": "hpcc-js - preact shim",
-  "main": "dist/preact-shim.js",
-  "module": "dist/preact-shim.es6.js",
-  "types": "dist/preact-shim.d.ts",
+  "main": "build/preact-shim.js",
+  "module": "lib/index",
+  "unpkg": "build/preact-shim.min.js",
+  "types": "lib/index.d.ts",
   "files": [
-    "dist/*"
+    "build/*",
+    "lib/*",
+    "src/*.css"
   ],
-  "directories": {
-    "lib": "dist/"
-  },
   "scripts": {
-    "build": "tsc && tsc --module esnext --outDir ./lib-es6 && rollup -c && rollup -c -f es -o dist/preact-shim.es6.js",
-    "clean": "rimraf lib* && rimraf dist*"
+    "clean": "rimraf lib* && rimraf build",
+    "compile": "tsc --module esnext --outDir ./lib",
+    "compile-watch": "npm run compile -- -w",
+    "bundle": "rollup -c",
+    "bundle-watch": "npm run bundle -- -w",
+    "minimize": "uglifyjs build/preact-shim.js -c -m -o build/preact-shim.min.js",
+    "build": "npm run compile && npm run bundle",
+    "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
+    "lint": "tslint --project . src/**/*.ts",
+    "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
     "preact": "8.2.1"
   },
   "devDependencies": {
     "rimraf": "2.6.1",
-    "rollup": "0.51.2",
+    "rollup": "0.51.3",
     "rollup-plugin-alias": "1.4.0",
     "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-sourcemaps": "0.4.2",
-    "rollup-plugin-uglify": "2.0.1",
-    "typescript": "2.6.1"
+    "typescript": "2.6.1",
+    "uglify-js": "3.1.8"
   },
   "repository": {
     "type": "git",

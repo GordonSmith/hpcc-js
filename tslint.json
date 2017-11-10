@@ -10,6 +10,7 @@
         /*
      * Any rules specified here will override those from the base config we are extending.
      */
+        "member-ordering": false,
         "prefer-for-of": false,
         "no-console": [
             false

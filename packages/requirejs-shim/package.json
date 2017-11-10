@@ -2,21 +2,20 @@
   "name": "@hpcc-js/requirejs-shim",
   "version": "0.0.37",
   "description": "hpcc-js - requirejs shim",
-  "main": "dist/requirejs-shim.js",
+  "main": "build/requirejs-shim.js",
   "types": "types/requirejs-shim.d.ts",
   "files": [
-    "dist/*"
+    "build/*",
+    "lib/*",
+    "types/*"
   ],
-  "directories": {
-    "lib": "dist/"
-  },
   "scripts": {
-    "build": "r_js -o ./requirejs.config.js",
-    "clean": "rimraf dist* && rimraf tmp"
+    "clean": "rimraf build && rimraf lib && rimraf tmp",
+    "build": "r_js -o ./requirejs.config.js"
   },
   "dependencies": {
     "requirejs": "2.3.3",
-    "rollup": "0.51.2"
+    "rollup": "0.51.3"
   },
   "devDependencies": {
     "rimraf": "2.6.1"

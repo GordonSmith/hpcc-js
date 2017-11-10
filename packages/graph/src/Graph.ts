@@ -241,8 +241,6 @@ export class Graph extends SVGZoomWidget {
         super.update(domNode, element);
         const context = this;
 
-
-
         //  Create  ---
         const vertexElements = this.svgV.selectAll("#" + this._id + "V > .graphVertex").data(this.graphData.nodeValues(), function (d) { return d.id(); });
         vertexElements.enter().append("g")

@@ -4,22 +4,22 @@ const postcss = require('rollup-plugin-postcss');
 const commonjs = require("rollup-plugin-commonjs");
 const alias = require('rollup-plugin-alias');
 const sourcemaps = require('rollup-plugin-sourcemaps');
+const definition = require("./package.json");
+const name = definition.name.split("/").pop();
 
 export default {
-    input: 'lib-es6/index.js',
+    input: "lib/index",
     name: "hpcc-js-phosphor-shim",
     output: {
-        file: 'dist/phosphor-shim.js',
-        format: 'umd'
+        file: `build/${name}.js`,
+        format: "umd",
+        name: `@hpcc-js/${name}`
     },
+    sourcemap: true,
     plugins: [
         resolve({
             jsnext: true,
             main: true
-        }),
-        postcss({
-            plugins: [],
-            extensions: ['.css']  // default value
         }),
         commonjs({
             namedExports: {
@@ -27,6 +27,9 @@ export default {
                 "@phosphor/widgets": ["BoxPanel", "CommandRegistry", "CommandPalette", "ContextMenu", "DockLayout", "DockPanel", "Message", "Menu", "MenuBar", "SplitPanel", "TabBar", "Widget"]
             },
             ignore: ['crypto']
+        }),
+        postcss({
+            extensions: ['.css']
         }),
         sourcemaps()
     ]

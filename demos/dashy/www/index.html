@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <title>Dashy</title>
 
-    <script src="../../../packages/loader/dist/loader.js"></script>
+    <script src="../../../packages/loader/build/loader.js"></script>
     <script>
         var hpccLoader = window["@hpcc-js/loader"];
-        var require = hpccLoader.amd("../../../packages", { "test": "../tests" }, "../../../node_modules");
+        var require = hpccLoader.dev();
     </script>
     <link href="../style/index.css" rel="stylesheet">
 </head>

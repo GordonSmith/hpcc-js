@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { Topology } from "@hpcc-js/comms";
 import { ESP_URL } from "../testLib";
 
-describe("test/esp/ecl/Topology", function () {
+describe("@hpcc-js/comms-Topology", function () {
     const topology = new Topology({ baseUrl: ESP_URL });
 
     it("Basic", function () {

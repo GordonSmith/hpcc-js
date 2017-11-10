@@ -1,16 +1,18 @@
-const alias = require('rollup-plugin-alias');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require("rollup-plugin-commonjs");
 const sourcemaps = require('rollup-plugin-sourcemaps');
+const definition = require("./package.json");
+const name = definition.name.split("/").pop();
 
 export default {
-    entry: 'lib-es6/index.js',
-    format: 'umd',
-    moduleName: "hpcc-js-preact-shim",
-    dest: 'dist/preact-shim.js',
+    input: "lib/index",
+    output: {
+        file: `build/${name}.js`,
+        format: "umd",
+        name: `@hpcc-js/${name}`
+    },
+    sourcemap: true,
     plugins: [
-        alias({
-        }),
         nodeResolve({
             module: true,
             main: true

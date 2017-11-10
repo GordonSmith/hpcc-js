@@ -19,7 +19,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "rollup": "0.51.2",
+    "rollup": "0.51.3",
     "rollup-plugin-alias": "1.4.0",
     "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.0",
@@ -29,7 +29,7 @@
     "tslib": "1.8.0"
   },
   "devDependencies": {
-    "@types/node": "6.0.90",
+    "@types/node": "8.0.51",
     "rimraf": "2.6.1",
     "typescript": "2.6.1"
   },

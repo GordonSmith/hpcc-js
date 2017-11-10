@@ -16,8 +16,8 @@ entry_list.forEach(function (e) { entry[e] = path.resolve(__dirname, "./src/" + 
 module.exports = {
     entry: entry,
     output: {
-        path: path.resolve(__dirname, 'dist/'),
-        publicPath: "dist/",
+        path: path.resolve(__dirname, 'build/'),
+        publicPath: "build/",
         filename: "dgrid-shim.js",
         libraryTarget: "umd",
         library: "@hpcc-js/dgrid-shim"

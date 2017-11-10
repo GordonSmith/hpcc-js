@@ -200,7 +200,6 @@ export class DBStore {
             totalLength.resolve(response.totalLength);
             retVal.resolve(response);
         }, error => {
-            debugger;
         });
         return new QueryResults(retVal.then(response => response.data), { totalLength });
     }

@@ -28,6 +28,7 @@ describe("debounce", function () {
 
     let func1SecCallCount = 0;
     const func1Sec = debounce(async (): Promise<number> => {
+        console.log("aaa");
         ++func1SecCallCount;
         return 42;
     }, 1000);
@@ -36,15 +37,19 @@ describe("debounce", function () {
         return new Promise<void>((resolve, reject) => {
             const startTime = Date.now();
             func1Sec();
-            setInterval(() => {
+            const interval = setInterval(() => {
+                console.log("bbb");
                 func1Sec();
                 if (Date.now() - startTime > 1000) {
+                    console.log("ddd");
+                    clearInterval(interval);
                     expect(func1SecCallCount).to.be.greaterThan(1);
                     resolve();
                 } else {
+                    console.log("ccc");
                     expect(func1SecCallCount).to.equal(1);
                 }
-            }, 100);
+            }, 101);
         });
     });
 });

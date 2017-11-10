@@ -11,7 +11,7 @@
     "@hpcc-js/form": "^0.0.46",
     "@hpcc-js/map": "^0.0.48",
     "d3-selection": "1.1.0",
-    "d3-time-format": "2.0.5",
+    "d3-time-format": "2.1.0",
     "impress.js": "GordonSmith/impressjs.git#MILEHIGH_UI"
   },
   "devDependencies": {

@@ -5,13 +5,14 @@
   "scripts": {
     "install": "lerna bootstrap --hoist",
     "uninstall": "lerna clean",
-    "clean": "lerna run clean && rimraf ./lib*",
-    "build": "lerna run --ignore \"@hpcc-js/test-*\" build",
+    "clean": "lerna run clean",
+    "compile-umd": "lerna run --ignore \"@hpcc-js/test-*\" compile-umd",
+    "build": "lerna run --ignore \"@hpcc-js/test-*\" --ignore \"@hpcc-js/xxxx-*\" build",
+    "minimize": "lerna run --ignore \"@hpcc-js/test-*\" minimize",
     "watch": "lerna exec --parallel --ignore \"@hpcc-js/test-*\" --ignore \"@hpcc-js/*-shim\" --ignore \"@hpcc-js/demo-*\" -- tsc -w ",
-    "build-es6": "lerna run --ignore \"@hpcc-js/test-*\" build-es6",
     "build-test": "lerna run --scope \"@hpcc-js/test-*\" build",
-    "bundle": "lerna run bundle",
-    "build-all": "npm run build && npm run build-es6 && npm run bundle && npm run build-test",
+    "build-all": "npm run build && npm run build-test",
+    "lint": "lerna run lint",
     "test": "lerna run test --scope \"@hpcc-js/test-*\"",
     "test:chrome": "lerna run test:chrome --scope \"@hpcc-js/test-*\"",
     "test:firefox": "lerna run test:firefox --scope \"@hpcc-js/test-*\"",
@@ -30,6 +31,6 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/hpcc-systems/Visualization",
   "dependencies": {
-    "rollup": "0.51.2"
+    "rollup": "0.51.3"
   }
 }

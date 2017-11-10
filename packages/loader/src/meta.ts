@@ -1,4 +1,4 @@
-export const thirdParty = {
+export const npmPackages = {
     "ajv": "ajv/dist/ajv.bundle",
     "amcharts3": "amcharts3",
     "amchartsImg": "amcharts3/amcharts/images/",
@@ -45,12 +45,21 @@ export const thirdParty = {
     "handsontable": "handsontable/dist/handsontable.full",
     "immutable": "immutable/dist/immutable.min",
     "javascript-autocomplete": "javascript-autocomplete/auto-complete",
-    "orb": "orb",
-    "react": "react/dist/react",
+    "orb-fix": "orb-fix/dist/orb",
+    "orb-fix.css": "orb-fix/dist/orb.css",
+    "react": "react/dist/react.min",
+    "react-dom": "react-dom/dist/react-dom.min",
     "reflect-metadata": "reflect-metadata/Reflect",
     "simpleheat": "simpleheat/simpleheat",
     "topojson": "topojson/build/topojson",
     "tslib": "tslib/tslib"
+};
+export const rawgitPackages = {
+    "d3-tip": "GordonSmith/d3-tip/vJSNEXT/lib-browser/index.min"
+};
+export const localPackages = {
+    ...npmPackages,
+    ...rawgitPackages
 };
 export const shims = ["loader", "codemirror-shim", "c3-shim", "ddl-shim", "dgrid-shim", "phosphor-shim", "preact-shim"];
 export const packages = [

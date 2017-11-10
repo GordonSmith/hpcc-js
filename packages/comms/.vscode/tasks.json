@@ -4,12 +4,8 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "watch-all"
-        },
-        {
-            "label": "watch-common",
             "type": "typescript",
-            "tsconfig": "packages\\common\\tsconfig.json",
+            "tsconfig": "tsconfig.json",
             "option": "watch",
             "problemMatcher": [
                 "$tsc-watch"

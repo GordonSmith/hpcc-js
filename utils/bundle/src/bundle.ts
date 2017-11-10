@@ -5,19 +5,12 @@ import * as resolve from "rollup-plugin-node-resolve";
 import * as postcss from "rollup-plugin-postcss";
 import * as sourcemaps from "rollup-plugin-sourcemaps";
 import * as uglify from "rollup-plugin-uglify";
-
-import * as program from "commander";
 import * as fs from "fs";
 import * as path from "path";
 import * as process from "process";
 
 // tslint:disable:no-var-requires
-declare const require: any;
-
-program
-    .version("0.0.1")
-    .option("-m, --min", "Minimize")
-    .parse(process.argv);
+// declare const require: any;
 
 const aliases: { [key: string]: string } = {
     // ajv: "../../node_modules/ajv/dist/ajv.bundle.js"
@@ -68,7 +61,7 @@ for (const key in myPackage.dependencies) {
     }
 }
 
-export function inOptions(min: boolean = false) {
+export function inOptions(inFile: string, min: boolean = false) {
     const plugins = [
         alias(aliases),
         resolve({
@@ -90,7 +83,7 @@ export function inOptions(min: boolean = false) {
         plugins.push(uglify({}));
     }
     return {
-        input: "lib-es6/index.js",
+        input: inFile,
         external: externals,
         plugins
     };
@@ -106,8 +99,8 @@ export function outOptions(min: boolean = false) {
     };
 }
 
-export async function bundle(min: boolean = false) {
-    const bundle = await rollup.rollup(inOptions(min));
+export async function bundle(inFile: string, min: boolean = false) {
+    const bundle = await rollup.rollup(inOptions(inFile, min));
 
     await bundle.write(outOptions(min));
 }

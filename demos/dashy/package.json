@@ -19,7 +19,7 @@
     "@hpcc-js/phosphor": "^0.0.46",
     "@hpcc-js/phosphor-shim": "^0.0.40",
     "@hpcc-js/util": "^0.0.42",
-    "d3-array": "1.2.0",
+    "d3-array": "1.2.1",
     "d3-collection": "1.0.4",
     "es6-promise": "4.1.1",
     "tslib": "1.8.0"

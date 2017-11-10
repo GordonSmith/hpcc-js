@@ -2,35 +2,49 @@
   "name": "@hpcc-js/layout",
   "version": "0.0.44",
   "description": "hpcc-js - Viz Layout",
-  "main": "lib/index.js",
-  "module": "lib-es6/index.js",
+  "main": "build/layout.js",
+  "module": "lib/index",
+  "unpkg": "build/layout.min.js",
   "types": "lib/index.d.ts",
   "unpkg": "dist/layout.min.js",
   "files": [
+    "build/*",
     "lib/*",
-    "lib-es6/*",
-    "src/*.css",
-    "dist/*"
+    "src/*.css"
   ],
   "scripts": {
-    "clean": "rimraf lib* && rimraf dist*",
-    "build": "tsc",
-    "build-es6": "tsc --module esnext --outDir ./lib-es6",
-    "bundle": "node ./node_modules/@hpcc-js/bundle/lib/rollup",
+    "clean": "rimraf lib* && rimraf build",
+    "compile": "tsc --module esnext --outDir ./lib",
+    "compile-watch": "npm run compile -- -w",
+    "compile-umd": "tsc",
+    "bundle": "rollup -c",
+    "bundle-watch": "npm run bundle -- -w",
+    "minimize": "uglifyjs build/layout.js -c -m -o build/layout.min.js",
+    "build": "npm run compile && npm run bundle",
+    "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
+    "lint": "tslint --project . src/**/*.ts",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/common": "^0.0.44",
-    "d3-drag": "1.1.0",
-    "d3-selection": "1.1.0",
-    "grid-list": "0.4.0",
-    "tslib": "1.8.0"
+    "grid-list": "0.4.0"
   },
   "devDependencies": {
     "@hpcc-js/bundle": "^0.0.15",
+    "@hpcc-js/common": "^0.0.44",
+    "tslint": "5.8.0",
+    "concurrently": "3.5.0",
     "rimraf": "2.6.1",
+    "rollup": "0.51.3",
+    "rollup-plugin-alias": "1.4.0",
+    "rollup-plugin-commonjs": "8.2.6",
+    "rollup-plugin-node-resolve": "3.0.0",
+    "rollup-plugin-postcss": "0.5.5",
     "typedoc": "0.7.1",
-    "typescript": "2.6.1"
+    "typescript": "2.6.1",
+    "uglify-js": "3.1.8",
+    "d3-drag": "1.2.1",
+    "d3-selection": "1.1.0",
+    "tslib": "1.8.0"
   },
   "repository": {
     "type": "git",

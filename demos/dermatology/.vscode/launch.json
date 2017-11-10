@@ -8,7 +8,7 @@
             "name": "Chrome Debug Dev",
             "type": "chrome",
             "request": "launch",
-            "url": "file:///${workspaceRoot}/www/index-dev.html?src/other/WordCloud.simple",
+            "url": "file:///${workspaceRoot}/www/index-dev.html?src/common/Text.simple",
             "runtimeArgs": [
                 "--allow-file-access-from-files"
             ],

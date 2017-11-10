@@ -7,7 +7,7 @@ import { classDef, render } from "./coreTests";
 
 const urlSearch: string = window.location.href.split("?")[1];
 
-describe("@hpcc-js/composite", () => {
+describe.skip("@hpcc-js/composite", () => {
     for (const key in composite) {
         const item = (composite as any)[key];
         if (item) {

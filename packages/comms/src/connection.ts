@@ -95,9 +95,6 @@ export class Connection implements IConnection {
                 }
             }
         }
-        if (prefix === "") {
-            console.log(str.join("&"));
-        }
         return str.join("&");
     }
 

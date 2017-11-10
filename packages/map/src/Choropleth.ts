@@ -25,7 +25,11 @@ export class Choropleth extends Layer {
     constructor() {
         super();
         Utility.SimpleSelectionMixin.call(this);
-        this._topoJsonFolder = require && require.toUrl ? require.toUrl("@hpcc-js/map/TopoJSON") : "../TopoJSON";
+        try {
+            this._topoJsonFolder = (require && require.toUrl) ? require.toUrl("@hpcc-js/map") : "./node_modules/@hpcc-js/map/TopoJSON";
+        } catch {
+            this._topoJsonFolder = "./node_modules/@hpcc-js/map/TopoJSON";
+        }
     }
 
     topoJsonFolder(): string;

@@ -2,29 +2,41 @@
   "name": "@hpcc-js/codemirror-shim",
   "version": "0.0.38",
   "description": "hpcc-js - codemirror shim",
-  "main": "dist/codemirror-shim.js",
-  "module": "dist/codemirror-shim.es6.js",
-  "types": "dist/index.d.ts",
+  "main": "build/codemirror-shim.js",
+  "module": "lib/index",
+  "types": "lib/index.d.ts",
   "files": [
-    "dist/**/*.js"
+    "build/*",
+    "lib/*",
+    "src/*.css"
   ],
   "scripts": {
-    "build": "tsc && tsc --module esnext --outDir ./lib-es6 && rollup -c && rollup -c -f es -o dist/codemirror-shim.es6.js",
-    "clean": "rimraf lib* && rimraf dist*"
+    "clean": "rimraf lib* && rimraf build",
+    "compile": "tsc --module esnext --outDir ./lib",
+    "compile-watch": "npm run compile -- -w",
+    "bundle": "rollup -c",
+    "bundle-watch": "npm run bundle -- -w",
+    "minimize": "uglifyjs build/codemirror-shim.js -c -m -o build/codemirror-shim.min.js",
+    "build": "npm run compile && npm run bundle",
+    "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
+    "lint": "tslint --project . src/**/*.ts",
+    "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
     "codemirror": "5.26.0"
   },
   "devDependencies": {
+    "tslint": "5.8.0",
+    "concurrently": "3.5.0",
     "rimraf": "2.6.1",
-    "rollup": "0.51.2",
+    "rollup": "0.51.3",
     "rollup-plugin-alias": "1.4.0",
     "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-postcss": "0.5.5",
     "rollup-plugin-sourcemaps": "0.4.2",
-    "rollup-plugin-uglify": "2.0.1",
-    "typescript": "2.6.1"
+    "typescript": "2.6.1",
+    "uglify-js": "3.1.8"
   },
   "repository": {
     "type": "git",
