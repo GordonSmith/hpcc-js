@@ -232,6 +232,150 @@
                 });
             }
         },
+        SummaryGauge: {
+            simple: function (callback) {
+                legacyRequire(["test/DataFactory", "src/chart/SummaryGauge"], function (DataFactory, SummaryGauge) {
+                    callback(new SummaryGauge()
+                        .columns(["Summary", "Score"])
+                        .data(["asdfasdfasdf", 22, "fa-info-circle"])
+                        .iconColumn("Icon")
+                        .labelColumn("Summary")
+                        .valueColumn("Score")
+                    );
+                });
+            },
+            based_on_mockup: function (callback) {
+                legacyRequire(["test/DataFactory", "src/chart/SummaryGauge", "src/composite/ChartPanel", "src/layout/Grid"], function (DataFactory, SummaryGauge, ChartPanel, Grid) {
+                    var _grid = new Grid();
+                    _grid.setContent(0, 0, new SummaryGauge().valueColor('#299ad6').labelColor('#299ad6').valueFontSize(30).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Accountinfo Accountidkey", 17])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(0, 2, new SummaryGauge().valueColor('#299ad6').labelColor('#299ad6').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Caseinfo Sampleidkey", 55426])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(0, 4, new SummaryGauge().valueColor('#8369a3').labelColor('#8369a3').valueFontSize(30).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Accountinfo Accountidkey", 17])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(0, 6, new SummaryGauge().valueColor('#8369a3').labelColor('#8369a3').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Caseinfo Sampleidkey", 55426])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(0, 8, new SummaryGauge().valueColor('#caa13d').labelColor('#caa13d').valueFontSize(30).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Accountinfo Accountidkey", 17])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(0, 10, new SummaryGauge().valueColor('#caa13d').labelColor('#caa13d').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Caseinfo Sampleidkey", 55426])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(2, 0, new SummaryGauge().valueColor('#299ad6').labelColor('#299ad6').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Caseinfo Sampleidkey", 56185])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(2, 2, new SummaryGauge().valueColor('#299ad6').labelColor('#299ad6').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Caseinfo Sampleidkey", 468])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(2, 4, new SummaryGauge().valueColor('#8369a3').labelColor('#8369a3').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Elephants", 22])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(2, 6, new SummaryGauge().valueColor('#8369a3').labelColor('#8369a3').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Caseinfo Sampleidkey", 468])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(2, 8, new SummaryGauge().valueColor('#caa13d').labelColor('#caa13d').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Elephants", 22])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(2, 10, new SummaryGauge().valueColor('#caa13d').labelColor('#caa13d').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Caseinfo Sampleidkey", 468])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+
+                    _grid.setContent(4, 0, new SummaryGauge().valueColor('#299ad6').labelColor('#299ad6').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Caseinfo Sampleidkey", 44447])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(4, 2, new SummaryGauge().valueColor('#299ad6').labelColor('#299ad6').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Gene", 620])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(4, 4, new SummaryGauge().valueColor('#8369a3').labelColor('#8369a3').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Caseinfo Sampleidkey", 44447])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(4, 6, new SummaryGauge().valueColor('#8369a3').labelColor('#8369a3').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Gene", 620])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(4, 8, new SummaryGauge().valueColor('#caa13d').labelColor('#caa13d').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Caseinfo Sampleidkey", 44447])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+                    _grid.setContent(4, 10, new SummaryGauge().valueColor('#caa13d').labelColor('#caa13d').valueFontSize(70).labelFontSize(20)
+                        .columns(["Summary", "Score"])
+                        .data(["Gene", 620])
+                        .labelColumn("Summary")
+                        .valueColumn("Score"), "", 2, 2
+                    )
+
+                    _grid.setContent(6, 0, new ChartPanel()
+                        .title("Hello and Welcome!")
+                        .columns(DataFactory.ND.subjects.columns)
+                        .data(DataFactory.ND.subjects.data), "", 4, 4
+                    )
+                    _grid.setContent(6, 4, new ChartPanel()
+                        .title("Hello and Welcome!")
+                        .columns(DataFactory.ND.subjects.columns)
+                        .data(DataFactory.ND.subjects.data), "", 4, 4
+                    )
+                    _grid.setContent(6, 8, new ChartPanel()
+                        .title("Hello and Welcome!")
+                        .columns(DataFactory.ND.subjects.columns)
+                        .data(DataFactory.ND.subjects.data), "", 4, 4
+                    )
+                    callback(_grid);
+                });
+            }
+        },
         MultiChart: {
             simple: function (callback) {
                 legacyRequire(["test/DataFactory", "src/chart/MultiChart"], function (DataFactory, MultiChart) {

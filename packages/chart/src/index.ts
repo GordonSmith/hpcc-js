@@ -11,4 +11,5 @@ export * from "./Pie";
 export * from "./Scatter";
 export * from "./Step";
 export * from "./Summary";
+export * from "./SummaryGauge";
 export * from "./XYAxis";
