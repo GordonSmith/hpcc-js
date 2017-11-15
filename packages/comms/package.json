@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/comms",
-  "version": "0.0.46",
+  "version": "0.0.47",
   "description": "hpcc-js - Communications",
   "main": "build/comms.node.js",
   "module": "lib/index.node",
@@ -32,7 +32,7 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/util": "^0.0.43",
+    "@hpcc-js/util": "^0.0.44",
     "d3-request": "1.0.5",
     "d3-time-format": "2.1.0",
     "request": "2.81.0",
