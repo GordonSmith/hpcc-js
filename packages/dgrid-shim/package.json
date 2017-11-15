@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/dgrid-shim",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "description": "dgrid shim",
   "main": "build/dgrid-shim.js",
   "scripts": {

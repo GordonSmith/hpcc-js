@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/preact-shim",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "description": "hpcc-js - preact shim",
   "main": "build/preact-shim.js",
   "module": "lib/index",

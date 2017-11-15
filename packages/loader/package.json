@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/loader",
-  "version": "0.0.50",
+  "version": "0.0.51",
   "description": "hpcc-js - Loader",
   "main": "build/loader.js",
   "module": "lib/index",
@@ -24,23 +24,22 @@
     "lint": "tslint --project . src/**/*.ts",
     "docs": "typedoc --options tdoptions.json ."
   },
-  "dependencies": {},
   "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.15",
-    "@hpcc-js/requirejs-shim": "^0.0.37",
-    "tslint": "5.8.0",
+    "@hpcc-js/bundle": "^0.0.16",
+    "@hpcc-js/requirejs-shim": "^0.0.38",
     "concurrently": "3.5.0",
+    "es6-promise": "4.1.1",
     "rimraf": "2.6.1",
     "rollup": "0.51.3",
+    "rollup-plugin-commonjs": "8.2.6",
+    "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-postcss": "0.5.5",
     "rollup-plugin-sourcemaps": "0.4.2",
-    "rollup-plugin-node-resolve": "3.0.0",
-    "rollup-plugin-commonjs": "8.2.6",
+    "tslib": "1.8.0",
+    "tslint": "5.8.0",
     "typedoc": "0.7.1",
     "typescript": "2.6.1",
-    "uglify-js": "3.1.8",
-    "es6-promise": "4.1.1",
-    "tslib": "1.8.0"
+    "uglify-js": "3.1.8"
   },
   "repository": {
     "type": "git",

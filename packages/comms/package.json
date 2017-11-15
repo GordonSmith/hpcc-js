@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/comms",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "description": "hpcc-js - Communications",
   "main": "build/comms.node.js",
   "module": "lib/index.node",
@@ -32,31 +32,31 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/util": "^0.0.42"
+    "@hpcc-js/util": "^0.0.43"
   },
   "devDependencies": {
-    "@types/node": "8.0.51",
+    "@hpcc-js/bundle": "^0.0.16",
     "@types/d3-request": "1.0.2",
+    "@types/node": "8.0.51",
     "@types/request": "0.0.41",
     "@types/xmldom": "0.1.29",
-    "@hpcc-js/bundle": "^0.0.15",
+    "concurrently": "3.5.0",
     "d3-request": "1.0.5",
     "d3-time-format": "2.1.0",
-    "tslint": "5.8.0",
-    "concurrently": "3.5.0",
+    "request": "2.81.0",
     "rimraf": "2.6.1",
     "rollup": "0.51.3",
     "rollup-plugin-alias": "1.4.0",
     "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.0",
+    "safe-buffer": "5.0.1",
+    "tmp": "0.0.33",
+    "tslib": "1.8.0",
+    "tslint": "5.8.0",
     "typedoc": "0.7.1",
     "typescript": "2.6.1",
     "uglify-js": "3.1.8",
-    "request": "2.81.0",
-    "safe-buffer": "5.0.1",
-    "tmp": "0.0.33",
-    "xmldom": "0.1.27",
-    "tslib": "1.8.0"
+    "xmldom": "0.1.27"
   },
   "repository": {
     "type": "git",
