@@ -14,11 +14,11 @@
     "build": "r_js -o ./requirejs.config.js"
   },
   "dependencies": {
-    "requirejs": "2.3.3",
-    "rollup": "0.51.3"
+    "requirejs": "2.3.3"
   },
   "devDependencies": {
-    "rimraf": "2.6.1"
+    "rimraf": "2.6.1",
+    "rollup": "0.51.3"
   },
   "repository": {
     "type": "git",

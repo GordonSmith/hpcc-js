@@ -23,15 +23,16 @@
     "lint": "tslint --project . src/**/*.ts",
     "docs": "typedoc --options tdoptions.json ."
   },
-  "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.16",
-    "concurrently": "3.5.0",
+  "dependencies": {
     "es6-promise": "4.1.1",
+    "tslib": "1.8.0"
+  },
+  "devDependencies": {
+    "concurrently": "3.5.0",
     "rimraf": "2.6.1",
     "rollup": "0.51.3",
     "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.0",
-    "tslib": "1.8.0",
     "tslint": "5.8.0",
     "typedoc": "0.7.1",
     "typescript": "2.6.1",

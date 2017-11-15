@@ -36,17 +36,16 @@
     "@hpcc-js/layout": "^0.0.45",
     "@hpcc-js/other": "^0.0.45",
     "@hpcc-js/phosphor": "^0.0.47",
-    "@hpcc-js/util": "^0.0.43"
-  },
-  "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.16",
-    "concurrently": "3.5.0",
+    "@hpcc-js/util": "^0.0.43",
     "d3-array": "1.2.1",
     "d3-collection": "1.0.4",
+    "tslib": "1.8.0"
+  },
+  "devDependencies": {
+    "concurrently": "3.5.0",
     "rimraf": "2.6.1",
     "rollup": "0.51.3",
     "rollup-plugin-postcss": "0.5.5",
-    "tslib": "1.8.0",
     "tslint": "5.8.0",
     "typedoc": "0.7.1",
     "typescript": "2.6.1",
