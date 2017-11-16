@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/common",
-  "version": "0.0.46",
+  "version": "0.0.47",
   "description": "hpcc-js - Viz Common",
   "main": "build/common.js",
   "module": "lib/index",
@@ -25,7 +25,7 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/util": "^0.0.44",
+    "@hpcc-js/util": "^0.0.45",
     "colorbrewer": "1.0.0",
     "d3-array": "1.2.1",
     "d3-brush": "1.0.4",

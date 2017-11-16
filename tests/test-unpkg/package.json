@@ -1,12 +1,12 @@
 {
   "private": true,
   "name": "@hpcc-js/test-unpkg",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@hpcc-js/common": "^0.0.46",
-    "@hpcc-js/map": "^0.0.50"
+    "@hpcc-js/common": "^0.0.47",
+    "@hpcc-js/map": "^0.0.51"
   },
   "scripts": {},
   "author": "",

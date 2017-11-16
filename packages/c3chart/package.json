@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/c3chart",
-  "version": "0.0.46",
+  "version": "0.0.47",
   "description": "hpcc-js - Viz C3 Charts",
   "main": "build/c3chart.js",
   "module": "lib/index",
@@ -25,9 +25,9 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/api": "^0.0.46",
-    "@hpcc-js/c3-shim": "^0.0.37",
-    "@hpcc-js/common": "^0.0.46",
+    "@hpcc-js/api": "^0.0.47",
+    "@hpcc-js/c3-shim": "^0.0.38",
+    "@hpcc-js/common": "^0.0.47",
     "d3-format": "1.2.0",
     "d3-time-format": "2.1.0",
     "tslib": "1.8.0"
