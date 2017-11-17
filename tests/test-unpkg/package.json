@@ -5,8 +5,15 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@hpcc-js/common": "^0.0.48",
-    "@hpcc-js/map": "^0.0.52"
+    "@hpcc-js/common": "*",
+    "@hpcc-js/api": "*",
+    "@hpcc-js/chart": "*",
+    "@hpcc-js/dgrid-shim": "*",
+    "@hpcc-js/dgrid": "*",
+    "@hpcc-js/map": "*",
+    "@hpcc-js/phosphor": "*",
+    "d3-array": "1.2.1",
+    "d3-random": "1.1.0"
   },
   "scripts": {},
   "author": "",
