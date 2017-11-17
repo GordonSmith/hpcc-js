@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/map",
-  "version": "0.0.52",
+  "version": "0.0.53",
   "description": "hpcc-js - Viz Map",
   "main": "build/map.js",
   "module": "lib/index",
