@@ -9,7 +9,7 @@ export default {
     input: "lib/index",
     output: {
         file: `build/${name}.js`,
-        format: "umd",
+        format: "es",
         name: `@hpcc-js/${name}`
     },
     sourcemap: true,
@@ -23,8 +23,6 @@ export default {
             extract: true
         }),
         commonjs({
-            namedExports: {
-            }
         }),
         sourcemaps()
     ]

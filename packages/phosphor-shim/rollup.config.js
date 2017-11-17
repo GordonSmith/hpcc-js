@@ -12,7 +12,7 @@ export default {
     name: "hpcc-js-phosphor-shim",
     output: {
         file: `build/${name}.js`,
-        format: "umd",
+        format: "es",
         name: `@hpcc-js/${name}`
     },
     sourcemap: true,

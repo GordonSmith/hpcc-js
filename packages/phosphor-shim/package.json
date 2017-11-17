@@ -2,9 +2,7 @@
   "name": "@hpcc-js/phosphor-shim",
   "version": "0.0.42",
   "description": "hpcc-js - Phosphor shim",
-  "main": "build/phosphor-shim.js",
-  "module": "lib/index",
-  "unpkg": "build/phosphor-shim.min.js",
+  "module": "build/phosphor-shim",
   "types": "lib/index.d.ts",
   "files": [
     "build/*",
@@ -17,7 +15,6 @@
     "compile-watch": "npm run compile -- -w",
     "bundle": "rollup -c",
     "bundle-watch": "npm run bundle -- -w",
-    "minimize": "uglifyjs build/phosphor-shim.js -c -m -o build/phosphor-shim.min.js",
     "build": "npm run compile && npm run bundle",
     "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
     "lint": "tslint --project . src/**/*.ts",
@@ -36,8 +33,7 @@
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-postcss": "0.5.5",
     "rollup-plugin-sourcemaps": "0.4.2",
-    "typescript": "2.6.1",
-    "uglify-js": "3.1.8"
+    "typescript": "2.6.1"
   },
   "repository": {
     "type": "git",

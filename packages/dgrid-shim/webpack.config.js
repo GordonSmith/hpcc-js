@@ -1,57 +1,51 @@
-var webpack = require("webpack");
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var DojoWebpackPlugin = require("dojo-webpack-plugin");
+
 var path = require("path");
-var dwlOptions = require("dojo-webpack-loader/defaultOptions");
-
-dwlOptions.dojoCorePath = path.resolve(__dirname, '../../node_modules/dojo');
-dwlOptions.dojoDijitPath = path.resolve(__dirname, '../../node_modules/dijit');
-dwlOptions.includeLanguages = ['en', 'ru', 'fr'];
-
-var entry_list = [
-    "index"
-];
-var entry = {};
-entry_list.forEach(function (e) { entry[e] = path.resolve(__dirname, "./src/" + e) });
+var webpack = require("webpack");
 
 module.exports = {
-    entry: entry,
+    context: __dirname,
+    entry: "./lib/index.js",
     output: {
-        path: path.resolve(__dirname, 'build/'),
+        path: path.join(__dirname, "build"),
         publicPath: "build/",
-        filename: "dgrid-shim.js",
-        libraryTarget: "umd",
-        library: "@hpcc-js/dgrid-shim"
+        pathinfo: true,
+        filename: "dgrid-shim.min.js"
     },
-    resolve: {
-        alias: {
-            "dojo": path.resolve(__dirname, '../../node_modules/dojo'),
-            "dstore": path.resolve(__dirname, '../../node_modules/dojo-dstore'),
-            "dijit": path.resolve(__dirname, '../../node_modules/dijit'),
-            "dgrid": path.resolve(__dirname, '../../node_modules/dgrid')
-        }
-    },
-    devtool: 'source-map',
     module: {
-        rules: [
-            {
-                test: /\.js$/,
-                use: ["dojo-webpack-loader"]
-            }, {
-                test: /\.css$/,
-                use: ExtractTextPlugin.extract({
-                    use: 'css-loader'
-                })
-            }, {
-                test: /\.png$/,
-                loader: "url-loader",
-                query: { mimetype: "image/png" }
-            }
+        loaders: [
+            { test: /\.(png)|(gif)$/, loader: "url-loader?limit=100000" }
         ]
     },
     plugins: [
-        new ExtractTextPlugin('dgrid-shim.css'),
+        new DojoWebpackPlugin({
+            loaderConfig: require.resolve("./src/loaderConfig"),
+            environment: { dojoRoot: "release" },	// used at run time for non-packed resources (e.g. blank.gif)
+            buildEnvironment: { dojoRoot: "node_modules" }, // used at build time
+            locales: ["en"]
+        }),
+
+        // For plugins registered after the DojoAMDPlugin, data.request has been normalized and
+        // resolved to an absMid and loader-config maps and aliases have been applied
+        new webpack.NormalModuleReplacementPlugin(/^dojox\/gfx\/renderer!/, "dojox/gfx/canvas"),
+        new webpack.NormalModuleReplacementPlugin(
+            /^css!/, function (data) {
+                data.request = data.request.replace(/^css!/, "!style-loader!css-loader!")
+            }
+        ),
+
         new webpack.optimize.UglifyJsPlugin({
-            sourceMap: "source-map"
+            output: { comments: false },
+            compress: { warnings: false },
+            sourceMap: true
         })
-    ]
+    ],
+    resolveLoader: {
+        modules: ["node_modules"]
+    },
+    devtool: "#source-map",
+    node: {
+        process: false,
+        global: false
+    }
 };

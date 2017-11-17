@@ -3,7 +3,6 @@
   "version": "0.0.38",
   "description": "hpcc-js - c3 shim",
   "main": "build/c3-shim.js",
-  "module": "build/c3-shim.es6",
   "files": [
     "dist/**/*"
   ],
