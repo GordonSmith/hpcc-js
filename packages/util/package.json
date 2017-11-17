@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/util",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "description": "hpcc-js - Utilities",
   "main": "build/util.js",
   "module": "lib/index",

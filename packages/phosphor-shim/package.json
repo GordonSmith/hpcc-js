@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/phosphor-shim",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "description": "hpcc-js - Phosphor shim",
   "module": "build/phosphor-shim",
   "types": "lib/index.d.ts",

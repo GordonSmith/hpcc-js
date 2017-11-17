@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/codemirror-shim",
-  "version": "0.0.40",
+  "version": "0.0.41",
   "description": "hpcc-js - codemirror shim",
   "module": "build/codemirror-shim",
   "types": "lib/index.d.ts",
