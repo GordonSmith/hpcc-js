@@ -5,7 +5,13 @@ import { Layer } from "./Layer";
 
 import "../src/Choropleth.css";
 
-declare const require: any;
+let _topoJsonFolder: string = "./node_modules/@hpcc-js/map/TopoJSON";
+export function topoJsonFolder(_?: string): string {
+    if (!arguments.length) return _topoJsonFolder;
+    const retVal = _topoJsonFolder;
+    _topoJsonFolder = _;
+    return retVal;
+}
 
 export class Choropleth extends Layer {
     _dataMap = {};
@@ -20,24 +26,10 @@ export class Choropleth extends Layer {
     _choroTopologyObjects;
     _prevProjection;
     _prevInternalOnly;
-    _topoJsonFolder: string;
 
     constructor() {
         super();
         Utility.SimpleSelectionMixin.call(this);
-        try {
-            this._topoJsonFolder = (require && require.toUrl) ? require.toUrl("@hpcc-js/map") : "./node_modules/@hpcc-js/map/TopoJSON";
-        } catch {
-            this._topoJsonFolder = "./node_modules/@hpcc-js/map/TopoJSON";
-        }
-    }
-
-    topoJsonFolder(): string;
-    topoJsonFolder(_: string): this;
-    topoJsonFolder(_?: string): string | this {
-        if (!arguments.length) return this._topoJsonFolder;
-        this._topoJsonFolder = _;
-        return this;
     }
 
     data(_?) {
