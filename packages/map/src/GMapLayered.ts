@@ -1,4 +1,4 @@
-import { AbsoluteSurface } from "@hpcc-js/layout";
+import { AbsoluteSurface } from "@hpcc-js/layout/lib/AbsoluteSurface";
 import { GMap } from "./GMap";
 import { Layered } from "./Layered";
 
@@ -54,6 +54,17 @@ export class GMapLayered extends GMap {
         if (!arguments.length) return this.layered.layers();
         this.layered.layers(_);
         return this;
+    }
+
+    render(callback?) {
+        return super.render(w => {
+            this.layered.preRender().then(() => {
+                this.layered.render();
+                if (callback) {
+                    callback(w);
+                }
+            });
+        });
     }
 }
 GMapLayered.prototype._class += " map_GMapLayered";

@@ -1,4 +1,4 @@
-﻿import { SVGZoomWidget } from "@hpcc-js/common";
+﻿import { SVGZoomWidget } from "@hpcc-js/common/lib/SVGZoomWidget";
 import { geoPath as d3GeoPath } from "d3-geo";
 import { select as d3Select } from "d3-selection";
 import { resolve, types as projectionTypes } from "./Projection";

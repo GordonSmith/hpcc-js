@@ -5,12 +5,12 @@ var webpack = require("webpack");
 
 module.exports = {
     context: __dirname,
-    entry: "./lib/index.js",
+    entry: "./lib-amd/index.js",
     output: {
         path: path.join(__dirname, "build"),
         publicPath: "build/",
         pathinfo: true,
-        libraryTarget: "umd",
+        libraryTarget: "commonjs2",
         library: "@hpcc-js/dgrid-shim",
         filename: "dgrid-shim.js"
     },

@@ -1,6 +1,7 @@
-import { publish } from "@hpcc-js/common";
-import { HTMLWidget } from "@hpcc-js/common";
-import { Grid, Memory, PagingGrid } from "@hpcc-js/dgrid-shim";
+import { HTMLWidget } from "@hpcc-js/common/lib/HTMLWidget";
+import { publish } from "@hpcc-js/common/lib/propertyExt";
+import { Grid, PagingGrid } from "@hpcc-js/dgrid-shim";
+import { Memory } from "@hpcc-js/dgrid-shim";
 
 import "../src/Common.css";
 

@@ -4,7 +4,7 @@ import nodeResolve from 'rollup-plugin-node-resolve';
 import postcss from "rollup-plugin-postcss";
 const definition = require("./package.json");
 const name = definition.name.split("/").pop();
-const external = Object.keys(definition.dependencies || {}).filter(dep => dep.indexOf("@hpcc-js") === 0 && dep.indexOf("-xxxxshim") < 0);
+const external = Object.keys(definition.dependencies || {}).filter(dep => dep.indexOf("@hpcc-js") === 0 && dep.indexOf("-shim") < 0);
 const globals = {};
 external.forEach(dep => { globals[dep] = dep });
 
@@ -23,7 +23,7 @@ export default {
         }),
         commonjs({
             namedExports: {
-                "../dgrid-shim/build/dgrid-shim.js": ["Deferred", "QueryResults"]
+                "../dgrid-shim/build/dgrid-shim.js": ["Deferred", "domConstruct", "QueryResults", "Memory", "PagingGrid", "Grid"]
             }
         }),
         alias({

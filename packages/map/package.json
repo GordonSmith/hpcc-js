@@ -43,7 +43,7 @@
     "concurrently": "3.5.0",
     "google-maps": "3.2.1",
     "rimraf": "2.6.1",
-    "rollup": "0.51.3",
+    "rollup": "0.51.7",
     "rollup-plugin-postcss": "0.5.5",
     "topojson": "3.0.2",
     "tslint": "5.8.0",

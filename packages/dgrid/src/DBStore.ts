@@ -1,5 +1,6 @@
-import { Database } from "@hpcc-js/common";
-import { Deferred, QueryResults } from "@hpcc-js/dgrid-shim";
+import { Grid } from "@hpcc-js/common/lib/Database";
+import { Deferred } from "@hpcc-js/dgrid-shim";
+import { QueryResults } from "@hpcc-js/dgrid-shim";
 
 import "../src/WUResultStore.css";
 
@@ -118,13 +119,13 @@ class RowFormatter {
 }
 
 export class DBStore {
-    _db: Database.Grid;
+    _db: Grid;
     _columnsIdx: { [key: string]: number } = {};
     _columns;
 
     private rowFormatter: RowFormatter;
 
-    constructor(db: Database.Grid) {
+    constructor(db: Grid) {
         this._db = db;
 
         this._columnsIdx = {};

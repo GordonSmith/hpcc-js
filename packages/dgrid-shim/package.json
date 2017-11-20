@@ -6,11 +6,11 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "clean": "rimraf lib* && rimraf build",
-    "compile": "tsc",
+    "compile": "tsc --module esnext --outDir ./lib",
     "compile-watch": "npm run compile -- -w",
-    "compile-umd": "tsc",
+    "compile-amd": "tsc",
     "bundle": "webpack",
-    "build": "npm run compile && npm run bundle",
+    "build": "npm run compile && npm run compile-amd && npm run bundle",
     "lint": "tslint --project . src/**/*.ts"
   },
   "files": [

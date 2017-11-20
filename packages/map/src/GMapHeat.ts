@@ -1,4 +1,4 @@
-import { HeatMap } from "@hpcc-js/other";
+import { HeatMap } from "@hpcc-js/other/lib/HeatMap";
 import { GMap } from "./GMap";
 
 export class GMapHeat extends GMap {

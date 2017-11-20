@@ -1,5 +1,5 @@
-import { HTMLWidget } from "@hpcc-js/common";
-import { AbsoluteSurface } from "@hpcc-js/layout";
+import { HTMLWidget } from "@hpcc-js/common/lib/HTMLWidget";
+import { AbsoluteSurface } from "@hpcc-js/layout/lib/AbsoluteSurface";
 import { map as d3Map } from "d3-collection";
 import * as _GoogleMapsLoader from "google-maps";
 

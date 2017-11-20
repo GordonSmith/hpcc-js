@@ -1,6 +1,6 @@
 ﻿import { OnOff } from "@hpcc-js/form";
 import { Border, Toolbar } from "@hpcc-js/layout";
-import { PropertyEditor } from "@hpcc-js/other";
+import { PropertyEditor } from "@hpcc-js/other/lib/PropertyEditor";
 
 import "../src/Dermatology.css";
 

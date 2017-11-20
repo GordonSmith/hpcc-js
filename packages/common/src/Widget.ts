@@ -80,14 +80,21 @@ export abstract class Widget extends PropertyExt {
         }
     }
 
-    export(_) {
+    importJSON(_: string | object): this {
+        this._db.json(_);
+        return this;
+    }
+
+    export(_: "JSON" | "CSV" | "TSV" = "JSON") {
         switch (_) {
+            case "CSV":
+                return this._db.csv();
             case "TSV":
                 return this._db.tsv();
             case "JSON":
+            default:
                 return this._db.json();
         }
-        return this._db.csv();
     }
 
     leakCheck(newNode) {

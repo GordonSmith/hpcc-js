@@ -37,7 +37,7 @@
   "devDependencies": {
     "concurrently": "3.5.0",
     "rimraf": "2.6.1",
-    "rollup": "0.51.3",
+    "rollup": "0.51.7",
     "rollup-plugin-postcss": "0.5.5",
     "tslint": "5.8.0",
     "typedoc": "0.7.1",

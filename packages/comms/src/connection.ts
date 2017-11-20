@@ -1,4 +1,5 @@
-import { join, scopedLogger } from "@hpcc-js/util";
+import { scopedLogger } from "@hpcc-js/util/lib/logging";
+import { join } from "@hpcc-js/util/lib/url";
 
 const logger = scopedLogger("comms/connection.ts");
 

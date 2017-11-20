@@ -1,4 +1,4 @@
-import { Persist } from "@hpcc-js/other";
+import * as Persist from "@hpcc-js/other/lib/Persist";
 import { DockLayout, DockPanel, each, TabBar, Widget } from "@hpcc-js/phosphor-shim";
 import { WidgetAdapter } from "./WidgetAdapter";
 
