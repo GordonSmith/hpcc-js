@@ -85,7 +85,7 @@ export class Connection implements IConnection {
                         str.push(prefix + encodeURIComponent(`${key}.itemcount`) + "=" + obj[key].length);
                     }
                 } else if (typeof obj[key] === "object") {
-                    if (obj[key]["Item"] instanceof Array) {  // Specific to ws_machine.GetTargetClusterInfo?
+                    if (obj[key] && obj[key]["Item"] instanceof Array) {  // Specific to ws_machine.GetTargetClusterInfo?
                         str.push(this.serialize(obj[key]["Item"], prefix + encodeURIComponent(key)));
                         str.push(prefix + encodeURIComponent(`${key}.itemcount`) + "=" + obj[key]["Item"].length);
                     } else {
