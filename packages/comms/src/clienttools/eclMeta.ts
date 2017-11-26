@@ -1,6 +1,6 @@
 import * as path from "path";
 
-import { Dictionary } from "@hpcc-js/util";
+import { Dictionary, DictionaryNoCase } from "@hpcc-js/util";
 import { find } from "@hpcc-js/util";
 import { scopedLogger } from "@hpcc-js/util";
 import { SAXStackParser, XMLNode } from "@hpcc-js/util";
@@ -66,7 +66,7 @@ export class ECLScope {
     constructor(name: string, type: string, sourcePath: string, xmlDefinitions: XMLNode[], line: number = 1, start: number = 0, body: number = 0, end: number = Number.MAX_VALUE) {
         this.name = name;
         this.type = type;
-        this.sourcePath = sourcePath;
+        this.sourcePath = path.normalize(sourcePath);
         this.line = +line - 1;
         this.start = +start;
         this.body = +body;
@@ -101,7 +101,7 @@ export class ECLScope {
         const qualifiedIDParts = qualifiedID.split(".");
         const top = qualifiedIDParts.shift();
         const retVal = find(defs, def => {
-            if (def.name === top) {
+            if (typeof def.name === "string" && typeof top === "string" && def.name.toLowerCase() === top.toLowerCase()) {
                 return true;
             }
             return false;
@@ -201,7 +201,7 @@ export class Source extends ECLScope {
 
 export class Workspace {
     _workspacePath: string;
-    _sourceByID: Dictionary<Source> = new Dictionary<Source>();
+    _sourceByID: DictionaryNoCase<Source> = new Dictionary<Source>();
     _sourceByPath: Dictionary<Source> = new Dictionary<Source>();
 
     constructor(workspacePath: string) {
@@ -224,7 +224,7 @@ export class Workspace {
     }
 
     resolveQualifiedID(filePath: string, qualifiedID: string, charOffset: number): ECLScope | undefined {
-        qualifiedID = qualifiedID.toLowerCase();
+        // qualifiedID = qualifiedID.toLowerCase();
         let retVal: ECLScope | undefined;
         if (this._sourceByPath.has(filePath)) {
             const eclSource = this._sourceByPath.get(filePath);
@@ -238,7 +238,7 @@ export class Workspace {
                 imports.some(imp => {
                     if (this._sourceByID.has(imp.ref)) {
                         const eclFile = this._sourceByID.get(imp.ref);
-                        if (qualifiedID === imp.ref.toLowerCase()) {
+                        if (qualifiedID.toLowerCase() === imp.ref.toLowerCase()) {
                         }
                         if (!retVal && qualifiedID === imp.name && this._sourceByID.has(imp.ref)) {
                             const importFile = this._sourceByID.get(imp.ref);

@@ -2,8 +2,9 @@
   "name": "@hpcc-js/map",
   "version": "0.0.53",
   "description": "hpcc-js - Viz Map",
-  "main": "build/map.js",
+  "browser": "build/map.js",
   "module": "lib/index",
+  "main": "build/map.js",
   "unpkg": "build/map.min.js",
   "types": "lib/index.d.ts",
   "files": [

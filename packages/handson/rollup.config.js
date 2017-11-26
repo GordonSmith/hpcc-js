@@ -14,7 +14,7 @@ export default {
     external: external.concat(external2),
     output: {
         file: `build/${name}.js`,
-        format: "umd",
+        format: "umd", sourcemap: true,
         globals,
         name: definition.name
     },

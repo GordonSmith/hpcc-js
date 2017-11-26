@@ -224,8 +224,9 @@ export class ClientTools {
         });
     }
 
-    parseECLErrors(err?: string): IECLError[] {
+    parseECLErrors(err?: string): [IECLError[], string[]] {
         const retVal: IECLError[] = [];
+        const retVal2: string[] = [];
         if (err && err.length) {
             for (const errLine of err.split(os.EOL)) {
                 const match = /([a-z]:\\(?:[-\w\.\d]+\\)*(?:[-\w\.\d]+)?|(?:\/[\w\.\-]+)+)\((\d*),(\d*)\): (error|warning|info) C(\d*): (.*)/.exec(errLine);
@@ -235,10 +236,16 @@ export class ClientTools {
                     const col: number = +_col;
                     const msg = code + ":  " + _msg;
                     retVal.push({ filePath, line, col, msg, severity });
+                } else {
+                    const match = /\d error(s?), \d warning(s?)/.exec(errLine);
+                    if (!match) {
+                        logger.warning(`parseECLErrors:  Unable to parse "${errLine}"`);
+                        retVal2.push(errLine);
+                    }
                 }
             }
         }
-        return retVal;
+        return [retVal, retVal2];
     }
 
     attachWorkspace(): Workspace {
@@ -256,10 +263,10 @@ export class ClientTools {
         });
     }
 
-    syntaxCheck(filePath: string): Promise<IECLError[]> {
+    syntaxCheck(filePath: string): Promise<[IECLError[], string[]]> {
         const args = ["-syntax", "-M"].concat([filePath]);
         return this.execFile(this.eclccPath, this.cwd, this.args(args), "eclcc", `Cannot find ${this.eclccPath}`).then((response: IExecFile) => {
-            let retVal: IECLError[] = [];
+            let retVal: [IECLError[], string[]] = [[], []];
             if (response) {
                 retVal = this.parseECLErrors(response.stderr);
             }

@@ -8,7 +8,7 @@ export default {
     input: "lib/index",
     output: {
         file: `build/${name}.js`,
-        format: "umd",
+        format: "umd", sourcemap: true,
         name: `@hpcc-js/${name}`
     },
     sourcemap: true,
