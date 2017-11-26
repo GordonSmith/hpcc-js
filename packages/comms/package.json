@@ -23,8 +23,8 @@
     "bundle-node": "rollup -c -f cjs -i lib/index.node.js -o build/comms.node.js",
     "bundle-node-watch": "npm run bundle-node -- -w",
     "bundle": "npm run bundle-browser && npm run bundle-node",
-    "minimize-browser": "uglifyjs build/comms.js -c -m -o build/comms.min.js",
-    "minimize-node": "uglifyjs build/comms.js -c -m -o build/comms.node.min.js",
+    "minimize-browser": "uglifyjs build/comms.js -c -m --source-map  -o build/comms.min.js",
+    "minimize-node": "uglifyjs build/comms.js -c -m --source-map  -o build/comms.node.min.js",
     "minimize": "npm run minimize-browser && npm run minimize-node",
     "build": "npm run compile && npm run bundle",
     "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-browser-watch\" \"npm run bundle-node-watch\"",
@@ -56,7 +56,7 @@
     "tslint": "5.8.0",
     "typedoc": "0.7.1",
     "typescript": "2.6.1",
-    "uglify-js": "3.1.8"
+    "uglify-es": "3.2.0"
   },
   "repository": {
     "type": "git",

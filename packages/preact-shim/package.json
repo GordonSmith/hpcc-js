@@ -17,7 +17,7 @@
     "compile-watch": "npm run compile -- -w",
     "bundle": "rollup -c",
     "bundle-watch": "npm run bundle -- -w",
-    "minimize": "uglifyjs build/preact-shim.js -c -m -o build/preact-shim.min.js",
+    "minimize": "uglifyjs build/preact-shim.js -c -m --source-map  -o build/preact-shim.min.js",
     "build": "npm run compile && npm run bundle",
     "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
     "lint": "tslint --project . src/**/*.ts",
@@ -34,7 +34,7 @@
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-sourcemaps": "0.4.2",
     "typescript": "2.6.1",
-    "uglify-js": "3.1.8"
+    "uglify-es": "3.2.0"
   },
   "repository": {
     "type": "git",

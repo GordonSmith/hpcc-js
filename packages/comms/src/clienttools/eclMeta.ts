@@ -99,9 +99,9 @@ export class ECLScope {
 
     private _resolve(defs: Definition[] = [], qualifiedID: string): Definition | undefined {
         const qualifiedIDParts = qualifiedID.split(".");
-        const top = qualifiedIDParts.shift();
+        const base = qualifiedIDParts.shift();
         const retVal = find(defs, def => {
-            if (typeof def.name === "string" && typeof top === "string" && def.name.toLowerCase() === top.toLowerCase()) {
+            if (typeof def.name === "string" && typeof base === "string" && def.name.toLowerCase() === base.toLowerCase()) {
                 return true;
             }
             return false;
@@ -112,7 +112,7 @@ export class ECLScope {
         return retVal;
     }
 
-    resolve(qualifiedID: string) {
+    resolve(qualifiedID: string): Definition | undefined {
         return this._resolve(this.definitions, qualifiedID);
     }
 
@@ -183,11 +183,21 @@ export class Import {
 }
 
 export class Source extends ECLScope {
+    workspace: Workspace;
     imports: Import[];
 
-    constructor(xmlSource: XMLNode) {
+    constructor(workspace: Workspace, xmlSource: XMLNode) {
         super(xmlSource.$.name, "source", xmlSource.$.sourcePath, xmlSource.children("Definition"));
-        this.imports = this.parseImports(xmlSource.children("Import"));
+        this.workspace = workspace;
+        const nameParts = xmlSource.$.name.split(".");
+        nameParts.pop();
+        const fakeNode = new XMLNode("");
+        fakeNode.appendAttribute("name", "$");
+        fakeNode.appendAttribute("ref", nameParts.join("."));
+        this.imports = [
+            new Import(fakeNode),
+            ...this.parseImports(xmlSource.children("Import"))
+        ];
     }
 
     private parseImports(imports: XMLNode[] = []): Import[] {
@@ -197,11 +207,56 @@ export class Source extends ECLScope {
             return retVal;
         });
     }
+
+    resolve(qualifiedID: string, charOffset?: number): Definition | undefined {
+        let retVal;
+
+        //  Check imports  ---
+        if (!retVal) {
+            const imports = this.imports;
+            imports.some(imp => {
+                if (qualifiedID.toLowerCase().indexOf(`${imp.name.toLowerCase()}.`) === 0) {
+                    const qualifiedIDParts = qualifiedID.split(".");
+                    qualifiedIDParts[0] = imp.ref;
+                    const attrIDParts: string[] = [];
+                    while (!retVal) {
+                        const realQualifiedID = qualifiedIDParts.join(".");
+                        if (this.workspace._sourceByID.has(realQualifiedID)) {
+                            const eclFile = this.workspace._sourceByID.get(realQualifiedID);
+                            if (attrIDParts.length) {
+                                retVal = eclFile.resolve(attrIDParts.join("."));
+                            }
+                            if (!retVal) {
+                                retVal = eclFile.resolve([qualifiedIDParts[qualifiedIDParts.length - 1], ...attrIDParts].join("."));
+                            }
+                        }
+                        attrIDParts.push(qualifiedIDParts.pop()!);
+                    }
+                }
+                return !!retVal;
+            });
+        }
+
+        //  Check Inner Scopes  ---
+        if (!retVal && charOffset !== undefined) {
+            const scopes = this.scopeStackAt(charOffset);
+            scopes.some(scope => {
+                retVal = scope.resolve(qualifiedID);
+                return !!retVal;
+            });
+        }
+
+        //  Check Definitions  ---
+        if (!retVal) {
+            retVal = super.resolve(qualifiedID);
+        }
+        return retVal;
+    }
 }
 
 export class Workspace {
     _workspacePath: string;
-    _sourceByID: DictionaryNoCase<Source> = new Dictionary<Source>();
+    _sourceByID: DictionaryNoCase<Source> = new DictionaryNoCase<Source>();
     _sourceByPath: Dictionary<Source> = new Dictionary<Source>();
 
     constructor(workspacePath: string) {
@@ -210,7 +265,7 @@ export class Workspace {
 
     parseSources(sources: XMLNode[] = []) {
         return sources.map(_source => {
-            const source = new Source(_source);
+            const source = new Source(this, _source);
             inspect(_source, "source", source);
             this._sourceByID.set(source.name, source);
             this._sourceByPath.set(source.sourcePath, source);
@@ -228,35 +283,7 @@ export class Workspace {
         let retVal: ECLScope | undefined;
         if (this._sourceByPath.has(filePath)) {
             const eclSource = this._sourceByPath.get(filePath);
-            const scopes = eclSource.scopeStackAt(charOffset);
-            scopes.some(scope => {
-                retVal = scope.resolve(qualifiedID);
-                return !!retVal;
-            });
-            if (!retVal) {
-                const imports = eclSource.imports;
-                imports.some(imp => {
-                    if (this._sourceByID.has(imp.ref)) {
-                        const eclFile = this._sourceByID.get(imp.ref);
-                        if (qualifiedID.toLowerCase() === imp.ref.toLowerCase()) {
-                        }
-                        if (!retVal && qualifiedID === imp.name && this._sourceByID.has(imp.ref)) {
-                            const importFile = this._sourceByID.get(imp.ref);
-                            retVal = this.resolveQualifiedID(importFile.sourcePath, qualifiedID, charOffset);
-                            if (!retVal) {
-                                const impRefParts = imp.ref.split(".");
-                                retVal = this.resolveQualifiedID(importFile.sourcePath, impRefParts[impRefParts.length - 1], charOffset);
-                            }
-                        }
-                        if (!retVal && qualifiedID.indexOf(imp.name + ".") === 0) {
-                            const impRefParts = imp.ref.split(".");
-                            const partialID = impRefParts[impRefParts.length - 1] + "." + qualifiedID.substring(imp.name.length + 1);
-                            retVal = this.resolveQualifiedID(eclFile.sourcePath, partialID, charOffset);
-                        }
-                    }
-                    return !!retVal;
-                });
-            }
+            retVal = eclSource.resolve(qualifiedID, charOffset);
         }
         return retVal;
     }
@@ -285,7 +312,7 @@ export function attachWorkspace(_workspacePath: string): Workspace {
 function isQualifiedIDChar(lineText: string, charPos: number) {
     if (charPos < 0) return false;
     const testChar = lineText.charAt(charPos);
-    return /[a-zA-Z\d_\.]/.test(testChar);
+    return /[a-zA-Z\d_\.$]/.test(testChar);
 }
 
 export function qualifiedIDBoundary(lineText: string, charPos: number, reverse: boolean) {

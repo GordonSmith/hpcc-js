@@ -20,7 +20,7 @@
     "compile-umd": "tsc",
     "bundle": "rollup -c",
     "bundle-watch": "npm run bundle -- -w",
-    "minimize": "uglifyjs build/common.js -c -m -o build/common.min.js",
+    "minimize": "uglifyjs build/common.js -c -m --source-map  -o build/common.min.js",
     "build": "npm run compile && npm run copy-resources && npm run bundle",
     "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
     "lint": "tslint --project . src/**/*.ts",
@@ -58,7 +58,7 @@
     "tslint": "5.8.0",
     "typedoc": "0.7.1",
     "typescript": "2.6.1",
-    "uglify-js": "3.1.8"
+    "uglify-es": "3.2.0"
   },
   "repository": {
     "type": "git",
