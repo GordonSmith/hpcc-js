@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/react",
-  "version": "0.0.48",
+  "version": "0.0.51",
   "description": "hpcc-js - Viz React",
   "main": "build/react.js",
   "module": "lib/index",
@@ -25,7 +25,7 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/common": "^0.0.48",
+    "@hpcc-js/common": "^0.0.51",
     "d3-format": "1.2.0",
     "orb-fix": "2.0.4",
     "react": "~15.5.4",

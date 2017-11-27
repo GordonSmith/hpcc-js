@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/requirejs-shim",
-  "version": "0.0.40",
+  "version": "0.0.43",
   "description": "hpcc-js - requirejs shim",
   "main": "build/requirejs-shim.js",
   "types": "types/requirejs-shim.d.ts",

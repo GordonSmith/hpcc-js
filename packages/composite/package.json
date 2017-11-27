@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/composite",
-  "version": "0.0.51",
+  "version": "0.0.54",
   "description": "hpcc-js - Viz Composite",
   "main": "build/composite.js",
   "module": "lib/index",
@@ -25,15 +25,15 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/api": "^0.0.48",
-    "@hpcc-js/chart": "^0.0.50",
-    "@hpcc-js/common": "^0.0.48",
-    "@hpcc-js/form": "^0.0.50",
-    "@hpcc-js/html": "^0.0.48",
-    "@hpcc-js/layout": "^0.0.48",
-    "@hpcc-js/other": "^0.0.48",
-    "@hpcc-js/phosphor": "^0.0.50",
-    "@hpcc-js/phosphor-shim": "^0.0.43",
+    "@hpcc-js/api": "^0.0.51",
+    "@hpcc-js/chart": "^0.0.53",
+    "@hpcc-js/common": "^0.0.51",
+    "@hpcc-js/form": "^0.0.53",
+    "@hpcc-js/html": "^0.0.51",
+    "@hpcc-js/layout": "^0.0.51",
+    "@hpcc-js/other": "^0.0.51",
+    "@hpcc-js/phosphor": "^0.0.53",
+    "@hpcc-js/phosphor-shim": "^0.0.46",
     "d3-selection": "1.1.0",
     "tslib": "1.8.0"
   },
