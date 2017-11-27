@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import * as path from "path";
 
 import { Dictionary, DictionaryNoCase } from "@hpcc-js/util";
@@ -6,6 +7,10 @@ import { scopedLogger } from "@hpcc-js/util";
 import { SAXStackParser, XMLNode } from "@hpcc-js/util";
 
 const logger = scopedLogger("clienttools/eclmeta");
+
+export interface IFilePath {
+    scope: ECLScope;
+}
 
 const _inspect = false;
 function inspect(obj: any, _id: string, known: any) {
@@ -31,10 +36,15 @@ export class Attr {
 }
 
 export class Field {
+    definition: Definition;
+    get scope(): ECLScope {
+        return this.definition;
+    }
     name: string;
     type: string;
 
-    constructor(xmlField: XMLNode) {
+    constructor(definition: Definition, xmlField: XMLNode) {
+        this.definition = definition;
         this.name = xmlField.$.name;
         this.type = xmlField.$.type;
     }
@@ -53,7 +63,10 @@ export interface ISuggestion {
     type: string;
 }
 
-export class ECLScope {
+export class ECLScope implements IFilePath {
+    get scope(): ECLScope {
+        return this;
+    }
     name: string;
     type: string;
     sourcePath: string;
@@ -150,7 +163,7 @@ export class Definition extends ECLScope {
 
     private parseFields(fields: XMLNode[] = []): Field[] {
         return fields.map(field => {
-            const retVal = new Field(field);
+            const retVal = new Field(this, field);
             inspect(field, "field", retVal);
             return retVal;
         });
@@ -183,12 +196,10 @@ export class Import {
 }
 
 export class Source extends ECLScope {
-    workspace: Workspace;
     imports: Import[];
 
-    constructor(workspace: Workspace, xmlSource: XMLNode) {
+    constructor(xmlSource: XMLNode) {
         super(xmlSource.$.name, "source", xmlSource.$.sourcePath, xmlSource.children("Definition"));
-        this.workspace = workspace;
         const nameParts = xmlSource.$.name.split(".");
         nameParts.pop();
         const fakeNode = new XMLNode("");
@@ -211,32 +222,6 @@ export class Source extends ECLScope {
     resolve(qualifiedID: string, charOffset?: number): Definition | undefined {
         let retVal;
 
-        //  Check imports  ---
-        if (!retVal) {
-            const imports = this.imports;
-            imports.some(imp => {
-                if (qualifiedID.toLowerCase().indexOf(`${imp.name.toLowerCase()}.`) === 0) {
-                    const qualifiedIDParts = qualifiedID.split(".");
-                    qualifiedIDParts[0] = imp.ref;
-                    const attrIDParts: string[] = [];
-                    while (!retVal) {
-                        const realQualifiedID = qualifiedIDParts.join(".");
-                        if (this.workspace._sourceByID.has(realQualifiedID)) {
-                            const eclFile = this.workspace._sourceByID.get(realQualifiedID);
-                            if (attrIDParts.length) {
-                                retVal = eclFile.resolve(attrIDParts.join("."));
-                            }
-                            if (!retVal) {
-                                retVal = eclFile.resolve([qualifiedIDParts[qualifiedIDParts.length - 1], ...attrIDParts].join("."));
-                            }
-                        }
-                        attrIDParts.push(qualifiedIDParts.pop()!);
-                    }
-                }
-                return !!retVal;
-            });
-        }
-
         //  Check Inner Scopes  ---
         if (!retVal && charOffset !== undefined) {
             const scopes = this.scopeStackAt(charOffset);
@@ -254,22 +239,97 @@ export class Source extends ECLScope {
     }
 }
 
+const isDirectory = source => source.indexOf(".") !== 0 && fs.lstatSync(source).isDirectory();
+const isEcl = source => path.extname(source).toLowerCase() === ".ecl";
+const modAttrs = source => fs.readdirSync(source).map(name => path.join(source, name)).filter(path => isDirectory(path) || isEcl(path));
+
+export class Folder extends ECLScope {
+
+    constructor(name: string, sourcePath: string) {
+        super(name, "folder", sourcePath, []);
+    }
+
+    suggestions(): ISuggestion[] {
+        return modAttrs(this.sourcePath).map(folder => {
+            return {
+                name: path.basename(folder, ".ecl"),
+                type: "folder"
+            };
+        });
+    }
+}
+
 export class Workspace {
     _workspacePath: string;
     _sourceByID: DictionaryNoCase<Source> = new DictionaryNoCase<Source>();
     _sourceByPath: Dictionary<Source> = new Dictionary<Source>();
+    private _test: DictionaryNoCase<IFilePath> = new DictionaryNoCase<IFilePath>();
 
     constructor(workspacePath: string) {
         this._workspacePath = workspacePath;
+        this.walkFolders(workspacePath);
     }
 
-    parseSources(sources: XMLNode[] = []) {
-        return sources.map(_source => {
-            const source = new Source(this, _source);
+    walkFolders(folderPath: string) {
+        const name = path.relative(this._workspacePath, folderPath).split(path.sep).join(".");
+        this._test.set(name, new Folder("", folderPath));
+        for (const child of modAttrs(folderPath)) {
+            if (isDirectory(child)) {
+                this.walkFolders(child);
+            }
+        }
+    }
+
+    buildStack(parentStack: string[], name: string, removeDupID: boolean): { stack: string[], qid: string } {
+        const nameStack = name.split(".");
+        if (removeDupID && parentStack[parentStack.length - 1] === nameStack[0]) {
+            nameStack.shift();
+        }
+        const stack = [...parentStack, ...nameStack];
+        const qid: string = stack.join(".");
+        return {
+            stack,
+            qid
+        };
+    }
+
+    walkECLScope(parentStack: string[], scope: ECLScope) {
+        const info = this.buildStack(parentStack, scope.name, true);
+        this._test.set(info.qid, scope);
+        for (const def of scope.definitions) {
+            this.walkDefinition(info.stack, def);
+        }
+    }
+
+    walkField(parentStack: string[], field: Field) {
+        const info = this.buildStack(parentStack, field.name, false);
+        this._test.set(info.qid, field);
+    }
+
+    walkDefinition(parentStack: string[], definition: Definition) {
+        const info = this.buildStack(parentStack, definition.name, true);
+        this.walkECLScope(parentStack, definition);
+        for (const field of definition.fields) {
+            this.walkField(info.stack, field);
+        }
+    }
+
+    walkSource(source: Source) {
+        const dirName = path.dirname(source.sourcePath);
+        const relName = path.relative(this._workspacePath, dirName).split(path.sep).join(".");
+        const folder = new Folder(relName, dirName);
+        this._test.set(folder.name, folder);
+        this.walkECLScope([], source);
+    }
+
+    parseSources(sources: XMLNode[] = []): void {
+        for (const _source of sources) {
+            const source = new Source(_source);
             inspect(_source, "source", source);
             this._sourceByID.set(source.name, source);
             this._sourceByPath.set(source.sourcePath, source);
-        });
+            this.walkSource(source);
+        }
     }
 
     parseMetaXML(metaXML: string): void {
@@ -278,25 +338,46 @@ export class Workspace {
         this.parseSources(metaParser.sources);
     }
 
-    resolveQualifiedID(filePath: string, qualifiedID: string, charOffset: number): ECLScope | undefined {
-        // qualifiedID = qualifiedID.toLowerCase();
+    resolveQualifiedID(filePath: string, qualifiedID: string, charOffset?: number): ECLScope | undefined {
         let retVal: ECLScope | undefined;
-        if (this._sourceByPath.has(filePath)) {
+        if (!retVal && this._test.has(qualifiedID)) {
+            retVal = this._test.get(qualifiedID).scope;
+        }
+        if (!retVal && this._sourceByPath.has(filePath)) {
             const eclSource = this._sourceByPath.get(filePath);
-            retVal = eclSource.resolve(qualifiedID, charOffset);
+
+            //  Resolve Imports  ---
+            const qualifiedIDParts = qualifiedID.split(".");
+            for (const imp of eclSource.imports) {
+                if (imp.name.toLowerCase() === qualifiedIDParts[0].toLowerCase()) {
+                    if (imp.ref) {
+                        qualifiedIDParts[0] = imp.ref;
+                    } else {
+                        qualifiedIDParts.shift();
+                    }
+                    break;
+                }
+            }
+            let realQID = qualifiedIDParts.join(".");
+            if (!retVal && this._test.has(realQID)) {
+                retVal = this._test.get(realQID).scope;
+            }
+            if (!retVal) {
+                realQID = [...eclSource.name.split("."), ...qualifiedIDParts].join(".");
+                if (this._test.has(realQID)) {
+                    retVal = this._test.get(realQID).scope;
+                }
+            }
         }
         return retVal;
     }
 
     resolvePartialID(filePath: string, partialID: string, charOffset: number): ECLScope | undefined {
         partialID = partialID.toLowerCase();
-        if (this._sourceByPath.has(filePath)) {
-            const partialIDParts = partialID.split(".");
-            partialIDParts.pop();
-            const partialIDQualifier = partialIDParts.length === 1 ? partialIDParts[0] : partialIDParts.join(".");
-            return this.resolveQualifiedID(filePath, partialIDQualifier, charOffset);
-        }
-        return undefined;
+        const partialIDParts = partialID.split(".");
+        partialIDParts.pop();
+        const partialIDQualifier = partialIDParts.length === 1 ? partialIDParts[0] : partialIDParts.join(".");
+        return this.resolveQualifiedID(filePath, partialIDQualifier, charOffset);
     }
 }
 
@@ -309,14 +390,14 @@ export function attachWorkspace(_workspacePath: string): Workspace {
     return workspaceCache.get(workspacePath);
 }
 
-function isQualifiedIDChar(lineText: string, charPos: number) {
+function isQualifiedIDChar(lineText: string, charPos: number, reverse: boolean) {
     if (charPos < 0) return false;
     const testChar = lineText.charAt(charPos);
-    return /[a-zA-Z\d_\.$]/.test(testChar);
+    return (reverse ? /[a-zA-Z\d_\.$]/ : /[a-zA-Z\d_]/).test(testChar);
 }
 
 export function qualifiedIDBoundary(lineText: string, charPos: number, reverse: boolean) {
-    while (isQualifiedIDChar(lineText, charPos)) {
+    while (isQualifiedIDChar(lineText, charPos, reverse)) {
         charPos += reverse ? -1 : 1;
     }
     return charPos + (reverse ? 1 : -1);
