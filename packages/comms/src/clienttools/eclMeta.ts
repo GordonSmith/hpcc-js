@@ -267,15 +267,19 @@ export class Workspace {
 
     constructor(workspacePath: string) {
         this._workspacePath = workspacePath;
-        this.walkFolders(workspacePath);
+        if (fs.existsSync(workspacePath)) {
+            this.walkFolders(workspacePath, workspacePath);
+        }
     }
 
-    walkFolders(folderPath: string) {
-        const name = path.relative(this._workspacePath, folderPath).split(path.sep).join(".");
-        this._test.set(name, new Folder("", folderPath));
-        for (const child of modAttrs(folderPath)) {
-            if (isDirectory(child)) {
-                this.walkFolders(child);
+    walkFolders(folderPath: string, refPath: string, force: boolean = false) {
+        const name = path.relative(refPath, folderPath).split(path.sep).join(".");
+        if (force || !this._test.has(name)) {
+            this._test.set(name, new Folder("", folderPath));
+            for (const child of modAttrs(folderPath)) {
+                if (isDirectory(child)) {
+                    this.walkFolders(child, refPath, force);
+                }
             }
         }
     }
@@ -324,11 +328,27 @@ export class Workspace {
 
     parseSources(sources: XMLNode[] = []): void {
         for (const _source of sources) {
-            const source = new Source(_source);
-            inspect(_source, "source", source);
-            this._sourceByID.set(source.name, source);
-            this._sourceByPath.set(source.sourcePath, source);
-            this.walkSource(source);
+            if (_source.$.name) {   //  Plugins have no name...
+                const source = new Source(_source);
+                inspect(_source, "source", source);
+                this._sourceByID.set(source.name, source);
+                this._sourceByPath.set(source.sourcePath, source);
+
+                //  If external source like "std.system.ThorLib" then need to backup to "std" and add its folder
+                if (source.name) {
+                    const sourceNameParts = source.name.split(".");
+                    let depth = sourceNameParts.length;
+                    if (depth > 1) {
+                        let sourcePath = source.sourcePath;
+                        while (depth > 1) {
+                            sourcePath = path.dirname(sourcePath);
+                            --depth;
+                        }
+                        this.walkFolders(sourcePath, path.dirname(sourcePath));
+                    }
+                }
+                this.walkSource(source);
+            }
         }
     }
 

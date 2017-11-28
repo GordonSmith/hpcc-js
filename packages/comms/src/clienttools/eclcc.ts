@@ -253,9 +253,9 @@ export class ClientTools {
     }
 
     fetchMeta(filePath: string): Promise<Workspace> {
+        const metaWorkspace = attachWorkspace(this.cwd);
         const args = ["-M"].concat([filePath]);
         return this.execFile(this.eclccPath, this.cwd, this.args(args), "eclcc", `Cannot find ${this.eclccPath}`).then((response: IExecFile) => {
-            const metaWorkspace = attachWorkspace(this.cwd);
             if (response && response.stdout && response.stdout.length) {
                 metaWorkspace.parseMetaXML(response.stdout);
             }
