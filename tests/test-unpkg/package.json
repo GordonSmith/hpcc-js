@@ -1,14 +1,14 @@
 {
   "private": true,
   "name": "@hpcc-js/test-unpkg",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "",
   "main": "index.js",
   "dependencies": {
     "@hpcc-js/api": "^0.0.51",
     "@hpcc-js/chart": "^0.0.53",
     "@hpcc-js/common": "^0.0.51",
-    "@hpcc-js/dgrid": "^0.0.58",
+    "@hpcc-js/dgrid": "^0.0.59",
     "@hpcc-js/dgrid-shim": "^0.0.45",
     "@hpcc-js/map": "^0.0.56",
     "@hpcc-js/other": "^0.0.51",

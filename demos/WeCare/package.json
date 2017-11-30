@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@hpcc-js/demo-wecare",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "scripts": {
     "clean": "rimraf lib* && rimraf dist",
     "compile": "tsc --module esnext --outDir ./lib",
@@ -14,8 +14,8 @@
   "dependencies": {
     "@hpcc-js/chart": "^0.0.53",
     "@hpcc-js/common": "^0.0.51",
-    "@hpcc-js/comms": "^0.0.53",
-    "@hpcc-js/dgrid": "^0.0.58",
+    "@hpcc-js/comms": "^0.0.54",
+    "@hpcc-js/dgrid": "^0.0.59",
     "@hpcc-js/form": "^0.0.53",
     "@hpcc-js/map": "^0.0.56",
     "d3-selection": "1.1.0",

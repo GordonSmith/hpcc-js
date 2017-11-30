@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@hpcc-js/demo-coupon",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,8 +12,8 @@
     "build": "npm run compile && npm run bundle && npm run bundle2"
   },
   "dependencies": {
-    "@hpcc-js/comms": "^0.0.53",
-    "@hpcc-js/dgrid": "^0.0.58",
+    "@hpcc-js/comms": "^0.0.54",
+    "@hpcc-js/dgrid": "^0.0.59",
     "@hpcc-js/map": "^0.0.56",
     "@hpcc-js/phosphor": "^0.0.53"
   },
