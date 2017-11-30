@@ -234,17 +234,16 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
         });
     }
 
-    update(request: Partial<WsWorkunits.WUUpdate.Request>, appData?: any, debugData?: any): Promise<Workunit> {
+    update(request: Partial<WsWorkunits.WUUpdate.Request>): Promise<Workunit> {
         return this.connection.WUUpdate({
-            ...request, ...{
+            ...request,
+            ...{
                 Wuid: this.Wuid,
                 StateOrig: this.State,
                 JobnameOrig: this.Jobname,
                 DescriptionOrig: this.Description,
                 ProtectedOrig: this.Protected,
-                ClusterOrig: this.Cluster,
-                ApplicationValues: appData,
-                DebugValues: debugData
+                ClusterOrig: this.Cluster
             }
         }).then((response) => {
             this.set(response.Workunit);
@@ -272,8 +271,16 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
             return this.connection.WUUpdate({
                 Wuid: this.Wuid,
                 Action: action,
-                ResultLimit: resultLimit
-            }, {}, { Debug: this._debugMode }).then((response) => {
+                ResultLimit: resultLimit,
+                DebugValues: {
+                    DebugValue: [
+                        {
+                            Name: "Debug",
+                            Value: this._debugMode ? "1" : ""
+                        }
+                    ]
+                }
+            }).then((response) => {
                 this.set(response.Workunit);
                 this._submitAction = action;
                 return this.connection.WUSubmit({ Wuid: this.Wuid, Cluster: cluster });

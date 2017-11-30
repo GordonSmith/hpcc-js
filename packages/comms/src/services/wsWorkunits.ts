@@ -1137,8 +1137,8 @@ export namespace WUUpdate {
         XmlParams?: string;
         ThorSlaveIP?: string;
         QueryMainDefinition?: string;
-        DebugValues?: any[];
-        ApplicationValues?: any[];
+        DebugValues?: DebugValues;
+        ApplicationValues?: ApplicationValues;
     }
 
     export interface Exception {
@@ -2434,21 +2434,7 @@ export class WorkunitsService {
         return this._connection.send("WUCreate");
     }
 
-    private objToESPArray(id: string, obj: any, request: any) {
-        let count = 0;
-        for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                request[`${id}s.${id}.${count}.Name`] = key;
-                request[`${id}s.${id}.${count}.Value`] = obj[key];
-                ++count;
-            }
-        }
-        request[`${id}s.${id}.itemcount`] = count;
-    }
-
-    WUUpdate(request: WUUpdate.Request, appValues: { [key: string]: string | number | boolean } = {}, debugValues: { [key: string]: string | number | boolean } = {}): Promise<WUUpdate.Response> {
-        this.objToESPArray("ApplicationValue", appValues, request);
-        this.objToESPArray("DebugValue", debugValues, request);
+    WUUpdate(request: WUUpdate.Request): Promise<WUUpdate.Response> {
         return this._connection.send("WUUpdate", request);
     }
 
