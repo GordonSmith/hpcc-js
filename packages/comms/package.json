@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/comms",
-  "version": "0.0.54",
+  "version": "0.0.55",
   "description": "hpcc-js - Communications",
   "main": "build/comms.node.js",
   "module": "lib/index",
