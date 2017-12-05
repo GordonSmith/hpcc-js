@@ -1,5 +1,4 @@
-import * as Platform from "@hpcc-js/common/lib/Platform";
-import * as Utility from "@hpcc-js/common/lib/Utility";
+import { Platform, Utility } from "@hpcc-js/common";
 import { select as d3Select } from "d3-selection";
 import { Layer } from "./Layer";
 import * as MapUtility from "./Utility";

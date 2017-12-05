@@ -51,7 +51,7 @@ export const npmPackages = {
     "react-dom": "react-dom/dist/react-dom.min",
     "reflect-metadata": "reflect-metadata/Reflect",
     "simpleheat": "simpleheat/simpleheat",
-    "topojson": "topojson/build/topojson",
+    "topojson": "topojson/dist/topojson",
     "tslib": "tslib/tslib"
 };
 export const rawgitPackages = {

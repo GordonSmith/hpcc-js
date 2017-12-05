@@ -1,4 +1,4 @@
-import { Grid } from "@hpcc-js/common/lib/Database";
+import { Database } from "@hpcc-js/common";
 import { Deferred } from "@hpcc-js/dgrid-shim";
 import { QueryResults } from "@hpcc-js/dgrid-shim";
 
@@ -119,13 +119,13 @@ class RowFormatter {
 }
 
 export class DBStore {
-    _db: Grid;
+    _db: Database.Grid;
     _columnsIdx: { [key: string]: number } = {};
     _columns;
 
     private rowFormatter: RowFormatter;
 
-    constructor(db: Grid) {
+    constructor(db: Database.Grid) {
         this._db = db;
 
         this._columnsIdx = {};

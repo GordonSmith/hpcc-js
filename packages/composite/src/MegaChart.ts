@@ -1,7 +1,7 @@
 import { Database, Text, Utility } from "@hpcc-js/common";
 import { Button, Input, Select } from "@hpcc-js/form";
 import { Border, Grid, Toolbar } from "@hpcc-js/layout";
-import { Legend } from "@hpcc-js/other/lib/Legend";
+import { Legend } from "@hpcc-js/other";
 import { select as d3Select } from "d3-selection";
 import "d3-transition";
 import { MultiChart } from "./MultiChart";

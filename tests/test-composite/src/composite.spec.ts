@@ -1,5 +1,5 @@
-import { Class, HTMLWidget, SVGWidget, Text } from "@hpcc-js/common";
-import { Dermatology, MegaChart, MultiChart, ChartPanel } from "@hpcc-js/composite";
+import { Class, HTMLWidget, SVGWidget } from "@hpcc-js/common";
+import { ChartPanel, Dermatology, MegaChart, MultiChart } from "@hpcc-js/composite";
 import * as composite from "@hpcc-js/composite";
 import { data } from "@hpcc-js/sample-data";
 import { expect } from "chai";
@@ -7,7 +7,7 @@ import { classDef, render } from "./coreTests";
 
 const urlSearch: string = window.location.href.split("?")[1];
 
-describe.skip("@hpcc-js/composite", () => {
+describe("@hpcc-js/composite", () => {
     for (const key in composite) {
         const item = (composite as any)[key];
         if (item) {
@@ -22,23 +22,11 @@ describe.skip("@hpcc-js/composite", () => {
                                 render(new MultiChart()
                                     .columns(data.Pivot.subjects.columns)
                                     .data(data.Pivot.subjects.data)
+                                    .chartType("COLUMN")
                                 );
                             case Dermatology:
-                                render(new Dermatology()
-                                    .widget(new Text().text("Hello and WElcome"))
-                                );
-                                break;
                             case MegaChart:
-                                render(new MegaChart()
-                                    .columns(data.Pivot.subjects.columns)
-                                    .data(data.Pivot.subjects.data)
-                                );
-                                break;
                             case ChartPanel:
-                                render(new ChartPanel()
-                                    .columns(data.Pivot.subjects.columns)
-                                    .data(data.Pivot.subjects.data)
-                                );
                                 break;
                             default:
                                 it("Missing test", () => {

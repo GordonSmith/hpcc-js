@@ -2,7 +2,14 @@
   "private": true,
   "name": "@hpcc-js/demo-dashy",
   "version": "0.0.32",
-  "scripts": {},
+  "scripts": {
+    "clean": "rimraf lib* && rimraf dist && rimraf build",
+    "compile-es6": "tsc --module es6 --outDir ./lib-es6",
+    "compile-umd": "tsc --module umd --outDir ./lib-umd",
+    "bundle": "webpack",
+    "bundle2": "rollup -c",
+    "build": "npm run compile-es6 && npm run bundle && npm run bundle2"
+  },
   "dependencies": {
     "@hpcc-js/api": "^0.0.51",
     "@hpcc-js/chart": "^0.0.53",
@@ -11,6 +18,7 @@
     "@hpcc-js/comms": "^0.0.55",
     "@hpcc-js/composite": "^0.0.54",
     "@hpcc-js/ddl-shim": "^0.0.18",
+    "@hpcc-js/dgrid-shim": "^0.0.45",
     "@hpcc-js/dgrid": "^0.0.60",
     "@hpcc-js/form": "^0.0.53",
     "@hpcc-js/graph": "^0.0.52",
@@ -27,7 +35,9 @@
   "devDependencies": {
     "material-design-lite": "1.2.1",
     "pure-css": "1.0.4",
-    "rimraf": "2.6.1",
-    "typescript": "2.6.1"
+    "rimraf": "2.6.2",
+    "rollup": "0.52.1",
+    "typescript": "2.6.1",
+    "webpack": "3.10.0"
   }
 }

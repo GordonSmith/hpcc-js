@@ -4,19 +4,23 @@ import nodeResolve from 'rollup-plugin-node-resolve';
 import postcss from "rollup-plugin-postcss";
 const definition = require("./package.json");
 const name = definition.name.split("/").pop();
-const external = Object.keys(definition.dependencies || {}).filter(dep => dep.indexOf("@hpcc-js") === 0 && dep.indexOf("-shim") < 0);
-const globals = {};
-const external2 = Object.keys(globals);
-external.forEach(dep => { globals[dep] = dep });
 const node_libs = ["child_process", "fs", "os", "path", "semver", "request", "safe-buffer", "tmp", "xmldom"];
 
 export default {
-    input: "lib/index.browser",
-    external: external.concat(external2).concat(node_libs),
+    input: "lib-es6/index",
+    external: function (id) {
+        return (id.indexOf("@hpcc-js") === 0 && id.indexOf("-shim") < 0) || node_libs.indexOf(id) >= 0;
+    },
     output: {
-        file: `build/${name}.js`,
-        format: "umd", sourcemap: true,
-        globals,
+        file: `build/index.es6.js`,
+        format: "es",
+        sourcemap: true,
+        globals: function (id) {
+            if (id.indexOf("@hpcc-js") === 0) {
+                return id;
+            }
+            return undefined;
+        },
         name: definition.name
     },
     plugins: [

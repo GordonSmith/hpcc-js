@@ -4,18 +4,30 @@ import nodeResolve from 'rollup-plugin-node-resolve';
 import postcss from "rollup-plugin-postcss";
 const definition = require("./package.json");
 const name = definition.name.split("/").pop();
-const external = Object.keys(definition.dependencies || {}).filter(dep => dep.indexOf("@hpcc-js") === 0 && dep.indexOf("-shim") < 0);
-const globals = {};
-external.forEach(dep => { globals[dep] = dep });
 
 export default {
-    input: "lib/index",
-    external,
+    input: "lib-es6/index",
+    external: function (id) {
+        return id.indexOf("@hpcc-js") === 0;// && id.indexOf("-shim") < 0;
+    },
     output: {
-        file: `build/${name}.js`,
-        format: "umd", sourcemap: true,
-        globals,
+        file: `build/index.es6.js`,
+        format: "es",
+        sourcemap: true,
+        globals: function (id) {
+            if (id.indexOf("@hpcc-js") === 0) {
+                return id;
+            }
+            return undefined;
+        },
         name: definition.name
+    },
+    moduleContext: function (path) {
+        if (path.indexOf("dgrid-shim.js") >= 0) {
+            console.log(path)
+            return "window";
+        }
+        return "undefined";
     },
     plugins: [
         nodeResolve({
@@ -23,7 +35,7 @@ export default {
         }),
         commonjs({
             namedExports: {
-                "../dgrid-shim/build/dgrid-shim.js": ["Deferred", "domConstruct", "QueryResults", "Memory", "PagingGrid", "Grid"]
+                //"../dgrid-shim/build/dgrid-shim.js": ["Deferred", "domConstruct", "QueryResults", "Memory", "PagingGrid", "Grid"]
             }
         }),
         alias({

@@ -1,4 +1,4 @@
-import { AbsoluteSurface } from "@hpcc-js/layout/lib/AbsoluteSurface";
+import { AbsoluteSurface } from "@hpcc-js/layout";
 import { GMap } from "./GMap";
 import { Layered } from "./Layered";
 

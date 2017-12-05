@@ -9,9 +9,9 @@ module.exports = {
     output: {
         path: path.join(__dirname, "build"),
         publicPath: "build/",
-        pathinfo: true,
-        libraryTarget: "commonjs2",
+        libraryTarget: "umd",
         library: "@hpcc-js/dgrid-shim",
+        pathinfo: true,
         filename: "dgrid-shim.js"
     },
     module: {
@@ -31,6 +31,10 @@ module.exports = {
                 }]
             }]
     },
+    node: {
+        process: false,
+        global: false
+    },
     plugins: [
         new DojoWebpackPlugin({
             loaderConfig: require.resolve("./src/loaderConfig"),
@@ -45,21 +49,20 @@ module.exports = {
             /^css!/, function (data) {
                 data.request = data.request.replace(/^css!/, "!style-loader!css-loader!")
             }
-        ),
+        )/*,
         new webpack.optimize.UglifyJsPlugin({
+            cache: true,
+            parallel: true,
             output: { comments: false },
             compress: { warnings: false },
             sourceMap: true
         })
+        */
     ],
     resolveLoader: {
         modules: [
             path.join(__dirname, "../../node_modules")
         ]
     },
-    devtool: "#source-map",
-    node: {
-        process: false,
-        global: false
-    }
+    devtool: "#source-map"
 };

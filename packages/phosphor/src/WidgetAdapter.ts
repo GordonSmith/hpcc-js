@@ -1,5 +1,5 @@
 import { Widget as Widget } from "@hpcc-js/common";
-import * as Persist from "@hpcc-js/other/lib/Persist";
+import { Persist } from "@hpcc-js/other";
 import { ConflatableMessage, Message, MessageLoop, Widget as PWidget } from "@hpcc-js/phosphor-shim";
 import { select as d3Select } from "d3-selection";
 

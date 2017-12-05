@@ -7,7 +7,7 @@ import { classDef, render } from "./coreTests";
 
 const urlSearch: string = window.location.href.split("?")[1];
 
-describe("@hpcc-js/c3chart", () => {
+describe.skip("@hpcc-js/c3chart", () => {
     for (const key in c3chart) {
         const item = (c3chart as any)[key];
         if (item) {

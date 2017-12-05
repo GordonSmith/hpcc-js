@@ -5,6 +5,7 @@ import { Dictionary, DictionaryNoCase } from "@hpcc-js/util";
 import { find } from "@hpcc-js/util";
 import { scopedLogger } from "@hpcc-js/util";
 import { SAXStackParser, XMLNode } from "@hpcc-js/util";
+import { ClientTools, locateClientTools } from "./eclcc";
 
 const logger = scopedLogger("clienttools/eclmeta");
 
@@ -239,9 +240,21 @@ export class Source extends ECLScope {
     }
 }
 
-const isDirectory = source => source.indexOf(".") !== 0 && fs.lstatSync(source).isDirectory();
-const isEcl = source => path.extname(source).toLowerCase() === ".ecl";
+const isHiddenDirectory = source => path.basename(source).indexOf(".") === 0;
+const isDirectory = source => fs.lstatSync(source).isDirectory() && !isHiddenDirectory(source);
+const isEcl = source => [".ecl", ".ecllib"].indexOf(path.extname(source).toLowerCase()) >= 0;
 const modAttrs = source => fs.readdirSync(source).map(name => path.join(source, name)).filter(path => isDirectory(path) || isEcl(path));
+
+export class File extends ECLScope {
+
+    constructor(name: string, sourcePath: string) {
+        super(name, "file", sourcePath, []);
+    }
+
+    suggestions(): ISuggestion[] {
+        return [];
+    }
+}
 
 export class Folder extends ECLScope {
 
@@ -261,26 +274,66 @@ export class Folder extends ECLScope {
 
 export class Workspace {
     _workspacePath: string;
+    _eclccPath?: string;
+    _clientTools: ClientTools;
     _sourceByID: DictionaryNoCase<Source> = new DictionaryNoCase<Source>();
     _sourceByPath: Dictionary<Source> = new Dictionary<Source>();
     private _test: DictionaryNoCase<IFilePath> = new DictionaryNoCase<IFilePath>();
 
-    constructor(workspacePath: string) {
+    constructor(workspacePath: string, eclccPath?: string) {
         this._workspacePath = workspacePath;
-        if (fs.existsSync(workspacePath)) {
-            this.walkFolders(workspacePath, workspacePath);
+        this._eclccPath = eclccPath;
+    }
+
+    refresh() {
+        this.primeWorkspace();
+        this.primeClientTools();
+    }
+
+    primeClientTools(): Promise<this> {
+        return locateClientTools(this._eclccPath, this._workspacePath).then(clientTools => {
+            this._clientTools = clientTools;
+            return clientTools.paths();
+        }).then(paths => {
+            for (const knownFolder of ["ECLCC_ECLLIBRARY_PATH", "ECLCC_PLUGIN_PATH"]) {
+                if (paths[knownFolder] && fs.existsSync(paths[knownFolder])) {
+                    this.walkChildFolders(paths[knownFolder], paths[knownFolder]);
+                }
+            }
+            return this;
+        });
+    }
+
+    primeWorkspace() {
+        if (fs.existsSync(this._workspacePath)) {
+            this.visitFolder(this._workspacePath, this._workspacePath);
         }
     }
 
-    walkFolders(folderPath: string, refPath: string, force: boolean = false) {
+    walkChildFolders(folderPath: string, refPath: string, force: boolean = false) {
+        for (const child of modAttrs(folderPath)) {
+            if (!isDirectory(child)) {
+                this.visitFile(child, refPath, force);
+            } else {
+                this.visitFolder(child, refPath, force);
+            }
+        }
+    }
+
+    visitFile(filePath: string, refPath: string, force: boolean = false) {
+        const filePathInfo = path.parse(filePath);
+        const pathNoExt = path.join(filePathInfo.dir, filePathInfo.name);
+        const name = path.relative(refPath, pathNoExt).split(path.sep).join(".");
+        if (force || !this._test.has(name)) {
+            this._test.set(name, new File("", filePath));
+        }
+    }
+
+    visitFolder(folderPath: string, refPath: string, force: boolean = false) {
         const name = path.relative(refPath, folderPath).split(path.sep).join(".");
         if (force || !this._test.has(name)) {
-            this._test.set(name, new Folder("", folderPath));
-            for (const child of modAttrs(folderPath)) {
-                if (isDirectory(child)) {
-                    this.walkFolders(child, refPath, force);
-                }
-            }
+            this._test.set(name, new Folder(name, folderPath));
+            this.walkChildFolders(folderPath, refPath, force);
         }
     }
 
@@ -319,10 +372,10 @@ export class Workspace {
     }
 
     walkSource(source: Source) {
-        const dirName = path.dirname(source.sourcePath);
-        const relName = path.relative(this._workspacePath, dirName).split(path.sep).join(".");
-        const folder = new Folder(relName, dirName);
-        this._test.set(folder.name, folder);
+        // const dirName = path.dirname(source.sourcePath);
+        // const relName = path.relative(this._workspacePath, dirName).split(path.sep).join(".");
+        // const folder = new Folder(relName, dirName);
+        // this._test.set(folder.name, folder);
         this.walkECLScope([], source);
     }
 
@@ -344,7 +397,7 @@ export class Workspace {
                             sourcePath = path.dirname(sourcePath);
                             --depth;
                         }
-                        this.walkFolders(sourcePath, path.dirname(sourcePath));
+                        this.visitFolder(sourcePath, path.dirname(sourcePath));
                     }
                 }
                 this.walkSource(source);
@@ -402,10 +455,12 @@ export class Workspace {
 }
 
 const workspaceCache = new Dictionary<Workspace>();
-export function attachWorkspace(_workspacePath: string): Workspace {
+export function attachWorkspace(_workspacePath: string, eclccPath?: string): Workspace {
     const workspacePath = path.normalize(_workspacePath);
     if (!workspaceCache.has(workspacePath)) {
-        workspaceCache.set(workspacePath, new Workspace(workspacePath));
+        const workspace = new Workspace(workspacePath, eclccPath);
+        workspaceCache.set(workspacePath, workspace);
+        workspace.refresh();
     }
     return workspaceCache.get(workspacePath);
 }

@@ -32,7 +32,6 @@ export class Graph extends Pins {
         return retVal;
     }
 
-
     data(_) {
         const retVal = Pins.prototype.data.apply(this, arguments);
         if (arguments.length) {

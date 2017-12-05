@@ -5,10 +5,10 @@ const definition = require("./package.json");
 const name = definition.name.split("/").pop();
 
 export default {
-    input: "lib/index",
+    input: "lib-es6/index",
     output: {
-        file: `build/${name}.js`,
-        format: "umd", sourcemap: true,
+        file: `build/index.es6.js`,
+        format: "es", sourcemap: true,
         name: `@hpcc-js/${name}`
     },
     sourcemap: true,

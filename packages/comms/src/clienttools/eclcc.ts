@@ -169,6 +169,22 @@ export class ClientTools {
         return this._version;
     }
 
+    _paths = {};
+    paths() {
+        return this.execFile(this.eclccPath, this.cwd, this.args(["-showpaths"]), "eclcc", `Cannot find ${this.eclccPath}`).then((response: IExecFile) => {
+            if (response && response.stdout && response.stdout.length) {
+                const paths = response.stdout.split(/\r?\n/);
+                for (const path of paths) {
+                    const parts = path.split("=");
+                    if (parts.length === 2) {
+                        this._paths[parts[0]] = parts[1];
+                    }
+                }
+            }
+            return this._paths;
+        });
+    }
+
     private loadXMLDoc(filePath: any, removeOnRead?: boolean): Promise<XMLNode> {
         return new Promise((resolve, _reject) => {
             const fileData = fs.readFileSync(filePath, "ascii");
@@ -253,26 +269,28 @@ export class ClientTools {
     }
 
     fetchMeta(filePath: string): Promise<Workspace> {
-        const metaWorkspace = attachWorkspace(this.cwd);
-        const args = ["-M"].concat([filePath]);
-        return this.execFile(this.eclccPath, this.cwd, this.args(args), "eclcc", `Cannot find ${this.eclccPath}`).then((response: IExecFile) => {
-            if (response && response.stdout && response.stdout.length) {
-                metaWorkspace.parseMetaXML(response.stdout);
+        return Promise.all([
+            attachWorkspace(this.cwd),
+            this.execFile(this.eclccPath, this.cwd, this.args(["-M", filePath]), "eclcc", `Cannot find ${this.eclccPath}`)
+        ]).then(([metaWorkspace, execFileResponse]: [Workspace, IExecFile]) => {
+            if (execFileResponse && execFileResponse.stdout && execFileResponse.stdout.length) {
+                metaWorkspace.parseMetaXML(execFileResponse.stdout);
             }
             return metaWorkspace;
         });
     }
 
     syntaxCheck(filePath: string): Promise<[IECLError[], string[]]> {
-        const args = ["-syntax", "-M"].concat([filePath]);
-        return this.execFile(this.eclccPath, this.cwd, this.args(args), "eclcc", `Cannot find ${this.eclccPath}`).then((response: IExecFile) => {
+        return Promise.all([
+            attachWorkspace(this.cwd),
+            this.execFile(this.eclccPath, this.cwd, this.args(["-syntax", "-M", filePath]), "eclcc", `Cannot find ${this.eclccPath}`)
+        ]).then(([metaWorkspace, execFileResponse]: [Workspace, IExecFile]) => {
             let retVal: [IECLError[], string[]] = [[], []];
-            if (response) {
-                retVal = this.parseECLErrors(response.stderr);
+            if (execFileResponse) {
+                retVal = this.parseECLErrors(execFileResponse.stderr);
             }
-            if (response && response.stdout && response.stdout.length) {
-                const metaWorkspace = attachWorkspace(this.cwd);
-                metaWorkspace.parseMetaXML(response.stdout);
+            if (execFileResponse && execFileResponse.stdout && execFileResponse.stdout.length) {
+                metaWorkspace.parseMetaXML(execFileResponse.stdout);
             }
             return retVal;
         });

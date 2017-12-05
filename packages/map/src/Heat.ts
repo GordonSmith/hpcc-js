@@ -1,4 +1,4 @@
-import { HeatMap } from "@hpcc-js/other/lib/HeatMap";
+import { HeatMap } from "@hpcc-js/other";
 import { Layer } from "./Layer";
 
 import "../src/Heat.css";

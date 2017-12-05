@@ -8,7 +8,7 @@ import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
 import { ddl } from "./sampleddl";
 
-export class Mutex {
+class Mutex {
     private _locking: Promise<any>;
     private _locked: boolean;
 
@@ -32,7 +32,7 @@ export class Mutex {
     }
 }
 
-export async function scopedLock(m: Mutex, func: (...params: any[]) => Promise<void>) {
+async function scopedLock(m: Mutex, func: (...params: any[]) => Promise<void>) {
     const unlock = await m.lock();
     try {
         m.lock();
@@ -202,7 +202,7 @@ export class App {
     loadPreview(activity: Activity) {
         this._preview
             .datasource(new DatasourceAdapt(activity))
-            .paging(true)
+            // .paging(true)
             .lazyRender()
             ;
     }

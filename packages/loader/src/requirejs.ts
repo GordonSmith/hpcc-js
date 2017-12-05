@@ -13,7 +13,7 @@ function guessScriptURL() {
 
 function parseScriptUrl() {
     const scriptUrl = guessScriptURL();
-    const scriptUrlParts = scriptUrl.split("/loader/build/loader.js");
+    const scriptUrlParts = scriptUrl.split("/loader/build/index.js");
     const isLocal = scriptUrl.indexOf("file://") === 0;
     return {
         isLocal,
@@ -43,7 +43,7 @@ const hostUrl = (function () {
     if (document && document.currentScript) {
         retVal = (document.currentScript as any).src;
     } else {
-        retVal = getElementAttrVal("script", "src", "/loader/build/loader.js");
+        retVal = getElementAttrVal("script", "src", "/loader/build/index.js");
     }
     const retValParts = retVal.split("/");
     retValParts.pop();  //  loader.js
@@ -97,9 +97,9 @@ export function bundle(url: string, additionalPaths: { [key: string]: string } =
         ...additionalPaths
     };
     const minStr = min ? ".min" : "";
-    shims.forEach(shim => { paths[`@hpcc-js/${shim}`] = `${url}/${shim}/build/${shim}`; });
+    shims.forEach(shim => { paths[`@hpcc-js/${shim}`] = `${url}/${shim}/build/index`; });
     packages.forEach(pckg => {
-        paths[`@hpcc-js/${pckg}`] = `${url}/${pckg}/build/${pckg}${minStr}`;
+        paths[`@hpcc-js/${pckg}`] = `${url}/${pckg}/build/index${minStr}`;
     });
     return requirejs.config({
         context: url,
@@ -136,7 +136,7 @@ function local(devMode: boolean, additionalPaths: { [key: string]: string }): an
         paths[`@hpcc-js/${pckg}`] = `${config.libUrl}/${pckg}`;
         rjsPackages.push({
             name: `@hpcc-js/${pckg}`,
-            main: devMode && config.isLocal ? `lib-umd/index` : `build/${pckg}`
+            main: devMode && config.isLocal ? `lib-umd/index` : `build/index`
         });
         paths[`@hpcc-js/${pckg}`] = `${config.libUrl}/${pckg}`;
     });

@@ -4,12 +4,11 @@
   "version": "0.0.31",
   "scripts": {
     "clean": "rimraf lib* && rimraf dist",
-    "compile": "tsc --module esnext --outDir ./lib",
-    "compile-watch": "npm run compile -- -w",
-    "compile-umd": "tsc",
+    "compile-es6": "tsc --module es6 --outDir ./lib-es6",
+    "compile-umd": "tsc --module umd --outDir ./lib-umd",
     "bundle": "webpack",
     "bundle2": "rollup -c",
-    "build": "npm run compile && npm run bundle && npm run bundle2"
+    "build": "npm run compile-es6 && npm run bundle-es6 && npm run bundle2"
   },
   "dependencies": {
     "@hpcc-js/chart": "^0.0.53",
@@ -24,10 +23,10 @@
   },
   "devDependencies": {
     "@types/d3": "4.9.0",
-    "rimraf": "2.6.1",
-    "rollup": "0.51.7",
+    "rimraf": "2.6.2",
+    "rollup": "0.52.1",
     "source-map-loader": "0.2.1",
     "typescript": "2.6.1",
-    "webpack": "3.8.1"
+    "webpack": "3.10.0"
   }
 }
