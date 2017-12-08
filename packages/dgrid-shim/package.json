@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/dgrid-shim",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "description": "dgrid shim",
   "main": "build/dgrid-shim.js",
   "types": "lib-amd/index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/graph",
-  "version": "0.0.52",
+  "version": "0.0.53",
   "description": "hpcc-js - Viz Graph",
   "main": "build/index.js",
   "module": "build/index.es6",
@@ -25,8 +25,8 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/api": "^0.0.51",
-    "@hpcc-js/common": "^0.0.51",
+    "@hpcc-js/api": "^0.0.52",
+    "@hpcc-js/common": "^0.0.52",
     "d3-array": "1.2.1",
     "d3-drag": "1.2.1",
     "d3-force": "1.0.6",
