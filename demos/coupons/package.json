@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@hpcc-js/demo-coupon",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@hpcc-js/comms": "^0.0.56",
-    "@hpcc-js/dgrid": "^0.0.61",
+    "@hpcc-js/dgrid": "^0.0.62",
     "@hpcc-js/map": "^0.0.57",
     "@hpcc-js/phosphor": "^0.0.54"
   },

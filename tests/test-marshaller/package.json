@@ -1,10 +1,10 @@
 {
   "private": true,
   "name": "@hpcc-js/test-marshaller",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "dependencies": {
     "@hpcc-js/common": "^0.0.52",
-    "@hpcc-js/marshaller": "^0.0.63",
+    "@hpcc-js/marshaller": "^0.0.64",
     "chai": "4.0.0",
     "es6-promise": "4.1.1",
     "mocha": "3.4.2",

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@hpcc-js/demo-wecare",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "scripts": {
     "clean": "rimraf lib* && rimraf dist",
     "compile-es6": "tsc --module es6 --outDir ./lib-es6",
@@ -14,7 +14,7 @@
     "@hpcc-js/chart": "^0.0.54",
     "@hpcc-js/common": "^0.0.52",
     "@hpcc-js/comms": "^0.0.56",
-    "@hpcc-js/dgrid": "^0.0.61",
+    "@hpcc-js/dgrid": "^0.0.62",
     "@hpcc-js/form": "^0.0.54",
     "@hpcc-js/map": "^0.0.57",
     "d3-selection": "1.1.0",
