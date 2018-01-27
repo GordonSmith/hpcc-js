@@ -24,6 +24,7 @@
     "@hpcc-js/form": "^0.0.71",
     "@hpcc-js/graph": "^0.0.70",
     "@hpcc-js/layout": "^0.0.69",
+"@hpcc-js/loader": "^0.0.70",
     "@hpcc-js/map": "^0.0.74",
     "@hpcc-js/marshaller": "^0.0.83",
     "@hpcc-js/other": "^0.0.69",

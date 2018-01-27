@@ -1,14 +1,10 @@
 
-import { Column } from "@hpcc-js/chart";
-import { Select } from "@hpcc-js/other";
 import { Table } from "@hpcc-js/dgrid";
-import { Graph } from "@hpcc-js/graph";
 import { ChartPanel } from "@hpcc-js/layout";
 import { Dashboard, Databomb, Element, ElementContainer, Filters, Form, GroupBy, HipieRequest, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
 
 //  Dashboard Element Container (Model)  ---
 const ec = new ElementContainer();
-ec.refresh();
 
 //  Dashboard (optional) ---
 export const dashboard = new Dashboard(ec)

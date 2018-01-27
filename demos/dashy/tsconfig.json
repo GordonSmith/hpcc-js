@@ -10,7 +10,7 @@
         "declarationDir": "./types",
         "noEmitOnError": false,
         "strictNullChecks": true,
-        "importHelpers": true,
+        "importHelpers": false,
         "experimentalDecorators": true,
         "downlevelIteration": true,
         "skipLibCheck": true,

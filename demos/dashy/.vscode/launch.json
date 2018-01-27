@@ -17,12 +17,14 @@
             "url5": "file:///${workspaceRoot}/index.html?Hostname=10.241.100.157&Port=8010&Protocol=http&Wuid=W20180124-100848&ResultName=hpccsummitdemo2016qaraw_Comp_Ins145924_DDL",
             "url6": "file:///${workspaceRoot}/index.html?Hostname=10.173.147.1&Port=8010&Protocol=http&Wuid=W20180130-120353&ResultName=issue_1396_wuidavg_Comp_Ins006_DDL",
             "runtimeArgs": [
-                "--allow-file-access-from-files"
+                //                "--allow-file-access-from-files",
+                // "--allow-file-access",
+                // "--allow-cross-origin-auth-prompt",
+                "--disable-web-security"
             ],
             "webRoot": "${workspaceRoot}",
             "sourceMapPathOverrides": {
-                "webpack:///./*": "${workspaceRoot}/*",
-                "webpack:///*": "/*"
+                "webpack:///C:/Users/{{username}}/git/hpcc-js/": "C:/Users/{{username}}/git/hpcc-js/"
             }
         },
         {
@@ -35,6 +37,19 @@
                 "--allow-cross-origin-auth-prompt",
                 "--allow-insecure-localhost",
                 "--allow-running-insecure-content"
+            ],
+            "webRoot": "${workspaceRoot}/../../",
+            "sourceMapPathOverrides": {
+                "http://127.0.0.1:8080/brundajx/DASH2/*": "${webRoot}/*"
+            }
+        },
+        {
+            "name": "CORS",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://127.0.0.1:8080/demos/dashy/index.html?Hostname=10.241.100.157&Port=8010&Protocol=http&Wuid=W20180124-100848&ResultName=hpccsummitdemo2016qaraw_Comp_Ins145924_DDL",
+            "runtimeArgs": [
+                "--disable-web-security"
             ],
             "webRoot": "${workspaceRoot}/../../",
             "sourceMapPathOverrides": {

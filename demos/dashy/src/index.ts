@@ -1,14 +1,19 @@
 ﻿import { JSEditor, JSONEditor } from "@hpcc-js/codemirror";
 import { PropertyExt, Widget } from "@hpcc-js/common";
-import { Connection, hookSend, IOptions, ResponseType, SendFunc, serializeRequest } from "@hpcc-js/comms";
-import { DDL1 } from "@hpcc-js/ddl-shim";
+import { Connection, hookSend, IOptions, ResponseType, Result, SendFunc, serializeRequest } from "@hpcc-js/comms";
+import { DDL1, ddl2Schema } from "@hpcc-js/ddl-shim";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
 import { Activity, Dashboard, DatasourceAdapt, DDLEditor, Element, ElementContainer, GraphAdapter, JavaScriptAdapter, upgrade } from "@hpcc-js/marshaller";
+import { Comms } from "@hpcc-js/other";
 import { PropertyEditor } from "@hpcc-js/other";
-import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
+import { SplitPanel, TabPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
+import { scopedLogger } from "@hpcc-js/util";
+import { debugUpgrade, upgrade as ddlUpgrade } from "./ddlUpgrade";
 import { ddl } from "./sampleddl";
+
+const logger = scopedLogger("index.ts");
 
 export function doHook() {
     const origSend = hookSend((opts: IOptions, action: string, request: any, responseType: ResponseType): Promise<any> => {
@@ -30,50 +35,17 @@ export function doHook() {
     });
 }
 if (window.location.origin.indexOf("http") === 0) {
-    doHook();
+    // doHook();
 }
 
 // const test = upgrade("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", JSON.stringify(ddl));
 
-class Mutex {
-    private _locking: Promise<any>;
-    private _locked: boolean;
-
-    constructor() {
-        this._locking = Promise.resolve();
-        this._locked = false;
-    }
-
-    isLocked() {
-        return this._locked;
-    }
-
-    lock() {
-        this._locked = true;
-        let unlockNext: any;
-        const willLock = new Promise(resolve => unlockNext = resolve);
-        willLock.then(() => this._locked = false);
-        const willUnlock = this._locking.then(() => unlockNext);
-        this._locking = this._locking.then(() => willLock);
-        return willUnlock;
-    }
-}
-
-async function scopedLock(m: Mutex, func: (...params: any[]) => Promise<void>) {
-    const unlock = await m.lock();
-    try {
-        m.lock();
-        return await func();
-    } finally {
-        unlock();
-    }
-}
-
 export class App {
-    private _dockPanel = new DockPanel();
-    private _dataSplit = new SplitPanel();
     private _elementContainer: ElementContainer = new ElementContainer();
 
+    private _splitMain = new SplitPanel("horizontal");
+
+    private _tabLHS = new TabPanel();
     private _dashboard: Dashboard = new Dashboard(this._elementContainer)
         .on("vizActivation", (viz: Element) => {
             this.selectionChanged(viz);
@@ -88,7 +60,7 @@ export class App {
         ;
     private _graphAdapter = new GraphAdapter(this._elementContainer);
     private _javaScripAdapter = new JavaScriptAdapter(this._dashboard);
-    private _graph: Graph = new Graph()
+    private _pipeline: Graph = new Graph()
         .allowDragging(false)
         .applyScaleOnLayout(true)
         .on("vertex_click", (row: any, col: string, sel: boolean, ext: any) => {
@@ -98,10 +70,22 @@ export class App {
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {
         })
         ;
+
+    private _tabDDL = new TabPanel();
+    private _ddlSchema = new JSONEditor().json(ddl2Schema);
+    private _ddlEditor = new DDLEditor();
+    private _jsEditor = new JSEditor();
+    private _layoutEditor = new JSONEditor();
+    private _ddlv1 = new JSONEditor();
+    private _ddlv2 = new JSONEditor();
+
+    private _tabRHS = new TabPanel();
+    private _splitData = new SplitPanel();
     private _dataProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
         .showFields(false)
         ;
+    private _preview = new DatasourceTable();
     private _vizProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
         .showFields(false)
@@ -110,38 +94,41 @@ export class App {
         .show_settings(false)
         .showFields(false)
         ;
-    private _ddlEditor = new DDLEditor();
-    private _layoutEditor = new JSONEditor();
-    private _jsEditor = new JSEditor();
     private _cloneEC: ElementContainer = new ElementContainer();
     private _clone: Dashboard = new Dashboard(this._cloneEC);
-    private _preview = new DatasourceTable();
 
     constructor(placeholder: string) {
         // app = this;
-        this._dataSplit
-            .addWidget(this._dataProperties)
-            .addWidget(this._preview)
-            ;
-        this._dockPanel
+        this._splitMain
             .target(placeholder)
+            .addWidget(this._tabLHS)
+            .addWidget(this._tabRHS)
+            ;
+        this._tabLHS
             .addWidget(this._dashboard, "Dashboard")
-            .addWidget(this._dataSplit, "Data", "split-right", this._dashboard)
-            .addWidget(this._vizProperties, "Widget", "tab-after", this._dataSplit)
-            .addWidget(this._stateProperties, "State", "tab-after", this._vizProperties)
-            .addWidget(this._graph as any, "Pipeline", "tab-after", this._dashboard)    //  TODO Fix Graph Declaration  ---
-            .addWidget(this._ddlEditor, "DDL", "tab-after", this._graph as any)         //  TODO Fix Graph Declaration  ---
-            .addWidget(this._jsEditor, "TS", "tab-after", this._ddlEditor)
-            .addWidget(this._layoutEditor, "Layout", "tab-after", this._jsEditor)
-            .addWidget(this._clone, "Clone", "tab-after", this._layoutEditor)
+            .addWidget(this._pipeline, "Pipeline")
+            .addWidget(this._tabDDL, "DDL")
             .on("childActivation", (w: Widget) => {
                 switch (w) {
                     case this._dashboard:
                         this.selectionChanged(this._currViz);
                         break;
-                    case this._graph:
+                    case this._pipeline:
                         this.loadGraph(true);
                         break;
+                    case this._tabDDL:
+                        this._tabDDL.childActivation(this._tabDDL.active());
+                        break;
+                }
+            })
+            ;
+        this._tabDDL
+            .addWidget(this._ddlSchema, "Schema")
+            .addWidget(this._ddlEditor, "v2")
+            .addWidget(this._jsEditor, "TS")
+            .addWidget(this._layoutEditor, "Layout")
+            .on("childActivation", (w: Widget) => {
+                switch (w) {
                     case this._ddlEditor:
                         this.loadDDL(true);
                         break;
@@ -151,12 +138,27 @@ export class App {
                     case this._layoutEditor:
                         this.loadLayout(true);
                         break;
+                }
+            })
+            ;
+        this._tabRHS
+            .addWidget(this._splitData, "Data")
+            .addWidget(this._vizProperties, "Widget")
+            .addWidget(this._stateProperties, "State")
+            .addWidget(this._clone, "Clone")
+            .on("childActivation", (w: Widget) => {
+                switch (w) {
                     case this._clone:
                         this.loadClone();
-                        //  this.loadDataProps(this._clone.test());
                         break;
                 }
             })
+            ;
+        this._splitData
+            .addWidget(this._dataProperties)
+            .addWidget(this._preview)
+            ;
+        this._splitMain
             .lazyRender()
             ;
         this.initMenu();
@@ -165,23 +167,57 @@ export class App {
                 this._currViz.refresh().then(() => {
                     this.refreshPreview();
                 });
-                switch (this._dockPanel.active()) {
+                switch (this._tabLHS.active()) {
                     case this._dashboard:
                         break;
-                    case this._graph:
-                        this.loadGraph(true);
+                    case this._pipeline:
+                        setTimeout(() => {
+                            this.loadGraph(true);
+                        }, 500);
                         break;
-                    case this._ddlEditor:
-                        this.loadDDL(true);
-                        break;
-                    case this._layoutEditor:
-                        this.loadLayout(true);
-                        break;
+                    case this._tabDDL:
+                        switch (this._tabDDL.active()) {
+                            case this._ddlEditor:
+                                this.loadDDL(true);
+                                break;
+                            case this._layoutEditor:
+                                this.loadLayout(true);
+                                break;
+                        }
                     case this._clone:
                         break;
                 }
             }
         });
+        this.parseUrl();
+    }
+
+    parseUrl() {
+        const _url = new Comms.ESPUrl().url(document.URL);
+        if (_url.param("Wuid")) {
+            logger.info(`Wuid Params:  ${_url.params()}`);
+            const baseUrl = `${_url.param("Protocol")}://${_url.param("Hostname")}:${_url.param("Port")}`;
+            const fullUrl = `${baseUrl}/WsWorkunits/WUResult.json?Wuid=${_url.param("Wuid")}&ResultName=${_url.param("ResultName")}`;
+            logger.info(baseUrl);
+            const result = new Result({ baseUrl }, _url.param("Wuid"), _url.param("ResultName"));
+            result.fetchRows().then(async (response: any[]) => {
+                const ddl = JSON.parse(response[0][_url.param("ResultName")]);
+                this._ddlv1.json(ddl);
+                const ddl2 = ddlUpgrade(ddl, baseUrl, _url.param("Wuid"));
+                this._ddlv2.json(ddl2);
+                this._tabDDL
+                    .addWidget(this._ddlv1, "v1")
+                    .addWidget(this._ddlv2, "v1->v2")
+                    ;
+                this._elementContainer.clear();
+                this._dashboard.restore({ ddl: ddl2, widgets: [], layout: {} });
+                this._elementContainer.refresh().then(() => {
+                    this._dashboard.render();
+                });
+            });
+        } else if (_url.param("QueryID")) {
+        } else {
+        }
     }
 
     clear() {
@@ -190,7 +226,7 @@ export class App {
         this._elementContainer.refresh();
     }
 
-    importV1DDL(target: string, ddl: DDL1.DDLSchema, seri: object) {
+    importV1DDL(target: string, ddl: DDL1.DDLSchema, seri?: object) {
         this._elementContainer.importV1DDL(target, ddl, seri);
         this.loadDashboard();
         this._elementContainer.refresh();
@@ -213,12 +249,14 @@ export class App {
     selectionChanged(viz?: Element, activity?: Activity) {
         if (activity && (this._currActivity !== activity)) {
             this.loadDataProps(activity);
-            this.loadPreview(activity);
+            if (activity instanceof Activity) {
+                this.loadPreview(activity);
+            }
         } else if (viz && (this._currViz !== viz || this._currActivity !== activity)) {
             this.loadDataProps(viz.hipiePipeline());
             this.loadWidgetProps(viz.multiChartPanel());
             this.loadStateProps(viz.state());
-            this.loadPreview(viz.hipiePipeline()!.last()!);
+            this.loadPreview(viz.hipiePipeline()!.mappings()!);
         }
         this._currViz = viz;
         this._currActivity = activity;
@@ -258,17 +296,17 @@ export class App {
     }
 
     loadDashboard(refresh: boolean = true) {
-        if (refresh && this._dockPanel.isVisible(this._dashboard as any)) {
+        if (refresh && this._tabLHS.active() === this._dashboard) {
             this._dashboard.lazyRender();
         }
     }
 
     loadGraph(refresh: boolean = false) {
-        this._graph
+        this._pipeline
             .data({ ...this._graphAdapter.createGraph(), merge: false })
             ;
-        if (refresh && this._dockPanel.isVisible(this._graph as any)) {
-            this._graph
+        if (refresh && this._tabLHS.active() === this._pipeline) {
+            this._pipeline
                 .layout("Hierarchy")
                 .lazyRender()
                 ;
@@ -279,7 +317,7 @@ export class App {
         this._ddlEditor
             .ddl(this._elementContainer.ddl())
             ;
-        if (refresh && this._dockPanel.isVisible(this._ddlEditor as any)) {
+        if (refresh && this._tabLHS.active() === this._tabDDL && this._tabDDL.active() === this._ddlEditor) {
             this._ddlEditor
                 .lazyRender()
                 ;
@@ -290,7 +328,7 @@ export class App {
         this._jsEditor
             .javascript(this._dashboard.javascript())
             ;
-        if (refresh && this._dockPanel.isVisible(this._jsEditor as any)) {
+        if (refresh && this._tabLHS.active() === this._tabDDL && this._tabDDL.active() === this._jsEditor) {
             this._jsEditor
                 .lazyRender()
                 ;
@@ -301,7 +339,7 @@ export class App {
         this._layoutEditor
             .json(this._dashboard.layout())
             ;
-        if (refresh && this._dockPanel.isVisible(this._layoutEditor as any)) {
+        if (refresh && this._tabLHS.active() === this._tabDDL && this._tabDDL.active() === this._layoutEditor) {
             this._layoutEditor
                 .lazyRender()
                 ;
@@ -383,7 +421,7 @@ export class App {
     }
 
     doResize(width: number, height: number) {
-        this._dockPanel
+        this._splitMain
             .resize({ width, height })
             .lazyRender();
     }
