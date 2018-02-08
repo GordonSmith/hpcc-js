@@ -1,6 +1,5 @@
 ﻿import { hashSum } from "@hpcc-js/util";
 import { Common } from "./Common";
-import { DBStore } from "./DBStore";
 
 export class Table extends Common {
     _prevChecksum;
@@ -16,6 +15,22 @@ export class Table extends Common {
 
     update(domNode, element) {
         super.update(domNode, element);
+        this._columns = this._store.columns();
+        const colsHash = hashSum(this._columns);
+        if (this._prevColsHash !== colsHash) {
+            this._prevColsHash = colsHash;
+            this._dgrid.set("columns", this._columns);
+        }
+        this._dgrid.refresh();
+        /*
+        this._dgrid.refresh();
+        this._columns = this._store.columns();
+        const colsHash = hashSum(this._columns);
+        if (this._prevColsHash !== colsHash) {
+            this._prevColsHash = colsHash;
+            this._dgrid.set("columns", this._columns);
+        }
+        this._dgrid.refresh();
         const store = new DBStore(this._db);
         this._columns = store.columns();
         const colsHash = hashSum(this._columns);
@@ -35,6 +50,7 @@ export class Table extends Common {
         if (changed) {
             this._dgrid.refresh();
         }
+        */
     }
 
     click(row, col, sel) {

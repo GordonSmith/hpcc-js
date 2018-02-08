@@ -13,7 +13,7 @@
                     var table = new Table()
                         .columns(["Subject", "Year 1", "Year 2", "Year 3", "Year 4"])
                         .data([
-                            ["Width 2 undefined", , 83, , 72],
+                            ["with 2 undefined", , 83, , 72],
                             ["English II", 17, 43, 83, 93],
                             ["English III", 6, 43, 64, 93],
                             ["Width Blank", 7, "", 52, 83],
