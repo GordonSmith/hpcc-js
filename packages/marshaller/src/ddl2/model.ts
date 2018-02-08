@@ -1,5 +1,5 @@
 import { PropertyExt, publish, publishProxy, Widget } from "@hpcc-js/common";
-import { MultiChartPanel } from "@hpcc-js/composite";
+import { MultiChart, MultiChartPanel } from "@hpcc-js/composite";
 import { DDL1 } from "@hpcc-js/ddl-shim";
 import { ChartPanel } from "@hpcc-js/layout";
 import { find } from "@hpcc-js/util";
@@ -101,6 +101,19 @@ export class Element extends PropertyExt {
             this._MultiChartPanel.id(_);
         }
         return retVal;
+    }
+
+    chartType(): string {
+        return this._MultiChartPanel.chartType();
+        // this.chart().classID();
+    }
+
+    chart(): Widget {
+        let widget = this._MultiChartPanel.widget();
+        if (widget instanceof MultiChart) {
+            widget = widget.chart();
+        }
+        return widget;
     }
 
     pipeline(activities: Activity[]): this {
