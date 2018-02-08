@@ -293,7 +293,7 @@ export class RoxieRequest extends Activity {
         });
     }
 
-    pullData(): object[] {
+    pullData(): ReadonlyArray<object> {
         return this._data;
     }
 }
