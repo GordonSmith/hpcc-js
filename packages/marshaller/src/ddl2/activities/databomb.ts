@@ -49,7 +49,7 @@ export class Databomb extends Activity {
         return Promise.resolve();
     }
 
-    pullData(): object[] {
+    pullData(): ReadonlyArray<object> {
         return this.payload();
     }
 
@@ -103,7 +103,7 @@ export class Form extends Activity {
         return Promise.resolve();
     }
 
-    pullData(): object[] {
+    pullData(): ReadonlyArray<object> {
         return [this.payload()];
     }
 

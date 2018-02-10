@@ -82,7 +82,7 @@ export abstract class ESPResult extends Activity {
         }
     });
 
-    pullData(): object[] {
+    pullData(): ReadonlyArray<object> {
         return this._data;
     }
 

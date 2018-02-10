@@ -149,7 +149,7 @@ export abstract class Activity extends PropertyExt {
         return this._sourceActivity ? this._sourceActivity.exec() : Promise.resolve();
     }
 
-    pullData(): object[] {
+    pullData(): ReadonlyArray<object> {
         return this._sourceActivity ? this._sourceActivity.pullData() || [] : [];
     }
 }
@@ -209,13 +209,10 @@ export class ActivityPipeline extends ActivityArray {
         return retVal;
     }
 
-    fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<any[]> {
+    fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<ReadonlyArray<object>> {
         return this.exec().then(() => {
             const data = this.pullData();
             if (from === 0 && data.length <= count) {
-                return data;
-            } else if (from === 0) {
-                data.length = count;
                 return data;
             }
             return data.slice(from, from + count);
@@ -274,7 +271,7 @@ export class ActivityPipeline extends ActivityArray {
         return this.last().exec();
     }
 
-    pullData(): object[] {
+    pullData(): ReadonlyArray<object> {
         return this.last().pullData();
     }
 }
@@ -350,7 +347,7 @@ export class ActivitySelection extends ActivityArray {
         return this.selection().exec();
     }
 
-    pullData(): object[] {
+    pullData(): ReadonlyArray<object> {
         return this.selection().pullData();
     }
 }
@@ -382,12 +379,9 @@ export class DatasourceAdapt implements IDatasource {
     total(): number {
         return this._activity.pullData().length;
     }
-    fetch(from: number, count: number): Promise<any[]> {
+    fetch(from: number, count: number): Promise<ReadonlyArray<object>> {
         const data = this._activity.pullData();
         if (from === 0 && data.length <= count) {
-            return Promise.resolve(data);
-        } else if (from === 0) {
-            data.length = count;
             return Promise.resolve(data);
         }
         return Promise.resolve(data.slice(from, from + count));
