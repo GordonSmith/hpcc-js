@@ -162,19 +162,16 @@ export class Table extends HTMLWidget {
                         }
                         const field = context.fields()[col2];
                         const textRender = context.renderHtmlDataCells() ? Handsontable.renderers.HtmlRenderer : Handsontable.renderers.TextRenderer;
-                        switch (field.type()) {
-                            case "string":
-                                value = field.transform(value);
-                                textRender.call(this, instance, td, row2, col2, prop2, value, cellProperties);
-                                break;
+                        switch (field.type) {
                             case "number":
                                 Handsontable.renderers.NumericRenderer.call(this, instance, td, row2, col2, prop2, value, cellProperties);
                                 break;
                             case "boolean":
                                 Handsontable.renderers.CheckboxRenderer.call(this, instance, td, row2, col2, prop2, value, cellProperties);
                                 break;
+                            case "string":
                             default:
-                                value = field.transform(value);
+                                // value = field.transform(value);
                                 textRender.call(this, instance, td, row2, col2, prop2, value, cellProperties);
                                 break;
                         }
@@ -190,9 +187,9 @@ export class Table extends HTMLWidget {
                         if (context.editLastRow() === true) {
                             if (row2 === context.data().length - 1) {
                                 cellProperties.readOnly = false;
-                                if (col2 === context.columns().indexOf(field.label())) {
+                                if (col2 === context.columns().indexOf(field.label)) {
                                     cellProperties.formulas = true;
-                                    if (value === "sum(" + field.label() + ")") {
+                                    if (value === "sum(" + field.label + ")") {
                                         let temp = 0;
                                         for (let i = 0; i < context.data().length; i++) {
                                             const innerArray = context.data()[i];
@@ -219,7 +216,7 @@ export class Table extends HTMLWidget {
 
                         if (context.columnFormatting().length > 0) {
                             for (let k = 0; k < context.columns().length; k++) {
-                                if ((context.columnFormatting()[k]) !== undefined && (context.columnFormatting()[k]).label_exists() && ((context.columnFormatting()[k]).label() === field.label())) {
+                                if ((context.columnFormatting()[k]) !== undefined && (context.columnFormatting()[k]).label_exists() && ((context.columnFormatting()[k]).label() === field.label)) {
                                     if ((context.columnFormatting()[k]).minRange_exists() && value < (context.columnFormatting()[k]).minRange()) {
                                         td.style.color = (context.columnFormatting()[k]).belowMinRangeColor();
                                     } else if ((context.columnFormatting()[k]).maxRange_exists() && value > (context.columnFormatting()[k]).maxRange()) {
@@ -252,8 +249,8 @@ export class Table extends HTMLWidget {
             return {
                 sortFunction: (sortOrder) => {
                     return function (a, b) {
-                        const l = sortOrder ? field.parse(a[1]) : field.parse(b[1]);
-                        const r = sortOrder ? field.parse(b[1]) : field.parse(a[1]);
+                        const l = sortOrder ? a[1] : b[1]; // field.parse(a[1]) : field.parse(b[1]);
+                        const r = sortOrder ? b[1] : a[1]; // field.parse(b[1]) : field.parse(a[1]);
                         if (l === r) {
                             return 0;
                         }

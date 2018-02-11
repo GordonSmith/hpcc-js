@@ -3,6 +3,7 @@ import { map as d3Map, nest as d3Nest } from "d3-collection";
 import { csvFormatRows as d3CsvFormatRows, csvParse as d3CsvParse, tsvFormatRows as d3TsvFormatRows, tsvParse as d3TsvParse } from "d3-dsv";
 import { format as d3Format } from "d3-format";
 import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";
+import { IDatasource, IField, IFieldType } from "./Datasource";
 import { PropertyExt } from "./PropertyExt";
 import * as Utility from "./Utility";
 
@@ -117,7 +118,9 @@ export class Field extends PropertyExt {
         switch (this.type()) {
             case "time":
             case "date":
-                return d3TimeFormat(format);
+                retVal = d3TimeFormat(format);
+                retVal.parse = d3TimeParse(format);
+                return retVal;
         }
         retVal = d3Format(format);
         retVal.parse = function (_) {
@@ -154,6 +157,24 @@ export class Field extends PropertyExt {
         return this;
     }
 
+    fieldType(): IFieldType {
+        switch (this.type()) {
+            case "string":
+                return "string";
+            case "number":
+                return "number";
+            case "boolean":
+                return "boolean";
+            case "nested":
+                return "object";
+            case "":
+            case "time":
+            case "hidden":
+            default:
+                return "undefined";
+        }
+    }
+
     label_default: { (): string; (x: string): Field; };
     label: { (): string; (x: string): Field; };
     type: { (): string; (x: string): Field; };
@@ -168,7 +189,7 @@ Field.prototype.publish("mask", "", "string", "Time Mask", null, { disable: (w: 
 Field.prototype.publish("format", "", "string", "Format", null, { optional: true });
 
 //  Grid  ---
-export class Grid extends PropertyExt {
+export class Grid extends PropertyExt implements IDatasource {
     _dataChecksum: boolean;
     _dataVersion: number;
 
@@ -184,7 +205,7 @@ export class Grid extends PropertyExt {
     }
 
     clear() {
-        this.fields([]);
+        this.legacyFields([]);
         this._data = [];
         this._dataChecksums = [];
         ++this._dataVersion;
@@ -193,7 +214,7 @@ export class Grid extends PropertyExt {
 
     //  Backward compatability  ---
     resetColumns() {
-        const fields = this.fields() as Field[];
+        const fields = this.legacyFields() as Field[];
         this.legacyColumns([]);
         this.legacyColumns(fields.map(function (field) {
             return field.label();
@@ -214,18 +235,37 @@ export class Grid extends PropertyExt {
     schema() {
     }
 
+    fields(_: IField[]): this;
+    fields(): ReadonlyArray<IField>;
+    fields(_?: IField[]): this | ReadonlyArray<IField> {
+        if (_ === void 0) return this.legacyFields().map(f => {
+            return {
+                label: f.label(),
+                type: f.fieldType(),
+
+                parse(_: any): any {
+                    return f.parse(_);
+                },
+                transform(_: any): any {
+                    return f.transform(_);
+                }
+            };
+        });
+        return this;
+    }
+
     field(idx) {
-        return this.fields()[idx];
+        return this.legacyFields()[idx];
     }
 
     fieldByLabel(_, ignoreCase?) {
-        return this.fields().filter(function (field: Field, idx) {
+        return this.legacyFields().filter(function (field: Field, idx) {
             field.idx = idx;
             return ignoreCase ? field.label().toLowerCase() === _.toLowerCase() : field.label() === _;
         })[0];
     }
 
-    data(_?, clone?): any | Grid {
+    data(_?, clone?: boolean): any | Grid {
         if (!arguments.length) return this._data;
         this._data = clone ? _.map(function (d) { return d.map(function (d2) { return d2; }); }) : _;
         this._dataCalcChecksum();
@@ -236,7 +276,7 @@ export class Grid extends PropertyExt {
         const context = this;
         return this._data.map(function (row) {
             return row.map(function (cell, idx) {
-                return context.fields()[idx].parse(cell);
+                return context.legacyFields()[idx].parse(cell);
             });
         });
     }
@@ -245,13 +285,13 @@ export class Grid extends PropertyExt {
         const context = this;
         return this._data.map(function (row) {
             return row.map(function (cell, idx) {
-                return context.fields()[idx].transform(cell);
+                return context.legacyFields()[idx].transform(cell);
             });
         });
     }
 
     fieldsChecksum() {
-        return Utility.checksum(this.fields().map(function (field) { return field.checksum(); }));
+        return Utility.checksum(this.legacyFields().map(function (field) { return field.checksum(); }));
     }
 
     dataChecksum() {
@@ -276,10 +316,10 @@ export class Grid extends PropertyExt {
     }
 
     row(row?, _?, asDefault?): any | Grid {
-        if (arguments.length < 2) return row === 0 ? this.fields().map(function (d) { return d.label(); }) : this._data[row - 1];
+        if (arguments.length < 2) return row === 0 ? this.legacyFields().map(function (d) { return d.label(); }) : this._data[row - 1];
         if (row === 0) {
-            const fieldsArr = this.fields();
-            this.fields(_.map(function (field: string | INestedColumn, idx) {
+            const fieldsArr = this.legacyFields();
+            this.legacyFields(_.map(function (field: string | INestedColumn, idx) {
                 if (typeof field === "string") {
                     if (asDefault) {
                         return (fieldsArr[idx] || new Field()).label_default(field);
@@ -317,10 +357,10 @@ export class Grid extends PropertyExt {
 
     //  Column Access  ---
     column(col, _?): any | Grid {
-        if (arguments.length < 2) return [this.fields()[col].label()].concat(this._data.map(function (row, _idx) { return row[col]; }));
+        if (arguments.length < 2) return [this.legacyFields()[col].label()].concat(this._data.map(function (row, _idx) { return row[col]; }));
         _.forEach(function (d, idx) {
             if (idx === 0) {
-                this.fields()[col] = new Field().label(_[0]);
+                this.legacyFields()[col] = new Field().label(_[0]);
             } else {
                 this._data[idx - 1][col] = d;
                 this._dataCalcChecksum(idx - 1);
@@ -339,7 +379,7 @@ export class Grid extends PropertyExt {
     }
 
     columns(_?): any | Grid {
-        if (!arguments.length) return this.fields().map(function (_col, idx) {
+        if (!arguments.length) return this.legacyFields().map(function (_col, idx) {
             return this.column(idx);
         }, this);
         _.forEach(function (_col, idx) {
@@ -349,10 +389,12 @@ export class Grid extends PropertyExt {
     }
 
     //  Cell Access  ---
-    cell(row, col, _) {
+    cell(row, col, _: any): this;
+    cell(row, col): any;
+    cell(row, col, _?: any): this | any {
         if (arguments.length < 3) return this.row(row)[col];
         if (row === 0) {
-            this.fields()[col] = new Field().label(_);
+            this.legacyFields()[col] = new Field().label(_);
         } else {
             this._data[row][col] = _;
             this._dataCalcChecksum(row);
@@ -369,7 +411,7 @@ export class Grid extends PropertyExt {
 
     hipieMappings(columns, missingDataString) {
         missingDataString = missingDataString || "";
-        if (!this.fields().length || !this._data.length) {
+        if (!this.legacyFields().length || !this._data.length) {
             return [];
         }
         const mappedColumns = [];
@@ -516,8 +558,12 @@ export class Grid extends PropertyExt {
         return this._data.length + 1;
     }
 
+    sort(compareFn?: (l: object, r: object) => number): ReadonlyArray<object> {
+        return this._data.sort(compareFn);
+    }
+
     width() {
-        return this.fields().length;
+        return this.legacyFields().length;
     }
 
     pivot() {
@@ -526,9 +572,9 @@ export class Grid extends PropertyExt {
         return this;
     }
 
-    clone(deep) {
+    clone(deep?: boolean) {
         return new Grid()
-            .fields(this.fields(), deep)
+            .legacyFields(this.legacyFields(), deep)
             .data(this.data(), deep)
             ;
     }
@@ -539,7 +585,7 @@ export class Grid extends PropertyExt {
             filterIdx[col] = idx;
         });
         return new Grid()
-            .fields(this.fields(), true)
+            .legacyFields(this.legacyFields(), true)
             .data(this.data().filter(function (row) {
                 for (const key in filter) {
                     if (filter[key] !== row[filterIdx[key]]) {
@@ -562,22 +608,24 @@ export class Grid extends PropertyExt {
             });
             retVal.push(rollup);
             const keys = rollup.map(function (d) { return d.key; });
-            this.fields()[col].isBoolean = typeTest(keys, isBoolean);
-            this.fields()[col].isNumber = typeTest(keys, isNumber);
-            this.fields()[col].isString = !this.fields()[col].isNumber && typeTest(keys, isString);
-            this.fields()[col].isUSState = this.fields()[col].isString && typeTest(keys, isUSState);
-            this.fields()[col].isDateTime = this.fields()[col].isString && typeTest(keys, isDateTime);
-            this.fields()[col].isDateTimeFormat = lastFoundFormat;
-            this.fields()[col].isDate = !this.fields()[col].isDateTime && typeTest(keys, isDate);
-            this.fields()[col].isDateFormat = lastFoundFormat;
-            this.fields()[col].isTime = this.fields()[col].isString && !this.fields()[col].isDateTime && !this.fields()[col].isDate && typeTest(keys, isTime);
-            this.fields()[col].isTimeFormat = lastFoundFormat;
+            this.legacyFields()[col].isBoolean = typeTest(keys, isBoolean);
+            this.legacyFields()[col].isNumber = typeTest(keys, isNumber);
+            this.legacyFields()[col].isString = !this.legacyFields()[col].isNumber && typeTest(keys, isString);
+            this.legacyFields()[col].isUSState = this.legacyFields()[col].isString && typeTest(keys, isUSState);
+            this.legacyFields()[col].isDateTime = this.legacyFields()[col].isString && typeTest(keys, isDateTime);
+            this.legacyFields()[col].isDateTimeFormat = lastFoundFormat;
+            this.legacyFields()[col].isDate = !this.legacyFields()[col].isDateTime && typeTest(keys, isDate);
+            this.legacyFields()[col].isDateFormat = lastFoundFormat;
+            this.legacyFields()[col].isTime = this.legacyFields()[col].isString && !this.legacyFields()[col].isDateTime && !this.legacyFields()[col].isDate && typeTest(keys, isTime);
+            this.legacyFields()[col].isTimeFormat = lastFoundFormat;
         }, this);
         return retVal;
     }
 
     //  Import/Export  ---
-    jsonObj(_?): any | Grid {
+    json(_: object[]): this;
+    json(): object[];
+    json(_?: object[]): this | object[] {
         if (!arguments.length) return this._data.map(function (row) {
             const retVal = {};
             this.row(0).forEach(function (col, idx) {
@@ -591,8 +639,8 @@ export class Grid extends PropertyExt {
             for (const key in row) {
                 let colIdx = this.row(0).indexOf(key);
                 if (colIdx < 0) {
-                    colIdx = this.fields().length;
-                    this.fields().push(new Field().label(key));
+                    colIdx = this.legacyFields().length;
+                    this.legacyFields().push(new Field().label(key));
                 }
                 retVal[colIdx] = row[key];
             }
@@ -601,36 +649,39 @@ export class Grid extends PropertyExt {
         return this;
     }
 
-    json(_?: string | object): string | Grid {
-        if (!arguments.length) return JSON.stringify(this.jsonObj(), null, "  ");
-        if (typeof (_) === "string") {
-            _ = JSON.parse(_);
-        }
-        this.jsonObj(_);
+    jsonStr(_: string): this;
+    jsonStr(): string;
+    jsonStr(_?: string): string | Grid {
+        if (!arguments.length) return JSON.stringify(this.json(), null, "  ");
+        this.json(JSON.parse(_));
         return this;
     }
 
+    csv(_: string): this;
+    csv(): string;
     csv(_?): string | Grid {
         if (!arguments.length) return d3CsvFormatRows(this.grid());
-        this.jsonObj(d3CsvParse(_));
+        this.json(d3CsvParse(_));
         return this;
     }
 
-    tsv(_?): string | Grid {
+    tsv(_: string): this;
+    tsv(): string;
+    tsv(_?): this | string {
         if (!arguments.length) return d3TsvFormatRows(this.grid());
-        this.jsonObj(d3TsvParse(_));
+        this.json(d3TsvParse(_));
         return this;
     }
 }
 Grid.prototype._class += " common_Database.Grid";
 export interface Grid {
-    fields(): Field[];
-    fields(_: Field[], clone?: boolean): this;
+    legacyFields(): Field[];
+    legacyFields(_: Field[], clone?: boolean): this;
 }
 
-Grid.prototype.publish("fields", [], "propertyArray", "Fields");
-const fieldsOrig = Grid.prototype.fields;
-Grid.prototype.fields = function (_?, clone?) {
+Grid.prototype.publish("legacyFields", [], "propertyArray", "Fields");
+const fieldsOrig = Grid.prototype.legacyFields;
+Grid.prototype.legacyFields = function (_?, clone?) {
     if (!arguments.length) return fieldsOrig.apply(this, arguments);
     return fieldsOrig.call(this, clone ? _.map(function (d) { return d.clone(); }) : _);
 };

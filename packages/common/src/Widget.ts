@@ -1,6 +1,7 @@
 import { select as d3Select, Selection as d3Selection } from "d3-selection";
 import "d3-transition";
-import { Field, Grid } from "./Database";
+import { Grid } from "./Database";
+import { IDatasource, IField } from "./Datasource";
 import { } from "./Platform";
 import { PropertyExt } from "./PropertyExt";
 import { debounce } from "./Utility";
@@ -32,7 +33,7 @@ export abstract class Widget extends PropertyExt {
 
     protected _tag: string;
 
-    protected _db = new Grid();
+    protected _db: IDatasource = new Grid();
     protected _pos;
     protected _prevPos;
     protected _size;
@@ -55,7 +56,6 @@ export abstract class Widget extends PropertyExt {
         this._class = Object.getPrototypeOf(this)._class;
         this._id = this._idSeed + widgetID++;
 
-        this._db = new Grid();
         this._pos = { x: 0, y: 0 };
         this._size = { width: 0, height: 0 };
         this._widgetScale = 1;
@@ -80,8 +80,8 @@ export abstract class Widget extends PropertyExt {
         }
     }
 
-    importJSON(_: string | object): this {
-        this._db.json(_);
+    importJSON(_: string | object[]): this {
+        typeof _ === "string" ? this._db.json(JSON.parse(_)) : this._db.json(_);
         return this;
     }
 
@@ -124,6 +124,14 @@ export abstract class Widget extends PropertyExt {
     }
 
     //  Implementation  ---
+    fields(): ReadonlyArray<IField>;
+    fields(_: IField[]): this;
+    fields(_?: IField[]): ReadonlyArray<IField> | this {
+        if (!arguments.length) return this._db.fields();
+        this._db.fields(_);
+        return this;
+    }
+
     columns(): string[];
     columns(_: string[], asDefault?: boolean): this;
     columns(_?: string[], asDefault?: boolean): string[] | this {
@@ -173,8 +181,8 @@ export abstract class Widget extends PropertyExt {
 
     rowToObj(row) {
         const retVal: any = {};
-        this.fields().forEach(function (field, idx) {
-            retVal[field.label_default() || field.label()] = row[idx];
+        this._db.fields().forEach(function (field, idx) {
+            retVal[field.label] = row[idx];
         });
         if (row.length === this.columns().length + 1) {
             retVal.__lparam = row[this.columns().length];
@@ -594,15 +602,10 @@ export abstract class Widget extends PropertyExt {
     postUpdate(_domNode: HTMLElement, _element: d3SelectionType) { }
     exit(_domNode?: HTMLElement, _element?: d3SelectionType) { }
 
-    //  Proxy stub  ---
-    fields(): Field[];
-    fields(_: Field[]): this;
-    fields(_?: Field[]): Field[] | this { return this; }
     classed: (_?) => any | this;
 }
 Widget.prototype._class += " common_Widget";
 
 Widget.prototype._idSeed = "_w";
 
-Widget.prototype.publishProxy("fields", "_db", "fields");
 Widget.prototype.publish("classed", {}, "object", "HTML Classes", null, { tags: ["Private"] });

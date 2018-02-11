@@ -1,16 +1,16 @@
-import { Database, HTMLWidget, publish } from "@hpcc-js/common";
+import { HTMLWidget, IDatasource, IField, publish } from "@hpcc-js/common";
 import { Grid, PagingGrid } from "@hpcc-js/dgrid-shim";
 import { hashSum } from "@hpcc-js/util";
 
 import "../src/Common.css";
 
 export class DBStore2 {
-    private _db: Database.Grid;
+    private _db: IDatasource;
 
     Model: null;
     idProperty: "__hpcc_id";
 
-    constructor(db: Database.Grid) {
+    constructor(db: IDatasource) {
         this._db = db;
     }
 
@@ -22,21 +22,21 @@ export class DBStore2 {
         });
     }
 
-    db2Columns(fields, prefix = ""): any[] {
+    db2Columns(fields: ReadonlyArray<IField>, prefix = ""): any[] {
         if (!fields) return [];
         return fields.map((field, idx) => {
-            const label = field.label();
+            const label = field.label;
             const column: any = {
                 label,
                 leafID: label,
-                field: idx,
+                field: label,
                 idx,
                 className: "resultGridCell",
                 sortable: true
             };
-            switch (field.type()) {
-                case "dataset":
-                    column.children = this.db2Columns(field.children(), prefix + label + "_");
+            switch (field.type) {
+                case "object":
+                    column.children = this.db2Columns(field.fields, prefix + label + "_");
                     break;
                 default:
                     column.formatter = (cell, row) => {
@@ -56,7 +56,7 @@ export class DBStore2 {
     }
 
     fetchRange(opts: { start: number, end: number }): Promise<object[]> {
-        const data = this._db.data().slice(opts.start, opts.end).map((d, i) => {
+        const data = this._db.json().slice(opts.start, opts.end).map((d, i) => {
             return {
                 ...d,
                 __hpcc_id: hashSum(d)
@@ -68,7 +68,8 @@ export class DBStore2 {
     }
 
     sort(opts) {
-        this._db.data().sort((l, r) => {
+        [].sort();
+        this._db.sort((l, r) => {
             for (const item of opts) {
                 const idx = item.property;
                 if (l[idx] < r[idx]) return item.descending ? 1 : -1;
