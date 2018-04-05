@@ -315,7 +315,7 @@ export class Main {
                 context.mainRequest.agelow = request.age[0];
                 context.mainRequest.agehigh = request.age[1];
                 context.mainRequest.demomode = demomode;
-                context.mainRequest.bestfitmax = 10;
+                context.mainRequest.bestfitmax = 25;
                 const tmp = JSON.stringify(context.mainRequest);
                 console.log(tmp);
                 // @ts-ignore
@@ -323,7 +323,7 @@ export class Main {
                     "zip1": "19146", "date1": "19980101", "zip1lowyyyymm": "199703", "zip1highyyyymm": "199811", "zip2": "80528", "date2": "20020101",
                     "zip2lowyyyymm": "200103", "zip2highyyyymm": "200211", "radius": 10, "agelow": 40, "agehigh": 55, "demomode": false, "bestfitmax": 10
                 };
-                context.connWeCare.send("wecares.serialoffenderfinderservice/json", newRequestXXX/*context.mainRequest*/).then(function (response) {
+                context.connWeCare.send("wecares.serialoffenderfinderservice/json", context.mainRequest).then(function (response) {
                     const bestFit = response["wecares.serialoffenderfinderserviceResponse"].Results.BestFit.Row;
                     context.loadDebugTable(bestFit);
                     context.individuals = [];

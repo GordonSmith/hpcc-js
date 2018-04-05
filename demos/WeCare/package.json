@@ -9,7 +9,7 @@
     "compile-umd": "tsc --module umd --outDir ./lib-umd",
     "bundle": "webpack",
     "bundle2": "rollup -c",
-    "build": "npm run compile-es6 && npm run bundle-es6 && npm run bundle2"
+    "build": "npm run compile-es6 && npm run bundle"
   },
   "dependencies": {
     "@hpcc-js/chart": "^0.0.72",
