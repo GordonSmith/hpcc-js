@@ -55,12 +55,12 @@ GET http://192.168.3.22:8010/WsWorkunits/WUDetails.json?ver_=1.72
     &PropertyOptions.IncludeCreatorType=0
 
 GET http://192.168.3.22:8010/WsWorkunits/WUDetails.json?ver_=1.72
-    &WUID=W20180329-153048
+    &WUID=W20180513-082149
     &ScopeFilter.MaxDepth=9999
-    &ScopeFilter.Ids=graph2
-    &ScopeFilter.ScopeTypes=graph
+    &ScopeFilter.Ids=
+    &ScopeFilter.ScopeTypes=
     &NestedFilter.Depth=9999
-    &NestedFilter.ScopeTypes=graph%0Asubgraph%0Aactivity%0Aedge
+    &NestedFilter.ScopeTypes=
     &PropertiesToReturn.AllAttributes=1
     &ScopeOptions.IncludeId=1
     &ScopeOptions.IncludeScope=0
