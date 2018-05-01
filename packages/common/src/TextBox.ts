@@ -22,7 +22,14 @@ export class TextBox extends SVGWidget {
                 this.dblclick();
             })
             ;
-        this._text = new Text();
+        this._text = new Text()
+            .on("click", () => {
+                this.click();
+            })
+            .on("dblclick", () => {
+                this.dblclick();
+            })
+            ;
     }
 
     padding(_) {

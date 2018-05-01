@@ -13,7 +13,14 @@ export class Text extends SVGWidget {
     enter(domNode, element) {
         super.enter(domNode, element);
         delete this._prevHash;
-        this._textElement = element.append("text");
+        this._textElement = element.append("text")
+            .on("click", () => {
+                this.click();
+            })
+            .on("dblclick", () => {
+                this.dblclick();
+            })
+            ;
     }
 
     _prevHash;
@@ -66,6 +73,12 @@ export class Text extends SVGWidget {
                 .attr("transform", function (_d) { return "translate(" + xOffset + "," + yOffset + ")"; })// rotate(" + context.rotation() + ")"; })
                 ;
         }
+    }
+
+    click() {
+    }
+
+    dblclick() {
     }
 
     text: { (): string; (_: string): Text; };

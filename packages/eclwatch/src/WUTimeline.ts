@@ -9,6 +9,7 @@ export class WUTimeline extends MiniGantt {
     constructor() {
         super();
         this
+            .columns(["label", "start", "end"])
             .timePattern("%Y-%m-%dT%H:%M:%S.%LZ")
             .tickFormat("%H:%M")
             .tooltipTimeFormat("%H:%M:%S.%L")
@@ -19,6 +20,10 @@ export class WUTimeline extends MiniGantt {
     }
 
     private _prevHashSum;
+    clear(): this {
+        delete this._prevHashSum;
+        return this;
+    }
     fetchScopes() {
         const hash = hashSum({
             baseUrl: this.baseUrl(),
