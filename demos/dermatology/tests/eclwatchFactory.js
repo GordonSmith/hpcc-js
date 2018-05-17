@@ -138,6 +138,16 @@
                     );
                 });
             }
+        },
+        WUStats: {
+            Nested: function (callback) {
+                legacyRequire(["src/eclwatch/WUStats"], function (WUStats) {
+                    callback(new WUStats()
+                        .baseUrl("http://192.168.3.22:8010")
+                        .wuid("W20180513-082149")
+                    );
+                });
+            }
         }
     };
 }));
