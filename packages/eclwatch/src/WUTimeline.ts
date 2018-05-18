@@ -34,7 +34,7 @@ export class WUTimeline extends MiniGantt {
             this._prevHashSum = hash;
             const wu = Workunit.attach({ baseUrl: this.baseUrl() }, this.wuid());
             wu.fetchDetails(this.request()).then(scopes => {
-                return scopes.filter(scope => scope.attr("WhenStarted").RawValue).map((scope: Scope) => {
+                return scopes.filter(scope => scope.Id && scope.attr("WhenStarted").RawValue).map((scope: Scope) => {
                     const whenStarted = +scope.attr("WhenStarted").RawValue / 1000;
                     const timeElapsed = +scope.attr("TimeElapsed").RawValue / 1000000;
                     return [

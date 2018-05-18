@@ -476,7 +476,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
             const data: object[] = [];
             for (const scope of scopes) {
                 const props = {};
-                if (scope && scope.Properties && scope.Properties.Property) {
+                if (scope && scope.Id && scope.Properties && scope.Properties.Property) {
                     for (const key in scope.Properties.Property) {
                         const scopeProperty = scope.Properties.Property[key];
                         if (scopeProperty.Measure === "ns") {

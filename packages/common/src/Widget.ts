@@ -606,6 +606,10 @@ export abstract class Widget extends PropertyExt {
         return this;
     }
 
+    renderCount(): number {
+        return this._renderCount;
+    }
+
     enter(_domNode: HTMLElement, _element: d3SelectionType) { }
     preUpdate(_domNode: HTMLElement, _element: d3SelectionType) { }
     update(_domNode: HTMLElement, _element: d3SelectionType) { }
