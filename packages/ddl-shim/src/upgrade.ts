@@ -528,30 +528,30 @@ class DDLUpgrade {
     type2chartType(chartType: DDL1.VisualizationType): { chartType: string, moduleName: string, className: string, memberName?: string } {
         switch (chartType) {
             case "LINE":
-                return { chartType, moduleName: "@hpcc-js/chart", className: "Line" };
+                return { chartType: "Line", moduleName: "@hpcc-js/chart", className: "Line" };
             case "BUBBLE":
-                return { chartType, moduleName: "@hpcc-js/chart", className: "Bubble" };
+                return { chartType: "Bubble", moduleName: "@hpcc-js/chart", className: "Bubble" };
             case "PIE":
-                return { chartType, moduleName: "@hpcc-js/chart", className: "Pie" };
+                return { chartType: "Pie", moduleName: "@hpcc-js/chart", className: "Pie" };
             case "BAR":
-                return { chartType, moduleName: "@hpcc-js/chart", className: "Column" };
+                return { chartType: "Column", moduleName: "@hpcc-js/chart", className: "Column" };
             case "FORM":
-                return { chartType, moduleName: "@hpcc-js/form", className: "Form" };
+                return { chartType: "FieldForm", moduleName: "@hpcc-js/form", className: "FieldForm" };
             case "WORD_CLOUD":
-                return { chartType, moduleName: "@hpcc-js/other", className: "WordCloud" };
+                return { chartType: "WordCloud", moduleName: "@hpcc-js/chart", className: "WordCloud" };
             case "CHORO":
-                return { chartType, moduleName: "@hpcc-js/map", className: "ChoroUSStates" };
+                return { chartType: "ChoroplethStates", moduleName: "@hpcc-js/map", className: "ChoroplethStates" };
             case "SLIDER":
-                return { chartType: "FORM", moduleName: "@hpcc-js/form", className: "Form" };
+                return { chartType: "FieldForm", moduleName: "@hpcc-js/form", className: "FieldForm" };
             case "HEAT_MAP":
-                return { chartType, moduleName: "@hpcc-js/other", className: "HeatMap" };
+                return { chartType: "HeatMap", moduleName: "@hpcc-js/other", className: "HeatMap" };
             case "2DCHART":
-                return { chartType, moduleName: "@hpcc-js/chart", className: "Column" };
+                return { chartType: "Column", moduleName: "@hpcc-js/chart", className: "Column" };
             case "GRAPH":
-                return { chartType: "ADJACENCY_GRAPH", moduleName: "@hpcc-js/graph", className: "AdjacencyGraph" };
+                return { chartType: "AdjacencyGraph", moduleName: "@hpcc-js/graph", className: "AdjacencyGraph" };
             case "TABLE":
             default:
-                return { chartType, moduleName: "@hpcc-js/grid", className: "Table" };
+                return { chartType: "Table", moduleName: "@hpcc-js/grid", className: "Table" };
         }
     }
 

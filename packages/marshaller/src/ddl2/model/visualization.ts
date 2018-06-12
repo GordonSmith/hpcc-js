@@ -2,13 +2,14 @@ import { Area, Bubble, Column, Contour, HexBin, Line, Pie, Scatter, Step, WordCl
 import { Database, InputField, PropertyExt, publish, publishProxy, Widget } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { Table } from "@hpcc-js/dgrid";
+import { FieldForm } from "@hpcc-js/form";
 import { ChartPanel } from "@hpcc-js/layout";
 import { ChoroplethCounties, ChoroplethStates } from "@hpcc-js/map";
 import { HipiePipeline } from "../activities/hipiepipeline";
 import { ComputedField, Mappings, MultiField } from "../activities/project";
 
-export type VizType = "Table" | "Area" | "Bubble" | "Column" | "Contour" | "HexBin" | "Line" | "Pie" | "WordCloud" | "Scatter" | "Step" | "ChoroplethCounties" | "ChoroplethStates";
-const VizTypeMap: { [key: string]: { new(...args: any[]): {} } } = { Table, Area, Bubble, Column, Contour, HexBin, Line, Pie, Scatter, Step, WordCloud, ChoroplethCounties, ChoroplethStates };
+export type VizType = "Table" | "FieldForm" | "Area" | "Bubble" | "Column" | "Contour" | "HexBin" | "Line" | "Pie" | "WordCloud" | "Scatter" | "Step" | "ChoroplethCounties" | "ChoroplethStates";
+const VizTypeMap: { [key: string]: { new(...args: any[]): {} } } = { Table, FieldForm, Area, Bubble, Column, Contour, HexBin, Line, Pie, Scatter, Step, WordCloud, ChoroplethCounties, ChoroplethStates };
 export const VizTypeSet = [];
 for (const key in VizTypeMap) {
     VizTypeSet.push(key);
@@ -35,6 +36,9 @@ export class Visualization extends PropertyExt {
     chartType(_: VizType, props?: { [prop: string]: any }): this;
     chartType(_?: VizType, props?: { [prop: string]: any }): VizType | this {
         if (!arguments.length) return this._chartType;
+        if (VizTypeSet.indexOf(_) === -1) {
+            _ = "Table";
+        }
         this._chartType = _;
         this.typeChanged();
         if (props) {
@@ -50,7 +54,19 @@ export class Visualization extends PropertyExt {
     @publish(null, "widget", "Mappings", undefined, { render: false })
     mappings: publish<this, Mappings>;
     @publish([], "widget", "Widget")
-    chartPanel: publish<this, ChartPanel>;
+    _chartPanel: ChartPanel;
+    chartPanel(): ChartPanel;
+    chartPanel(_: ChartPanel): this;
+    chartPanel(_?: ChartPanel): ChartPanel | this {
+        if (!arguments.length) return this._chartPanel;
+        this._chartPanel = _;
+        this._chartPanel
+            .on("click", (row: any, col: string, sel: boolean) => this.click(row, col, sel))
+            .on("vertex_click", (row: any, col: string, sel: boolean) => this.vertex_click(row, col, sel))
+            ;
+        return this;
+    }
+
     @publishProxy("_chartPanel")
     title: publish<this, string>;
     @publishProxy("_chartPanel")
@@ -137,7 +153,7 @@ export class Visualization extends PropertyExt {
 
     toDBFields(fields: DDL2.IField[]): Database.Field[] {
         const retVal: Database.Field[] = [];
-        for (const field of fields) {
+        fields.forEach((field, idx) => {
             const f = new Database.Field()
                 .id(field.id)
                 .label(field.id)
@@ -146,7 +162,7 @@ export class Visualization extends PropertyExt {
                 f.children(this.toDBFields(field.children));
             }
             retVal.push(f);
-        }
+        });
         return retVal;
     }
 
@@ -176,6 +192,12 @@ export class Visualization extends PropertyExt {
         this.refreshData();
         this.chartPanel().finishProgress && this.chartPanel().finishProgress();
         //        }
+    }
+
+    //  Events  ---
+    click(row: any, col: string, sel: boolean) {
+    }
+    vertex_click(row: any, col: string, sel: boolean) {
     }
 }
 Visualization.prototype._class += " Visualization";

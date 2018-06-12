@@ -11,6 +11,7 @@
             "url": "file:///${workspaceRoot}/index-dev.html",
             /*
             "url": "file:///${workspaceRoot}/index-dev.html",
+            "url": "file:///${workspaceRoot}/index-dev.html?Protocol=http&Hostname=10.241.100.157&Port=8002&QuerySet=roxie&QueryID=carmigjx_govottocustomerdash1.ins5191838_service_1"
             "url": "file:///${workspaceRoot}/index-dev.html?Hostname=10.241.100.159&Port=8010&Protocol=http&Wuid=W20180509-160522&ResultName=govottotopsuspiciousaddresses_Comp_Ins4637373_DDL",
             "url": "file:///${workspaceRoot}/index-dev.html?Protocol=http&Hostname=10.241.100.159&Port=8002&QuerySet=roxie&QueryID=prichajx_govottocustomerstats.ins109_service_1",
             "url": "file:///${workspaceRoot}/index-dev.html?Hostname=10.173.147.1&Port=8010&Protocol=http&Wuid=W20180109-010415&ResultName=qwer7_Comp_Ins015_DDL",

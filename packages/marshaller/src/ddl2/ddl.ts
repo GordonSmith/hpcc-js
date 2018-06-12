@@ -240,7 +240,7 @@ export class DDLAdapter {
     }
 
     writeMappings(mappings: Mappings): DDL2.IMappings {
-        if (!mappings.exists()) return undefined;
+        if (!mappings.exists()) return { type: "mappings", transformations: [] };
         return mappings.toDDL();
     }
 

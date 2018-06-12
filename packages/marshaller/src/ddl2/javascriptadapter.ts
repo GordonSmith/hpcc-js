@@ -228,6 +228,7 @@ const ${dataview.id} = new marshaller.Element(ec)
     .pipeline([
         ${activities.join(",\n        ")}
     ])
+    .mappings(new marshaller.Mappings().transformations(${stringify(dataview.visualization.mappings.transformations)}))
     .chartPanel(viz.${dataview.visualization.id})
     .on("selectionChanged", () => {
         ${updates.join("\n        ")}
