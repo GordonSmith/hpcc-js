@@ -12,7 +12,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, "dist"),
         publicPath: "dist/",
-        libraryTarget: "umd",
+        libraryTarget: "commonjs2",
         library: "@hpcc-js/dgrid-shim",
         pathinfo: true,
         filename: "index.js"

@@ -19,7 +19,7 @@
         var paths = {
             "test": "tests"
         }
-        var mode = "dev";  // "dev" | "build" | "unpkg"
+        var mode = "build";  // "dev" | "build" | "unpkg"
         if (mode === "unpkg") {
             var require = hpccLoader.dev(paths);
         } else {

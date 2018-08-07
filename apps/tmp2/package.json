@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "name": "hpccjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "dependencies": {
+    "@hpcc-js/util": "*",
+    "@hpcc-js/common": "*",
+    "@hpcc-js/api": "*",
+    "@hpcc-js/dgrid-shim": "*",
+    "@hpcc-js/dgrid": "*",
+    "@hpcc-js/chart": "*",
+    "@hpcc-js/layout": "*",
+    "@hpcc-js/form": "*",
+    "@hpcc-js/other": "*"
+  },
+  "devDependencies": {
+    "rollup": "0.63.5",
+    "rollup-plugin-commonjs": "9.1.4",
+    "rollup-plugin-node-resolve": "3.3.0"
+  },
+  "scripts": {
+    "bundle": "rollup -c"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,10 +1,16 @@
-import { external, globals } from "@hpcc-js/bundle";
+import { globals } from "@hpcc-js/bundle";
 import alias from 'rollup-plugin-alias';
 import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import postcss from "rollup-plugin-postcss";
 
 const pkg = require("./package.json");
+
+function external(id) {
+    return id.indexOf("@hpcc-js/dgrid-shimXXX") === 0 ||
+        id.indexOf("@hpcc-js/ddl-shim") === 0 ||
+        (id.indexOf("@hpcc-js") === 0 && id.indexOf("-shim") < 0);
+}
 
 export default {
     input: "lib-es6/index",
@@ -40,7 +46,7 @@ export default {
         }),
         commonjs({
             namedExports: {
-                // "../dgrid-shim/dist/dgrid-shim.js": ["Deferred", "domConstruct", "QueryResults", "Memory", "PagingGrid", "Grid"]
+                "../dgrid-shim/dist/index.js": ["Deferred", "domConstruct", "QueryResults", "Memory", "PagingGrid", "Grid"]
             }
         }),
         postcss({
