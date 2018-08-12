@@ -2,8 +2,9 @@ import { PropertyExt, publish } from "@hpcc-js/common";
 import { Query as CommsQuery } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { compare, debounce, hashSum } from "@hpcc-js/util";
+import { ReferencedFields } from "../activities/activity";
 import { Element, ElementContainer } from "../model/element";
-import { Activity, ReferencedFields } from "./activity";
+import { Datasource } from "./datasource";
 
 function parseUrl(_: string): { url: string, querySet: string, queryID: string } {
     // "http://10.241.100.157:8002/WsEcl/submit/query/roxie/carmigjx_govbisgsavi.Ins4621360_Service_00000006/json",
@@ -167,7 +168,8 @@ export class RoxieService extends PropertyExt {
 RoxieService.prototype._class += " RoxieService";
 
 const _roxiePool: { [key: string]: RoxieService } = {};
-export class RoxieRequest extends Activity {
+
+export class RoxieRequest extends Datasource {
     private _elementContainer: ElementContainer;
 
     roxieServiceID(): string {

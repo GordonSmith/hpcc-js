@@ -192,18 +192,20 @@ export class Visualization extends PropertyExt {
         });
     }
 
-    async refresh() {
+    refresh(): Promise<void> {
         //        if (this.chartPanel().renderCount()) {
         this.chartPanel().startProgress && this.chartPanel().startProgress();
         //        }
         const mappings = this.mappings();
         mappings.sourceActivity(this._hipiePipeline);
-        await mappings.refreshMeta();
-        await mappings.exec();
-        //        if (this.chartPanel().renderCount()) {
-        this.refreshData();
-        this.chartPanel().finishProgress && this.chartPanel().finishProgress();
-        //        }
+        return mappings.refreshMeta().then(() => {
+            return mappings.exec();
+        }).then(() => {
+            //        if (this.chartPanel().renderCount()) {
+            this.refreshData();
+            this.chartPanel().finishProgress && this.chartPanel().finishProgress();
+            //        }
+        });
     }
 
     //  Events  ---

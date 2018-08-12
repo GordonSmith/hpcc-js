@@ -8,6 +8,7 @@ import { CommandPalette, CommandRegistry, ContextMenu, SplitPanel, TabPanel, Wid
 import { scopedLogger } from "@hpcc-js/util";
 import { Activity, DatasourceAdapt } from "./ddl2/activities/activity";
 import { Dashboard } from "./ddl2/dashboard";
+import { Databomb } from "./ddl2/datasources/databomb";
 import { DDLEditor } from "./ddl2/ddleditor";
 import { GraphAdapter } from "./ddl2/graphadapter";
 import { Element, ElementContainer } from "./ddl2/model/element";
@@ -98,12 +99,12 @@ export class Dashy extends SplitPanel {
     private _ddlv2 = new JSONEditor();
 
     private _tabRHS = new TabPanel();
-    private _splitData = new SplitPanel();
-    private _dataProperties: PropertyEditor = new PropertyEditor()
+    private _splitView = new SplitPanel();
+    private _viewProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
         .showFields(false)
         ;
-    private _preview = new DatasourceTable();
+    private _viewPreview = new DatasourceTable().pagination(true);
     private _widgetProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
         .showFields(false)
@@ -168,10 +169,10 @@ export class Dashy extends SplitPanel {
     }
 
     refreshPreview() {
-        const ds = this._preview.datasource() as DatasourceAdapt;
+        const ds = this._viewPreview.datasource() as DatasourceAdapt;
         if (ds) {
             ds.exec().then(() => {
-                this._preview
+                this._viewPreview
                     .invalidate()
                     .lazyRender()
                     ;
@@ -191,7 +192,7 @@ export class Dashy extends SplitPanel {
     }
 
     loadDataProps(pe: PropertyExt) {
-        this._dataProperties
+        this._viewProperties
             .widget(pe)
             .render()
             ;
@@ -219,7 +220,7 @@ export class Dashy extends SplitPanel {
     }
 
     loadPreview(activity: Activity) {
-        this._preview
+        this._viewPreview
             .datasource(new DatasourceAdapt(activity))
             // .paging(true)
             .lazyRender()
@@ -302,7 +303,7 @@ export class Dashy extends SplitPanel {
 
         //  Dashboard  Commands  ---
         commands.addCommand("dash_add", {
-            label: "Add Element",
+            label: "Add View",
             execute: () => {
                 const newElem = new Element(this._elementContainer);
                 this._elementContainer.append(newElem);
@@ -360,6 +361,19 @@ export class Dashy extends SplitPanel {
         });
     }
 
+    addDatabomb(label: string, payload: string, format: "csv" | "tsv" | "json") {
+        const databomb = new Databomb(label).format(format).payload(payload);
+        this._elementContainer.appendDatasource(databomb);
+        const newElem = new Element(this._elementContainer);
+        newElem.hipiePipeline().datasource().selection(databomb);
+        this._elementContainer.append(newElem);
+        this.loadDashboard().then(() => {
+            newElem.refresh().then(() => {
+                this._dashboard.activate(newElem);
+            });
+        });
+    }
+
     enter(domNode, element) {
         super.enter(domNode, element);
         this
@@ -407,14 +421,14 @@ export class Dashy extends SplitPanel {
             })
             ;
         this._tabRHS
-            .addWidget(this._splitData, "Data")
-            .addWidget(this._widgetProperties, "Widget")
+            .addWidget(this._splitView, "Data View")
+            .addWidget(this._widgetProperties, "Viz")
             .addWidget(this._paletteProperties, "Palette")
             .addWidget(this._stateProperties, "State")
             .addWidget(this._clone, "Clone")
             .on("childActivation", (w: Widget) => {
                 switch (w) {
-                    case this._splitData:
+                    case this._splitView:
                         this.loadDataProps(this._currActivity || this._currElement.hipiePipeline());
                         this.loadPreview(this._currActivity || this._currElement.hipiePipeline().last());
                         break;
@@ -432,14 +446,14 @@ export class Dashy extends SplitPanel {
                 }
             })
             ;
-        this._splitData
-            .addWidget(this._dataProperties)
-            .addWidget(this._preview)
+        this._splitView
+            .addWidget(this._viewProperties)
+            .addWidget(this._viewPreview)
             ;
 
         this.initMenu();
-        this._dataProperties.monitor((id: string, newValue: any, oldValue: any, source: PropertyExt) => {
-            if (source !== this._dataProperties && this._currElement) {
+        this._viewProperties.monitor((id: string, newValue: any, oldValue: any, source: PropertyExt) => {
+            if (source !== this._viewProperties && this._currElement) {
                 this._currElement.refresh().then(() => {
                     this.refreshPreview();
                 });

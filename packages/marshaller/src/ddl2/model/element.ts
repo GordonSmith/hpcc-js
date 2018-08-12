@@ -5,6 +5,8 @@ import { find, isArray } from "@hpcc-js/util";
 import { Activity } from "../activities/activity";
 import { HipiePipeline } from "../activities/hipiepipeline";
 import { Mappings } from "../activities/project";
+import { Databomb } from "../datasources/databomb";
+import { Datasource } from "../datasources/datasource";
 import { Visualization } from "./visualization";
 
 export class State extends PropertyExt {
@@ -143,12 +145,13 @@ export class Element extends PropertyExt {
         return this.state();
     }
 
-    async refresh() {
-        await this.visualization().refresh();
-        const data = this.hipiePipeline().outData();
-        if (this.state().removeInvalid(data)) {
-            this.selectionChanged();
-        }
+    refresh(): Promise<void> {
+        return this.visualization().refresh().then(() => {
+            const data = this.hipiePipeline().outData();
+            if (this.state().removeInvalid(data)) {
+                this.selectionChanged();
+            }
+        });
     }
 
     //  Selection  ---
@@ -184,11 +187,34 @@ export interface IPersist {
 }
 
 export class ElementContainer extends PropertyExt {
-    private _elements: Element[] = [];
-    private _nullElement = new Element(this);
+    private _nullDatasource = new Databomb("empty");
+    private _nullElement;
+
+    private _datasources: Datasource[];
+    private _elements: Element[];
+
+    constructor() {
+        super();
+        this.clear();
+        this._nullElement = new Element(this);
+    }
 
     clear() {
+        this._datasources = [this._nullDatasource];
         this._elements = [];
+    }
+
+    datasources(): Datasource[] {
+        return this._datasources;
+    }
+
+    datasource(id): Datasource {
+        return this._datasources.filter(ds => ds.id() === id)[0];
+    }
+
+    appendDatasource(ds: Datasource): this {
+        this._datasources.push(ds);
+        return this;
     }
 
     elements(): Element[] {

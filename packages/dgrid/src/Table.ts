@@ -1,5 +1,4 @@
 ﻿import { Palette, PropertyExt } from "@hpcc-js/common";
-import { hashSum } from "@hpcc-js/util";
 import { format as d3Format } from "d3-format";
 import { select as d3Select } from "d3-selection";
 import { Common } from "./Common";
@@ -92,9 +91,6 @@ ColumnFormat.prototype.publish("valueColumn", null, "set", "Column", function (t
 
 //  Table ---
 export class Table extends Common {
-    private _prevColsHash;
-    private _prevFieldsHash;
-    private _prevDataHash;
     _colsRefresh = false;
     _forceRefresh = false;
 
@@ -105,12 +101,8 @@ export class Table extends Common {
     fields(_?: any): any | this {
         const retVal = super.fields.apply(this, arguments);
         if (arguments.length) {
-            const hash = hashSum({ _ });
-            if (this._prevFieldsHash !== hash) {
-                this._prevFieldsHash = hash;
-                this._colsRefresh = true;
-                this._forceRefresh = true;
-            }
+            this._colsRefresh = true;
+            this._forceRefresh = true;
         }
         return retVal;
     }
@@ -118,12 +110,8 @@ export class Table extends Common {
     columns(_?: any): any | this {
         const retVal = super.columns.apply(this, arguments);
         if (arguments.length) {
-            const hash = hashSum({ _ });
-            if (this._prevColsHash !== hash) {
-                this._prevColsHash = hash;
-                this._colsRefresh = true;
-                this._forceRefresh = true;
-            }
+            this._colsRefresh = true;
+            this._forceRefresh = true;
         }
         return retVal;
     }
@@ -131,11 +119,7 @@ export class Table extends Common {
     data(_?: any): any | this {
         const retVal = super.data.apply(this, arguments);
         if (arguments.length) {
-            const hash = JSON.stringify(_); // TODO - Should be a more efficent way (immutable?).
-            if (this._prevDataHash !== hash) {
-                this._prevDataHash = hash;
-                this._forceRefresh = true;
-            }
+            this._forceRefresh = true;
         }
         return retVal;
     }

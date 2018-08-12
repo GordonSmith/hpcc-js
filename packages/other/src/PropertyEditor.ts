@@ -629,6 +629,10 @@ export class PropertyEditor extends HTMLWidget {
                     cell.append(param.ext && param.ext.multiline ? "textarea" : "input")
                         .attr("id", this.id() + "_" + param.id)
                         .classed("property-input", true)
+                        .attr("autocomplete", "off")
+                        .attr("autocorrect", "off")
+                        .attr("autocapitalize", "off")
+                        .attr("spellcheck", "false")
                         .on("change", function () {
                             context.setProperty(widget, param.id, this.value);
                         })
@@ -679,7 +683,7 @@ export class PropertyEditor extends HTMLWidget {
                 if (param.ext && param.ext.range) {
                     d3Select("#" + this.id() + "_" + param.id + "_currentVal").text("Current Value: " + val);
                 }
-                element.property("value", val);
+                element.property("value", val && val.length && val.length > 100000 ? "...too big to display..." : val);
                 break;
         }
     }

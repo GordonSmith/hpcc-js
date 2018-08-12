@@ -1,14 +1,16 @@
 import { publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { csvParse as d3CsvParse, tsvParse as d3TsvParse } from "d3-dsv";
-import { Activity } from "./activity";
+import { Datasource } from "./datasource";
 
-export class Databomb extends Activity {
+export class Databomb extends Datasource {
 
-    _jasonData: object[];
+    private _label: string = "Databomb";
+    private _jasonData: object[] = [];
 
-    constructor() {
+    constructor(label: string) {
         super();
+        this._label = label;
     }
 
     updateJsonData() {
@@ -42,7 +44,7 @@ export class Databomb extends Activity {
     }
 
     label(): string {
-        return `Databomb`;
+        return this._label;
     }
 
     computeFields(): DDL2.IField[] {
@@ -83,7 +85,7 @@ export interface Databomb {
 }
 
 Databomb.prototype.publish("format", "json", "set", "Databomb Format", ["json", "csv", "tsv"]);
-Databomb.prototype.publish("payload", "", "string", "Databomb array", null, { multiline: true });
+Databomb.prototype.publish("payload", "", "string", "Databomb array", null, { multiline: true, tags: [] });
 
 const payloadFormat = Databomb.prototype.format;
 Databomb.prototype.format = function (this: Databomb, _?) {
@@ -103,7 +105,7 @@ Databomb.prototype.payload = function (this: Databomb, _?) {
     return retVal;
 };
 
-export class Form extends Activity {
+export class Form extends Datasource {
     @publish({}, "object", "Form object")
     payload: publish<this, object>;
 
@@ -113,7 +115,7 @@ export class Form extends Activity {
 
     hash(more: object): string {
         return super.hash({
-            payload: this.payload(),
+            // payload: this.payload(),
             ...more
         });
     }

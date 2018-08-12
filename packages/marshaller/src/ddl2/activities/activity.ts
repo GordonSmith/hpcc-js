@@ -1,8 +1,9 @@
-import { IMonitorHandle, PropertyExt } from "@hpcc-js/common";
+import { IMonitorHandle } from "@hpcc-js/common";
 import { IField as WsEclField } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IDatasource } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
+import { Datasource, IError, ReferencedFields } from "../datasources/datasource";
 
 export function stringify(obj_from_json) {
     if (Array.isArray(obj_from_json)) {
@@ -72,17 +73,9 @@ export function wsEclSchemaRow2IField(row: WsEclField): DDL2.IField {
     return row;
 }
 
-export type ReferencedFields = {
-    inputs: { [activityID: string]: string[] },
-    outputs: { [activityID: string]: string[] }
+export {
+    ReferencedFields
 };
-
-export interface IActivityError {
-    source: string;
-    msg: string;
-    hint: string;
-}
-
 /*
 export const ROW_ID = "__##__";  //  TODO:  Should be Symbol
 export function rowID(row: Readonly<object>): undefined | number {
@@ -90,76 +83,30 @@ export function rowID(row: Readonly<object>): undefined | number {
 }
 */
 
-export abstract class Activity extends PropertyExt {
-    private _sourceActivity: Activity;
+export interface IActivityError extends IError {
+}
 
-    fixInt64(data) {
-        if (data.length === 0) return data;
-        const int64Fields = this.outFields().filter(field => {
-            switch (field.type) {
-                case "number":
-                    //  Test actual data for integer64 cases.
-                    return typeof data[0][field.id] !== "number";
-                case "number64":
-                    return true;
-            }
-            return false;
-        });
-        if (int64Fields.length) {
-            return data.map(row => {
-                for (const int64Field of int64Fields) {
-                    row[int64Field.id] = +row[int64Field.id];
-                }
-                return row;
-            });
-        }
-        return data;
-    }
+export abstract class Activity extends Datasource {
+    private _sourceActivity: Datasource | Activity;
 
-    sourceActivity(): Activity;
-    sourceActivity(_: Activity): this;
-    sourceActivity(_?: Activity): Activity | this {
+    sourceActivity(): Datasource | Activity;
+    sourceActivity(_: Datasource | Activity): this;
+    sourceActivity(_?: Datasource | Activity): Datasource | Activity | this {
         if (!arguments.length) return this._sourceActivity;
         this._sourceActivity = _;
         return this;
     }
 
-    hash(more: object = {}): string {
-        return hashSum({
-            ...more
-        });
-    }
-
     refreshMeta(): Promise<void> {
-        return this._sourceActivity ? this._sourceActivity.refreshMeta() : Promise.resolve();
-    }
-
-    exists(): boolean {
-        return true;
-    }
-
-    validate(): IActivityError[] {
-        return [];
-    }
-
-    label(): string {
-        return this.id();
-    }
-
-    updatedBy(): string[] {
-        return [];
+        return this._sourceActivity.refreshMeta();
     }
 
     inFields(): DDL2.IField[] {
-        return this._sourceActivity ? this._sourceActivity.outFields() : [];
+        return this._sourceActivity.outFields();
     }
 
     computeFields(): DDL2.IField[] {
         return this.inFields();
-    }
-
-    outFields(): DDL2.IField[] {
-        return this.computeFields();
     }
 
     localFields(): DDL2.IField[] {
@@ -167,66 +114,32 @@ export abstract class Activity extends PropertyExt {
         return this.outFields().filter(field => inFieldIDs.indexOf(field.id) < 0);
     }
 
-    fieldOrigin(fieldID: string): Activity | null {
+    fieldOrigin(fieldID: string): Datasource | Activity | null {
         if (this.localFields().filter(field => field.id === fieldID).length) {
             return this;
-        } else if (this.sourceActivity()) {
-            return this.sourceActivity().fieldOrigin(fieldID);
         }
-        return null;
-    }
-
-    resolveFields(refs: ReferencedFields, fieldIDs: string[]) {
-        for (const fieldID of fieldIDs) {
-            const fieldOrigin = this.fieldOrigin(fieldID);
-            if (fieldOrigin) {
-                if (!refs.outputs[fieldOrigin.id()]) {
-                    refs.outputs[fieldOrigin.id()] = [];
-                }
-                if (refs.outputs[fieldOrigin.id()].indexOf(fieldID) < 0) {
-                    refs.outputs[fieldOrigin.id()].push(fieldID);
-                }
-            }
-        }
+        return this._sourceActivity.fieldOrigin(fieldID);
     }
 
     resolveInFields(refs: ReferencedFields, fieldIDs: string[]) {
-        if (this.sourceActivity()) {
-            this.sourceActivity().resolveFields(refs, fieldIDs);
-        }
+        return this._sourceActivity.resolveFields(refs, fieldIDs);
     }
 
     referencedFields(refs: ReferencedFields): void {
-        if (this.sourceActivity()) {
-            this.sourceActivity().referencedFields(refs);
-        }
+        this._sourceActivity.referencedFields(refs);
     }
 
     exec(): Promise<void> {
-        return this._sourceActivity ? this._sourceActivity.exec() : Promise.resolve();
+        return this._sourceActivity.exec();
     }
 
     inData(): ReadonlyArray<object> {
-        return this._sourceActivity ? this._sourceActivity.outData() || [] : [];
+        return this._sourceActivity.outData();
     }
 
     computeData(): ReadonlyArray<object> {
         return this.inData();
     }
-
-    outData(): ReadonlyArray<object> {
-        return this.computeData();
-    }
-
-    /*
-    inRow(idx: number) {
-        return this.inData().filter(row => row[ROW_ID] === idx)[0];
-    }
-
-    outRow(idx: number) {
-        return this.outData().filter(row => row[ROW_ID] === idx)[0];
-    }
-    */
 }
 
 export class ActivityArray extends Activity {
@@ -244,12 +157,25 @@ ActivityArray.prototype._class += " ActivityArray";
 
 export class ActivityPipeline extends ActivityArray {
 
+    protected _datasource: Datasource;
+    datasource(): Datasource;
+    datasource(_: Datasource): this;
+    datasource(_?: Datasource): Datasource | this {
+        if (!arguments.length) return this._datasource;
+        this._datasource = _;
+        const activities = this.activities();
+        if (activities.length) {
+            activities[0].sourceActivity(this._datasource);
+        }
+        return this;
+    }
+
     activities(): Activity[];
     activities(_: Activity[]): this;
     activities(_?: Activity[]): Activity[] | this {
         if (!arguments.length) return super.activities();
         super.activities(_);
-        let prevActivity: Activity;
+        let prevActivity: Datasource | Activity = this.datasource();
         for (const activity of _) {
             activity.sourceActivity(prevActivity);
             prevActivity = activity;
@@ -276,8 +202,8 @@ export class ActivityPipeline extends ActivityArray {
         });
     }
 
-    updatedByGraph(): Array<{ from: string, to: Activity }> {
-        let retVal: Array<{ from: string, to: Activity }> = [];
+    updatedByGraph(): Array<{ from: string, to: Datasource | Activity }> {
+        let retVal: Array<{ from: string, to: Datasource | Activity }> = [];
         for (const activity of this.activities()) {
             retVal = retVal.concat(this.calcUpdatedGraph(activity));
         }
@@ -326,7 +252,7 @@ export class ActivityPipeline extends ActivityArray {
         return this.last().localFields();
     }
 
-    fieldOrigin(fieldID: string): Activity | null {
+    fieldOrigin(fieldID: string): Datasource | Activity | null {
         return this.last().fieldOrigin(fieldID);
     }
 
@@ -402,7 +328,7 @@ export class ActivitySelection extends ActivityArray {
         return this.selection().localFields();
     }
 
-    fieldOrigin(fieldID: string): Activity | null {
+    fieldOrigin(fieldID: string): Datasource | Activity | null {
         return this.selection().fieldOrigin(fieldID);
     }
 

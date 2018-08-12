@@ -2,9 +2,9 @@ import { PropertyExt } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { classID2Meta, ClassMeta, isArray } from "@hpcc-js/util";
 import { Activity, stringify } from "./activities/activity";
-import { Databomb, Form } from "./activities/databomb";
-import { DSPicker } from "./activities/dspicker";
 import { Dashboard } from "./dashboard";
+import { Databomb, Form } from "./datasources/databomb";
+import { DSPicker } from "./datasources/dspicker";
 import { DDLAdapter } from "./ddl";
 import { ElementContainer } from "./model/element";
 
@@ -163,9 +163,9 @@ export class JavaScriptAdapter {
                     {
                         let format = "json";
                         let payload = "";
-                        const ds = this._elementContainer.elements().filter(e => e.hipiePipeline().dataSource().id() === datasource.id);
+                        const ds = this._elementContainer.elements().filter(e => e.hipiePipeline().datasource().id() === datasource.id);
                         if (ds.length) {
-                            const databomb = (ds[0].hipiePipeline().dataSource() as DSPicker).details() as Databomb;
+                            const databomb = (ds[0].hipiePipeline().datasource() as DSPicker).selection() as Databomb;
                             format = databomb.format();
                             payload = databomb.payload();
                         }
@@ -178,9 +178,9 @@ export class JavaScriptAdapter {
                 case "form":
                     {
                         let payload = {};
-                        const ds = this._elementContainer.elements().filter(e => e.hipiePipeline().dataSource().id() === datasource.id);
+                        const ds = this._elementContainer.elements().filter(e => e.hipiePipeline().datasource().id() === datasource.id);
                         if (ds.length) {
-                            const form = (ds[0].hipiePipeline().dataSource() as DSPicker).details() as Form;
+                            const form = (ds[0].hipiePipeline().datasource() as DSPicker).selection() as Form;
                             payload = form.payload();
                         }
                         retVal.push(`    export const ${datasource.id} = new marshaller.Form()

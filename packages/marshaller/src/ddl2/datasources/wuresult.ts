@@ -2,9 +2,10 @@ import { publish } from "@hpcc-js/common";
 import { Result, XSDXMLNode } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { debounce, hashSum } from "@hpcc-js/util";
-import { Activity, schemaRow2IField } from "./activity";
+import { schemaRow2IField } from "../activities/activity";
+import { Datasource } from "./datasource";
 
-export abstract class ESPResult extends Activity {
+export abstract class ESPResult extends Datasource {
     protected _result: Result;
     protected _schema: XSDXMLNode[] = [];
     protected _meta: DDL2.IField[] = [];

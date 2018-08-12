@@ -1,10 +1,13 @@
 import { Widget } from "@hpcc-js/common";
 import { Edge, IGraphData, Lineage, Subgraph, Vertex } from "@hpcc-js/graph";
 import { Activity } from "./activities/activity";
-import { DSPicker, isDatasource } from "./activities/dspicker";
 import { HipiePipeline } from "./activities/hipiepipeline";
-import { RoxieRequest } from "./activities/roxie";
-import { WUResult } from "./activities/wuresult";
+import { Databomb } from "./datasources/databomb";
+import { Datasource } from "./datasources/datasource";
+import { DSPicker } from "./datasources/dspicker";
+import { LogicalFile } from "./datasources/logicalfile";
+import { RoxieRequest } from "./datasources/roxie";
+import { WUResult } from "./datasources/wuresult";
 import { Element, ElementContainer } from "./model/element";
 
 export class GraphAdapter {
@@ -80,9 +83,57 @@ export class GraphAdapter {
         return retVal;
     }
 
-    createDatasource(viz: Element, view: HipiePipeline, data: any): string {
-        const ds = view.dataSource();
-        const dsDetails = ds instanceof DSPicker ? ds.details() : ds;
+    createDatasource(dsDetails: Datasource): string {
+        const data = {};
+        if (dsDetails instanceof WUResult) {
+            const serverID = `${dsDetails.url()}`;
+            const server: Subgraph = this.createSubgraph(serverID, `${serverID}`, { datasource: dsDetails });
+            const wuID = `${dsDetails.url()}/${dsDetails.wuid()}`;
+            const wu: Subgraph = this.createSubgraph(wuID, `${dsDetails.wuid()}`, { datasource: dsDetails });
+            this.hierarchy.push({ parent: server, child: wu });
+            const resultID = `${wuID}/${dsDetails.resultName()}`;
+            const result: Vertex = this.createVertex(resultID, dsDetails.resultName(), data);
+            this.hierarchy.push({ parent: wu, child: result });
+            return resultID;
+        } else if (dsDetails instanceof LogicalFile) {
+            const serverID = `${dsDetails.url()}`;
+            const server: Subgraph = this.createSubgraph(serverID, `${serverID}`, { datasource: dsDetails });
+            const lfID = `${serverID}/${dsDetails.logicalFile()}`;
+            const result: Vertex = this.createVertex(lfID, dsDetails.logicalFile(), data);
+            this.hierarchy.push({ parent: server, child: result });
+            return lfID;
+        } else if (dsDetails instanceof RoxieRequest) {
+            const serverID = `${dsDetails.url()}`;
+            const server: Subgraph = this.createSubgraph(serverID, `${serverID}`, { datasource: dsDetails });
+            const surfaceID = dsDetails.roxieServiceID(); // `${dsDetails.url()}/${dsDetails.querySet()}`;
+            const surface: Subgraph = this.createSubgraph(surfaceID, dsDetails.querySet(), { datasource: dsDetails });
+            this.hierarchy.push({ parent: server, child: surface });
+            const roxieID = surfaceID;
+            this.hierarchy.push({
+                parent: surface,
+                child: this.createVertex(roxieID, dsDetails.queryID(), data)
+            });
+            const roxieResultID = `${surfaceID}/${dsDetails.resultName()}`;
+            this.hierarchy.push({
+                parent: surface,
+                child: this.createVertex(roxieResultID, dsDetails.resultName(), data)
+            });
+            this.createEdge(roxieID, roxieResultID);
+            return roxieResultID;
+        } else if (dsDetails instanceof Databomb) {
+            const id = dsDetails.id();
+            this.createVertex(id, dsDetails.label(), { viz: undefined, activity: dsDetails });
+            return id;
+        } else {
+            const id = dsDetails.hash();
+            this.createVertex(id, dsDetails.label(), { viz: undefined, activity: dsDetails });
+            return id;
+        }
+    }
+
+    createVizDatasourceXXX(viz: Element, view: HipiePipeline, data: any): string {
+        const ds = view.datasource();
+        const dsDetails = ds instanceof DSPicker ? ds.selection() : ds;
         if (dsDetails instanceof WUResult) {
             const surfaceID = `${dsDetails.url()}/${dsDetails.wuid()}`;
             const surface: Subgraph = this.createSubgraph(surfaceID, `${dsDetails.wuid()}`, { viz, view });
@@ -136,17 +187,16 @@ export class GraphAdapter {
 
     createGraph(): IGraphData {
         this.clear();
+        for (const ds of this._elementContainer.datasources()) {
+            this.createDatasource(ds);
+        }
 
         const lastID: { [key: string]: string } = {};
         for (const element of this._elementContainer.elements()) {
             const view = element.hipiePipeline();
-            let prevID = "";
+            let prevID = this.createDatasource(view.datasource());
             for (const activity of view.activities()) {
-                if (isDatasource(activity)) {
-                    prevID = this.createDatasource(element, view, { viz: undefined, activity });
-                } else {
-                    prevID = this.createActivity(prevID, element, view, activity);
-                }
+                prevID = this.createActivity(prevID, element, view, activity);
             }
             const visualization = element.visualization();
             const mappings = visualization.mappings();
@@ -187,7 +237,7 @@ export class GraphAdapter {
             const view = viz.hipiePipeline();
             for (const updateInfo of view.updatedByGraph()) {
                 if (updateInfo.to instanceof DSPicker) {
-                    updateInfo.to = updateInfo.to.details();
+                    updateInfo.to = updateInfo.to.selection();
                 }
                 this.createEdge(lastID[this._elementContainer.element(updateInfo.from).hipiePipeline().id()], updateInfo.to instanceof RoxieRequest ? `${updateInfo.to.roxieServiceID()}/${updateInfo.to.resultName()}` : updateInfo.to.id())
                     .weight(10)

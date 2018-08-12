@@ -1,8 +1,8 @@
 import { publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
+import { DSPicker } from "../datasources/dspicker";
 import { ElementContainer } from "../model/element";
 import { Activity, ActivityPipeline } from "./activity";
-import { DSPicker } from "./dspicker";
 import { Filters } from "./filter";
 import { GroupBy } from "./groupby";
 import { Limit } from "./limit";
@@ -13,12 +13,12 @@ export class HipiePipeline extends ActivityPipeline {
     _elementContainer: ElementContainer;
 
     @publish(null, "widget", "Data Source 2")
-    _dataSource: Activity;
-    dataSource(): Activity;
-    dataSource(_: Activity): this;
-    dataSource(_?: Activity): Activity | this {
-        if (!arguments.length) return this._dataSource;
-        this._dataSource = _;
+    _datasource: DSPicker;
+    datasource(): DSPicker;
+    datasource(_: DSPicker): this;
+    datasource(_?: DSPicker): DSPicker | this {
+        if (!arguments.length) return this._datasource;
+        this._datasource = _;
         this.updateSequence();
         return this;
     }
@@ -78,15 +78,12 @@ export class HipiePipeline extends ActivityPipeline {
         return this;
     }
 
-    constructor(model: ElementContainer, viewID: string) {
+    constructor(ec: ElementContainer, viewID: string) {
         super();
-        this._elementContainer = model;
+        this._elementContainer = ec;
         this._id = viewID;
-        this._dataSource = new DSPicker(this);
-        this._dataSource.monitor((id, newVal, oldVal) => {
-            this.broadcast(id, newVal, oldVal, this.dataSource());
-        });
-        this._filters = new Filters(model);
+        this._datasource = new DSPicker(this._elementContainer);
+        this._filters = new Filters(ec);
         this._project = new Project();
         this._groupBy = new GroupBy();
         this._sort = new Sort();
@@ -103,7 +100,6 @@ export class HipiePipeline extends ActivityPipeline {
 
     private updateSequence() {
         this.activities([
-            this.dataSource(),
             this.filters(),
             this.project(),
             this.groupBy(),
