@@ -24,9 +24,9 @@ const bubble = new Bubble()
     .paletteID("Dark2");
 
 new DockPanel()
-    .target("target")
     .addWidget(area, "<drag me>")
     .addWidget(bubble, "<drag me>", "split-right", area)
     .addWidget(line, "<drag me>", "split-bottom", area)
+    .target("target")
     .render()
     ;
