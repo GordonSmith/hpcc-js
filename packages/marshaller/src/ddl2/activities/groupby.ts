@@ -3,6 +3,7 @@ import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
 import { deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "d3-array";
 import { nest as d3Nest } from "d3-collection";
+import { fromJS, List, Map } from "immutable";
 import { Activity, IActivityError, ReferencedFields } from "./activity";
 
 export class GroupByColumn extends PropertyExt {
@@ -282,16 +283,12 @@ export class GroupBy extends Activity {
     }
 
     inFieldIDs(): string[] {
-        return this.inFields().map(field => field.id);
+        return this.inFields().map(field => field.id).toJS();
     }
 
     field(fieldID: string): DDL2.IField | null {
-        for (const field of this.inFields()) {
-            if (field.id === fieldID) {
-                return field;
-            }
-        }
-        return null;
+        const found = this.inFields().find(field => field.id === fieldID);
+        return found || null;
     }
 
     appendComputedFields(aggregateFields: [{ label: string, type: AggregateType, column?: string }]): this {
@@ -317,7 +314,7 @@ export class GroupBy extends Activity {
         return this.validComputedFields().length > 0;
     }
 
-    computeFields(): DDL2.IField[] {
+    computeFields(): List<DDL2.IField> {
         if (!this.exists()) return super.computeFields();
         const retVal: DDL2.IField[] = [];
         const groups: GroupByColumn[] = this.validGroupBy();
@@ -352,9 +349,9 @@ export class GroupBy extends Activity {
             const columns = groups.map(groupBy => groupBy.label());
             detailsTarget.push(...this.inFields().filter(field => {
                 return this.fullDetails() || columns.indexOf(field.id) < 0;
-            }));
+            }).toJS());
         }
-        return retVal;
+        return fromJS(retVal);
     }
 
     referencedFields(refs: ReferencedFields): void {
@@ -371,9 +368,9 @@ export class GroupBy extends Activity {
         super.resolveInFields(refs, fieldIDs);
     }
 
-    computeData(): ReadonlyArray<object> {
+    computeData(): List<Map<any, any>> {
         const data = super.computeData();
-        if (data.length === 0 || !this.exists()) return data;
+        if (data.size === 0 || !this.exists()) return data;
         const columnLabels: string[] = this.validGroupBy().map(gb => gb.label());
         const computedFields = this.validComputedFields().map(cf => {
             return { label: cf.fieldID(), aggrFunc: cf.aggrFunc() };
@@ -386,7 +383,7 @@ export class GroupBy extends Activity {
                 }
                 return key;
             })
-            .entries(data as object[]).map(_row => {
+            .entries(data.toJS() as object[]).map(_row => {
                 const row: {
                     [key: string]: any
                 } = _row;
@@ -401,13 +398,13 @@ export class GroupBy extends Activity {
             })
             ;
         const outFields = this.outFields();
-        return retVal.map(row => {
+        return fromJS(retVal.map(row => {
             const retVal = {};
-            for (const field of outFields) {
+            outFields.forEach(field => {
                 retVal[field.id] = row[field.id];
-            }
+            });
             return retVal;
-        });
+        }));
     }
 }
 GroupBy.prototype._class += " GroupBy";

@@ -1,4 +1,5 @@
 ﻿import { Palette, PropertyExt } from "@hpcc-js/common";
+import { hashSum } from "@hpcc-js/util";
 import { format as d3Format } from "d3-format";
 import { select as d3Select } from "d3-selection";
 import { Common } from "./Common";
@@ -91,6 +92,8 @@ ColumnFormat.prototype.publish("valueColumn", null, "set", "Column", function (t
 
 //  Table ---
 export class Table extends Common {
+    private _prevColsHash;
+    private _prevFieldsHash;
     _colsRefresh = false;
     _forceRefresh = false;
 
@@ -101,8 +104,12 @@ export class Table extends Common {
     fields(_?: any): any | this {
         const retVal = super.fields.apply(this, arguments);
         if (arguments.length) {
-            this._colsRefresh = true;
-            this._forceRefresh = true;
+            const hash = hashSum({ _ });
+            if (this._prevFieldsHash !== hash) {
+                this._prevFieldsHash = hash;
+                this._colsRefresh = true;
+                this._forceRefresh = true;
+            }
         }
         return retVal;
     }
@@ -110,8 +117,12 @@ export class Table extends Common {
     columns(_?: any): any | this {
         const retVal = super.columns.apply(this, arguments);
         if (arguments.length) {
-            this._colsRefresh = true;
-            this._forceRefresh = true;
+            const hash = hashSum({ _ });
+            if (this._prevColsHash !== hash) {
+                this._prevColsHash = hash;
+                this._colsRefresh = true;
+                this._forceRefresh = true;
+            }
         }
         return retVal;
     }

@@ -1,6 +1,7 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
+import { List, Map } from "immutable";
 import { Element, ElementContainer } from "../model/element";
 import { Activity, IActivityError, ReferencedFields } from "./activity";
 
@@ -78,12 +79,12 @@ export class ColumnMapping extends PropertyExt {
         });
     }
 
-    localFields() {
-        return this._owner.inFields().map(field => field.id);
+    localFields(): string[] {
+        return this._owner.inFields().toJS().map(field => field.id);
     }
 
-    sourceOutFields() {
-        return this._owner.sourceOutFields().map(field => field.id);
+    sourceOutFields(): string[] {
+        return this._owner.sourceOutFields().toJS().map(field => field.id);
     }
 
     createFilter(filterSelection: any[]): (localRow: any) => boolean {
@@ -209,7 +210,7 @@ export class Filter extends PropertyExt {
         return this;
     }
 
-    inFields(): DDL2.IField[] {
+    inFields(): List<DDL2.IField> {
         return this._owner.inFields();
     }
 
@@ -217,7 +218,7 @@ export class Filter extends PropertyExt {
         return this._owner.visualization(this.source());
     }
 
-    sourceOutFields(): DDL2.IField[] {
+    sourceOutFields(): List<DDL2.IField> {
         return this.sourceViz().hipiePipeline().selectionFields();
     }
 
@@ -313,9 +314,9 @@ export class Filters extends Activity {
         return super.exec();
     }
 
-    computeData(): ReadonlyArray<object> {
+    computeData(): List<Map<any, any>> {
         const data = super.computeData();
-        if (data.length === 0 || !this.exists()) return data;
+        if (data.size === 0 || !this.exists()) return data;
         const filters = this.validFilters().map(filter => filter.createFilter());
         return data.filter(row => {
             return filters.every(filter => filter(row));

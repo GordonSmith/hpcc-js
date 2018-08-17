@@ -42,6 +42,7 @@ export const npmPackages = {
     "font-awesome": "font-awesome",
     "google-maps": "google-maps/lib/Google",
     "grid-list": "grid-list/src/gridList",
+    "immutable": "immutable/dist/immutable",
     "javascript-autocomplete": "javascript-autocomplete/auto-complete",
     "react": "react/dist/react.min",
     "react-dom": "react-dom/dist/react-dom.min",

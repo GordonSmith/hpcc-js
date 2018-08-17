@@ -1,6 +1,7 @@
 import { IMonitorHandle, PropertyExt } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
+import { List, Map } from "immutable";
 
 export type ReferencedFields = {
     inputs: { [activityID: string]: string[] },
@@ -27,11 +28,9 @@ export abstract class Datasource extends PropertyExt {
             }
             return false;
         });
-        if (int64Fields.length) {
+        if (!int64Fields.isEmpty()) {
             return data.map(row => {
-                for (const int64Field of int64Fields) {
-                    row[int64Field.id] = +row[int64Field.id];
-                }
+                int64Fields.forEach(int64Field => row[int64Field.id] = +row[int64Field.id]);
                 return row;
             });
         }
@@ -64,20 +63,20 @@ export abstract class Datasource extends PropertyExt {
         return [];
     }
 
-    computeFields(): DDL2.IField[] {
-        return [];
+    computeFields(): List<DDL2.IField> {
+        return List();
     }
 
-    outFields(): DDL2.IField[] {
+    outFields(): List<DDL2.IField> {
         return this.computeFields();
     }
 
-    localFields(): DDL2.IField[] {
+    localFields(): List<DDL2.IField> {
         return this.outFields();
     }
 
     fieldOrigin(fieldID: string): Datasource | null {
-        if (this.localFields().filter(field => field.id === fieldID).length) {
+        if (this.localFields().filter(field => field.id === fieldID).size) {
             return this;
         }
         return null;
@@ -104,11 +103,11 @@ export abstract class Datasource extends PropertyExt {
         return Promise.resolve();
     }
 
-    computeData(): ReadonlyArray<object> {
-        return [];
+    computeData(): List<Map<any, any>> {
+        return List();
     }
 
-    outData(): ReadonlyArray<object> {
+    outData(): List<Map<any, any>> {
         return this.computeData();
     }
 }
@@ -164,11 +163,11 @@ export class DatasourceSelection extends DatasourceArray {
         return this.selection().updatedBy();
     }
 
-    outFields(): DDL2.IField[] {
+    outFields(): List<DDL2.IField> {
         return this.selection().outFields();
     }
 
-    localFields(): DDL2.IField[] {
+    localFields(): List<DDL2.IField> {
         return this.selection().localFields();
     }
 
@@ -188,7 +187,7 @@ export class DatasourceSelection extends DatasourceArray {
         return this.selection().exec();
     }
 
-    outData(): ReadonlyArray<object> {
+    outData(): List<Map<any, any>> {
         return this.selection().outData();
     }
 }

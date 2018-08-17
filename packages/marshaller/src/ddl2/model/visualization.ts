@@ -5,6 +5,7 @@ import { Table } from "@hpcc-js/dgrid";
 import { FieldForm } from "@hpcc-js/form";
 import { ChartPanel } from "@hpcc-js/layout";
 import { ChoroplethCounties, ChoroplethStates } from "@hpcc-js/map";
+import { List, Map } from "immutable";
 import { HipiePipeline } from "../activities/hipiepipeline";
 import { ComputedField, Mappings, MultiField } from "../activities/project";
 
@@ -119,7 +120,7 @@ export class Visualization extends PropertyExt {
                         .label(input.id)
                         ;
                     const computedFields: ComputedField[] = [];
-                    for (const inField of inFields) {
+                    inFields.forEach(inField => {
                         if ((input.type === "any" || input.type === inField.type) && !taken[inField.id]) {
                             taken[inField.id] = true;
                             computedFields.push(new ComputedField()
@@ -128,7 +129,7 @@ export class Visualization extends PropertyExt {
                                 .column1(inField.id)
                             );
                         }
-                    }
+                    });
                     retVal.multiFields(computedFields);
                 } else {
                     retVal = new ComputedField()
@@ -136,13 +137,13 @@ export class Visualization extends PropertyExt {
                         .label(input.id)
                         .type("=")
                         ;
-                    for (const inField of inFields) {
+                    inFields.forEach(inField => {
                         if ((input.type === "any" || input.type === inField.type) && !taken[inField.id]) {
                             taken[inField.id] = true;
-                            retVal.column1(inField.id);
-                            break;
+                            (retVal as ComputedField).column1(inField.id);
+                            return false;
                         }
-                    }
+                    });
                 }
             }
             return retVal;
@@ -150,14 +151,28 @@ export class Visualization extends PropertyExt {
         return this;
     }
 
+    _prevFields: List<DDL2.IField> = List();
+    _prevData: List<any> = List();
     refreshData(): this {
         const mappings = this.mappings();
-        const fields = this.toDBFields(mappings.outFields());
-        const data = mappings.outData();
-        const mappedData = this.toDBData(fields, data);
+        const newFields = mappings.outFields();
+        if (!this._prevFields.equals(newFields)) {
+            this._prevFields = newFields;
+            const fields = this.toDBFields(newFields.toJS());
+            this.chartPanel().fields(fields.filter(f => f.id() !== "__lparam"));
+        } else {
+            console.log(`${this.id()} Immutable Fields!`);
+        }
+        const data: List<Map<any, any>> = mappings.outData();
+        if (!this._prevData.equals(data)) {
+            this._prevData = data;
+            const fields = this.chartPanel().fields();
+            const mappedData = this.toDBData(fields, data.toJS());
+            this.chartPanel().data(mappedData);
+        } else {
+            console.log(`${this.id()} Immutable Data!`);
+        }
         this.chartPanel()
-            .fields(fields.filter(f => f.id() !== "__lparam"))
-            .data(mappedData)
             .render()
             ;
         return this;
@@ -178,7 +193,7 @@ export class Visualization extends PropertyExt {
         return retVal;
     }
 
-    toDBData(fields: Database.Field[], data) {
+    toDBData(fields: Database.Field[], data: object[]) {
         return data.map((row: any) => {
             const retVal = [];
             for (const field of fields) {
@@ -215,3 +230,42 @@ export class Visualization extends PropertyExt {
     }
 }
 Visualization.prototype._class += " Visualization";
+
+const filter = (field, value) => (data: object[]) => data.filter((row) => row[field] === value);
+const testFilter = filter("a", 20);
+const project = (newField) => (data: object[]) => data.map((row) => { row[newField] = ""; return row; });
+const testProject = project("b");
+
+const data = [{ a: 10 }, { a: 20 }, { a: 30 }];
+console.log([testFilter, testProject].reduce((acc, itm) => itm(acc), data));
+console.log(testProject(testFilter([{ a: 10 }, { a: 20 }, { a: 30 }])));
+
+type AggregateFn<T> = (...args: T[]) => T;
+
+interface CurryFn<T> extends AggregateFn<T> {
+    (...args: T[]): CurryFn<T>;
+}
+
+function curry<T>(f: AggregateFn<T>): CurryFn<T> {
+    return (...args: any[]): CurryFn<any> | any => {
+        if (args.length)
+            return curry(f.bind.apply(f, [undefined].concat(args)));
+        return f();
+    };
+}
+
+function sum(a: number, b: number): number {
+    return a + b;
+}
+
+export const curriedSum = curry(sum);
+const sum10 = curriedSum(10);
+const test = sum10(11);
+
+console.log(test(22)());
+
+function addNumbers(...args: number[]): number {
+    return args.reduce((acc, itm) => acc += itm, 0);
+}
+
+export const curriedAdd = curry(addNumbers);

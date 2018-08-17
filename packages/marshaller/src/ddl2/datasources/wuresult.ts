@@ -2,6 +2,7 @@ import { publish } from "@hpcc-js/common";
 import { Result, XSDXMLNode } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { debounce, hashSum } from "@hpcc-js/util";
+import { fromJS, List, Map } from "immutable";
 import { schemaRow2IField } from "../activities/activity";
 import { Datasource } from "./datasource";
 
@@ -10,7 +11,7 @@ export abstract class ESPResult extends Datasource {
     protected _schema: XSDXMLNode[] = [];
     protected _meta: DDL2.IField[] = [];
     protected _total: number;
-    private _data: any[];
+    private _data: List<Map<any, any>> = List();
 
     @publish("", "string", "ESP Url (http://x.x.x.x:8010)")
     url: publish<this, string>;
@@ -78,8 +79,8 @@ export abstract class ESPResult extends Datasource {
         return this;
     }
 
-    computeFields(): DDL2.IField[] {
-        return this.responseFields();
+    computeFields(): List<DDL2.IField> {
+        return fromJS(this.responseFields());
     }
 
     exec(): Promise<void> {
@@ -95,14 +96,14 @@ export abstract class ESPResult extends Datasource {
             }).then(response => {
                 this._data = this.fixInt64(response);
             }).catch(e => {
-                this._data = [];
+                this._data = List();
             });
         } else {
             return Promise.resolve();
         }
     });
 
-    computeData(): ReadonlyArray<object> {
+    computeData(): List<Map<any, any>> {
         return this._data;
     }
 

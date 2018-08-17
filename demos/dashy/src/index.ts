@@ -1,9 +1,8 @@
 ﻿import { event as d3Event } from "@hpcc-js/common";
 import { Connection, Result } from "@hpcc-js/comms";
-import { Dashy } from "@hpcc-js/marshaller";
+import { Dashy, Databomb, Form, LogicalFile, RoxieRequest, WUResult } from "@hpcc-js/marshaller";
 import { Comms } from "@hpcc-js/other";
 import { exists, scopedLogger } from "@hpcc-js/util";
-import { event as d3Event } from "d3-selection";
 
 const logger = scopedLogger("index.ts");
 
@@ -17,11 +16,15 @@ export class App {
             ;
 
         this._dashy.element()
-            .on("drop", () => this.dropHandler())
-            .on("dragover", () => this.dragOverHandler())
+            .on("drop", () => this.dropHandler(this.event()))
+            .on("dragover", () => this.dragOverHandler(this.event()))
             ;
 
         this.parseUrl();
+    }
+
+    event() {
+        return d3Event || event;
     }
 
     parseUrl() {
@@ -52,6 +55,56 @@ export class App {
                 }
             });
         } else {
+            //  Lets add some demo datasoures
+            const ec = this._dashy.elementContainer();
+            const datasources = ec.datasources();
+            for (const datasource of [
+                new WUResult()
+                    .url("http://52.51.90.23:8010")
+                    .wuid("W20180513-082149")
+                    .resultName("Result 1")
+                ,
+                new LogicalFile()
+                    .url("http://52.51.90.23:8010")
+                    .logicalFile("progguide::exampledata::peopleaccts")
+                ,
+                new RoxieRequest(ec)
+                    .url("http://52.51.90.23:8002")
+                    .querySet("roxie")
+                    .queryID("peopleaccounts")
+                    .resultName("Accounts"),
+                new Databomb("sample")
+                    .payload(JSON.stringify([]))
+                ,
+                new Form()
+                    .payload({
+                        id: 770,
+                        fname: "TIMTOHY",
+                        lname: "SALEEMI",
+                        minitial: "",
+                        gender: "M",
+                        street: "1734 NOSTRAND AVE # 3",
+                        city: "DRACUT",
+                        st: "MA",
+                        zip: "01826"
+                    }),
+                new WUResult()
+                    .url("http://192.168.3.22:8010")
+                    .wuid("W20171201-153452")
+                    .resultName("Result 1")
+                ,
+                new LogicalFile()
+                    .url("http://192.168.3.22:8010")
+                    .logicalFile("progguide::exampledata::peopleaccts")
+                ,
+                new RoxieRequest(ec)
+                    .url("http://192.168.3.22:8002")
+                    .querySet("roxie")
+                    .queryID("peopleaccounts")
+                    .resultName("Accounts"),
+            ]) {
+                datasources.push(datasource);
+            }
         }
     }
 
@@ -87,39 +140,39 @@ export class App {
         reader.readAsText(file);
     }
 
-    dropHandler() {
+    dropHandler(evt) {
         console.log("File(s) dropped");
 
         // Prevent default behavior (Prevent file from being opened)
-        d3Event.preventDefault();
+        evt.preventDefault();
 
-        if (d3Event.dataTransfer.items) {
+        if (evt.dataTransfer.items) {
             // Use DataTransferItemList interface to access the file(s)
-            for (let i = 0; i < d3Event.dataTransfer.items.length; i++) {
+            for (let i = 0; i < evt.dataTransfer.items.length; i++) {
                 // If dropped items aren't files, reject them
-                if (d3Event.dataTransfer.items[i].kind === "file") {
-                    const file = d3Event.dataTransfer.items[i].getAsFile();
+                if (evt.dataTransfer.items[i].kind === "file") {
+                    const file = evt.dataTransfer.items[i].getAsFile();
                     console.log("... file[" + i + "].name = " + file.name);
                     this.loadFile(file);
                 }
             }
         } else {
             // Use DataTransfer interface to access the file(s)
-            for (let i = 0; i < d3Event.dataTransfer.files.length; i++) {
-                console.log("... file[" + i + "].name = " + d3Event.dataTransfer.files[i].name);
-                this.loadFile(d3Event.dataTransfer.files[i]);
+            for (let i = 0; i < evt.dataTransfer.files.length; i++) {
+                console.log("... file[" + i + "].name = " + evt.dataTransfer.files[i].name);
+                this.loadFile(evt.dataTransfer.files[i]);
             }
         }
 
         // Pass event to removeDragData for cleanup
-        this.removeDragData(d3Event);
+        this.removeDragData(evt);
     }
 
-    dragOverHandler() {
+    dragOverHandler(evt) {
         console.log("File(s) in drop zone");
 
         // Prevent default behavior (Prevent file from being opened)
-        d3Event.preventDefault();
+        evt.preventDefault();
     }
 
     removeDragData(ev) {

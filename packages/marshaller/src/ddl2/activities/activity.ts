@@ -3,6 +3,7 @@ import { IField as WsEclField } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IDatasource } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
+import { List, Map } from "immutable";
 import { Datasource, IError, ReferencedFields } from "../datasources/datasource";
 
 export function stringify(obj_from_json) {
@@ -101,21 +102,21 @@ export abstract class Activity extends Datasource {
         return this._sourceActivity.refreshMeta();
     }
 
-    inFields(): DDL2.IField[] {
+    inFields(): List<DDL2.IField> {
         return this._sourceActivity.outFields();
     }
 
-    computeFields(): DDL2.IField[] {
+    computeFields(): List<DDL2.IField> {
         return this.inFields();
     }
 
-    localFields(): DDL2.IField[] {
+    localFields(): List<DDL2.IField> {
         const inFieldIDs = this.inFields().map(field => field.id);
         return this.outFields().filter(field => inFieldIDs.indexOf(field.id) < 0);
     }
 
     fieldOrigin(fieldID: string): Datasource | Activity | null {
-        if (this.localFields().filter(field => field.id === fieldID).length) {
+        if (this.localFields().filter(field => field.id === fieldID).size) {
             return this;
         }
         return this._sourceActivity.fieldOrigin(fieldID);
@@ -133,11 +134,11 @@ export abstract class Activity extends Datasource {
         return this._sourceActivity.exec();
     }
 
-    inData(): ReadonlyArray<object> {
+    inData(): List<Map<any, any>> {
         return this._sourceActivity.outData();
     }
 
-    computeData(): ReadonlyArray<object> {
+    computeData(): List<Map<any, any>> {
         return this.inData();
     }
 }
@@ -210,10 +211,10 @@ export class ActivityPipeline extends ActivityArray {
         return retVal;
     }
 
-    fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<ReadonlyArray<object>> {
+    fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<List<Map<any, any>>> {
         return this.exec().then(() => {
             const data = this.outData();
-            if (from === 0 && data.length <= count) {
+            if (from === 0 && data.size <= count) {
                 return data;
             }
             return data.slice(from, from + count);
@@ -240,15 +241,15 @@ export class ActivityPipeline extends ActivityArray {
         return retVal;
     }
 
-    inFields(): DDL2.IField[] {
+    inFields(): List<DDL2.IField> {
         return this.first().inFields();
     }
 
-    outFields(): DDL2.IField[] {
+    outFields(): List<DDL2.IField> {
         return this.last().outFields();
     }
 
-    localFields(): DDL2.IField[] {
+    localFields(): List<DDL2.IField> {
         return this.last().localFields();
     }
 
@@ -272,7 +273,7 @@ export class ActivityPipeline extends ActivityArray {
         return this.last().exec();
     }
 
-    outData(): ReadonlyArray<object> {
+    outData(): List<Map<any, any>> {
         return this.last().outData();
     }
 }
@@ -316,15 +317,15 @@ export class ActivitySelection extends ActivityArray {
         return this.selection().updatedBy();
     }
 
-    inFields(): DDL2.IField[] {
+    inFields(): List<DDL2.IField> {
         return this.selection().inFields();
     }
 
-    outFields(): DDL2.IField[] {
+    outFields(): List<DDL2.IField> {
         return this.selection().outFields();
     }
 
-    localFields(): DDL2.IField[] {
+    localFields(): List<DDL2.IField> {
         return this.selection().localFields();
     }
 
@@ -348,7 +349,7 @@ export class ActivitySelection extends ActivityArray {
         return this.selection().exec();
     }
 
-    outData(): ReadonlyArray<object> {
+    outData(): List<Map<any, any>> {
         return this.selection().outData();
     }
 }
@@ -375,13 +376,13 @@ export class DatasourceAdapt implements IDatasource {
         return this._activity.label();
     }
     outFields(): DDL2.IField[] {
-        return this._activity.outFields();
+        return this._activity ? this._activity.outFields().toJS() : [];
     }
     total(): number {
-        return this._activity.outData().length;
+        return this._activity.outData().size;
     }
     fetch(from: number, count: number): Promise<ReadonlyArray<object>> {
-        const data = this._activity.outData();
+        const data: object[] = this._activity.outData().toJS();
         if (from === 0 && data.length <= count) {
             return Promise.resolve(data);
         }

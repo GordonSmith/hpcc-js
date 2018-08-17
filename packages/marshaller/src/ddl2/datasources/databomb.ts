@@ -1,12 +1,13 @@
 import { publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { csvParse as d3CsvParse, tsvParse as d3TsvParse } from "d3-dsv";
+import { fromJS, List, Map } from "immutable";
 import { Datasource } from "./datasource";
 
 export class Databomb extends Datasource {
 
     private _label: string = "Databomb";
-    private _jasonData: object[] = [];
+    private _jasonData: List<Map<any, any>> = List();
 
     constructor(label: string) {
         super();
@@ -17,18 +18,18 @@ export class Databomb extends Datasource {
         try {
             switch (this.format()) {
                 case "csv":
-                    this._jasonData = d3CsvParse(this.payload());
+                    this._jasonData = fromJS(d3CsvParse(this.payload()));
                     break;
                 case "tsv":
-                    this._jasonData = d3TsvParse(this.payload());
+                    this._jasonData = fromJS(d3TsvParse(this.payload()));
                     break;
                 case "json":
                 default:
-                    this._jasonData = JSON.parse(this.payload());
+                    this._jasonData = fromJS(JSON.parse(this.payload()));
                     break;
             }
         } catch (e) {
-            this._jasonData = [];
+            this._jasonData = List();
         }
     }
 
@@ -47,32 +48,32 @@ export class Databomb extends Datasource {
         return this._label;
     }
 
-    computeFields(): DDL2.IField[] {
-        let row0: any;
-        for (row0 of this._jasonData) {
-            const retVal: DDL2.IField[] = [];
-            for (const key in row0) {
-                retVal.push({
-                    id: key,
-                    type: typeof row0[key] as DDL2.IFieldType
-                });
-            }
-            return retVal;
+    computeFields(): List<DDL2.IField> {
+        if (this._jasonData.isEmpty()) {
+            return List();
         }
-        return [];
+        const row0 = this._jasonData.first().toJS();
+        const retVal: DDL2.IField[] = [];
+        for (const key in row0) {
+            retVal.push({
+                id: key,
+                type: typeof row0[key] as DDL2.IFieldType
+            });
+        }
+        return fromJS(retVal);
     }
 
     exec(): Promise<void> {
         return Promise.resolve();
     }
 
-    computeData(): ReadonlyArray<object> {
+    computeData(): List<Map<any, any>> {
         return this._jasonData;
     }
 
     //  ===
     total(): number {
-        return this._jasonData.length;
+        return this._jasonData.size;
     }
 }
 Databomb.prototype._class += " Databomb";
@@ -128,7 +129,7 @@ export class Form extends Datasource {
         return "Form";
     }
 
-    computeFields(): DDL2.IField[] {
+    computeFields(): List<DDL2.IField> {
         const retVal: DDL2.IField[] = [];
         const row0: any = this.payload();
         for (const key in row0) {
@@ -139,15 +140,15 @@ export class Form extends Datasource {
                     default: row0[key]
                 });
         }
-        return retVal;
+        return fromJS(retVal);
     }
 
     exec(): Promise<void> {
         return Promise.resolve();
     }
 
-    computeData(): ReadonlyArray<object> {
-        return [this.payload()];
+    computeData(): List<Map<any, any>> {
+        return fromJS(this.payload());
     }
 
     //  ===

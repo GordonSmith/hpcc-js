@@ -2,6 +2,7 @@ import { PropertyExt, publish } from "@hpcc-js/common";
 import { Query as CommsQuery } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { compare, debounce, hashSum } from "@hpcc-js/util";
+import { fromJS, List, Map } from "immutable";
 import { ReferencedFields } from "../activities/activity";
 import { Element, ElementContainer } from "../model/element";
 import { Datasource } from "./datasource";
@@ -27,7 +28,7 @@ export class Param extends PropertyExt {
     @publish(null, "set", "Datasource", function (this: Param) { return this.visualizationIDs(); }, { optional: true })
     source: publish<this, string>;
     source_exists: () => boolean;
-    @publish(null, "set", "Source Field", function (this: Param) { return this.sourceFields(); }, { optional: true })
+    @publish(null, "set", "Source Field", function (this: Param) { return this.sourceFields().toJS(); }, { optional: true })
     remoteField: publish<this, string>;
     remoteField_exists: () => boolean;
     @publish(null, "string", "Label")  //  TODO Add ReadOnly
@@ -75,7 +76,7 @@ export class Param extends PropertyExt {
         return this._elementContainer.element(this.source());
     }
 
-    sourceOutFields(): DDL2.IField[] {
+    sourceOutFields(): List<DDL2.IField> {
         return this.sourceViz().hipiePipeline().selectionFields();
     }
 
@@ -188,7 +189,7 @@ export class RoxieRequest extends Datasource {
         }
         return retVal;
     }
-    private _data: any[] = [];
+    private _data: List<Map<any, any>> = List();
 
     @publish("", "string", "ESP Url (http://x.x.x.x:8002)")
     url: publish<this, string>;
@@ -304,8 +305,8 @@ export class RoxieRequest extends Datasource {
         return retVal;
     }
 
-    computeFields(): DDL2.IField[] {
-        return this._roxieService.responseFields(this.resultName());
+    computeFields(): List<DDL2.IField> {
+        return fromJS(this._roxieService.responseFields(this.resultName()));
     }
 
     formatRequest(): { [key: string]: any } {
@@ -335,7 +336,7 @@ export class RoxieRequest extends Datasource {
         });
     }
 
-    computeData(): ReadonlyArray<object> {
+    computeData(): List<Map<any, any>> {
         return this._data;
     }
 }

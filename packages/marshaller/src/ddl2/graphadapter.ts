@@ -33,7 +33,7 @@ export class GraphAdapter {
         this.edges = [];
     }
 
-    createSubgraph(id: string, label: string, data: any): Subgraph {
+    createSubgraph(id: string, label: string, data?: any): Subgraph {
         let retVal: Subgraph = this.subgraphMap[id];
         if (!retVal) {
             retVal = new Subgraph()
@@ -50,7 +50,7 @@ export class GraphAdapter {
         return retVal;
     }
 
-    createVertex(id: string, label: string, data: any, tooltip: string = "", fillColor: string = "#dcf1ff"): Vertex {
+    createVertex(id: string, label: string, data?: any, tooltip: string = "", fillColor: string = "#dcf1ff"): Vertex {
         let retVal: Vertex = this.vertexMap[id];
         if (!retVal) {
             retVal = new Vertex()
@@ -84,49 +84,51 @@ export class GraphAdapter {
     }
 
     createDatasource(dsDetails: Datasource): string {
-        const data = {};
+        if (dsDetails instanceof DSPicker) {
+            dsDetails = dsDetails.selection();
+        }
         if (dsDetails instanceof WUResult) {
             const serverID = `${dsDetails.url()}`;
-            const server: Subgraph = this.createSubgraph(serverID, `${serverID}`, { datasource: dsDetails });
+            const server: Subgraph = this.createSubgraph(serverID, `${serverID}`);
             const wuID = `${dsDetails.url()}/${dsDetails.wuid()}`;
-            const wu: Subgraph = this.createSubgraph(wuID, `${dsDetails.wuid()}`, { datasource: dsDetails });
+            const wu: Subgraph = this.createSubgraph(wuID, `${dsDetails.wuid()}`);
             this.hierarchy.push({ parent: server, child: wu });
             const resultID = `${wuID}/${dsDetails.resultName()}`;
-            const result: Vertex = this.createVertex(resultID, dsDetails.resultName(), data);
+            const result: Vertex = this.createVertex(resultID, dsDetails.resultName(), { datasource: dsDetails });
             this.hierarchy.push({ parent: wu, child: result });
             return resultID;
         } else if (dsDetails instanceof LogicalFile) {
             const serverID = `${dsDetails.url()}`;
-            const server: Subgraph = this.createSubgraph(serverID, `${serverID}`, { datasource: dsDetails });
+            const server: Subgraph = this.createSubgraph(serverID, `${serverID}`);
             const lfID = `${serverID}/${dsDetails.logicalFile()}`;
-            const result: Vertex = this.createVertex(lfID, dsDetails.logicalFile(), data);
-            this.hierarchy.push({ parent: server, child: result });
+            const lf: Vertex = this.createVertex(lfID, dsDetails.logicalFile(), { datasource: dsDetails });
+            this.hierarchy.push({ parent: server, child: lf });
             return lfID;
         } else if (dsDetails instanceof RoxieRequest) {
             const serverID = `${dsDetails.url()}`;
-            const server: Subgraph = this.createSubgraph(serverID, `${serverID}`, { datasource: dsDetails });
+            const server: Subgraph = this.createSubgraph(serverID, `${serverID}`);
             const surfaceID = dsDetails.roxieServiceID(); // `${dsDetails.url()}/${dsDetails.querySet()}`;
-            const surface: Subgraph = this.createSubgraph(surfaceID, dsDetails.querySet(), { datasource: dsDetails });
+            const surface: Subgraph = this.createSubgraph(surfaceID, dsDetails.querySet());
             this.hierarchy.push({ parent: server, child: surface });
             const roxieID = surfaceID;
             this.hierarchy.push({
                 parent: surface,
-                child: this.createVertex(roxieID, dsDetails.queryID(), data)
+                child: this.createVertex(roxieID, dsDetails.queryID())
             });
             const roxieResultID = `${surfaceID}/${dsDetails.resultName()}`;
             this.hierarchy.push({
                 parent: surface,
-                child: this.createVertex(roxieResultID, dsDetails.resultName(), data)
+                child: this.createVertex(roxieResultID, dsDetails.resultName(), { datasource: dsDetails })
             });
             this.createEdge(roxieID, roxieResultID);
             return roxieResultID;
         } else if (dsDetails instanceof Databomb) {
             const id = dsDetails.id();
-            this.createVertex(id, dsDetails.label(), { viz: undefined, activity: dsDetails });
+            this.createVertex(id, dsDetails.label(), { datasource: dsDetails });
             return id;
         } else {
             const id = dsDetails.hash();
-            this.createVertex(id, dsDetails.label(), { viz: undefined, activity: dsDetails });
+            this.createVertex(id, dsDetails.label(), { datasource: dsDetails });
             return id;
         }
     }

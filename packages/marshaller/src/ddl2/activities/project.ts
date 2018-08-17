@@ -1,6 +1,7 @@
 import { PropertyExt, publish, Utility } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
+import { fromJS, List, Map } from "immutable";
 import { Activity, IActivityError, ReferencedFields } from "./activity";
 
 export class ComputedMapping extends PropertyExt {
@@ -498,16 +499,12 @@ export class ProjectBase extends Activity {
 
     //  IComputedFieldOwner  ---
     fieldIDs(): string[] {
-        return this.inFields().map(field => field.id);
+        return this.inFields().map(field => field.id).toJS();
     }
 
     field(fieldID: string): DDL2.IField | null {
-        for (const field of this.inFields()) {
-            if (field.id === fieldID) {
-                return field;
-            }
-        }
-        return null;
+        const found = this.inFields().find(field => field.id === fieldID);
+        return found || null;
     }
     //  ---
 
@@ -538,7 +535,7 @@ export class ProjectBase extends Activity {
         return this.validComputedFields().length;
     }
 
-    computeFields(): DDL2.IField[] {
+    computeFields(): List<DDL2.IField> {
         if (!this.exists()) return super.computeFields();
         const retVal: DDL2.IField[] = [];
         const retValMap: { [key: string]: boolean } = {};
@@ -562,9 +559,9 @@ export class ProjectBase extends Activity {
             };
             retVal.push(computedField);
             retValMap[computedField.id] = true;
-            return retVal;
+            return fromJS(retVal);
         }
-        return retVal.concat(super.computeFields().filter(field => !retValMap[field.id]));
+        return List<DDL2.IField>(retVal).concat(super.computeFields().filter(field => !retValMap[field.id]));
     }
 
     referencedFields(refs: ReferencedFields): void {
@@ -619,10 +616,10 @@ export class ProjectBase extends Activity {
         };
     }
 
-    computeData(): ReadonlyArray<object> {
+    computeData(): List<Map<any, any>> {
         const data = super.computeData();
-        if (data.length === 0 || !this.exists()) return data;
-        return data.map(this.projection());
+        if (data.size === 0 || !this.exists()) return data;
+        return fromJS(data.toJS().map(this.projection()));
     }
 }
 
@@ -669,7 +666,7 @@ export class Mappings extends ProjectBase {
         if (this.hasComputedFields()) {
             return super.referencedFields(refs);
         }
-        this.resolveInFields(refs, this.inFields().filter(f => f.id !== "__lparam").map(f => f.id));
+        this.resolveInFields(refs, this.inFields().filter(f => f.id !== "__lparam").map(f => f.id).toJS());
     }
 }
 Mappings.prototype._class += " Mappings";

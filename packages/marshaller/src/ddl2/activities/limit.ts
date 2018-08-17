@@ -1,6 +1,7 @@
 import { publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
+import { List, Map } from "immutable";
 import { Activity } from "./activity";
 
 export class Limit extends Activity {
@@ -36,10 +37,10 @@ export class Limit extends Activity {
         return this.rows_exists() && this.rows() > 0;
     }
 
-    computeData(): ReadonlyArray<object> {
+    computeData(): List<Map<any, any>> {
         const data = super.computeData();
-        if (data.length === 0 || !this.exists()) return data;
-        return data.slice(0, Math.min(this.rows(), data.length));
+        if (data.size === 0 || !this.exists()) return data;
+        return data.slice(0, Math.min(this.rows(), data.size));
     }
 }
 Limit.prototype._class += " Limit";

@@ -83,8 +83,8 @@ export class Dashy extends SplitPanel {
         .allowDragging(false)
         .applyScaleOnLayout(true)
         .on("vertex_click", (row: any, col: string, sel: boolean, ext: any) => {
-            const obj = row.__lparam[0];
-            this.selectionChanged(obj.viz, obj.activity);
+            const obj = row.__lparam[0] || {};
+            this.selectionChanged(obj.viz, obj.activity || obj.datasource);
         })
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {
         })
@@ -123,6 +123,10 @@ export class Dashy extends SplitPanel {
 
     constructor() {
         super("horizontal");
+    }
+
+    elementContainer(): ElementContainer {
+        return this._elementContainer;
     }
 
     clear() {
@@ -183,11 +187,30 @@ export class Dashy extends SplitPanel {
     private _currElement: Element | undefined;
     private _currActivity: Activity | undefined;
     selectionChanged(elem?: Element, activity?: Activity) {
-        if ((activity && this._currActivity !== activity) ||
-            (elem && (this._currElement !== elem || this._currActivity !== activity))) {
-            this._currElement = elem;
-            this._currActivity = activity;
-            this._tabRHS.childActivation(this._tabRHS.active());
+        if (elem && activity) {
+            if (this._currElement !== elem || this._currActivity !== activity) {
+                this._currElement = elem;
+                this._currActivity = activity;
+                this._tabRHS.childActivation(this._tabRHS.active());
+            }
+        } else if (elem) {
+            if (this._currElement !== elem) {
+                this._currElement = elem;
+                this._currActivity = activity;
+                this._tabRHS.childActivation(this._tabRHS.active());
+            }
+        } else if (activity) {
+            if (this._currActivity !== activity) {
+                this._currElement = elem;
+                this._currActivity = activity;
+                this._tabRHS.childActivation(this._tabRHS.active());
+            }
+        } else {
+            if (this._currElement !== elem || this._currActivity !== activity) {
+                this._currElement = elem;
+                this._currActivity = activity;
+                this._tabRHS.childActivation(this._tabRHS.active());
+            }
         }
     }
 
@@ -429,16 +452,16 @@ export class Dashy extends SplitPanel {
             .on("childActivation", (w: Widget) => {
                 switch (w) {
                     case this._splitView:
-                        this.loadDataProps(this._currActivity || this._currElement.hipiePipeline());
-                        this.loadPreview(this._currActivity || this._currElement.hipiePipeline().last());
+                        this.loadDataProps(this._currActivity || (this._currElement && this._currElement.hipiePipeline()));
+                        this.loadPreview(this._currActivity || (this._currElement && this._currElement.hipiePipeline().last()));
                         break;
                     case this._widgetProperties:
-                        this.loadWidgetProps(this._currElement.visualization());
+                        this.loadWidgetProps(this._currElement && this._currElement.visualization());
                         break;
                     case this._paletteProperties:
                         break;
                     case this._stateProperties:
-                        this.loadStateProps(this._currElement.state());
+                        this.loadStateProps(this._currElement && this._currElement.state());
                         break;
                     case this._clone:
                         this.loadClone();

@@ -2,6 +2,7 @@ import { PropertyExt, publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
 import { ascending as d3Ascending, descending as d3Descending } from "d3-array";
+import { List, Map } from "immutable";
 import { Activity, IActivityError, ReferencedFields } from "./activity";
 
 export class SortColumn extends PropertyExt {
@@ -133,10 +134,10 @@ export class Sort extends Activity {
     }
 
     fieldIDs(): string[] {
-        return this.inFields().map(field => field.id);
+        return this.inFields().map(field => field.id).toJS();
     }
 
-    computeData(): ReadonlyArray<object> {
+    computeData(): List<Map<any, any>> {
         const data = super.computeData();
         const sortByArr: Array<{ compare: (l, r) => number, id: string }> = [];
         for (const sortBy of this.validSortBy()) {
@@ -147,7 +148,7 @@ export class Sort extends Activity {
         }
 
         if (sortByArr.length) {
-            return [...data].sort((l: any, r: any) => {
+            return data.sort((l: any, r: any) => {
                 for (const item of sortByArr) {
                     const retVal2 = item.compare(l[item.id], r[item.id]);
                     if (retVal2 !== 0) {

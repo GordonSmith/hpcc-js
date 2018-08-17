@@ -137,15 +137,15 @@ class DDLDatasourceAdapter {
         const dsDetails = ds instanceof DSPicker ? ds.selection() : ds;
         if (dsDetails instanceof RoxieRequest) {
             const inFields = dsDetails.localFields().filter(field => refs.inputs[dsDetails.id()] && refs.inputs[dsDetails.id()].indexOf(field.id) >= 0);
-            (ddlDatasource as DDL2.IRoxieService).inputs = mergeFieldArray((ddlDatasource as DDL2.IRoxieService).inputs, inFields);
+            (ddlDatasource as DDL2.IRoxieService).inputs = mergeFieldArray((ddlDatasource as DDL2.IRoxieService).inputs, inFields.toJS());
         }
         const outFields = dsDetails.localFields().filter(field => refs.outputs[dsDetails.id()] && refs.outputs[dsDetails.id()].indexOf(field.id) >= 0);
         if (dsDetails instanceof RoxieRequest || dsDetails instanceof WUResult) {
             const result: DDL2.IOutput = (ddlDatasource as DDL2.IRoxieService).outputs[dsDetails.resultName()] || { fields: [] };
-            result.fields = mergeFieldArray(result.fields, outFields);
+            result.fields = mergeFieldArray(result.fields, outFields.toJS());
             (ddlDatasource as DDL2.IRoxieService).outputs[dsDetails.resultName()] = result;
         } else {
-            (ddlDatasource as DDL2.IDatasource).fields = mergeFieldArray((ddlDatasource as DDL2.IDatasource).fields, outFields);
+            (ddlDatasource as DDL2.IDatasource).fields = mergeFieldArray((ddlDatasource as DDL2.IDatasource).fields, outFields.toJS());
         }
     }
 }
