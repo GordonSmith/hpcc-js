@@ -2,9 +2,9 @@ import { publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { csvParse as d3CsvParse, tsvParse as d3TsvParse } from "d3-dsv";
 import { fromJS, List, Map } from "immutable";
-import { Datasource } from "./datasource";
+import { Activity } from "./activity";
 
-export class Databomb extends Datasource {
+export class Databomb extends Activity {
 
     private _label: string = "Databomb";
     private _jasonData: List<Map<any, any>> = List();
@@ -35,7 +35,7 @@ export class Databomb extends Datasource {
 
     hash(more: object): string {
         return super.hash({
-            payload: this._jasonData,
+            payload: this._jasonData.hashCode(),
             ...more
         });
     }
@@ -48,27 +48,27 @@ export class Databomb extends Datasource {
         return this._label;
     }
 
-    computeFields(): List<DDL2.IField> {
-        if (this._jasonData.isEmpty()) {
-            return List();
-        }
-        const row0 = this._jasonData.first().toJS();
-        const retVal: DDL2.IField[] = [];
-        for (const key in row0) {
-            retVal.push({
-                id: key,
-                type: typeof row0[key] as DDL2.IFieldType
-            });
-        }
-        return fromJS(retVal);
+    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+        return (inFields: List<DDL2.IField>) => {
+            if (this._jasonData.isEmpty()) return List();
+            const row0 = this._jasonData.first().toJS();
+            const retVal: DDL2.IField[] = [];
+            for (const key in row0) {
+                retVal.push({
+                    id: key,
+                    type: typeof row0[key] as DDL2.IFieldType
+                });
+            }
+            return fromJS(retVal);
+        };
     }
 
     exec(): Promise<void> {
         return Promise.resolve();
     }
 
-    computeData(): List<Map<any, any>> {
-        return this._jasonData;
+    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+        return (inData: List<Map<any, any>>) => this._jasonData;
     }
 
     //  ===
@@ -106,7 +106,7 @@ Databomb.prototype.payload = function (this: Databomb, _?) {
     return retVal;
 };
 
-export class Form extends Datasource {
+export class Form extends Activity {
     @publish({}, "object", "Form object")
     payload: publish<this, object>;
 
@@ -129,26 +129,30 @@ export class Form extends Datasource {
         return "Form";
     }
 
-    computeFields(): List<DDL2.IField> {
-        const retVal: DDL2.IField[] = [];
-        const row0: any = this.payload();
-        for (const key in row0) {
-            retVal.push(
-                {
-                    id: key,
-                    type: typeof row0[key] as DDL2.IFieldType,
-                    default: row0[key]
-                });
-        }
-        return fromJS(retVal);
+    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+        return (inFields: List<DDL2.IField>) => {
+            const retVal: DDL2.IField[] = [];
+            const row0: any = this.payload();
+            for (const key in row0) {
+                retVal.push(
+                    {
+                        id: key,
+                        type: typeof row0[key] as DDL2.IFieldType,
+                        default: row0[key]
+                    });
+            }
+            return fromJS(retVal);
+        };
     }
 
     exec(): Promise<void> {
         return Promise.resolve();
     }
 
-    computeData(): List<Map<any, any>> {
-        return fromJS(this.payload());
+    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+        return (inData: List<Map<any, any>>) => {
+            return fromJS(this.payload());
+        };
     }
 
     //  ===

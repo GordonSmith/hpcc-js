@@ -137,29 +137,30 @@ export class Sort extends Activity {
         return this.inFields().map(field => field.id).toJS();
     }
 
-    computeData(): List<Map<any, any>> {
-        const data = super.computeData();
-        const sortByArr: Array<{ compare: (l, r) => number, id: string }> = [];
-        for (const sortBy of this.validSortBy()) {
-            sortByArr.push({
-                compare: sortBy.descending() ? d3Descending : d3Ascending,
-                id: sortBy.fieldID()
-            });
-        }
+    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+        return (inData: List<Map<any, any>>) => {
+            const sortByArr: Array<{ compare: (l, r) => number, id: string }> = [];
+            for (const sortBy of this.validSortBy()) {
+                sortByArr.push({
+                    compare: sortBy.descending() ? d3Descending : d3Ascending,
+                    id: sortBy.fieldID()
+                });
+            }
 
-        if (sortByArr.length) {
-            return data.sort((l: any, r: any) => {
-                for (const item of sortByArr) {
-                    const retVal2 = item.compare(l[item.id], r[item.id]);
-                    if (retVal2 !== 0) {
-                        return retVal2;
+            if (sortByArr.length) {
+                return inData.sort((l: any, r: any) => {
+                    for (const item of sortByArr) {
+                        const retVal2 = item.compare(l[item.id], r[item.id]);
+                        if (retVal2 !== 0) {
+                            return retVal2;
+                        }
                     }
-                }
-                return 0;
-            });
+                    return 0;
+                });
 
-        }
-        return data;
+            }
+            return inData;
+        };
     }
 }
 Sort.prototype._class += " Sort";

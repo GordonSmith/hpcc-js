@@ -314,44 +314,46 @@ export class GroupBy extends Activity {
         return this.validComputedFields().length > 0;
     }
 
-    computeFields(): List<DDL2.IField> {
-        if (!this.exists()) return super.computeFields();
-        const retVal: DDL2.IField[] = [];
-        const groups: GroupByColumn[] = this.validGroupBy();
-        for (const groupBy of groups) {
-            const groupByField = this.field(groupBy.label());
-            const field: DDL2.IField = {
-                id: groupBy.label(),
-                type: groupByField ? groupByField.type : "string"
-            };
-            retVal.push(field);
-        }
-        for (const cf of this.computedFields()) {
-            if (cf.fieldID()) {
-                const computedField: DDL2.IField = {
-                    id: cf.fieldID(),
-                    type: "number"
+    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+        if (!this.exists()) return super.fieldsFunc();
+        return (inFields: List<DDL2.IField>) => {
+            const retVal: DDL2.IField[] = [];
+            const groups: GroupByColumn[] = this.validGroupBy();
+            for (const groupBy of groups) {
+                const groupByField = this.field(groupBy.label());
+                const field: DDL2.IField = {
+                    id: groupBy.label(),
+                    type: groupByField ? groupByField.type : "string"
                 };
-                retVal.push(computedField);
+                retVal.push(field);
             }
-        }
-        if (this.details()) {
-            let detailsTarget: DDL2.IField[] = retVal;
-            if (this.exists()) {
-                const rows: DDL2.IField = {
-                    id: "values",
-                    type: "dataset",
-                    children: []
-                };
-                retVal.push(rows);
-                detailsTarget = rows.children;
+            for (const cf of this.computedFields()) {
+                if (cf.fieldID()) {
+                    const computedField: DDL2.IField = {
+                        id: cf.fieldID(),
+                        type: "number"
+                    };
+                    retVal.push(computedField);
+                }
             }
-            const columns = groups.map(groupBy => groupBy.label());
-            detailsTarget.push(...this.inFields().filter(field => {
-                return this.fullDetails() || columns.indexOf(field.id) < 0;
-            }).toJS());
-        }
-        return fromJS(retVal);
+            if (this.details()) {
+                let detailsTarget: DDL2.IField[] = retVal;
+                if (this.exists()) {
+                    const rows: DDL2.IField = {
+                        id: "values",
+                        type: "dataset",
+                        children: []
+                    };
+                    retVal.push(rows);
+                    detailsTarget = rows.children;
+                }
+                const columns = groups.map(groupBy => groupBy.label());
+                detailsTarget.push(...this.inFields().filter(field => {
+                    return this.fullDetails() || columns.indexOf(field.id) < 0;
+                }).toJS());
+            }
+            return fromJS(retVal);
+        };
     }
 
     referencedFields(refs: ReferencedFields): void {
@@ -368,43 +370,45 @@ export class GroupBy extends Activity {
         super.resolveInFields(refs, fieldIDs);
     }
 
-    computeData(): List<Map<any, any>> {
-        const data = super.computeData();
-        if (data.size === 0 || !this.exists()) return data;
-        const columnLabels: string[] = this.validGroupBy().map(gb => gb.label());
-        const computedFields = this.validComputedFields().map(cf => {
-            return { label: cf.fieldID(), aggrFunc: cf.aggrFunc() };
-        });
-        const retVal = d3Nest()
-            .key((row: { [key: string]: any }) => {
-                let key = "";
-                for (const groupByLabel of columnLabels) {
-                    key += ":" + row[groupByLabel];
-                }
-                return key;
-            })
-            .entries(data.toJS() as object[]).map(_row => {
-                const row: {
-                    [key: string]: any
-                } = _row;
-                delete row.key;
-                for (const groupByLabel of columnLabels) {
-                    row[groupByLabel] = row.values[0][groupByLabel];
-                }
-                for (const cf of computedFields) {
-                    row[cf.label] = cf.aggrFunc(row.values);
-                }
-                return row;
-            })
-            ;
-        const outFields = this.outFields();
-        return fromJS(retVal.map(row => {
-            const retVal = {};
-            outFields.forEach(field => {
-                retVal[field.id] = row[field.id];
+    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+        if (!this.exists()) return super.dataFunc();
+        return (inData: List<Map<any, any>>) => {
+            if (inData.size === 0) return inData;
+            const columnLabels: string[] = this.validGroupBy().map(gb => gb.label());
+            const computedFields = this.validComputedFields().map(cf => {
+                return { label: cf.fieldID(), aggrFunc: cf.aggrFunc() };
             });
-            return retVal;
-        }));
+            const retVal = d3Nest()
+                .key((row: { [key: string]: any }) => {
+                    let key = "";
+                    for (const groupByLabel of columnLabels) {
+                        key += ":" + row[groupByLabel];
+                    }
+                    return key;
+                })
+                .entries(inData.toJS() as object[]).map(_row => {
+                    const row: {
+                        [key: string]: any
+                    } = _row;
+                    delete row.key;
+                    for (const groupByLabel of columnLabels) {
+                        row[groupByLabel] = row.values[0][groupByLabel];
+                    }
+                    for (const cf of computedFields) {
+                        row[cf.label] = cf.aggrFunc(row.values);
+                    }
+                    return row;
+                })
+                ;
+            const outFields = this.outFields();
+            return fromJS(retVal.map(row => {
+                const retVal = {};
+                outFields.forEach(field => {
+                    retVal[field.id] = row[field.id];
+                });
+                return retVal;
+            }));
+        };
     }
 }
 GroupBy.prototype._class += " GroupBy";

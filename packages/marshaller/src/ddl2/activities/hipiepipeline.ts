@@ -1,9 +1,9 @@
 import { publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { List } from "immutable";
-import { DSPicker } from "../datasources/dspicker";
 import { ElementContainer } from "../model/element";
 import { Activity, ActivityPipeline } from "./activity";
+import { DSPicker } from "./dspicker";
 import { Filters } from "./filter";
 import { GroupBy } from "./groupby";
 import { Limit } from "./limit";

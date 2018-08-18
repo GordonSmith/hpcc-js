@@ -37,10 +37,11 @@ export class Limit extends Activity {
         return this.rows_exists() && this.rows() > 0;
     }
 
-    computeData(): List<Map<any, any>> {
-        const data = super.computeData();
-        if (data.size === 0 || !this.exists()) return data;
-        return data.slice(0, Math.min(this.rows(), data.size));
+    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+        return (inData: List<Map<any, any>>) => {
+            if (inData.size === 0 || !this.exists()) return inData;
+            return inData.slice(0, Math.min(this.rows(), inData.size));
+        };
     }
 }
 Limit.prototype._class += " Limit";

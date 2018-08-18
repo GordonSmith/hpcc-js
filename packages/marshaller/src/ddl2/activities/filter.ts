@@ -87,7 +87,7 @@ export class ColumnMapping extends PropertyExt {
         return this._owner.sourceOutFields().toJS().map(field => field.id);
     }
 
-    createFilter(filterSelection: any[]): (localRow: any) => boolean {
+    createFilter(filterSelection: any[]): (localRow: Map<any, any>) => boolean {
         const lf = this.localField();
         const rf = this.remoteField();
         let fs = filterSelection.length ? filterSelection[0][rf] : undefined;
@@ -100,21 +100,33 @@ export class ColumnMapping extends PropertyExt {
         }
         switch (this.condition()) {
             case "==":
-                return (localRow) => isString && typeof localRow[lf] === "string" ? localRow[lf].trim() === fs : localRow[lf] === fs;
+                return (localRow) => {
+                    const val = localRow.get(lf);
+                    return isString && typeof val === "string" ? val.trim() === fs : val === fs;
+                };
             case "!=":
-                return (localRow) => isString && typeof localRow[lf] === "string" ? localRow[lf].trim() !== fs : localRow[lf] !== fs;
+                return (localRow) => {
+                    const val = localRow.get(lf);
+                    return isString && val.get(lf) === "string" ? val.trim() !== fs : val !== fs;
+                };
             case "<":
-                return (localRow) => localRow[lf] < fs;
+                return (localRow) => localRow.get(lf) < fs;
             case "<=":
-                return (localRow) => localRow[lf] <= fs;
+                return (localRow) => localRow.get(lf) <= fs;
             case ">":
-                return (localRow) => localRow[lf] > fs;
+                return (localRow) => localRow.get(lf) > fs;
             case ">=":
-                return (localRow) => localRow[lf] >= fs;
+                return (localRow) => localRow.get(lf) >= fs;
             case "range":
-                return (localRow) => localRow[lf] >= fs[0] && localRow[lf] <= fs[1];
+                return (localRow) => {
+                    const val = localRow.get(lf);
+                    return val >= fs[0] && val <= fs[1];
+                };
             case "in":
-                return (localRow) => filterSelection.some(fsRow => typeof localRow[lf] === "string" && typeof fsRow[rf] === "string" ? localRow[lf].trim() === fsRow[rf].trim() : localRow[lf] === fsRow[rf]);
+                return (localRow) => {
+                    const val = localRow.get(lf);
+                    return filterSelection.some(fsRow => typeof val === "string" && typeof fsRow[rf] === "string" ? val.trim() === fsRow[rf].trim() : val === fsRow[rf]);
+                };
             default:
                 throw new Error(`Unknown filter condition:  ${this.condition()}`);
         }
@@ -125,7 +137,7 @@ ColumnMapping.prototype._class += " ColumnMapping";
 export class Filter extends PropertyExt {
     private _owner: Filters;
 
-    @publish(null, "set", "Datasource", function (this: Filter) { return this.visualizationIDs(); }, { optional: true })
+    @publish(null, "set", "Activity", function (this: Filter) { return this.visualizationIDs(); }, { optional: true })
     source: publish<this, string>;
     @publish([], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping })
     mappings: publish<this, ColumnMapping[]>;
@@ -226,10 +238,10 @@ export class Filter extends PropertyExt {
         return this.sourceViz().selection();
     }
 
-    createFilter(): (localRow: any) => boolean {
+    createFilter(): (localRow: Map<any, any>) => boolean {
         const selection = this.sourceSelection();
         const mappingFilters = this.validMappings().map(mapping => mapping.createFilter(selection));
-        return (row: object): boolean => mappingFilters.every(mappingFilter => mappingFilter(row));
+        return (row: Map<any, any>): boolean => mappingFilters.every(mappingFilter => mappingFilter(row));
     }
 }
 Filter.prototype._class += " Filter";
@@ -314,13 +326,15 @@ export class Filters extends Activity {
         return super.exec();
     }
 
-    computeData(): List<Map<any, any>> {
-        const data = super.computeData();
-        if (data.size === 0 || !this.exists()) return data;
+    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+        if (!this.exists()) return super.dataFunc();
         const filters = this.validFilters().map(filter => filter.createFilter());
-        return data.filter(row => {
-            return filters.every(filter => filter(row));
-        });
+        return (inData: List<Map<any, any>>) => {
+            if (inData.size === 0) return inData;
+            return inData.filter(row => {
+                return filters.every(filter => filter(row));
+            });
+        };
     }
 
     //  --- --- ---

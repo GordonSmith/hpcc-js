@@ -1,13 +1,12 @@
 import { Widget } from "@hpcc-js/common";
 import { Edge, IGraphData, Lineage, Subgraph, Vertex } from "@hpcc-js/graph";
 import { Activity } from "./activities/activity";
+import { Databomb } from "./activities/databomb";
+import { DSPicker } from "./activities/dspicker";
 import { HipiePipeline } from "./activities/hipiepipeline";
-import { Databomb } from "./datasources/databomb";
-import { Datasource } from "./datasources/datasource";
-import { DSPicker } from "./datasources/dspicker";
-import { LogicalFile } from "./datasources/logicalfile";
-import { RoxieRequest } from "./datasources/roxie";
-import { WUResult } from "./datasources/wuresult";
+import { LogicalFile } from "./activities/logicalfile";
+import { RoxieRequest } from "./activities/roxie";
+import { WUResult } from "./activities/wuresult";
 import { Element, ElementContainer } from "./model/element";
 
 export class GraphAdapter {
@@ -83,7 +82,7 @@ export class GraphAdapter {
         return retVal;
     }
 
-    createDatasource(dsDetails: Datasource): string {
+    createDatasource(dsDetails: Activity): string {
         if (dsDetails instanceof DSPicker) {
             dsDetails = dsDetails.selection();
         }

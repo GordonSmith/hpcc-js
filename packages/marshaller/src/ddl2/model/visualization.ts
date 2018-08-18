@@ -155,7 +155,11 @@ export class Visualization extends PropertyExt {
     _prevData: List<any> = List();
     refreshData(): this {
         const mappings = this.mappings();
-        const newFields = mappings.outFields();
+        const fieldsPipeline = [
+            this._hipiePipeline.fieldsFunc(),
+            mappings.fieldsFunc()
+        ];
+        const newFields = fieldsPipeline.reduce((accum, func) => func(accum), List());
         if (!this._prevFields.equals(newFields)) {
             this._prevFields = newFields;
             const fields = this.toDBFields(newFields.toJS());
@@ -163,7 +167,12 @@ export class Visualization extends PropertyExt {
         } else {
             console.log(`${this.id()} Immutable Fields!`);
         }
-        const data: List<Map<any, any>> = mappings.outData();
+
+        const dataPipeline = [
+            this._hipiePipeline.dataFunc(),
+            mappings.dataFunc()
+        ];
+        const data: List<Map<any, any>> = dataPipeline.reduce((accum, func) => func(accum), List());
         if (!this._prevData.equals(data)) {
             this._prevData = data;
             const fields = this.chartPanel().fields();

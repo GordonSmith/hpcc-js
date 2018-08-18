@@ -3,9 +3,8 @@ import { Query as CommsQuery } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { compare, debounce, hashSum } from "@hpcc-js/util";
 import { fromJS, List, Map } from "immutable";
-import { ReferencedFields } from "../activities/activity";
 import { Element, ElementContainer } from "../model/element";
-import { Datasource } from "./datasource";
+import { Activity, ReferencedFields } from "./activity";
 
 function parseUrl(_: string): { url: string, querySet: string, queryID: string } {
     // "http://10.241.100.157:8002/WsEcl/submit/query/roxie/carmigjx_govbisgsavi.Ins4621360_Service_00000006/json",
@@ -25,7 +24,7 @@ function parseUrl(_: string): { url: string, querySet: string, queryID: string }
 export class Param extends PropertyExt {
     private _elementContainer: ElementContainer;
 
-    @publish(null, "set", "Datasource", function (this: Param) { return this.visualizationIDs(); }, { optional: true })
+    @publish(null, "set", "Activity", function (this: Param) { return this.visualizationIDs(); }, { optional: true })
     source: publish<this, string>;
     source_exists: () => boolean;
     @publish(null, "set", "Source Field", function (this: Param) { return this.sourceFields().toJS(); }, { optional: true })
@@ -170,7 +169,7 @@ RoxieService.prototype._class += " RoxieService";
 
 const _roxiePool: { [key: string]: RoxieService } = {};
 
-export class RoxieRequest extends Datasource {
+export class RoxieRequest extends Activity {
     private _elementContainer: ElementContainer;
 
     roxieServiceID(): string {
@@ -305,8 +304,10 @@ export class RoxieRequest extends Datasource {
         return retVal;
     }
 
-    computeFields(): List<DDL2.IField> {
-        return fromJS(this._roxieService.responseFields(this.resultName()));
+    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+        return (inFields: List<DDL2.IField>) => {
+            return fromJS(this._roxieService.responseFields(this.resultName()));
+        };
     }
 
     formatRequest(): { [key: string]: any } {
@@ -336,8 +337,10 @@ export class RoxieRequest extends Datasource {
         });
     }
 
-    computeData(): List<Map<any, any>> {
-        return this._data;
+    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+        return (inData: List<Map<any, any>>) => {
+            return this._data;
+        };
     }
 }
 RoxieRequest.prototype._class += " RoxieRequest";

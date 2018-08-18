@@ -535,33 +535,35 @@ export class ProjectBase extends Activity {
         return this.validComputedFields().length;
     }
 
-    computeFields(): List<DDL2.IField> {
-        if (!this.exists()) return super.computeFields();
-        const retVal: DDL2.IField[] = [];
-        const retValMap: { [key: string]: boolean } = {};
-        for (const cf of this.validComputedFields()) {
-            if (cf instanceof MultiField) {
-                for (const cf2 of cf.validMultiFields()) {
-                    const computedField = cf2.computedField();
+    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+        if (!this.exists()) return super.fieldsFunc();
+        return (inFields: List<DDL2.IField>) => {
+            const retVal: DDL2.IField[] = [];
+            const retValMap: { [key: string]: boolean } = {};
+            for (const cf of this.validComputedFields()) {
+                if (cf instanceof MultiField) {
+                    for (const cf2 of cf.validMultiFields()) {
+                        const computedField = cf2.computedField();
+                        retVal.push(computedField);
+                        retValMap[computedField.id] = true;
+                    }
+                } else {
+                    const computedField = cf.computedField();
                     retVal.push(computedField);
                     retValMap[computedField.id] = true;
                 }
-            } else {
-                const computedField = cf.computedField();
+            }
+            if (this.trim() && this.hasComputedFields()) {
+                const computedField: DDL2.IField = {
+                    id: "__lparam",
+                    type: "dataset"
+                };
                 retVal.push(computedField);
                 retValMap[computedField.id] = true;
+                return fromJS(retVal);
             }
-        }
-        if (this.trim() && this.hasComputedFields()) {
-            const computedField: DDL2.IField = {
-                id: "__lparam",
-                type: "dataset"
-            };
-            retVal.push(computedField);
-            retValMap[computedField.id] = true;
-            return fromJS(retVal);
-        }
-        return List<DDL2.IField>(retVal).concat(super.computeFields().filter(field => !retValMap[field.id]));
+            return List<DDL2.IField>(retVal).concat(inFields.filter(field => !retValMap[field.id]));
+        };
     }
 
     referencedFields(refs: ReferencedFields): void {
@@ -616,10 +618,12 @@ export class ProjectBase extends Activity {
         };
     }
 
-    computeData(): List<Map<any, any>> {
-        const data = super.computeData();
-        if (data.size === 0 || !this.exists()) return data;
-        return fromJS(data.toJS().map(this.projection()));
+    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+        if (!this.exists()) return super.dataFunc();
+        return (inData: List<Map<any, any>>) => {
+            if (inData.size === 0) return inData;
+            return fromJS(inData.toJS().map(this.projection()));
+        };
     }
 }
 

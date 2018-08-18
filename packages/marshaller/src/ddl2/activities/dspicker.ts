@@ -1,9 +1,9 @@
 import { publish } from "@hpcc-js/common";
 import { ElementContainer } from "../model/element";
+import { Activity, ActivitySelection } from "./activity";
 import { Databomb } from "./databomb";
-import { Datasource, DatasourceSelection } from "./datasource";
 
-function formatID(ds: Datasource) {
+function formatID(ds: Activity) {
     return `${ds.id()} - ${ds.label()}`;
 }
 
@@ -12,11 +12,11 @@ function parseID(dsID: string) {
 }
 
 let dsPickerID = 0;
-export class DSPicker extends DatasourceSelection {
+export class DSPicker extends ActivitySelection {
     private _elementContainer: ElementContainer;
     private _nullDatasource = new Databomb("empty");
 
-    @publish("", "set", "Datasource", function (this: DSPicker) { return this.datasourceIDs(); }, { optional: false })
+    @publish("", "set", "Activity", function (this: DSPicker) { return this.datasourceIDs(); }, { optional: false })
     _datasourceID: string; // DDL2.IDatasourceType;
     datasourceID(_?: string): this | string {
         if (!arguments.length) return this._datasourceID;
@@ -27,9 +27,9 @@ export class DSPicker extends DatasourceSelection {
         return this;
     }
 
-    selection(): Datasource;
-    selection(_: Datasource): this;
-    selection(_?: Datasource): Datasource | this {
+    selection(): Activity;
+    selection(_: Activity): this;
+    selection(_?: Activity): Activity | this {
         const retVal = super.selection.apply(this, arguments);
         if (!arguments.length) return retVal || this._nullDatasource;
         if (this._datasourceID !== formatID(_)) {

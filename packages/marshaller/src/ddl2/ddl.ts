@@ -1,18 +1,17 @@
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { scopedLogger } from "@hpcc-js/util";
-import { ActivityPipeline, ReferencedFields } from "./activities/activity";
+import { Activity, ActivityPipeline, ReferencedFields } from "./activities/activity";
+import { Databomb, Form } from "./activities/databomb";
+import { DSPicker } from "./activities/dspicker";
 import { Filters } from "./activities/filter";
 import { GroupBy } from "./activities/groupby";
 import { Limit } from "./activities/limit";
+import { LogicalFile } from "./activities/logicalfile";
 import { Mappings, Project } from "./activities/project";
+import { HipieRequest, Param, RoxieRequest } from "./activities/roxie";
 import { Sort } from "./activities/sort";
+import { WUResult } from "./activities/wuresult";
 import { Dashboard } from "./dashboard";
-import { Databomb, Form } from "./datasources/databomb";
-import { Datasource } from "./datasources/datasource";
-import { DSPicker } from "./datasources/dspicker";
-import { LogicalFile } from "./datasources/logicalfile";
-import { HipieRequest, Param, RoxieRequest } from "./datasources/roxie";
-import { WUResult } from "./datasources/wuresult";
 import { Element, ElementContainer } from "./model/element";
 import { Visualization } from "./model/visualization";
 
@@ -30,7 +29,7 @@ class DDLDatasourceAdapter {
     constructor() {
     }
 
-    private hash(ds: Datasource): string {
+    private hash(ds: Activity): string {
         const dsDetails = ds instanceof DSPicker ? ds.selection() : ds;
         if (dsDetails instanceof RoxieRequest || dsDetails instanceof WUResult) {
             return dsDetails.sourceHash();
@@ -38,7 +37,7 @@ class DDLDatasourceAdapter {
         return dsDetails.hash();
     }
 
-    private writeDatasource(ds: Datasource): DDL2.DatasourceType {
+    private writeDatasource(ds: Activity): DDL2.DatasourceType {
         const dsDetails = ds instanceof DSPicker ? ds.selection() : ds;
         if (dsDetails instanceof WUResult) {
             const ddl: DDL2.IWUResult = {
@@ -109,7 +108,7 @@ class DDLDatasourceAdapter {
         this._dsDedupID[ds.id] = ds;
     }
 
-    get(ds: Datasource): DDL2.DatasourceType {
+    get(ds: Activity): DDL2.DatasourceType {
         const dsID = this.hash(ds);
         let retVal: DDL2.DatasourceType = this._dsDedup[dsID];
         if (!retVal) {
@@ -132,7 +131,7 @@ class DDLDatasourceAdapter {
         return retVal;
     }
 
-    updateDSFields(ds: Datasource, refs: ReferencedFields) {
+    updateDSFields(ds: Activity, refs: ReferencedFields) {
         const ddlDatasource = this.getByID(ds.id());
         const dsDetails = ds instanceof DSPicker ? ds.selection() : ds;
         if (dsDetails instanceof RoxieRequest) {
@@ -160,7 +159,7 @@ export class DDLAdapter {
         this._elementContainer = this._dashboard.elementContainer();
     }
 
-    readDatasource(_ddlDS: DDL2.DatasourceType, ds: Datasource): this {
+    readDatasource(_ddlDS: DDL2.DatasourceType, ds: Activity): this {
         if (ds instanceof DSPicker) {
             ds
                 .id(_ddlDS.id)
@@ -276,7 +275,7 @@ export class DDLAdapter {
         return Limit.fromDDL(ddlLimit);
     }
 
-    writeDatasourceRef(ds: Datasource): DDL2.IWUResultRef | DDL2.IRoxieServiceRef | DDL2.IDatasourceRef {
+    writeDatasourceRef(ds: Activity): DDL2.IWUResultRef | DDL2.IRoxieServiceRef | DDL2.IDatasourceRef {
         const dsDetails = ds instanceof DSPicker ? ds.selection() : ds;
         if (dsDetails instanceof RoxieRequest) {
             const retVal: DDL2.IRoxieServiceRef = {
@@ -303,7 +302,7 @@ export class DDLAdapter {
         return retVal;
     }
 
-    readDatasourceRef(ddlDSRef: DDL2.IRoxieServiceRef | DDL2.IDatasourceRef, ds: Datasource, elementContainer: ElementContainer): this {
+    readDatasourceRef(ddlDSRef: DDL2.IRoxieServiceRef | DDL2.IDatasourceRef, ds: Activity, elementContainer: ElementContainer): this {
         const ddlDS = this._dsDedup.getByID(ddlDSRef.id);
         this.readDatasource(ddlDS, ds);
         const dsDetails = ds instanceof DSPicker ? ds.selection() : ds;

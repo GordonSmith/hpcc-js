@@ -3,10 +3,9 @@ import { Result, XSDXMLNode } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { debounce, hashSum } from "@hpcc-js/util";
 import { fromJS, List, Map } from "immutable";
-import { schemaRow2IField } from "../activities/activity";
-import { Datasource } from "./datasource";
+import { Activity, schemaRow2IField } from "./activity";
 
-export abstract class ESPResult extends Datasource {
+export abstract class ESPResult extends Activity {
     protected _result: Result;
     protected _schema: XSDXMLNode[] = [];
     protected _meta: DDL2.IField[] = [];
@@ -79,8 +78,10 @@ export abstract class ESPResult extends Datasource {
         return this;
     }
 
-    computeFields(): List<DDL2.IField> {
-        return fromJS(this.responseFields());
+    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+        return (inFields: List<DDL2.IField>) => {
+            return fromJS(this.responseFields());
+        };
     }
 
     exec(): Promise<void> {
@@ -103,8 +104,10 @@ export abstract class ESPResult extends Datasource {
         }
     });
 
-    computeData(): List<Map<any, any>> {
-        return this._data;
+    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+        return (inData: List<Map<any, any>>) => {
+            return this._data;
+        };
     }
 
     total(): number {

@@ -7,8 +7,10 @@ export class NullView extends HipiePipeline {
         return super.hash();
     }
 
-    computeFields(): List<DDL2.IField> {
-        return List();
+    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+        return (inFields: List<DDL2.IField>) => {
+            return List();
+        };
     }
 
     _fetch(from: number, count: number): Promise<any[]> {

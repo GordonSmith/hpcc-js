@@ -4,10 +4,9 @@ import { ChartPanel } from "@hpcc-js/layout";
 import { find, isArray } from "@hpcc-js/util";
 import { List, Map } from "immutable";
 import { Activity } from "../activities/activity";
+import { Databomb } from "../activities/databomb";
 import { HipiePipeline } from "../activities/hipiepipeline";
 import { Mappings } from "../activities/project";
-import { Databomb } from "../datasources/databomb";
-import { Datasource } from "../datasources/datasource";
 import { Visualization } from "./visualization";
 
 export class State extends PropertyExt {
@@ -191,7 +190,7 @@ export class ElementContainer extends PropertyExt {
     private _nullDatasource = new Databomb("empty");
     private _nullElement;
 
-    private _datasources: Datasource[];
+    private _datasources: Activity[];
     private _elements: Element[];
 
     constructor() {
@@ -205,15 +204,15 @@ export class ElementContainer extends PropertyExt {
         this._elements = [];
     }
 
-    datasources(): Datasource[] {
+    datasources(): Activity[] {
         return this._datasources;
     }
 
-    datasource(id): Datasource {
+    datasource(id): Activity {
         return this._datasources.filter(ds => ds.id() === id)[0];
     }
 
-    appendDatasource(ds: Datasource): this {
+    appendDatasource(ds: Activity): this {
         this._datasources.push(ds);
         return this;
     }
