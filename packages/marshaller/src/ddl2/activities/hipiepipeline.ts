@@ -1,11 +1,10 @@
 import { publish } from "@hpcc-js/common";
-import { DDL2 } from "@hpcc-js/ddl-shim";
-import { List } from "immutable";
 import { ElementContainer } from "../model/element";
 import { Activity, ActivityPipeline } from "./activity";
 import { DSPicker } from "./dspicker";
 import { Filters } from "./filter";
 import { GroupBy } from "./groupby";
+import { ImmFields } from "./immutable";
 import { Limit } from "./limit";
 import { Project } from "./project";
 import { Sort } from "./sort";
@@ -109,7 +108,7 @@ export class HipiePipeline extends ActivityPipeline {
         ]);
     }
 
-    selectionFields(): List<DDL2.IField> {
+    selectionFields(): ImmFields {
         return this.last().outFields();
     }
 }

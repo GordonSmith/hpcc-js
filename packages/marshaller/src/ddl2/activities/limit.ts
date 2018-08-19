@@ -1,8 +1,8 @@
 import { publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
-import { List, Map } from "immutable";
 import { Activity } from "./activity";
+import { ImmData, ImmDB, ImmFields } from "./immutable";
 
 export class Limit extends Activity {
 
@@ -37,10 +37,13 @@ export class Limit extends Activity {
         return this.rows_exists() && this.rows() > 0;
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
-        return (inData: List<Map<any, any>>) => {
-            if (inData.size === 0 || !this.exists()) return inData;
-            return inData.slice(0, Math.min(this.rows(), inData.size));
+    dataFunc(): (inDB: ImmDB) => ImmDB {
+        return (inDB: ImmDB) => {
+            if (inDB.data.size === 0 || !this.exists()) return inDB;
+            return {
+                fields: inDB.fields,
+                data: inDB.data = inDB.data.slice(0, Math.min(this.rows(), inDB.data.size))
+            };
         };
     }
 }

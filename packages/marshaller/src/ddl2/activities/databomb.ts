@@ -1,13 +1,13 @@
 import { publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { csvParse as d3CsvParse, tsvParse as d3TsvParse } from "d3-dsv";
-import { fromJS, List, Map } from "immutable";
 import { Activity } from "./activity";
+import { immData, ImmData, ImmDB, immDB, ImmFields, immFields } from "./immutable";
 
 export class Databomb extends Activity {
 
     private _label: string = "Databomb";
-    private _jasonData: List<Map<any, any>> = List();
+    private _jasonData: ImmData = immData();
 
     constructor(label: string) {
         super();
@@ -18,18 +18,18 @@ export class Databomb extends Activity {
         try {
             switch (this.format()) {
                 case "csv":
-                    this._jasonData = fromJS(d3CsvParse(this.payload()));
+                    this._jasonData = immData(d3CsvParse(this.payload()));
                     break;
                 case "tsv":
-                    this._jasonData = fromJS(d3TsvParse(this.payload()));
+                    this._jasonData = immData(d3TsvParse(this.payload()));
                     break;
                 case "json":
                 default:
-                    this._jasonData = fromJS(JSON.parse(this.payload()));
+                    this._jasonData = immData(JSON.parse(this.payload()));
                     break;
             }
         } catch (e) {
-            this._jasonData = List();
+            this._jasonData = immData();
         }
     }
 
@@ -48,9 +48,9 @@ export class Databomb extends Activity {
         return this._label;
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
-        return (inFields: List<DDL2.IField>) => {
-            if (this._jasonData.isEmpty()) return List();
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
+        return (inFields: ImmFields) => {
+            if (this._jasonData.isEmpty()) return immFields();
             const row0 = this._jasonData.first().toJS();
             const retVal: DDL2.IField[] = [];
             for (const key in row0) {
@@ -59,7 +59,7 @@ export class Databomb extends Activity {
                     type: typeof row0[key] as DDL2.IFieldType
                 });
             }
-            return fromJS(retVal);
+            return immFields(retVal);
         };
     }
 
@@ -67,8 +67,8 @@ export class Databomb extends Activity {
         return Promise.resolve();
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
-        return (inData: List<Map<any, any>>) => this._jasonData;
+    dataFunc(): (inDB: ImmDB) => ImmDB {
+        return (inDB: ImmDB) => immDB(inDB.fields, this._jasonData);
     }
 
     //  ===
@@ -129,8 +129,8 @@ export class Form extends Activity {
         return "Form";
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
-        return (inFields: List<DDL2.IField>) => {
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
+        return (inFields: ImmFields) => {
             const retVal: DDL2.IField[] = [];
             const row0: any = this.payload();
             for (const key in row0) {
@@ -141,7 +141,7 @@ export class Form extends Activity {
                         default: row0[key]
                     });
             }
-            return fromJS(retVal);
+            return immFields(retVal);
         };
     }
 
@@ -149,9 +149,9 @@ export class Form extends Activity {
         return Promise.resolve();
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
-        return (inData: List<Map<any, any>>) => {
-            return fromJS(this.payload());
+    dataFunc(): (inDB: ImmDB) => ImmDB {
+        return (inDB: ImmDB) => {
+            return immDB(inDB.fields, [this.payload()]);
         };
     }
 

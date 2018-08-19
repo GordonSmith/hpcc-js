@@ -5,8 +5,8 @@ import { Table } from "@hpcc-js/dgrid";
 import { FieldForm } from "@hpcc-js/form";
 import { ChartPanel } from "@hpcc-js/layout";
 import { ChoroplethCounties, ChoroplethStates } from "@hpcc-js/map";
-import { List, Map } from "immutable";
 import { HipiePipeline } from "../activities/hipiepipeline";
+import { immData, ImmData, immDB, ImmDB, immFields, ImmFields } from "../activities/immutable";
 import { ComputedField, Mappings, MultiField } from "../activities/project";
 
 export type VizType = "Table" | "FieldForm" | "Area" | "Bubble" | "Column" | "Contour" | "HexBin" | "Line" | "Pie" | "WordCloud" | "Scatter" | "Step" | "ChoroplethCounties" | "ChoroplethStates" | "EntityRectList";
@@ -151,15 +151,15 @@ export class Visualization extends PropertyExt {
         return this;
     }
 
-    _prevFields: List<DDL2.IField> = List();
-    _prevData: List<any> = List();
+    _prevFields: ImmFields = immFields();
+    _prevData: ImmData = immData();
     refreshData(): this {
         const mappings = this.mappings();
         const fieldsPipeline = [
             this._hipiePipeline.fieldsFunc(),
             mappings.fieldsFunc()
         ];
-        const newFields = fieldsPipeline.reduce((accum, func) => func(accum), List());
+        const newFields = fieldsPipeline.reduce((accum, func) => func(accum), immFields());
         if (!this._prevFields.equals(newFields)) {
             this._prevFields = newFields;
             const fields = this.toDBFields(newFields.toJS());
@@ -172,11 +172,11 @@ export class Visualization extends PropertyExt {
             this._hipiePipeline.dataFunc(),
             mappings.dataFunc()
         ];
-        const data: List<Map<any, any>> = dataPipeline.reduce((accum, func) => func(accum), List());
-        if (!this._prevData.equals(data)) {
-            this._prevData = data;
+        const db: ImmDB = dataPipeline.reduce((accum, func) => func(accum), immDB());
+        if (!this._prevData.equals(db.data)) {
+            this._prevData = db.data;
             const fields = this.chartPanel().fields();
-            const mappedData = this.toDBData(fields, data.toJS());
+            const mappedData = this.toDBData(fields, db.data.toJS());
             this.chartPanel().data(mappedData);
         } else {
             console.log(`${this.id()} Immutable Data!`);

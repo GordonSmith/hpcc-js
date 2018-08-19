@@ -2,10 +2,10 @@ import { PropertyExt, publish, Widget } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { ChartPanel } from "@hpcc-js/layout";
 import { find, isArray } from "@hpcc-js/util";
-import { List, Map } from "immutable";
 import { Activity } from "../activities/activity";
 import { Databomb } from "../activities/databomb";
 import { HipiePipeline } from "../activities/hipiepipeline";
+import { ImmDB } from "../activities/immutable";
 import { Mappings } from "../activities/project";
 import { Visualization } from "./visualization";
 
@@ -16,11 +16,11 @@ export class State extends PropertyExt {
         this.selection([]);
     }
 
-    removeInvalid(data: List<Map<any, any>>): boolean {
+    removeInvalid(db: ImmDB): boolean {
         const currSelection = this.selection();
         const newSelection: object[] = [];
         for (const selRow of currSelection) {
-            if (find(data.toJS(), (row: { [key: string]: any }, index): boolean => {
+            if (find(db.data.toJS(), (row: { [key: string]: any }, index): boolean => {
                 for (const column in selRow) {
                     if (selRow[column] !== row[column]) {
                         return false;

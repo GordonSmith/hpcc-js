@@ -1,9 +1,9 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
-import { List, Map } from "immutable";
 import { Element, ElementContainer } from "../model/element";
 import { Activity, IActivityError, ReferencedFields } from "./activity";
+import { immDB, ImmDB, ImmFields, ImmRow } from "./immutable";
 
 export class ColumnMapping extends PropertyExt {
     private _owner: Filter;
@@ -87,7 +87,7 @@ export class ColumnMapping extends PropertyExt {
         return this._owner.sourceOutFields().toJS().map(field => field.id);
     }
 
-    createFilter(filterSelection: any[]): (localRow: Map<any, any>) => boolean {
+    createFilter(filterSelection: any[]): (localRow: ImmRow) => boolean {
         const lf = this.localField();
         const rf = this.remoteField();
         let fs = filterSelection.length ? filterSelection[0][rf] : undefined;
@@ -222,7 +222,7 @@ export class Filter extends PropertyExt {
         return this;
     }
 
-    inFields(): List<DDL2.IField> {
+    inFields(): ImmFields {
         return this._owner.inFields();
     }
 
@@ -230,7 +230,7 @@ export class Filter extends PropertyExt {
         return this._owner.visualization(this.source());
     }
 
-    sourceOutFields(): List<DDL2.IField> {
+    sourceOutFields(): ImmFields {
         return this.sourceViz().hipiePipeline().selectionFields();
     }
 
@@ -238,10 +238,10 @@ export class Filter extends PropertyExt {
         return this.sourceViz().selection();
     }
 
-    createFilter(): (localRow: Map<any, any>) => boolean {
+    createFilter(): (localRow: ImmRow) => boolean {
         const selection = this.sourceSelection();
         const mappingFilters = this.validMappings().map(mapping => mapping.createFilter(selection));
-        return (row: Map<any, any>): boolean => mappingFilters.every(mappingFilter => mappingFilter(row));
+        return (row: ImmRow): boolean => mappingFilters.every(mappingFilter => mappingFilter(row));
     }
 }
 Filter.prototype._class += " Filter";
@@ -326,14 +326,14 @@ export class Filters extends Activity {
         return super.exec();
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+    dataFunc(): (inDB: ImmDB) => ImmDB {
         if (!this.exists()) return super.dataFunc();
         const filters = this.validFilters().map(filter => filter.createFilter());
-        return (inData: List<Map<any, any>>) => {
-            if (inData.size === 0) return inData;
-            return inData.filter(row => {
+        return (inDB: ImmDB) => {
+            if (inDB.data.size === 0) return inDB;
+            return immDB(inDB.fields, inDB.data.filter(row => {
                 return filters.every(filter => filter(row));
-            });
+            }));
         };
     }
 

@@ -3,8 +3,8 @@ import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
 import { deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "d3-array";
 import { nest as d3Nest } from "d3-collection";
-import { fromJS, List, Map } from "immutable";
 import { Activity, IActivityError, ReferencedFields } from "./activity";
+import { immDB, ImmDB, immFields, ImmFields } from "./immutable";
 
 export class GroupByColumn extends PropertyExt {
     private _owner: GroupBy;
@@ -314,9 +314,9 @@ export class GroupBy extends Activity {
         return this.validComputedFields().length > 0;
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
         if (!this.exists()) return super.fieldsFunc();
-        return (inFields: List<DDL2.IField>) => {
+        return (inFields: ImmFields) => {
             const retVal: DDL2.IField[] = [];
             const groups: GroupByColumn[] = this.validGroupBy();
             for (const groupBy of groups) {
@@ -352,7 +352,7 @@ export class GroupBy extends Activity {
                     return this.fullDetails() || columns.indexOf(field.id) < 0;
                 }).toJS());
             }
-            return fromJS(retVal);
+            return immFields(retVal);
         };
     }
 
@@ -370,10 +370,10 @@ export class GroupBy extends Activity {
         super.resolveInFields(refs, fieldIDs);
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+    dataFunc(): (inDB: ImmDB) => ImmDB {
         if (!this.exists()) return super.dataFunc();
-        return (inData: List<Map<any, any>>) => {
-            if (inData.size === 0) return inData;
+        return (inDB: ImmDB) => {
+            if (inDB.data.size === 0) return inDB;
             const columnLabels: string[] = this.validGroupBy().map(gb => gb.label());
             const computedFields = this.validComputedFields().map(cf => {
                 return { label: cf.fieldID(), aggrFunc: cf.aggrFunc() };
@@ -386,7 +386,7 @@ export class GroupBy extends Activity {
                     }
                     return key;
                 })
-                .entries(inData.toJS() as object[]).map(_row => {
+                .entries(inDB.data.toJS() as object[]).map(_row => {
                     const row: {
                         [key: string]: any
                     } = _row;
@@ -401,7 +401,7 @@ export class GroupBy extends Activity {
                 })
                 ;
             const outFields = this.outFields();
-            return fromJS(retVal.map(row => {
+            return immDB(inDB.fields, retVal.map(row => {
                 const retVal = {};
                 outFields.forEach(field => {
                     retVal[field.id] = row[field.id];

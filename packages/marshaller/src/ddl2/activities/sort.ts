@@ -2,8 +2,8 @@ import { PropertyExt, publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
 import { ascending as d3Ascending, descending as d3Descending } from "d3-array";
-import { List, Map } from "immutable";
 import { Activity, IActivityError, ReferencedFields } from "./activity";
+import { ImmData, immDB, ImmDB, ImmFields } from "./immutable";
 
 export class SortColumn extends PropertyExt {
     private _owner: Sort;
@@ -137,8 +137,8 @@ export class Sort extends Activity {
         return this.inFields().map(field => field.id).toJS();
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
-        return (inData: List<Map<any, any>>) => {
+    dataFunc(): (inDB: ImmDB) => ImmDB {
+        return (inDB: ImmDB) => {
             const sortByArr: Array<{ compare: (l, r) => number, id: string }> = [];
             for (const sortBy of this.validSortBy()) {
                 sortByArr.push({
@@ -148,7 +148,7 @@ export class Sort extends Activity {
             }
 
             if (sortByArr.length) {
-                return inData.sort((l: any, r: any) => {
+                return immDB(inDB.fields, inDB.data.sort((l: any, r: any) => {
                     for (const item of sortByArr) {
                         const retVal2 = item.compare(l[item.id], r[item.id]);
                         if (retVal2 !== 0) {
@@ -156,10 +156,9 @@ export class Sort extends Activity {
                         }
                     }
                     return 0;
-                });
-
+                }));
             }
-            return inData;
+            return inDB;
         };
     }
 }

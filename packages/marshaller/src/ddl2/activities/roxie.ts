@@ -2,9 +2,9 @@ import { PropertyExt, publish } from "@hpcc-js/common";
 import { Query as CommsQuery } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { compare, debounce, hashSum } from "@hpcc-js/util";
-import { fromJS, List, Map } from "immutable";
 import { Element, ElementContainer } from "../model/element";
 import { Activity, ReferencedFields } from "./activity";
+import { immDB, ImmDB, immFields, ImmFields } from "./immutable";
 
 function parseUrl(_: string): { url: string, querySet: string, queryID: string } {
     // "http://10.241.100.157:8002/WsEcl/submit/query/roxie/carmigjx_govbisgsavi.Ins4621360_Service_00000006/json",
@@ -75,7 +75,7 @@ export class Param extends PropertyExt {
         return this._elementContainer.element(this.source());
     }
 
-    sourceOutFields(): List<DDL2.IField> {
+    sourceOutFields(): ImmFields {
         return this.sourceViz().hipiePipeline().selectionFields();
     }
 
@@ -188,7 +188,7 @@ export class RoxieRequest extends Activity {
         }
         return retVal;
     }
-    private _data: List<Map<any, any>> = List();
+    private _data: ImmDB = immDB();
 
     @publish("", "string", "ESP Url (http://x.x.x.x:8002)")
     url: publish<this, string>;
@@ -304,9 +304,9 @@ export class RoxieRequest extends Activity {
         return retVal;
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
-        return (inFields: List<DDL2.IField>) => {
-            return fromJS(this._roxieService.responseFields(this.resultName()));
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
+        return (inFields: ImmFields) => {
+            return immFields(this._roxieService.responseFields(this.resultName()));
         };
     }
 
@@ -337,8 +337,8 @@ export class RoxieRequest extends Activity {
         });
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
-        return (inData: List<Map<any, any>>) => {
+    dataFunc(): (inDB: ImmDB) => ImmDB {
+        return (inDB: ImmDB) => {
             return this._data;
         };
     }

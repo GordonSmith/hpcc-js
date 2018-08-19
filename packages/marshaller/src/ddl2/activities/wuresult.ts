@@ -2,15 +2,15 @@ import { publish } from "@hpcc-js/common";
 import { Result, XSDXMLNode } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { debounce, hashSum } from "@hpcc-js/util";
-import { fromJS, List, Map } from "immutable";
 import { Activity, schemaRow2IField } from "./activity";
+import { immData, ImmData, immDB, ImmDB, immFields, ImmFields } from "./immutable";
 
 export abstract class ESPResult extends Activity {
     protected _result: Result;
     protected _schema: XSDXMLNode[] = [];
     protected _meta: DDL2.IField[] = [];
     protected _total: number;
-    private _data: List<Map<any, any>> = List();
+    private _data: ImmData = immData();
 
     @publish("", "string", "ESP Url (http://x.x.x.x:8010)")
     url: publish<this, string>;
@@ -78,9 +78,9 @@ export abstract class ESPResult extends Activity {
         return this;
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
-        return (inFields: List<DDL2.IField>) => {
-            return fromJS(this.responseFields());
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
+        return (inFields: ImmFields) => {
+            return immFields(this.responseFields());
         };
     }
 
@@ -97,17 +97,15 @@ export abstract class ESPResult extends Activity {
             }).then(response => {
                 this._data = this.fixInt64(response);
             }).catch(e => {
-                this._data = List();
+                this._data = immData();
             });
         } else {
             return Promise.resolve();
         }
     });
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
-        return (inData: List<Map<any, any>>) => {
-            return this._data;
-        };
+    dataFunc(): (inDB: ImmDB) => ImmDB {
+        return (inDB: ImmDB) => immDB(inDB.fields, this._data);
     }
 
     total(): number {

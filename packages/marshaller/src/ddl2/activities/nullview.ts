@@ -1,15 +1,14 @@
-import { DDL2 } from "@hpcc-js/ddl-shim";
-import { List } from "immutable";
 import { HipiePipeline } from "./hipiepipeline";
+import { immFields, ImmFields } from "./immutable";
 
 export class NullView extends HipiePipeline {
     hash(): string {
         return super.hash();
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
-        return (inFields: List<DDL2.IField>) => {
-            return List();
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
+        return (inFields: ImmFields) => {
+            return immFields();
         };
     }
 

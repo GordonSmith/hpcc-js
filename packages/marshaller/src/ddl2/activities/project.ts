@@ -1,8 +1,8 @@
 import { PropertyExt, publish, Utility } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { hashSum } from "@hpcc-js/util";
-import { fromJS, List, Map } from "immutable";
 import { Activity, IActivityError, ReferencedFields } from "./activity";
+import { immDB, ImmDB, immFields, ImmFields } from "./immutable";
 
 export class ComputedMapping extends PropertyExt {
     protected _owner: ComputedField;
@@ -535,9 +535,9 @@ export class ProjectBase extends Activity {
         return this.validComputedFields().length;
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
         if (!this.exists()) return super.fieldsFunc();
-        return (inFields: List<DDL2.IField>) => {
+        return (inFields: ImmFields) => {
             const retVal: DDL2.IField[] = [];
             const retValMap: { [key: string]: boolean } = {};
             for (const cf of this.validComputedFields()) {
@@ -560,9 +560,9 @@ export class ProjectBase extends Activity {
                 };
                 retVal.push(computedField);
                 retValMap[computedField.id] = true;
-                return fromJS(retVal);
+                return immFields(retVal);
             }
-            return List<DDL2.IField>(retVal).concat(inFields.filter(field => !retValMap[field.id]));
+            return immFields(retVal).concat(inFields.filter(field => !retValMap[field.id]));
         };
     }
 
@@ -618,11 +618,11 @@ export class ProjectBase extends Activity {
         };
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+    dataFunc(): (inDB: ImmDB) => ImmDB {
         if (!this.exists()) return super.dataFunc();
-        return (inData: List<Map<any, any>>) => {
-            if (inData.size === 0) return inData;
-            return fromJS(inData.toJS().map(this.projection()));
+        return (inDB: ImmDB) => {
+            if (inDB.data.size === 0) return inDB;
+            return immDB(inDB.fields, inDB.data.toJS().map(this.projection()));
         };
     }
 }

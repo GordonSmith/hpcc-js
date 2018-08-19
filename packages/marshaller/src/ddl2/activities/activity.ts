@@ -3,7 +3,7 @@ import { IField as WsEclField } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IDatasource } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
-import { List, Map } from "immutable";
+import { ImmData, immDB, ImmDB, immFields, ImmFields } from "./immutable";
 
 export function stringify(obj_from_json) {
     if (Array.isArray(obj_from_json)) {
@@ -152,19 +152,19 @@ export abstract class Activity extends PropertyExt {
         return [];
     }
 
-    inFields(): List<DDL2.IField> {
-        return this._sourceActivity ? this._sourceActivity.outFields() : List();
+    inFields(): ImmFields {
+        return this._sourceActivity ? this._sourceActivity.outFields() : immFields();
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
-        return (inFields: List<DDL2.IField>) => inFields;
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
+        return (inFields: ImmFields) => inFields;
     }
 
-    outFields(): List<DDL2.IField> {
+    outFields(): ImmFields {
         return this.fieldsFunc()(this.inFields());
     }
 
-    localFields(): List<DDL2.IField> {
+    localFields(): ImmFields {
         const inFieldIDs = this.inFields().map(field => field.id);
         return this.outFields().filter(field => inFieldIDs.indexOf(field.id) < 0);
     }
@@ -202,17 +202,17 @@ export abstract class Activity extends PropertyExt {
         return this._sourceActivity ? this._sourceActivity.exec() : Promise.resolve();
     }
 
-    inData(): List<Map<any, any>> {
-        return this._sourceActivity ? this._sourceActivity.outData() : List();
+    inDB(): ImmDB {
+        return this._sourceActivity ? this._sourceActivity.outData() : immDB();
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+    dataFunc(): (inDB: ImmDB) => ImmDB {
         console.log(`${this.classID()}.dataFunc missing!`);
-        return (inData: List<Map<any, any>>) => inData;
+        return (inDB: ImmDB) => inDB;
     }
 
-    outData(): List<Map<any, any>> {
-        return this.dataFunc()(this.inData());
+    outData(): ImmDB {
+        return this.dataFunc()(this.inDB());
     }
 }
 
@@ -227,14 +227,14 @@ export class ActivityArray extends Activity {
         return this;
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
         const pipeline = this.activities().map(a => a.fieldsFunc());
-        return (inFields: List<DDL2.IField>) => pipeline.reduce((accum, func) => func(accum), inFields);
+        return (inFields: ImmFields) => pipeline.reduce((accum, func) => func(accum), inFields);
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+    dataFunc(): (inDB: ImmDB) => ImmDB {
         const pipeline = this.activities().map(a => a.dataFunc());
-        return (inData: List<Map<any, any>>) => pipeline.reduce((accum, func) => func(accum), inData);
+        return (inDB: ImmDB) => pipeline.reduce((accum, func) => func(accum), inDB);
     }
 }
 ActivityArray.prototype._class += " ActivityArray";
@@ -294,13 +294,13 @@ export class ActivityPipeline extends ActivityArray {
         return retVal;
     }
 
-    fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<List<Map<any, any>>> {
+    fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<ImmData> {
         return this.exec().then(() => {
-            const data = this.outData();
-            if (from === 0 && data.size <= count) {
-                return data;
+            const db = this.outData();
+            if (from === 0 && db.data.size <= count) {
+                return db.data;
             }
-            return data.slice(from, from + count);
+            return db.data.slice(from, from + count);
         });
     }
 
@@ -324,20 +324,20 @@ export class ActivityPipeline extends ActivityArray {
         return retVal;
     }
 
-    inFields(): List<DDL2.IField> {
+    inFields(): ImmFields {
         return this.first().inFields();
     }
 
-    outFields(): List<DDL2.IField> {
+    outFields(): ImmFields {
         return this.last().outFields();
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
         const pipeline = [this.datasource().fieldsFunc(), super.fieldsFunc()];
-        return (inFields: List<DDL2.IField>) => pipeline.reduce((accum, func) => func(accum), inFields);
+        return (inFields: ImmFields) => pipeline.reduce((accum, func) => func(accum), inFields);
     }
 
-    localFields(): List<DDL2.IField> {
+    localFields(): ImmFields {
         return this.last().localFields();
     }
 
@@ -361,12 +361,12 @@ export class ActivityPipeline extends ActivityArray {
         return this.last().exec();
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+    dataFunc(): (inDB: ImmDB) => ImmDB {
         const pipeline = [this.datasource().dataFunc(), super.dataFunc()];
-        return (inData: List<Map<any, any>>) => pipeline.reduce((accum, func) => func(accum), inData);
+        return (inDB: ImmDB) => pipeline.reduce((accum, func) => func(accum), inDB);
     }
 
-    outData(): List<Map<any, any>> {
+    outData(): ImmDB {
         return this.last().outData();
     }
 }
@@ -410,19 +410,19 @@ export class ActivitySelection extends ActivityArray {
         return this.selection().updatedBy();
     }
 
-    inFields(): List<DDL2.IField> {
+    inFields(): ImmFields {
         return this.selection().inFields();
     }
 
-    outFields(): List<DDL2.IField> {
+    outFields(): ImmFields {
         return this.selection().outFields();
     }
 
-    fieldsFunc(): (inFields: List<DDL2.IField>) => List<DDL2.IField> {
+    fieldsFunc(): (inFields: ImmFields) => ImmFields {
         return this.selection().fieldsFunc();
     }
 
-    localFields(): List<DDL2.IField> {
+    localFields(): ImmFields {
         return this.selection().localFields();
     }
 
@@ -446,11 +446,11 @@ export class ActivitySelection extends ActivityArray {
         return this.selection().exec();
     }
 
-    dataFunc(): (inData: List<Map<any, any>>) => List<Map<any, any>> {
+    dataFunc(): (inDB: ImmDB) => ImmDB {
         return this.selection().dataFunc();
     }
 
-    outData(): List<Map<any, any>> {
+    outData(): ImmDB {
         return this.selection().outData();
     }
 }
@@ -480,13 +480,13 @@ export class DatasourceAdapt implements IDatasource {
         return this._activity ? this._activity.outFields().toJS() : [];
     }
     total(): number {
-        return this._activity.outData().size;
+        return this._activity.outData().data.size;
     }
     fetch(from: number, count: number): Promise<ReadonlyArray<object>> {
-        const data = this._activity.outData();
-        if (from === 0 && data.size <= count) {
-            return Promise.resolve(data.toJS());
+        const db = this._activity.outData();
+        if (from === 0 && db.data.size <= count) {
+            return Promise.resolve(db.data.toJS());
         }
-        return Promise.resolve(data.slice(from, from + count).toJS());
+        return Promise.resolve(db.data.slice(from, from + count).toJS());
     }
 }
