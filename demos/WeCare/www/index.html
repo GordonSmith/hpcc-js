@@ -96,12 +96,17 @@
 
         <script>
             var main = new vizLib.Main();
-            main.initSearch("form");
             main.initPeople("table");
             main.initAddressMap("addressMap");
             main.initAddressTable("addressTable");
             main.initAddressChart("addressChart");
             main.initDebugTable("DebugTable");
+            var handle = setInterval(function () {
+                if (google && google.maps && google.maps.Geocoder) {
+                    main.initSearch("form");
+                    clearInterval(handle);
+                }
+            }, 100);
         </script>
     </div>
     <div class="hint">
