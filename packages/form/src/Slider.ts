@@ -31,9 +31,17 @@ export class Slider extends SVGWidget {
         IInput.call(this);
     }
 
+    calcWidth() {
+        console.log(this.maxWidth_exists() ? Math.min(this.width(), this.maxWidth()) : this.width());
+        return this.maxWidth_exists() ? Math.min(this.width(), this.maxWidth()) : this.width();
+    }
+
     enter(domNode, element) {
         super.enter(domNode, element);
-        this.resize({ width: this.width(), height: 50 });
+        this.resize({
+            width: this.calcWidth(),
+            height: 50
+        });
 
         this.xScale = d3ScaleLinear()
             .clamp(true);
@@ -96,18 +104,18 @@ export class Slider extends SVGWidget {
         const context = this;
         this.xScale
             .domain([this.low(), this.high()])
-            .range([0, this.width() - this.padding() * 2])
+            .range([0, this.calcWidth() - this.padding() * 2])
             ;
 
         this.slider
-            .attr("transform", "translate(" + (-this.width() / 2 + this.padding()) + "," + 0 + ")");
+            .attr("transform", "translate(" + (-this.calcWidth() / 2 + this.padding()) + "," + 0 + ")");
 
         this.slider.selectAll("line.track,line.track-inset,line.track-overlay")
             .attr("x1", this.xScale.range()[0])
             .attr("x2", this.xScale.range()[1])
             ;
         let tickText;
-        const x_distance = (this.width() - (this.padding() * 2)) / (this.tickCount() - 1);
+        const x_distance = (this.calcWidth() - (this.padding() * 2)) / (this.tickCount() - 1);
 
         const tick_text_arr = [];
         if (this.tickDateFormat() !== null && this.timePattern() !== null) {
@@ -320,6 +328,10 @@ export interface Slider {
     timePattern(): string;
     timePattern(_: string): this;
 
+    maxWidth(): number | null;
+    maxWidth(_: number | null): this;
+    maxWidth_exists(): boolean;
+
     padding_exists(): boolean;
     fontSize_exists(): boolean;
     fontFamily_exists(): boolean;
@@ -355,6 +367,9 @@ Slider.prototype.publish("tickOffset", 5, "number");
 Slider.prototype.publish("tickHeight", 8, "number");
 Slider.prototype.publish("tickDateFormat", null, "string");
 Slider.prototype.publish("tickValueFormat", ",.0f", "string");
+
+Slider.prototype.publish("maxWidth", null, "number", "Max Width", null, { optional: true });
+
 
 const name = Slider.prototype.name;
 Slider.prototype.name = function (_: any): any {

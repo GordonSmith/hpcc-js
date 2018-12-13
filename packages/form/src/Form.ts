@@ -245,9 +245,11 @@ export class Form extends HTMLWidget {
                 const element2 = d3Select(this);
                 const inputWidgetArray = inputWidget instanceof WidgetArray ? inputWidget.content() : [inputWidget];
                 inputWidgetArray.forEach(function (inputWidget2, idx) {
-                    element2.select("td.prompt")
-                        .text(inputWidget2.label() + ":")
-                        ;
+                    if (idx === 0) {
+                        element2.select("td.prompt")
+                            .text(inputWidget2.label() + ":")
+                            ;
+                    }
                 });
             })
             ;

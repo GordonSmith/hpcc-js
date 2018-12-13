@@ -335,7 +335,8 @@ export class Main {
             .omitBlank(true)
             .on("clear", function (request) {
                 context.clear();
-            }).on("click", function (request) {
+            })
+            .on("click", function (request) {
                 context.clear();
                 context.refreshLocations();
                 const data = JSON.stringify(context.form.data());

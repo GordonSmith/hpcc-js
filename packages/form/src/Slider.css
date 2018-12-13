@@ -27,6 +27,7 @@
   }
   
   .form_Slider .handle {
+    pointer-events: none;
     fill: #fff;
     stroke: #000;
     stroke-opacity: 0.5;

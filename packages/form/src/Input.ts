@@ -51,7 +51,10 @@ export class Input extends HTMLWidget {
         }
 
         this._inputElement.forEach(function (e, idx) {
-            e.attr("name", context.name());
+            e
+                .attr("name", context.name())
+                .attr("title", context.label())
+                ;
             e.on("click", function (w: Input) {
                 w.click(w);
             });
