@@ -65,7 +65,7 @@ export const localPackages = {
     ...npmPackages,
     ...rawgitPackages
 };
-export const hpccShims = ["loader", "codemirror-shim", "ddl-shim", "dgrid-shim", "phosphor-shim", "preact-shim"];
+export const hpccShims = ["loader", "codemirror-shim", "ddl-shim", "dgrid-shim", "h3-js-umd", "phosphor-shim", "preact-shim"];
 export const packages = [
     "comms", "util", "common", "layout", "phosphor", "api", "dgrid", "chart", "other", "form",
     "tree", "graph", "map",

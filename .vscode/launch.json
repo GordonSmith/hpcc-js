@@ -4,8 +4,8 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Dermatology",
-            "url": "file:///${workspaceRoot}/demos/dermatology/index.html",
+            "name": "Hex Test",
+            "url": "file:///${workspaceRoot}/demos/dermatology/index.html?src/map/Leaflet.HexTest&mapType=MapBox",
             "webRoot": "${workspaceRoot}/demos/dermatology",
             "runtimeArgs": [
                 "--allow-file-access-from-files",

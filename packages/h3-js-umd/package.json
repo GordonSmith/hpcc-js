@@ -1,0 +1,54 @@
+{
+  "name": "@hpcc-js/h3-js-umd",
+  "version": "2.0.0",
+  "description": "h3-js umd wrapper",
+  "main": "dist/index.js",
+  "unpkg": "dist/index.js",
+  "types": "types/index.d.ts",
+  "files": [
+    "dist/*",
+    "types/*",
+    "src/*.css"
+  ],
+  "scripts": {
+    "clean": "rimraf lib* types dist",
+    "compile-es6": "tsc --module es6 --outDir ./lib-es6",
+    "compile-es6-watch": "npm run compile-es6 -- -w",
+    "compile-umd": "tsc --build",
+    "compile-umd-clean": "npm run compile-umd -- --clean",
+    "compile-umd-force": "npm run compile-umd -- --force",
+    "compile-umd-watch": "npm run compile-umd -- --watch",
+    "bundle": "webpack",
+    "bundle-watch": "npm run bundle -- -w",
+    "build": "npm run compile-es6 && npm run bundle",
+    "watch": "run-p compile-es6-watch bundle-watch",
+    "lint": "tslint --project . src/**/*.ts"
+  },
+  "devDependencies": {
+    "@hpcc-js/bundle": "^0.0.45",
+    "h3-js": "3.3.0",
+    "geojson2h3": "1.0.1",
+    "npm-run-all": "4.1.5",
+    "rimraf": "2.6.2",
+    "tslib": "1.9.3",
+    "tslint": "5.11.0",
+    "typescript": "3.2.2",
+    "webpack": "4.16.5",
+    "webpack-cli": "3.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hpcc-systems/Visualization.git"
+  },
+  "keywords": [
+    "h3-js",
+    "webpack"
+  ],
+  "author": "Gordon Smith",
+  "contributors": [],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hpcc-systems/Visualization/issues"
+  },
+  "homepage": "https://github.com/hpcc-systems/Visualization#readme"
+}

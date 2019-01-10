@@ -36,7 +36,8 @@ export default {
             namedExports: {
                 "leaflet": ["Circle", "CRS", "DomUtil", "FeatureGroup", "GeoJSON", "GridLayer", "Icon", "Layer", "LatLng", "latLng", "LatLngBounds", "latLngBounds", "Map", "Marker", "Point", "point", "Polygon", "svg", "TileLayer", "Transformation", "Util"],
                 "leaflet.markercluster": ["MarkerClusterGroup"],
-                "leaflet.gridlayer.googlemutant": ["GoogleMutant"]
+                "leaflet.gridlayer.googlemutant": ["GoogleMutant"],
+                "../h3-js-shim/dist/index.js": ["geoToH3"]
             }
         }),
         postcss({

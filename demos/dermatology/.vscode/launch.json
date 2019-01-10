@@ -19,10 +19,10 @@
             }
         },
         {
-            "name": "Leaflet.Pins",
+            "name": "Leaflet.HexTest",
             "type": "chrome",
             "request": "launch",
-            "url": "file:///${workspaceRoot}/index.html?src/map/Leaflet.Pins",
+            "url": "file:///${workspaceRoot}/index.html?src/map/Leaflet.HexTest",
             "runtimeArgs": [
                 "--allow-file-access-from-files"
             ],
