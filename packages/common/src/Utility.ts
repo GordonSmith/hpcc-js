@@ -441,7 +441,9 @@ export function d3ArrayAdapter(array) {
     };
 }
 
-export function downloadBlob(format: "TSV" | "JSON" | "TEXT", blob, id?, ext?) {
+export type DownloadFileFormat = "CSV" | "HTML" | "TSV" | "JSON" | "PNG" | "SVG" | "TEXT";
+
+export function downloadBlob(format: DownloadFileFormat, blob, id?, ext?) {
     const currentdate = new Date();
     const timeFormat = d3TimeFormat("%Y-%m-%dT%H_%M_%S");
     const nowTime = timeFormat(currentdate);
@@ -450,6 +452,7 @@ export function downloadBlob(format: "TSV" | "JSON" | "TEXT", blob, id?, ext?) {
     const filename = id + (ext ? "." + ext : "");
 
     let mimeType = "";
+    let useBlobURL = false;
     switch (format) {
         case "TSV":
             mimeType = "text/tab-seperated-values";
@@ -457,7 +460,16 @@ export function downloadBlob(format: "TSV" | "JSON" | "TEXT", blob, id?, ext?) {
         case "JSON":
             mimeType = "application/json";
             break;
+        case "PNG":
+            mimeType = "image/png";
+            useBlobURL = true;
+            break;
+        case "SVG":
+            mimeType = "image/svg+xml";
+            useBlobURL = true;
+            break;
         case "TEXT":
+        case "CSV":
         default:
             mimeType = "text/csv";
     }
@@ -467,7 +479,12 @@ export function downloadBlob(format: "TSV" | "JSON" | "TEXT", blob, id?, ext?) {
         a = null;
         return navigator.msSaveBlob(new Blob([blob], { type: mimeType }), filename);
     } else if ("download" in a) { // html 5
-        a.href = "data:" + mimeType + "," + encodeURIComponent(blob);
+        if (useBlobURL) {
+            a.href = URL.createObjectURL(blob);
+        } else {
+            a.href = "data:" + mimeType + "," + encodeURIComponent(blob);
+        }
+        console.log("a.href", a.href);
         a.setAttribute("download", filename);
         document.body.appendChild(a);
         setTimeout(function () {
@@ -479,7 +496,11 @@ export function downloadBlob(format: "TSV" | "JSON" | "TEXT", blob, id?, ext?) {
         a = null;
         const frame = document.createElement("iframe");
         document.body.appendChild(frame);
-        frame.src = "data:" + mimeType + "," + encodeURIComponent(blob);
+        if (useBlobURL) {
+            frame.src = URL.createObjectURL(blob);
+        } else {
+            frame.src = "data:" + mimeType + "," + encodeURIComponent(blob);
+        }
 
         setTimeout(function () {
             document.body.removeChild(frame);

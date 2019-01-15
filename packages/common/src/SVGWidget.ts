@@ -2,7 +2,7 @@ import { rgb as d3Rgb } from "d3-color";
 import { select as d3Select } from "d3-selection";
 import { svgMarkerGlitch } from "./Platform";
 import { Transition } from "./Transition";
-import { debounce, downloadBlob2 } from "./Utility";
+import { debounce, downloadBlob } from "./Utility";
 import { d3SelectionType, ISize, Widget } from "./Widget";
 
 const lerp = function (point, that, t) {
@@ -422,11 +422,13 @@ export class SVGWidget extends Widget {
     }
 
     downloadSVG() {
-        downloadBlob2(this.serializeSVG());
+        downloadBlob("SVG", this.serializeSVG());
     }
 
     downloadPNG() {
-        downloadBlob2(this.rasterize());
+        this.rasterize().then(function (blob) {
+            downloadBlob("PNG", blob);
+        });
     }
 
     //  IE Fixers  ---
