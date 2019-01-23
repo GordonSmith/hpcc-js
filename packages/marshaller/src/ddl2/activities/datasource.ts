@@ -1,16 +1,18 @@
 import { publish } from "@hpcc-js/common";
+import { globalsT } from "@hpcc-js/util";
 import { Activity } from "./activity";
 import { Databomb, Form } from "./databomb";
 import { LogicalFile } from "./logicalfile";
 import { RoxieResult, RoxieService } from "./roxie";
 import { WU, WUResult } from "./wuresult";
 
-let datasourceID = 0;
+const globals = globalsT({ datasourceID: 0 });
+
 export class Datasource extends Activity {
 
     constructor() {
         super();
-        this._id = `ds_${++datasourceID}`;
+        this._id = `ds_${++globals.datasourceID}`;
     }
 }
 

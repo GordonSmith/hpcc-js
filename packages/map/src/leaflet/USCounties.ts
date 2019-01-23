@@ -1,6 +1,6 @@
 import { json as d3Json } from "d3-request";
 import * as topojson from "topojson";
-import { topoJsonFolder } from "../Choropleth";
+import { topoJsonUrl } from "../Choropleth";
 import { US } from "./US";
 
 let usCounties = null;
@@ -14,7 +14,7 @@ export class USCounties extends US {
                 if (usCounties) {
                     resolve(usCounties);
                 }
-                d3Json(`${topoJsonFolder()}/us-counties.json`, function (_usCounties) {
+                d3Json(`${topoJsonUrl()}/us-counties.json`, function (_usCounties) {
                     usCounties = _usCounties;
                     resolve(usCounties);
                 });

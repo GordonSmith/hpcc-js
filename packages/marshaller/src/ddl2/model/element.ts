@@ -1,7 +1,6 @@
 import { PropertyExt, publish, Widget } from "@hpcc-js/common";
-import { DDL2 } from "@hpcc-js/ddl-shim";
 import { ChartPanel } from "@hpcc-js/layout";
-import { find, isArray } from "@hpcc-js/util";
+import { find, globalsT, isArray } from "@hpcc-js/util";
 import { Activity, IActivityError } from "../activities/activity";
 import { emptyDatabomb } from "../activities/databomb";
 import { DatasourceRefType } from "../activities/datasource";
@@ -45,7 +44,12 @@ export interface State {
 }
 State.prototype.publish("selection", [], "array", "State");
 
-let vizID = 0;
+export interface IElementError extends IActivityError {
+    elementID: string;
+}
+
+const globals = globalsT({ vizID: 0 });
+
 export class Element extends PropertyExt {
     private _elementContainer: ElementContainer;
     private _vizChartPanel: Visualization;
@@ -80,8 +84,8 @@ export class Element extends PropertyExt {
         super();
         this._elementContainer = ec;
         while (true) {
-            vizID++;
-            this._id = `e_${vizID}`;
+            globals.vizID++;
+            this._id = `e_${globals.vizID}`;
             if (!this._elementContainer.elementExists(this._id)) {
                 break;
             }
@@ -89,10 +93,10 @@ export class Element extends PropertyExt {
         const view = new HipiePipeline(ec, this._id);
         this.hipiePipeline(view);
         this._vizChartPanel = new Visualization(this.hipiePipeline())
-            .id(`viz_${vizID}`)
-            .title(`Element ${vizID}`)
+            .id(`viz_${globals.vizID}`)
+            .title(`Element ${globals.vizID}`)
             ;
-        this._vizChartPanel.chartPanel().id(`cp_${vizID}`);
+        this._vizChartPanel.chartPanel().id(`cp_${globals.vizID}`);
         this.visualization(this._vizChartPanel);
         this.state(new State());
     }
@@ -213,15 +217,7 @@ export class Element extends PropertyExt {
 }
 Element.prototype._class += " Viz";
 
-export interface IPersist {
-    ddl: DDL2.Schema;
-    layout: any;
-}
-
-export interface IElementError extends IActivityError {
-    elementID: string;
-}
-
+//  ===========================================================================
 export class ElementContainer extends PropertyExt {
 
     private _nullElement;

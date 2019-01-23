@@ -2,6 +2,19 @@ import { define, require as requirejs } from "@hpcc-js/requirejs-shim";
 import { hpccShims, npmPackages, packages, requireShims } from "./meta";
 
 declare const window: any;
+const globalNS = "@hpcc-js/util/globals";  // Must be kept in sync with @hpcc-js/util/platform.ts
+window[globalNS] = window[globalNS] || {};
+
+function setGlobals(packageUrl: string): { packageUrl: string, topoJsonUrl: string } {
+    const retVal = {
+        packageUrl,
+        topoJsonUrl: packageUrl + "/map/TopoJSON"
+    };
+    //  Overwrite existing values (loader should be loaded first anyway)
+    window[globalNS].packageUrl = retVal.packageUrl;
+    window[globalNS].topoJsonUrl = retVal.topoJsonUrl;
+    return retVal;
+}
 
 function guessScriptURL() {
     if (document && document.currentScript) {
@@ -91,10 +104,10 @@ if (!(window as any).define) {
 }
 
 export function cdn(url: string, min: boolean = true, additionalPaths: { [key: string]: string } = {}): any {
-    window.__hpcc_topoJsonFolder = `${url}/map/TopoJSON`;
+    const { topoJsonUrl } = setGlobals(url);
     const minStr = min ? ".min" : "";
     const paths: { [key: string]: string } = {
-        "@hpcc-js/map/TopoJSON": `${url}/map/TopoJSON`,
+        "@hpcc-js/map/TopoJSON": topoJsonUrl,
         ...additionalPaths
     };
     hpccShims.forEach(shim => {
@@ -110,13 +123,12 @@ export function cdn(url: string, min: boolean = true, additionalPaths: { [key: s
 }
 
 export function unpkg(min: boolean = true, additionalPaths: { [key: string]: string } = {}): any {
-    window.__hpcc_topoJsonFolder = "https://unpkg.com/@hpcc-js/map/TopoJSON";
     return cdn("https://unpkg.com/@hpcc-js", min, additionalPaths);
 }
 
 function local(additionalPaths: { [key: string]: string }, min: boolean = false): any {
     const config = parseScriptUrl(true);
-    window.__hpcc_topoJsonFolder = `${config.libUrl}/map/TopoJSON`;
+    setGlobals(config.libUrl);
     const thirdPartyPaths: { [key: string]: string } = {};
     for (const key in npmPackages) {
         thirdPartyPaths[key] = `${config.node_modulesUrl}/${npmPackages[key]}`;

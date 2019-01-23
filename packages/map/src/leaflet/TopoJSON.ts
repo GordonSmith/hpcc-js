@@ -1,7 +1,7 @@
 import { json as d3Json } from "d3-request";
 import { GeoJSON, Map } from "leaflet";
 import * as topojson from "topojson";
-import { topoJsonFolder } from "../Choropleth";
+import { topoJsonUrl } from "../Choropleth";
 import { FeatureLayer } from "./FeatureLayer";
 
 export class TopoJSON extends GeoJSON {
@@ -39,7 +39,7 @@ export class TopoJSONLayer extends FeatureLayer {
                 if (usStates) {
                     resolve();
                 }
-                d3Json(`${topoJsonFolder()}/us-states.json`, function (_usStates) {
+                d3Json(`${topoJsonUrl()}/us-states.json`, function (_usStates) {
                     usStates = _usStates;
                     features = topojson.feature(usStates.topology, usStates.topology.objects.states).features;
                     rFeatures = {};
@@ -61,7 +61,7 @@ export class TopoJSONLayer extends FeatureLayer {
                 if (usCounties) {
                     resolve();
                 }
-                d3Json(`${topoJsonFolder()}/us-counties.json`, function (_usCounties) {
+                d3Json(`${topoJsonUrl()}/us-counties.json`, function (_usCounties) {
                     usCounties = _usCounties;
                     features = topojson.feature(usCounties.topology, usCounties.topology.objects.counties).features;
                     rFeatures = {};

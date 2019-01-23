@@ -2,7 +2,7 @@ import { InputField } from "@hpcc-js/common";
 import { json as d3Json } from "d3-request";
 import { select as d3Select } from "d3-selection";
 import * as topojson from "topojson";
-import { Choropleth, topoJsonFolder } from "./Choropleth";
+import { Choropleth, topoJsonUrl } from "./Choropleth";
 
 let usStates = null;
 let features = null;
@@ -85,7 +85,7 @@ export class ChoroplethStates extends Choropleth {
                 if (usStates) {
                     resolve();
                 }
-                d3Json(`${topoJsonFolder()}/us-states.json`, function (_usStates) {
+                d3Json(`${topoJsonUrl()}/us-states.json`, function (_usStates) {
                     usStates = _usStates;
                     features = topojson.feature(usStates.topology, usStates.topology.objects.states).features;
                     rFeatures = {};

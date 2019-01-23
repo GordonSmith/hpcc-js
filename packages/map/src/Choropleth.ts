@@ -1,19 +1,20 @@
 import { Palette, Utility } from "@hpcc-js/common";
+import { globalsT } from "@hpcc-js/util";
 import { select as d3Select } from "d3-selection";
 import * as topojson from "topojson";
 import { Layer } from "./Layer";
 
 import "../src/Choropleth.css";
 
-declare const window: any;
+const globals = globalsT({ topoJsonUrl: "./node_modules/@hpcc-js/map/TopoJSON" });
 
-let _topoJsonFolder: string = window.__hpcc_topoJsonFolder || "./node_modules/@hpcc-js/map/TopoJSON";
-export function topoJsonFolder(_?: string): string {
-    if (!arguments.length) return _topoJsonFolder;
-    const retVal = _topoJsonFolder;
-    _topoJsonFolder = _;
+export function topoJsonUrl(_?: string): string {
+    if (!arguments.length) return globals.topoJsonUrl;
+    const retVal = globals.topoJsonUrl;
+    globals.topoJsonUrl = _;
     return retVal;
 }
+export const topoJsonFolder = topoJsonUrl;  //  Backward compatibility
 
 export class Choropleth extends Layer {
     _dataMap = {};

@@ -1,3 +1,4 @@
+import { globalsT } from "@hpcc-js/util";
 import { BaseType as d3BaseType, select as d3Select, Selection as d3Selection } from "d3-selection";
 import "d3-transition";
 import { Field, Grid } from "./Database";
@@ -41,7 +42,8 @@ export interface BBox {
 let g_fontSizeContext: CanvasRenderingContext2D;
 const g_fontSizeContextCache: { [key: string]: ISize } = {};
 
-let widgetID = 0;
+const globals = globalsT({ widgetID: 0 });
+
 export abstract class Widget extends PropertyExt {
     _idSeed: string;
 
@@ -69,7 +71,7 @@ export abstract class Widget extends PropertyExt {
     constructor() {
         super();
         this._class = Object.getPrototypeOf(this)._class;
-        this._id = this._idSeed + widgetID++;
+        this._id = this._idSeed + globals.widgetID++;
 
         this._db = new Grid();
         this._pos = { x: 0, y: 0 };
