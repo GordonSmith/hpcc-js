@@ -56,7 +56,11 @@ describe("Types", function () {
                                                     expectedDependencies["es6-promise"] = true;
                                                     break;
                                                 default:
-                                                    expectedDependencies[match[1]] = true;
+                                                    if (match[1].indexOf("d3-") === 0) {
+                                                        expectedDependencies["@types/" + match[1]] = true;
+                                                    } else if (match[1].indexOf("@hpcc-js/") !== 0) {
+                                                        expectedDependencies[match[1]] = true;
+                                                    }
                                             }
                                         }
                                         match = re.exec(data);
@@ -68,7 +72,7 @@ describe("Types", function () {
                             for (const expected in expectedDependencies) {
                                 if (!pkg.dependencies[expected]) {
                                     // console.log(`${folder} missing dependency:  ${expected}`);
-                                    expect(false, `${folder} missing dependency:  ${expected}`).to.be.true;
+                                    expect(false, `${pkg.name}:${folder} missing dependency:  ${expected}`).to.be.true;
                                 }
                             }
                             for (const dependency in pkg.dependencies) {
