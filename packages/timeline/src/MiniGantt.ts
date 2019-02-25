@@ -1,10 +1,10 @@
 import { ITooltip } from "@hpcc-js/api";
 import { Axis } from "@hpcc-js/chart";
 import { EntityPin, EntityRect, SVGWidget, Utility } from "@hpcc-js/common";
+import { d3TimeFormat } from "@hpcc-js/util";
 import { extent as d3Extent } from "d3-array";
 import { scaleBand as d3ScaleBand } from "d3-scale";
 import { event as d3Event, local as d3Local, select as d3Select } from "d3-selection";
-import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";
 import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from "d3-zoom";
 
 import "../src/MiniGantt.css";
@@ -63,8 +63,8 @@ export class MiniGantt extends SVGWidget {
     extent() {
         const extent = this.rootExtent ? [this.rootExtent[1], this.rootExtent[2]] : this.fullExtent();
         if (extent[0] !== undefined && extent[1] !== undefined && extent[0] === extent[1]) {
-            const parser = d3TimeParse(this.timePattern());
-            const formatter = d3TimeFormat(this.timePattern());
+            const parser = d3TimeFormat.timeParse(this.timePattern());
+            const formatter = d3TimeFormat.timeFormat(this.timePattern());
             const dt = parser(extent[0]);
             extent[0] = formatter(new Date(dt.setFullYear(dt.getFullYear() - 1)));
             extent[1] = formatter(new Date(dt.setFullYear(dt.getFullYear() + 2)));
@@ -157,7 +157,7 @@ export class MiniGantt extends SVGWidget {
             return;
         }
 
-        this.tooltipFormatter = d3TimeFormat(this.tooltipTimeFormat());
+        this.tooltipFormatter = d3TimeFormat.timeFormat(this.tooltipTimeFormat());
 
         const width = this.width();
         const height = this.height();

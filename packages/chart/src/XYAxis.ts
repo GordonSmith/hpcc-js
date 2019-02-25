@@ -3,7 +3,7 @@ import { max as d3Max, min as d3Min } from "d3-array";
 import { brush as d3Brush, brushSelection as d3BrushSelection, brushX as d3BrushX, brushY as d3BrushY } from "d3-brush";
 import { hsl as d3Hsl } from "d3-color";
 import { event as d3Event, select as d3Select } from "d3-selection";
-import { Axis } from "./Axis";
+import { Axis, AxisType } from "./Axis";
 
 import "../src/XYAxis.css";
 
@@ -412,12 +412,13 @@ export class XYAxis extends SVGWidget {
 
     updateBrush(width, height, maxCurrExtent, isHorizontal) {
         const currBrush = this.use2dSelection() ? this.xyBrush : isHorizontal ? this.xBrush : this.yBrush;
-        const prevBrushSel: any = d3BrushSelection(this.svgBrush.node());
+        const prevBrushSel = d3BrushSelection(this.svgBrush.node()) as [number, number];
         currBrush.extent([[0, 0], [width, height]]);
         this.svgBrush
             .attr("transform", "translate(" + this.margin.left + ", " + this.margin.top + ")")
             .style("display", this.selectionMode() ? null : "none")
             .call(currBrush)
+            .call(currBrush.move, prevBrushSel)  //  Force resize  ---
             ;
         const handleTypes = this.use2dSelection() ? [] : isHorizontal ? [{ type: "w" }, { type: "e" }] : [{ type: "n" }, { type: "s" }];
         const handlePath = this.svgBrush.selectAll(".handle--custom").data(handleTypes);
@@ -614,6 +615,19 @@ export class XYAxis extends SVGWidget {
         super.exit(domNode, element);
     }
 
+    selected(): any[] {
+        const retVal = [];
+        const selWE = this._selection.widgetElement();
+        if (selWE) {
+            this._selection.widgetElement().selectAll(".selected")
+                .each(function (d) {
+                    retVal.push(d.origRow);
+                })
+                ;
+        }
+        return retVal;
+    }
+
     selection(_selected) {
         const context = this;
         this._selection.widgetElement().selectAll(".selected,.deselected")
@@ -633,6 +647,7 @@ export class XYAxis extends SVGWidget {
         setTimeout(() => {
             this.click(selRows, "", true);
         }, 0);
+        return this;
     }
 
     //  Events  ---
@@ -660,8 +675,8 @@ export class XYAxis extends SVGWidget {
     @publishProxy("domainAxis", "tickFormat")
     xAxisTickFormat: publish<this, string>;
     @publishProxy("domainAxis", "type")
-    xAxisType: publish<this, string>;
-    xAxisType_default: publish<this, string>;
+    xAxisType: publish<this, AxisType>;
+    xAxisType_default: publish<this, AxisType>;
     @publishProxy("domainAxis", "timePattern")
     xAxisTypeTimePattern: publish<this, string>;
     @publish(null, "string", "X-Axis Low", null, { optional: true, disable: (w: XYAxis) => w.xAxisType() === "ordinal" })

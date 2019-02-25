@@ -1,7 +1,7 @@
-import { isArray } from "@hpcc-js/util";
+
+import { d3TimeFormat, isArray } from "@hpcc-js/util";
 import { ascending as d3Ascending, descending as d3Descending } from "d3-array";
 import { select as d3Select } from "d3-selection";
-import { timeFormat as d3TimeFormat } from "d3-time-format";
 
 function _naturalSort(a, b, order, idx, sortCaseSensitive) {
     const re = /(^([+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)?$|^0x[0-9a-f]+$|\d+)/gi;
@@ -443,7 +443,7 @@ export function d3ArrayAdapter(array) {
 
 export function downloadBlob(format, blob, id?, ext?) {
     const currentdate = new Date();
-    const timeFormat = d3TimeFormat("%Y-%m-%dT%H_%M_%S");
+    const timeFormat = d3TimeFormat.timeFormat("%Y-%m-%dT%H_%M_%S");
     const nowTime = timeFormat(currentdate);
     id = id || "data" + "_" + nowTime + "." + format.toLowerCase();
 

@@ -1619,6 +1619,54 @@ export namespace WUQueryDetails {
     }
 }
 
+export namespace WUQueryGetSummaryStats {
+
+    export interface Request {
+        Target: string;
+        QueryId: string;
+        FromTime?: string;
+        ToTime?: string;
+    }
+
+    export interface Exception {
+        Code: string;
+        Audience: string;
+        Source: string;
+        Message: string;
+    }
+
+    export interface Exceptions {
+        Source: string;
+        Exception: Exception[];
+    }
+
+    export interface QuerySummaryStat {
+        Endpoint: string;
+        Status: string;
+        StartTime: string;
+        EndTime: string;
+        CountTotal: number;
+        CountFailed: number;
+        AverageSlavesReplyLen: number;
+        AverageBytesOut: number;
+        SizeAvgPeakMemory: number;
+        TimeAvgTotalExecuteMinutes: number;
+        TimeMinTotalExecuteMinutes: number;
+        TimeMaxTotalExecuteMinutes: number;
+        Percentile97: number;
+        Percentile97Estimate: boolean;
+    }
+
+    export interface StatsList {
+        QuerySummaryStats: QuerySummaryStat[];
+    }
+
+    export interface Response {
+        Exceptions: Exceptions;
+        StatsList: StatsList;
+    }
+}
+
 export namespace WUAction {
     export type Type = "SetToFailed" | "Pause" | "PauseNow" | "Resume" | "Abort" | "Delete" | "Restore" | "Deschedule" | "Reschedule";
     export interface Request {
@@ -2451,6 +2499,10 @@ export class WorkunitsService {
 
     WUQueryDetails(request: WUQueryDetails.Request): Promise<WUQueryDetails.Response> {
         return this._connection.send("WUQueryDetails", request);
+    }
+
+    WUQueryGetSummaryStats(request: WUQueryGetSummaryStats.Request): Promise<WUQueryGetSummaryStats.Response> {
+        return this._connection.send("WUQueryGetSummaryStats", request);
     }
 
     WUListQueries(request: WUListQueries.Request): Promise<WUListQueries.Response> {

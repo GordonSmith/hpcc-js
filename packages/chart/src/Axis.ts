@@ -1,9 +1,9 @@
 import { publish, SVGWidget } from "@hpcc-js/common";
+import { d3TimeFormat } from "@hpcc-js/util";
 import { axisBottom as d3AxisBottom, axisLeft as d3AxisLeft, axisRight as d3AxisRight, axisTop as d3AxisTop } from "d3-axis";
 import { format as d3Format } from "d3-format";
 import { scaleBand as d3ScaleBand, scaleLinear as d3ScaleLinear, scaleLog as d3ScaleLog, scalePow as d3ScalePow, scaleTime as d3ScaleTime } from "d3-scale";
 import { select as d3Select } from "d3-selection";
-import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";
 
 import "../src/Axis.css";
 
@@ -16,6 +16,7 @@ export interface IOverflow {
     tickOverlapModulus: number;
 }
 
+export type AxisType = "none" | "ordinal" | "linear" | "pow" | "log" | "time";
 export class Axis extends SVGWidget {
     protected parser;
     protected parserInvert;
@@ -29,10 +30,10 @@ export class Axis extends SVGWidget {
     protected svgGuides;
 
     @publish("linear", "set", "Type", ["none", "ordinal", "linear", "pow", "log", "time"])
-    _type: string;
-    type(): string;
-    type(_: string): this;
-    type(_?: string): string | this {
+    _type: AxisType;
+    type(): AxisType;
+    type(_: AxisType): this;
+    type(_?: AxisType): AxisType | this {
         if (!arguments.length) return this._type;
         this._type = _;
         this.updateScale();
@@ -227,9 +228,9 @@ export class Axis extends SVGWidget {
                 if (this.low_exists() && this.high_exists()) {
                     this.d3Scale.domain([this.lowValue(), this.highValue()]);
                 }
-                this.parser = this.timePattern_exists() ? d3TimeParse(this.timePattern()) : null;
-                this.parserInvert = this.timePattern_exists() ? d3TimeFormat(this.timePattern()) : null;
-                this.formatter = this.tickFormat_exists() ? d3TimeFormat(this.tickFormat()) : null;
+                this.parser = this.timePattern_exists() ? d3TimeFormat.timeParse(this.timePattern()) : null;
+                this.parserInvert = this.timePattern_exists() ? d3TimeFormat.timeFormat(this.timePattern()) : null;
+                this.formatter = this.tickFormat_exists() ? d3TimeFormat.timeFormat(this.tickFormat()) : null;
                 break;
             default:
         }

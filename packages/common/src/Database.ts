@@ -1,8 +1,8 @@
+import { d3TimeFormat } from "@hpcc-js/util";
 import { deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "d3-array";
 import { map as d3Map, nest as d3Nest } from "d3-collection";
 import { csvFormatRows as d3CsvFormatRows, csvParse as d3CsvParse, tsvFormatRows as d3TsvFormatRows, tsvParse as d3TsvParse } from "d3-dsv";
 import { format as d3Format } from "d3-format";
-import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";
 import { PropertyExt } from "./PropertyExt";
 import * as Utility from "./Utility";
 
@@ -130,7 +130,7 @@ export class Field extends PropertyExt {
         switch (this.type()) {
             case "time":
             case "date":
-                return d3TimeFormat(format);
+                return d3TimeFormat.timeFormat(format);
         }
         retVal = d3Format(format);
         retVal.parse = function (_) {
@@ -823,7 +823,7 @@ dateFormats.forEach(function (d) {
 });
 function formatPicker(formats, cell) {
     for (let i = 0; i < formats.length; ++i) {
-        const date = d3TimeParse(formats[i])(cell);
+        const date = d3TimeFormat.timeParse(formats[i])(cell);
         if (date) {
             lastFoundFormat = formats[i];
             return formats[i];

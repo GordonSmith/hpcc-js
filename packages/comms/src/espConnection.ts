@@ -1,5 +1,8 @@
-import { join } from "@hpcc-js/util";
+import { d3TimeFormat, join } from "@hpcc-js/util";
 import { createConnection, IConnection, IOptions, ResponseType } from "./connection";
+
+export const dateFormatter = d3TimeFormat.utcFormat("%Y-%m-%dT%H:%M:%S.%LZ");
+export const dateParser = d3TimeFormat.utcParse("%Y-%m-%dT%H:%M:%S.%LZ");
 
 export type ESPResponseType = ResponseType | "json2" | "xsd";
 

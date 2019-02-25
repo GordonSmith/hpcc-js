@@ -1,10 +1,10 @@
 import { IInput } from "@hpcc-js/api";
 import { SVGWidget } from "@hpcc-js/common";
+import { d3TimeFormat } from "@hpcc-js/util";
 import { drag as d3Drag } from "d3-drag";
 import { format as d3Format } from "d3-format";
 import { scaleLinear as d3ScaleLinear } from "d3-scale";
 import { event as d3Event, select as d3Select } from "d3-selection";
-import { timeFormat as d3TimeFormat, timeParse as d3TimeParse } from "d3-time-format";
 
 import "../src/Slider.css";
 
@@ -43,7 +43,7 @@ export class Slider extends SVGWidget {
             ;
         if (this.low() === null && this.high() === null) {
             if (this.lowDatetime() !== null && this.highDatetime() !== null) {
-                const time_parser = d3TimeParse(this.timePattern() ? this.timePattern() : "%Q");
+                const time_parser = d3TimeFormat.timeParse(this.timePattern() ? this.timePattern() : "%Q");
                 this.low(time_parser(this.lowDatetime()).getTime());
                 this.high(time_parser(this.highDatetime()).getTime());
             }
@@ -111,8 +111,8 @@ export class Slider extends SVGWidget {
 
         const tick_text_arr = [];
         if (this.tickDateFormat() !== null && this.timePattern() !== null) {
-            const Q_parser = d3TimeParse("%Q");
-            const time_formatter = d3TimeFormat(this.tickDateFormat());
+            const Q_parser = d3TimeFormat.timeParse("%Q");
+            const time_formatter = d3TimeFormat.timeFormat(this.tickDateFormat());
             const time_segment = (this.high() - this.low()) / (this.tickCount() - 1);
             for (let i = 0; i < this.tickCount(); i++) {
                 const date_to_parse = "" + (this.low() + (time_segment * i));

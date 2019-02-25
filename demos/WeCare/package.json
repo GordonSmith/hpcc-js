@@ -20,8 +20,8 @@
     "@hpcc-js/dgrid": "^2.0.15",
     "@hpcc-js/form": "^2.3.2",
     "@hpcc-js/map": "^2.2.2",
+    "@hpcc-js/util": "^2.2.2",
     "d3-selection": "1.1.0",
-    "d3-time-format": "2.1.0",
     "impress.js": "GordonSmith/impressjs.git#MILEHIGH_UI",
     "tslib": "1.9.3"
   },

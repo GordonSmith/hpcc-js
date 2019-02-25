@@ -13,6 +13,9 @@ import { XYAxis } from "./XYAxis";
 
 import "../src/Scatter.css";
 
+export type InterpolateType = "" | "linear" | "step" | "step-before" | "step-after" | "basis" | "bundle" | "cardinal" | "catmullRom" | "natural" | "monotone";
+export const InterpolateTypeSet = ["", "linear", "step", "step-before", "step-after", "basis", "bundle", "cardinal", "catmullRom", "natural", "monotone"];
+
 export class Scatter extends XYAxis {
     static __inputs: InputField[] = [{
         id: "label",
@@ -310,8 +313,8 @@ export class Scatter extends XYAxis {
     pointSizeScale: { (): string; (_: string): Scatter; };
     pointShape: { (): string; (_: string): Scatter; };
     pointSize: { (): number; (_: number): Scatter; };
-    interpolate: { (): string; (_: string): Scatter; };
-    interpolate_default: { (): string; (_: string): Scatter; };
+    interpolate: { (): InterpolateType; (_: InterpolateType): Scatter; };
+    interpolate_default: { (): InterpolateType; (_: InterpolateType): Scatter; };
     interpolateFill: { (): boolean; (_: boolean): Scatter; };
     interpolateFill_default: { (): boolean; (_: boolean): Scatter; };
     interpolateFillOpacity: { (): number; (_: number): Scatter; };
@@ -332,6 +335,7 @@ export class Scatter extends XYAxis {
 Scatter.prototype._class += " chart_Scatter";
 Scatter.prototype.implements(INDChart.prototype);
 Scatter.prototype.implements(ITooltip.prototype);
+
 export interface Scatter {
     valueAnchor(): string;
     valueAnchor(_: string): this;
@@ -344,11 +348,12 @@ export interface Scatter {
     interpolateDarken(): boolean;
     interpolateDarken(_: boolean): this;
 }
+
 Scatter.prototype.publish("paletteID", "default", "set", "Color palette for this widget", Scatter.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
 Scatter.prototype.publish("pointSizeScale", "linear", "set", "pointSizeScale", ["linear", "pow", "log", "sqrt"]);
 Scatter.prototype.publish("pointShape", "cross", "set", "Shape of the data points", ["circle", "rectangle", "cross"]);
 Scatter.prototype.publish("pointSize", 6, "number", "Point Size", null, { range: { min: 1, step: 1, max: 200 } });
-Scatter.prototype.publish("interpolate", "", "set", "Interpolate Data", ["", "linear", "step", "step-before", "step-after", "basis", "bundle", "cardinal", "catmullRom", "natural", "monotone"]);
+Scatter.prototype.publish("interpolate", "", "set", "Interpolate Data", InterpolateTypeSet);
 Scatter.prototype.publish("pointDarken", true, "boolean", "If true, and interpolate is set, then points will have a slightly darker color than their assigned palette color", null, { disable: w => !w.interpolate() });
 Scatter.prototype.publish("interpolateDarken", true, "boolean", "If true, and interpolateFill is true, then lines will have a slightly darker color than their assigned palette color", null, { disable: w => !w.interpolateFill() });
 Scatter.prototype.publish("interpolateFill", false, "boolean", "If true, the area between the line and zero will be filled");

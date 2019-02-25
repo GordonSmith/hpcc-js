@@ -1,10 +1,6 @@
 import { StateObject, StringAnyMap } from "@hpcc-js/util";
-// import { utcFormat, utcParse } from "d3-time-format";
 import { WUDetails } from "../services/wsWorkunits";
 import { Workunit } from "./workunit";
-
-// const formatter = utcFormat("%Y-%m-%dT%H:%M:%S.%LZ");
-// const parser = utcParse("%Y-%m-%dT%H:%M:%S.%LZ");
 
 export interface AttributeEx extends WUDetails.Property {
     FormattedEnd?: string;

@@ -1,10 +1,10 @@
 import { HTMLWidget, Palette, Utility } from "@hpcc-js/common";
+import { d3TimeFormat } from "@hpcc-js/util";
 import { extent as d3Extent, range as d3Range } from "d3-array";
 import { map as d3Map } from "d3-collection";
 import { format as d3Format } from "d3-format";
 import { select as d3Select } from "d3-selection";
 import { timeDays as d3TimeDays, timeMonths as d3TimeMonths, timeWeek as d3TimeWeek, timeYear as d3TimeYear } from "d3-time";
-import { timeParse as d3TimeParse } from "d3-time-format";
 
 import "../src/CalendarHeatMap.css";
 
@@ -26,7 +26,7 @@ export class CalendarHeatMap extends HTMLWidget {
         if (this.fields().length === 0 || this.data().length === 0) {
             return [];
         }
-        const dateParser = d3TimeParse(this.datePattern());
+        const dateParser = d3TimeFormat.timeParse(this.datePattern());
         const valueFormatter = this.aggrDeltaColumn() ? d3Format(".1%") : d3Format("s");
         if (this._prevDateColumn !== this.dateColumn() ||
             this._prevAggrType !== this.aggrType() ||

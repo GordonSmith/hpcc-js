@@ -1,6 +1,7 @@
 export * from "./array";
 export * from "./cache";
 export * from "./debounce";
+export * from "./dateTime";
 export * from "./dictionary";
 export * from "./esp";
 export * from "./graph";
@@ -16,3 +17,8 @@ export * from "./stack";
 export * from "./stateful";
 export * from "./string";
 export * from "./url";
+
+import * as d3TimeFormat from "d3-time-format";
+export {
+    d3TimeFormat
+};

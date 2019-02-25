@@ -1,7 +1,6 @@
 import { Cache, deepMixinT, IEvent, scopedLogger, StateCallback, StateEvents, StateObject, StatePropCallback, StringAnyMap, XMLNode } from "@hpcc-js/util";
-import { utcFormat, utcParse } from "d3-time-format";
 import { IConnection, IOptions } from "../connection";
-import { ESPExceptions } from "../espConnection";
+import { dateFormatter, dateParser, ESPExceptions } from "../espConnection";
 import { SMCActivity } from "../services/wsSMC";
 import * as WsTopology from "../services/wsTopology";
 import * as WsWorkunits from "../services/wsWorkunits";
@@ -12,8 +11,6 @@ import { BaseScope, Scope } from "./scope";
 import { SourceFile } from "./sourceFile";
 import { Timer } from "./timer";
 
-const formatter = utcFormat("%Y-%m-%dT%H:%M:%S.%LZ");
-const parser = utcParse("%Y-%m-%dT%H:%M:%S.%LZ");
 const logger = scopedLogger("workunit.ts");
 
 const WUStateID = WsWorkunits.WUStateID;
@@ -643,9 +640,9 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
             for (const key in scopeInfo) {
                 const scope = scopeInfo[key];
                 if (scope.start && scope.elapsed) {
-                    const endTime = parser(scope.start);
+                    const endTime = dateParser(scope.start);
                     endTime!.setMilliseconds(endTime!.getMilliseconds() + scope.elapsed / 1000000);
-                    scope.finish = formatter(endTime!);
+                    scope.finish = dateFormatter(endTime!);
                     retVal.push(scope);
                 }
             }
