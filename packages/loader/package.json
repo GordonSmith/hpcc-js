@@ -35,6 +35,7 @@
     "@hpcc-js/eclwatch": "^2.1.8",
     "@hpcc-js/form": "^2.3.2",
     "@hpcc-js/graph": "^2.5.8",
+    "@hpcc-js/h3-js-umd": "^2.0.0",
     "@hpcc-js/html": "^2.0.14",
     "@hpcc-js/layout": "^2.6.5",
     "@hpcc-js/map": "^2.2.2",

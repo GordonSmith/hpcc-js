@@ -19,6 +19,9 @@
             "path": "../graph"
         },
         {
+            "path": "../h3-js-umd"
+        },
+        {
             "path": "../layout"
         },
         {

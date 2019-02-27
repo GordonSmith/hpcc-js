@@ -18,7 +18,7 @@
             "name": "Dashy-url",
             "type": "chrome",
             "request": "launch",
-            "url": "file:///${workspaceRoot}/index.html?Protocol=http&Hostname=10.173.10.157&Port=8002&QuerySet=roxie&QueryID=batchr3dspsvcqa_mbs_govbisvisearch.ins4631350_service_88785347",
+            "url": "file:///${workspaceRoot}/index.html?Protocol=http&Hostname=10.173.10.157&Port=8002&QuerySet=roxie&QueryID=stermi01_govbispunkadvancedv13.ins3900887_service_1",
             /*
             //  DDL1 Urls
             "url": "file:///${workspaceRoot}/index.html?Protocol=http&Hostname=10.173.10.157&Port=8002&QuerySet=roxie&QueryID=batchr3dspsvcqa_mbs_govbisvisearch.ins4631350_service_88785347",
