@@ -155,28 +155,13 @@ export class HexTest extends Hexagons {
         const polyQuery = {
             h3PolySetRes: resolution,
             h3PolySet: {
-                Row: [
-                    {
-                        lat: bounds.getNorth(),
-                        lng: west < -180 ? -180 : west
-                    },
-                    {
-                        lat: bounds.getNorth(),
-                        lng: east > 180 ? 180 : east
-                    },
-                    {
-                        lat: bounds.getSouth(),
-                        lng: east > 180 ? 180 : east
-                    },
-                    {
-                        lat: bounds.getSouth(),
-                        lng: west < -180 ? -180 : west
-                    }
-                ]
+                Row: poly.map(p => {
+                    return { lat: p[0], lng: p[1] };
+                })
             }
         };
 
-        this.query.submit(false ? polyQuery : indexQuery).then((response: any) => {
+        this.query.submit(true ? polyQuery : indexQuery).then((response: any) => {
             return response.IndexCountSet;
         }).then((data: any[]) => {
             const extent = d3Extent(data, row => row.rowcount);
