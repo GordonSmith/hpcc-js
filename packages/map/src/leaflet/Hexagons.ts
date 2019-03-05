@@ -156,7 +156,7 @@ export class HexTest extends Hexagons {
             h3PolySetRes: resolution,
             h3PolySet: {
                 Row: poly.map(p => {
-                    return { lat: p[0], lng: p[1] };
+                    return { lat: p[0], lon: p[1] };
                 })
             }
         };
