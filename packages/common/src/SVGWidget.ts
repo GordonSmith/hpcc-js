@@ -413,6 +413,16 @@ export class SVGWidget extends Widget {
     //  Download  ---
     private serializeSVG(svg?: Element): Blob {
         svg = svg || this.locateSVGNode(this._element.node());
+        (Array as any).from(svg.querySelectorAll("*")).forEach(elm => {
+            const styles = window.getComputedStyle(elm);
+            elm.style.font = styles.getPropertyValue("font");
+            elm.style.fill = styles.getPropertyValue("fill");
+            elm.style.stroke = styles.getPropertyValue("stroke");
+            elm.style.strokeWidth = styles.getPropertyValue("stroke-width");
+            elm.style.strokeDasharray = styles.getPropertyValue("stroke-dasharray");
+            elm.style.shapeRendering = styles.getPropertyValue("shape-rendering");
+            elm.style.opacity = styles.getPropertyValue("opacity");
+        });
         const xmlns = "http://www.w3.org/2000/xmlns/";
         const xlinkns = "http://www.w3.org/1999/xlink";
         const svgns = "http://www.w3.org/2000/svg";
@@ -443,12 +453,12 @@ export class SVGWidget extends Widget {
                 canvas.width = rect.width;
                 canvas.height = rect.height;
                 canvas.style.width = rect.width + "px";
-                const context = canvas.getContext("2d");
-                context.fillStyle = "white";
-                context.fillRect(0, 0, rect.width, rect.height)
-                context.fillStyle = "transparent";
-                context.drawImage(image, 0, 0, rect.width, rect.height);
-                context.canvas.toBlob(resolve);
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, rect.width, rect.height);
+                ctx.fillStyle = "transparent";
+                ctx.drawImage(image, 0, 0, rect.width, rect.height);
+                ctx.canvas.toBlob(resolve);
             };
             image.src = URL.createObjectURL(this.serializeSVG(svg));
         });
