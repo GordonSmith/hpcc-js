@@ -1,16 +1,29 @@
 import { expect } from "chai";
 
-import { Connection, WorkunitsService, WUQuery } from "@hpcc-js/comms";
+import { Connection, hookSend, WorkunitsService, WUQuery } from "@hpcc-js/comms";
 import { isBrowser } from "@hpcc-js/util";
 import { ESP_URL, isTravis } from "../testLib";
 
-describe("WsWorkunits", function () {
+const origSend = hookSend((opts, action, request, responseType, header?): Promise<any> => {
+    console.log(`${responseType}:  `, opts, request);
+    opts.type = "get";
+    return origSend(opts, action, request, responseType, header);
+});
+
+describe.only("WsWorkunits", function () {
     describe("POST", function () {
         const wsWorkunits = new WorkunitsService(new Connection({ baseUrl: ESP_URL, type: "post" }));
         doTest(wsWorkunits);
     });
     describe("GET", function () {
-        const wsWorkunits = new WorkunitsService(new Connection({ baseUrl: ESP_URL, type: "get" }));
+        const wsWorkunits = new WorkunitsService(new Connection({
+            baseUrl: ESP_URL,
+            type: "get",
+            hookSend: (options, action, request, responseType, defaultSend, header?): Promise<any> => {
+                console.log(`${responseType}:  `, request);
+                return defaultSend(options, action, request, responseType, header);
+            }
+        }));
         doTest(wsWorkunits);
     });
     if (isBrowser) {
@@ -24,7 +37,7 @@ describe("WsWorkunits", function () {
 function doTest(wsWorkunits: WorkunitsService) {
     let wu: WUQuery.ECLWorkunit;
     it("WUQuery", function () {
-        return wsWorkunits.WUQuery().then((response) => {
+        return wsWorkunits.WUQuery({ someTest: "aaa&BBB=ccc", someTest2: "Hello?and#welcome!" } as WUQuery.Request).then((response) => {
             expect(response).exist;
             expect(response.Workunits).exist;
             wu = response.Workunits.ECLWorkunit[0];
