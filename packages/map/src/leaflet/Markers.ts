@@ -41,7 +41,7 @@ export class Markers extends ClusterLayer {
         if (this._hashSum !== hashSum) {
             this._hashSum = hashSum;
             this.clear();
-            this.data().filter(row => !this.omitNullLatLong() || (!!row[latIdx] && !!row[longIdx])).forEach(row => {
+            this.addBulk(this.data().filter(row => !this.omitNullLatLong() || (!!row[latIdx] && !!row[longIdx])).map(row => {
                 const marker = new Marker([row[latIdx], row[longIdx]], markerOptions(row))
                     .on("click", e => this.clickHandler(e, marker, row))
                     ;
@@ -58,8 +58,8 @@ export class Markers extends ClusterLayer {
                         offset: point(this.popupOffsetX(), this.popupOffsetY())
                     });
                 }
-                this.add(marker);
-            });
+                return marker;
+            }));
         }
     }
 

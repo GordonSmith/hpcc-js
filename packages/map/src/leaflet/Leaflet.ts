@@ -12,7 +12,7 @@ import "../../src/leaflet/Leaflet.css";
 export class Leaflet extends HTMLWidget {
 
     protected _leafletElement;
-    private _leafletMap: L.Map;
+    protected _leafletMap: L.Map;
 
     protected _iconBar = new IconBar()
         .buttons([

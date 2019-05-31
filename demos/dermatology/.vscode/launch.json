@@ -19,6 +19,20 @@
             }
         },
         {
+            "name": "Leaflet.Graph",
+            "type": "chrome",
+            "request": "launch",
+            "url": "file:///${workspaceRoot}/index.html?src/map/Leaflet.Graph",
+            "runtimeArgs": [
+                "--allow-file-access-from-files"
+            ],
+            "webRoot": "${workspaceRoot}",
+            "sourceMapPathOverrides": {
+                "webpack:///./*": "${workspaceRoot}/*",
+                "webpack:///*": "/*"
+            }
+        },
+        {
             "name": "Leaflet.Pins",
             "type": "chrome",
             "request": "launch",

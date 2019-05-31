@@ -508,6 +508,35 @@
             }
         },
         Leaflet: {
+            Graph: function (callback) {
+                legacyRequire(["test/DataFactory", "src/map/Leaflet"], function (DataFactory, Leaflet) {
+                    var nodeIndex = {};
+                    var nodes = [];
+                    var edgeIndex = {};
+                    var edges = [];
+                    DataFactory.Sample.FlightPath.data.forEach(function (row) {
+                        if (!nodeIndex[row[2]]) {
+                            nodeIndex[row[2]] = true;
+                            nodes.push(row.filter((d, i) => i < 5));
+                        }
+                        if (!nodeIndex[row[6]]) {
+                            nodeIndex[row[6]] = true;
+                            nodes.push([row[5], row[7], row[6], row[8], row[9]]);
+                        }
+                        edges.push([row[2], row[6]]);
+                    });
+                    callback(new Leaflet.Graph()
+                        .mapType("None")
+                        .columns(["state", "airport", "iata", "lat", "long"])
+                        .data(nodes)
+                        .links(edges)
+                        .latitudeColumn("lat")
+                        .longtitudeColumn("long")
+                        .linkIDColumn("iata")
+                        .faChar("fa-plane")
+                    );
+                });
+            },
             Pins: function (callback) {
                 legacyRequire(["test/DataFactory", "src/map/Leaflet"], function (DataFactory, Leaflet) {
                     callback(new Leaflet.Leaflet()

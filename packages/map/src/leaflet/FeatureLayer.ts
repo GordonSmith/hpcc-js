@@ -10,13 +10,13 @@ import "leaflet.markercluster.css";
 import "leaflet.markercluster.default.css";
 
 export class FeatureLayer extends Leaflet implements ILayer {
-    private _layer: FeatureGroup | MarkerClusterGroup;
+    protected _featureGroup: FeatureGroup | MarkerClusterGroup;
     protected _selection: Utility.SimpleSelection;
 
     constructor(cluster = false) {
         super();
-        this._layer = cluster ? new MarkerClusterGroup() : new FeatureGroup();
-        (this._layer as any).__hpcc_layer = this;
+        this._featureGroup = cluster ? new MarkerClusterGroup() : new FeatureGroup();
+        (this._featureGroup as any).__hpcc_layer = this;
         Utility.SimpleSelectionMixin.call(this);
         this.layers([this]);
     }
@@ -31,11 +31,15 @@ export class FeatureLayer extends Leaflet implements ILayer {
     }
 
     clear() {
-        this._layer.clearLayers();
+        this._featureGroup.clearLayers();
     }
 
     add(layer) {
-        this._layer.addLayer(layer);
+        this._featureGroup.addLayer(layer);
+    }
+
+    addBulk(layers) {
+        this._featureGroup.addLayers(layers);
     }
 
     maxZoom() {
@@ -64,11 +68,11 @@ export class FeatureLayer extends Leaflet implements ILayer {
     }
 
     getBounds(): LatLngBounds {
-        return this._layer.getBounds();
+        return this._featureGroup.getBounds();
     }
 
     layerEnter(map: Map) {
-        map.addLayer(this._layer);
+        map.addLayer(this._featureGroup);
         const elem = d3Select(map.getContainer()).select(".leaflet-pane.leaflet-marker-pane");
         this._selection.widgetElement(elem);
     }
@@ -77,8 +81,8 @@ export class FeatureLayer extends Leaflet implements ILayer {
     }
 
     layerExit(map: Map) {
-        this._layer.clearLayers();
-        map.removeLayer(this._layer);
+        this._featureGroup.clearLayers();
+        map.removeLayer(this._featureGroup);
     }
 
     //  Events  ---

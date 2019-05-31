@@ -14,8 +14,9 @@ export class Pins extends Markers {
         const faCharColorIdx = columns.indexOf(this.faCharColorColumn());
         const strokeColorIdx = columns.indexOf(this.strokeColorColumn());
         const fillColorIdx = columns.indexOf(this.fillColorColumn());
-        super.layerUpdate(map, (row) => {
+        super.layerUpdate(map, row => {
             return {
+                id: this.layerID(row),
                 icon: BeautifyIcon({
                     iconShape: "marker",
                     icon: this.propValue(faCharIdx, row, this.faChar()),
@@ -30,6 +31,10 @@ export class Pins extends Markers {
                 draggable: false
             };
         });
+    }
+
+    layerID(row) {
+        return undefined;
     }
 }
 Pins.prototype._class += " map_Pins";
