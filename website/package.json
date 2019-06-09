@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "examples": "docusaurus-examples",
+    "start": "docusaurus-start",
+    "build": "docusaurus-build",
+    "publish-gh-pages": "docusaurus-publish",
+    "publish": "cross-env GIT_USER=GordonSmith CURRENT_BRANCH=docusaurus USE_SSH=true npm run publish-gh-pages",
+    "write-translations": "docusaurus-write-translations",
+    "version": "docusaurus-version",
+    "rename-version": "docusaurus-rename-version"
+  },
+  "devDependencies": {
+    "cross-env": "5.2.0",
+    "docusaurus": "^1.11.1"
+  }
+}

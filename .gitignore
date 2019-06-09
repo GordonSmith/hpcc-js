@@ -6,6 +6,7 @@ lib*/
 types/
 tests/**/.vs*
 util/**/.vs*
+**/.vscode/ipch/
 packages/**/package-lock.json
 tests/**/package-lock.json
 util/**/package-lock.json

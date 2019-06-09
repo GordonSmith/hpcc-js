@@ -1,0 +1,26 @@
+{
+  "docs": {
+    "Getting Started": [
+      "installation",
+      "iife_unpkg",
+      "iife_npm",
+      "amd_unpkg",
+      "amd_npm",
+      "webpack_npm",
+      "rollup_npm"
+    ],
+    "Visualizations": [
+      "viz",
+      "chart"
+    ],
+    "Comms": [
+      "doc3"
+    ]
+  },
+  "docs-other": {
+    "First Category": [
+      "doc4",
+      "doc5"
+    ]
+  }
+}
