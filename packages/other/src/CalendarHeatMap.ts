@@ -144,6 +144,7 @@ export class CalendarHeatMap extends HTMLWidget {
             .attr("height", cellSize)
             .style("stroke", this.dayStrokeColor())
             .style("stroke-width", this.dayStrokeWidth())
+            .style("fill", null)
             ;
         dayRectUpdate.select("title")
             .text(d => d)
@@ -162,7 +163,6 @@ export class CalendarHeatMap extends HTMLWidget {
                 return data2.key + ": " + data2.formattedValues;
             })
             ;
-        dayRect.exit().remove();
 
         const monthPath = svg.select(".months").selectAll(".month").data(function (d) { return d3TimeMonths(new Date(d, 0, 1), new Date(d + 1, 0, 1)); });
         monthPath.enter().append("path")

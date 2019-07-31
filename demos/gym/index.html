@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Gym</title>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        #placeholder {
+            position: absolute;
+            top: 8px;
+            height: 800px;
+            left: 8px;
+            right: 8px;
+        }
+    </style>
+    <script src="data/raw.js"></script>
+    <script src="../../node_modules/requirejs/require.js"></script>
+    <script>
+        require.config({
+            baseUrl: ".",
+            paths: {
+                "@hpcc-js/util": "../../packages/util/dist/index",
+                "@hpcc-js/common": "../../packages/common/dist/index",
+                "@hpcc-js/api": "../../packages/api/dist/index",
+                "@hpcc-js/chart": "../../packages/chart/dist/index",
+                "@hpcc-js/dgrid-shim": "../../packages/dgrid-shim/dist/index",
+                "@hpcc-js/dgrid": "../../packages/dgrid/dist/index",
+                "@hpcc-js/layout": "../../packages/layout/dist/index",
+                "@hpcc-js/other": "../../packages/other/dist/index",
+                "@hpcc-js/tree": "../../packages/tree/dist/index",
+                "@hpcc-js/phosphor": "../../packages/phosphor/dist/index",
+                "tslib": "../../node_modules/tslib/tslib"
+            }
+        });
+    </script>
+</head>
+
+<body onresize="doResize()">
+    <div id="placeholder">
+    </div>
+    <script>
+        var app;
+        require(["lib-umd/fakeData", "lib-umd/index"], function (fakeData, indexMod) {
+            app = new indexMod.Main()
+                .target("placeholder")
+                .initData(fakeData.exercise, fakeData.exercise_log)
+                .render()
+                ;
+        });
+
+        function doResize() {
+            if (app) {
+                app
+                    .resize()
+                    .render()
+                    ;
+            }
+        }
+    </script>
+</body>
+
+</html>

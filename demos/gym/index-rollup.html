@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Participation Dashbaord</title>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            padding: 0px;
+            margin: 0px;
+            overflow: hidden;
+        }
+
+        #placeholder {
+            position: absolute;
+            top: 8px;
+            height: 800px;
+            left: 8px;
+            right: 8px;
+        }
+    </style>
+    <script src="dist/index.min.js"></script>
+</head>
+
+<body onresize="doResize()">
+    <div id="placeholder">
+    </div>
+
+    <script>
+        //  PHP:  Replace the following two lines with the actual data...
+        var exercise = [];
+        var exercise_log = [];
+        //  --- -- ---
+
+        var app = new dashboard.Main(1237)
+            .target("placeholder")
+            .initData(exercise, exercise_log)
+            .render()
+            ;
+
+        function doResize() {
+            if (app) {
+                app
+                    .resize()
+                    .render()
+                    ;
+            }
+        }
+    </script>
+</body>
+
+</html>
