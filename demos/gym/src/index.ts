@@ -1,5 +1,6 @@
 ﻿import { Bar, Column, Radar } from "@hpcc-js/chart";
 import { Table } from "@hpcc-js/dgrid";
+import { ChartPanel } from "@hpcc-js/layout";
 import { CalendarHeatMap } from "@hpcc-js/other";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { AllData, DB, map2arr } from "./db";
@@ -53,7 +54,10 @@ export class Main extends DockPanel {
     private bodyPart = new Radar()
         .columns(["Part", "Count"]);
 
-    private exerciseBar = new Bar()
+    private exerciseBar = new ChartPanel()
+        .title("Exercise Summary")
+        .downloadImageButtonVisible(true)
+        .widget(new Bar())
         .columns(["Label", "Count"])
         ;
 

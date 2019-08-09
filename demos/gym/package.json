@@ -4,14 +4,14 @@
     "main": "dist/index.js",
     "scripts": {
         "clean": "rimraf lib* types dist *.tsbuildinfo",
-        "copy-resources": "cpx \"node_modules/font-awesome/fonts/*\" \"dist/font-awesome/fonts\" && cpx \"node_modules/font-awesome/css/*\" \"dist/font-awesome/css\"",
+        "copy-resources": "cpx \"node_modules/@hpcc-js/common/font-awesome/fonts/*\" \"dist/font-awesome/fonts\" && cpx \"node_modules/@hpcc-js/common/font-awesome/css/*\" \"dist/font-awesome/css\"",
         "compile-es6": "tsc --module es6 --outDir ./lib-es6",
         "compile-es6-watch": "npm run compile-es6 -- -w",
         "compile-umd": "tsc --module umd --outDir ./lib-umd",
         "bundle": "rollup -c",
         "bundle-watch": "npm run bundle -- -w",
         "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
-        "build": "run-s compile-es6 bundle",
+        "build": "run-s copy-resources compile-es6 bundle",
         "watch": "run-p compile-es6-watch bundle-watch"
     },
     "dependencies": {
