@@ -1,4 +1,4 @@
-import { HTMLWidget, publish, Widget } from "@hpcc-js/common";
+import { HTMLWidget, Widget } from "@hpcc-js/common";
 import * as marked from "marked";
 import { markdownWidget } from "./markdownPlugins/index.js";
 
@@ -7,19 +7,35 @@ export class Markdown extends HTMLWidget {
     private _renderer = new marked.Renderer();
     private _origCode = this._renderer.code;
     private _codeSamples: Widget[] = [];
+    public _anchors = [];
 
-    @publish("", "string")
-    markdown: publish<this, string>;
+    _markdown: string;
+
+    markdown(): string;
+    markdown(_: string): this;
+    markdown(_?: string): this | string {
+        if (!arguments.length)return this._markdown;
+        this._anchors = [];
+        this._markdown = _;
+        return this;
+    }
+
+    scroll() {}
 
     constructor() {
         super();
 
         //  Heading override ---
+        const context = this;
         this._renderer.heading = function (text, level) {
-            const escapedText = text.toLowerCase().replace(/[^\w]+/g, "-");
+            const escapedText = text.toLowerCase().replace(/[^\w]+/g, "");
+            context._anchors.push({
+                label: text,
+                href: "#" + escapedText
+            });
             return `\
 <h${level}>
-    <a name="${escapedText}" class="anchor" href="#${escapedText}">
+    <a id="${escapedText}" class="anchor" href="#${escapedText}">
         <span class="header-link"></span>
     </a>
     ${text}
@@ -43,10 +59,15 @@ export class Markdown extends HTMLWidget {
 
     enter(domNode, element) {
         super.enter(domNode, element);
+        const context = this;
         element
             .style("overflow-x", "hidden")
             .style("overflow-y", "scroll")
             .style("padding", "8px")
+            .on("scroll", function() {
+                console.log("scroll test");
+                context.scroll.apply(this, arguments);
+            })
             ;
     }
 
@@ -71,3 +92,5 @@ export class Markdown extends HTMLWidget {
         }
     }
 }
+
+Markdown.prototype.publish("markdown", "", "string", "String to be rendered as markdown");

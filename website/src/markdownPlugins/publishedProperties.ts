@@ -42,7 +42,8 @@ export class PublishedProperties extends HTMLWidget {
                 md.push(`* **optional**: ${!!meta.ext.optional}`);
                 md.push(`* **default**: ${JSON.stringify(meta.defaultValue)} `);
                 if (meta.type === "set") {
-                    md.push(`* **options**: ${JSON.stringify(meta.set)} `);
+                    const set = typeof meta.set === "function" ? meta.set() : meta.set;
+                    md.push(`* **options**: "${set.join('" | "')}" `);
                 }
                 md.push("");
             });
