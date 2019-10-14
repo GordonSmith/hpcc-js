@@ -2,8 +2,27 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/WordCloud.ts#L11",
-    "extends": "SVGWidget"
+    "id": 15139,
+    "name": "WordCloud",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "WordCloud.ts",
+            "line": 11,
+            "character": 22
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "SVGWidget"
+        }
+    ],
+    "folder": "packages/chart"
 }
 -->
 

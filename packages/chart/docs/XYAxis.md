@@ -41,12 +41,12 @@
         {
             "type": "reference",
             "name": "Contour",
-            "id": 6230
+            "id": 6232
         },
         {
             "type": "reference",
             "name": "HexBin",
-            "id": 9936
+            "id": 9464
         }
     ],
     "folder": "packages/chart"

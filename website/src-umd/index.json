@@ -1,424 +1,5 @@
 [
     {
-        "root": "",
-        "folder": "Getting Started",
-        "path": "docs/Getting Started/formatting.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "Formatting"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Number formatting"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Date and time formatting"
-            }
-        ]
-    },
-    {
-        "root": "",
-        "folder": "Getting Started",
-        "path": "docs/Getting Started/importRequireGlobalVars.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "IMPORT, REQUIRE and Global Namespaces"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "\\<SCRIPT> and Global Namespaces"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "ES6 IMPORT"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "AMD REQUIRE"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "CommonJS REQUIRE"
-            }
-        ]
-    },
-    {
-        "root": "",
-        "folder": "Getting Started",
-        "path": "docs/Getting Started/installation.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "Installation"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "NPM + WebPack"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "Install dependencies:"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "JavaScript"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "Create a WebPack configuration file:"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "Run WebPack"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "Include the bundled sources into your web page:"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "CDN + https://unpkg.com"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "NPM + \\<SCRIPT>"
-            }
-        ]
-    },
-    {
-        "root": "",
-        "folder": "Getting Started",
-        "path": "docs/Getting Started/tutorial.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "Tutorial"
-            }
-        ]
-    },
-    {
-        "root": "",
-        "folder": "",
-        "path": "docs/index.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "@hpcc-js (aka Viz Framework 2.0)"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Contents"
-            }
-        ]
-    },
-    {
-        "root": "",
-        "folder": "Website Tests",
-        "path": "docs/Website Tests/demo.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "Demo..."
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Calling Roxie"
-            }
-        ]
-    },
-    {
-        "root": "",
-        "folder": "Website Tests",
-        "path": "docs/Website Tests/Samples.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "Sample"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Samples"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "Code and Sample (Splitter)"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "Code and Sample (Tabbed)"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "Just a Sample (no code)"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "Just code (no visible sample)"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/CSSEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "CSSEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/ECLEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "ECLEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/HTMLEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "HTMLEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/JSEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "JSEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/JSONEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "JSONEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/MarkdownEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "MarkdownEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/XMLEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "XMLEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/map-deck",
-        "folder": "",
-        "path": "packages/map-deck/docs/CircleLines.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "CircleLines"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/map-deck",
-        "folder": "",
-        "path": "packages/map-deck/docs/index.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "@hpcc-js/map-deck"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "MapBox API Key"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Contents"
-            }
-        ]
-    },
-    {
-        "root": "packages/map-deck",
-        "folder": "",
-        "path": "packages/map-deck/docs/Polygons.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "Polygons"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 3,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
         "root": "packages/chart",
         "folder": "",
         "path": "packages/chart/docs/Area.md",
@@ -871,6 +452,205 @@
         ]
     },
     {
+        "root": "",
+        "folder": "Getting Started",
+        "path": "docs/Getting Started/formatting.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "Formatting"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Number formatting"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Date and time formatting"
+            }
+        ]
+    },
+    {
+        "root": "",
+        "folder": "Getting Started",
+        "path": "docs/Getting Started/importRequireGlobalVars.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "IMPORT, REQUIRE and Global Namespaces"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "\\<SCRIPT> and Global Namespaces"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "ES6 IMPORT"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "AMD REQUIRE"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "CommonJS REQUIRE"
+            }
+        ]
+    },
+    {
+        "root": "",
+        "folder": "Getting Started",
+        "path": "docs/Getting Started/installation.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "Installation"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "NPM + WebPack"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "Install dependencies:"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "JavaScript"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "Create a WebPack configuration file:"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "Run WebPack"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "Include the bundled sources into your web page:"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "CDN + https://unpkg.com"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "NPM + \\<SCRIPT>"
+            }
+        ]
+    },
+    {
+        "root": "",
+        "folder": "Getting Started",
+        "path": "docs/Getting Started/tutorial.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "Tutorial"
+            }
+        ]
+    },
+    {
+        "root": "",
+        "folder": "",
+        "path": "docs/index.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "@hpcc-js (aka Viz Framework 2.0)"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Contents"
+            }
+        ]
+    },
+    {
+        "root": "",
+        "folder": "Website Tests",
+        "path": "docs/Website Tests/demo.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "Demo..."
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Calling Roxie"
+            }
+        ]
+    },
+    {
+        "root": "",
+        "folder": "Website Tests",
+        "path": "docs/Website Tests/Samples.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "Sample"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Samples"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "Code and Sample (Splitter)"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "Code and Sample (Tabbed)"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "Just a Sample (no code)"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "Just code (no visible sample)"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
         "root": "packages/common",
         "folder": "",
         "path": "packages/common/docs/index.md",
@@ -946,6 +726,226 @@
                 "type": "heading",
                 "depth": 3,
                 "text": "Using a custom palette"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/CSSEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "CSSEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/ECLEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "ECLEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/HTMLEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "HTMLEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/JSEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "JSEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/JSONEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "JSONEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/MarkdownEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "MarkdownEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/XMLEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "XMLEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/map-deck",
+        "folder": "",
+        "path": "packages/map-deck/docs/CircleLines.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "CircleLines"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/map-deck",
+        "folder": "",
+        "path": "packages/map-deck/docs/index.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "@hpcc-js/map-deck"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "MapBox API Key"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Contents"
+            }
+        ]
+    },
+    {
+        "root": "packages/map-deck",
+        "folder": "",
+        "path": "packages/map-deck/docs/Polygons.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "Polygons"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 3,
+                "text": "Published Properties"
             }
         ]
     }

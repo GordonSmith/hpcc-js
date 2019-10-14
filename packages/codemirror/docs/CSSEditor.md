@@ -2,8 +2,28 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/CSSEditor.ts#L3",
-    "extends": "Editor"
+    "id": 16234,
+    "name": "CSSEditor",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "CSSEditor.ts",
+            "line": 3,
+            "character": 22
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "Editor",
+            "id": 15805
+        }
+    ],
+    "folder": "packages/codemirror"
 }
 -->
 

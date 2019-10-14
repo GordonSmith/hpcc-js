@@ -2,7 +2,7 @@
 
 <!--meta
 {
-    "id": 913,
+    "id": 36502,
     "name": "Polygons",
     "kind": 128,
     "kindString": "Class",
@@ -25,7 +25,7 @@
         {
             "type": "reference",
             "name": "Common",
-            "id": 10
+            "id": 35582
         }
     ],
     "folder": "packages/map-deck"

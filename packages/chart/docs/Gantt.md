@@ -2,8 +2,28 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/Gantt.ts#L3",
-    "extends": "Bar"
+    "id": 7091,
+    "name": "Gantt",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "Gantt.ts",
+            "line": 3,
+            "character": 18
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "Bar",
+            "id": 3919
+        }
+    ],
+    "folder": "packages/chart"
 }
 -->
 

@@ -2,8 +2,27 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/Bubble.ts#L8",
-    "extends": "SVGWidget"
+    "id": 4581,
+    "name": "Bubble",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "Bubble.ts",
+            "line": 8,
+            "character": 19
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "SVGWidget"
+        }
+    ],
+    "folder": "packages/chart"
 }
 -->
 

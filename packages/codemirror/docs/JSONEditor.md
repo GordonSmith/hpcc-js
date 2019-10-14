@@ -2,8 +2,28 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/JSONEditor.ts#L3",
-    "extends": "Editor"
+    "id": 18393,
+    "name": "JSONEditor",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "JSONEditor.ts",
+            "line": 3,
+            "character": 23
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "Editor",
+            "id": 15805
+        }
+    ],
+    "folder": "packages/codemirror"
 }
 -->
 

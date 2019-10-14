@@ -2,8 +2,28 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/Step.ts#L3",
-    "extends": "Scatter"
+    "id": 13237,
+    "name": "Step",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "Step.ts",
+            "line": 3,
+            "character": 17
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "Scatter",
+            "id": 1462
+        }
+    ],
+    "folder": "packages/chart"
 }
 -->
 
