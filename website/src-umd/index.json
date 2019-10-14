@@ -452,6 +452,160 @@
         ]
     },
     {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/CSSEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "CSSEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/ECLEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "ECLEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/HTMLEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "HTMLEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/JSEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "JSEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/JSONEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "JSONEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/MarkdownEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "MarkdownEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
+        "root": "packages/codemirror",
+        "folder": "",
+        "path": "packages/codemirror/docs/XMLEditor.md",
+        "headings": [
+            {
+                "type": "heading",
+                "depth": 1,
+                "text": "XMLEditor"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "API"
+            },
+            {
+                "type": "heading",
+                "depth": 2,
+                "text": "Published Properties"
+            }
+        ]
+    },
+    {
         "root": "",
         "folder": "Getting Started",
         "path": "docs/Getting Started/formatting.md",
@@ -726,160 +880,6 @@
                 "type": "heading",
                 "depth": 3,
                 "text": "Using a custom palette"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/CSSEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "CSSEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/ECLEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "ECLEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/HTMLEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "HTMLEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/JSEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "JSEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/JSONEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "JSONEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/MarkdownEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "MarkdownEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
-            }
-        ]
-    },
-    {
-        "root": "packages/codemirror",
-        "folder": "",
-        "path": "packages/codemirror/docs/XMLEditor.md",
-        "headings": [
-            {
-                "type": "heading",
-                "depth": 1,
-                "text": "XMLEditor"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "API"
-            },
-            {
-                "type": "heading",
-                "depth": 2,
-                "text": "Published Properties"
             }
         ]
     },
