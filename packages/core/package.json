@@ -5,12 +5,12 @@
   "main": "dist/index.js",
   "module": "dist/index.es6",
   "unpkg": "dist/index.min.js",
+  "jsdelivr": "dist/index.min.js",
   "types": "types/index.d.ts",
   "files": [
+    "dist/*",
     "types/*",
-    "lib-es6/*",
-    "src/*.css",
-    "dist/*"
+    "src/*.css"
   ],
   "scripts": {
     "clean": "rimraf lib* types dist *.tsbuildinfo",
@@ -19,7 +19,7 @@
     "compile-umd": "tsc --module umd --outDir ./lib-umd",
     "bundle": "rollup -c",
     "bundle-watch": "npm run bundle -- -w",
-    "minimize": "terser dist/index.js -c -m --source-map -o dist/index.min.js",
+    "minimize": "terser dist/index.js -c -m --source-map \"content='dist/index.js.map',url='index.min.js.map'\" -o dist/index.min.js",
     "build": "npm run compile-es6 && npm run bundle",
     "watch": "run-p compile-es6-watch bundle-watch",
     "stamp": "node node_modules/@hpcc-js/bundle/src/stamp.js",
@@ -27,7 +27,7 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/util": "^2.8.2",
+    "@hpcc-js/util": "^2.8.3",
     "@types/d3-selection": "1.4.1"
   },
   "devDependencies": {

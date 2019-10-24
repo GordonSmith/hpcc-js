@@ -29,6 +29,7 @@
   "dependencies": {
     "@hpcc-js/api": "^2.8.4",
     "@hpcc-js/common": "^2.19.3",
+    "@hpcc-js/core": "^0.0.0",
     "@hpcc-js/util": "^2.8.3"
   },
   "devDependencies": {
@@ -36,12 +37,14 @@
     "@types/d3-transition": "1.1.4",
     "@types/dagre": "0.7.41",
     "d3-array": "1.2.4",
-    "d3-drag": "1.2.3",
+    "d3-drag": "1.2.4",
     "d3-force": "1.0.6",
+    "d3-geo": "1.6.4",
     "d3-sankey": "0.5.0",
     "d3-selection": "1.4.0",
     "d3-shape": "1.2.0",
     "d3-transition": "1.2.0",
+    "d3-tile": "1.0.0",
     "dagre": "0.8.4",
     "npm-run-all": "4.1.5",
     "rimraf": "2.6.3",

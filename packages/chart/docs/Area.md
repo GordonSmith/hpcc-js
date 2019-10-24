@@ -244,12 +244,12 @@ new Area()
     ],
     "sources": [
         {
-            "fileName": "C:/Users/jaman/CODE/HPCCJS_2_x_x/Visualization/packages/common/types/SVGWidget.d.ts",
+            "fileName": "C:/Users/gordon/git/hpcc-js/packages/common/types/SVGWidget.d.ts",
             "line": 43,
             "character": 10
         },
         {
-            "fileName": "C:/Users/jaman/CODE/HPCCJS_2_x_x/Visualization/packages/common/types/SVGWidget.d.ts",
+            "fileName": "C:/Users/gordon/git/hpcc-js/packages/common/types/SVGWidget.d.ts",
             "line": 44,
             "character": 10
         }

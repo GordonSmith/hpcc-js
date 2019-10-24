@@ -2,8 +2,32 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/QuartileCandlestick.ts#L4",
-    "extends": "SVGWidget"
+    "id": 11602,
+    "name": "QuartileCandlestick",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "QuartileCandlestick.ts",
+            "line": 4,
+            "character": 32
+        },
+        {
+            "fileName": "QuartileCandlestick.ts",
+            "line": 300,
+            "character": 36
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "SVGWidget"
+        }
+    ],
+    "folder": "packages/chart"
 }
 -->
 

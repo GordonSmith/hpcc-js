@@ -7,6 +7,14 @@
     }
 }(this, function () {
     return {
+        Graph3: {
+            simple: function (callback) {
+                legacyRequire(["test/DataFactory", "src/graph/Graph3"], function (DataFactory, Graph3) {
+                    callback(new Graph3()
+                    );
+                });
+            }
+        },
         Vertex: {
             simple: function (callback) {
                 legacyRequire(["test/DataFactory", "src/graph/Vertex"], function (DataFactory, Vertex) {

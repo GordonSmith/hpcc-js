@@ -1,11 +1,11 @@
-import { event as d3Event, select as d3Select } from "d3-selection";
+import * as d3 from "./d3";
 import { publish } from "./serialize";
-import { Widget } from "./widget";
+import { Surface } from "./surface";
 
 import "../src/ARIATable.css";
 import "./lite/api";
 
-export class AriaTable extends Widget {
+export class AriaTable extends Surface<"table"> {
     private _caption: any;
     private _tableHeader: any;
     private _tableBody: any;
@@ -60,16 +60,16 @@ export class AriaTable extends Widget {
             .attr("class", "td_" + id)
             .each(function (this: Element, d, i) {
                 if (i > 0) {
-                    d3Select(this).append("a")
+                    d3.select(this).append("a")
                         .attr("tabindex", -1)
                         .attr("href", "#")
                         .on("click", function (d, i) {
-                            d3Event.preventDefault();
+                            d3.event.preventDefault();
                             return false;
                         })
                         ;
                 } else {
-                    d3Select(this)
+                    d3.select(this)
                         .attr("tabindex", -1)
                         ;
                 }
@@ -77,9 +77,9 @@ export class AriaTable extends Widget {
             .merge(cells)
             .each(function (this: Element, d, i) {
                 if (i > 0) {
-                    d3Select(this).select("a").text(d);
+                    d3.select(this).select("a").text(d);
                 } else {
-                    d3Select(this).text(d);
+                    d3.select(this).text(d);
                 }
             })
             ;

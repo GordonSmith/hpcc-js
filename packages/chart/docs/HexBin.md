@@ -2,8 +2,28 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/HexBin.ts#L9",
-    "extends": "XYAxis"
+    "id": 9464,
+    "name": "HexBin",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "HexBin.ts",
+            "line": 9,
+            "character": 19
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "XYAxis",
+            "id": 693
+        }
+    ],
+    "folder": "packages/chart"
 }
 -->
 

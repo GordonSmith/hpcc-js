@@ -2,8 +2,28 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/ECLEditor.ts#L5",
-    "extends": "Editor"
+    "id": 17096,
+    "name": "ECLEditor",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "ECLEditor.ts",
+            "line": 5,
+            "character": 22
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "Editor",
+            "id": 15805
+        }
+    ],
+    "folder": "packages/codemirror"
 }
 -->
 

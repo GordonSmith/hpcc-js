@@ -27,7 +27,7 @@
         {
             "type": "reference",
             "name": "Gantt",
-            "id": 7089
+            "id": 7091
         }
     ],
     "folder": "packages/chart"

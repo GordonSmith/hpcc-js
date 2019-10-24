@@ -2,8 +2,28 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/Line.ts#L5",
-    "extends": "Scatter"
+    "id": 10281,
+    "name": "Line",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "Line.ts",
+            "line": 5,
+            "character": 17
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "Scatter",
+            "id": 1462
+        }
+    ],
+    "folder": "packages/chart"
 }
 -->
 
