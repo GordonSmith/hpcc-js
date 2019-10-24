@@ -2,8 +2,28 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/MarkdownEditor.ts#L3",
-    "extends": "Editor"
+    "id": 18824,
+    "name": "MarkdownEditor",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "MarkdownEditor.ts",
+            "line": 3,
+            "character": 27
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "Editor",
+            "id": 15805
+        }
+    ],
+    "folder": "packages/codemirror"
 }
 -->
 

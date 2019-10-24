@@ -35,7 +35,7 @@ const is_META = (key: string) => key.indexOf("__META__") === 0;
  * Public property call signature
  */
 export type publish<T, C> = {
-    (): T,
+    (): Readonly<T>,
     (_: TOrTFunctor<T, C>): C
 };
 
@@ -115,8 +115,10 @@ export function serializable(moduleName: string) {
             }
 
             cssClass(prefix: string = "hpcc-js"): string {
-                if (__proto__.cssClass) {
-                    return __proto__.cssClass.call(this) + " " + prefix + "-" + className;
+                const __proto__ = Object.getPrototypeOf(this);
+                const className = __proto__.constructor.name;
+                if (__proto__.__proto__ && __proto__.__proto__.cssClass) {
+                    return __proto__.__proto__.cssClass.call(this["__proto__"]) + " " + prefix + "-" + className;
                 }
                 return prefix + "-" + className;
             }
@@ -206,6 +208,37 @@ export function publish(defaultValue: any, description: string = "") {
             const oldValue = this[property]();
             delete this[propValue];
             this._dispatch.post(new PropertyChangedMessage(property, this[property](), oldValue));
+        };
+    };
+}
+
+export function publishProxy(proxy, method?, defaultValue?) {
+    return function (__proto__: any, property: string) {
+        const META = to_META(property);
+        const propValue = to_prop(property);
+        if (__proto__[META]) throw new Error(`Property ${property} is already published.`);
+        __proto__[META] = { defaultValue, description: "proxy" };
+
+        method = method || property;
+        __proto__[property] = function (_?: TOrTFunctor<string, typeof __proto__>) {
+            if (_ === void 0) return this[propValue] && this[propValue](this) || defaultValue;
+            if (_ === void 0) return defaultValue === undefined || this[property + "_modified"]() ? this[proxy][method]() : defaultValue;
+            if (defaultValue !== undefined && _ === defaultValue) {
+                this[proxy][method + "_reset"]();
+            } else {
+                this[proxy][method](_);
+            }
+            return this;
+        };
+        __proto__[property + "_exists"] = function () {
+            return this[proxy][method + "_exists"]();
+        };
+        __proto__[property + "_modified"] = function () {
+            return this[proxy][method + "_modified"]() && (defaultValue === undefined || this[proxy][method]() !== defaultValue);
+        };
+        __proto__[property + "_reset"] = function () {
+            this[proxy][method + "_reset"]();
+            return this;
         };
     };
 }

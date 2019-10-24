@@ -64,3 +64,66 @@ FAChar.prototype._class += " common_FAChar";
 FAChar.prototype.publish("char", "", "string", "Font Awesome Item", null, { tags: ["Private"] });
 FAChar.prototype.publish("fontSize", null, "number", "Font Size", null, { tags: ["Private"] });
 FAChar.prototype.publishProxy("text_colorFill", "_text", "colorFill");
+
+/*
+export class FAChar2 extends SVGGWidget {
+
+    @publish("", "Font Awesome Item")
+    char: publish<string, this>;
+
+    @publish(null, "Font Size")
+    fontSize: publish<number, this>;
+
+    @publishProxy(null, "Font Size")
+    text_colorFill: publish<number, this>;
+
+    protected _text = new Text()
+        .fontFamily("FontAwesome")
+        ;
+
+    constructor() {
+        super();
+    }
+
+    enter(element) {
+        super.enter(element);
+        this._text
+            .target(element.node())
+            ;
+        element
+            .on("click", () => {
+                this.click();
+            })
+            .on("dblclick", () => {
+                this.dblclick();
+            })
+            ;
+    }
+
+    update(element) {
+        super.update(element);
+        this._text
+            .text(this.char())
+            .scale((this.fontSize() || 14) / 14) //  Scale rather than fontSize to prevent Chrome glitch  ---
+            .render()
+            ;
+    }
+
+    exit(element) {
+        this._text
+            .target(null)
+            ;
+
+        super.exit(element);
+    }
+
+    click() {
+        console.log("Click:", this);
+    }
+
+    dblclick() {
+        console.log("Double click:", this);
+    }
+}
+// FAChar.prototype._class += " common_FAChar";
+*/

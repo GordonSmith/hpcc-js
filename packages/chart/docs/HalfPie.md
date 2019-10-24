@@ -2,7 +2,7 @@
 
 <!--meta
 {
-    "id": 8854,
+    "id": 8869,
     "name": "HalfPie",
     "kind": 128,
     "kindString": "Class",
@@ -20,7 +20,7 @@
         {
             "type": "reference",
             "name": "Pie",
-            "id": 8247
+            "id": 8262
         }
     ],
     "folder": "packages/chart"

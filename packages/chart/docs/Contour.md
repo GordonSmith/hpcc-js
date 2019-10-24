@@ -2,7 +2,7 @@
 
 <!--meta
 {
-    "id": 6230,
+    "id": 6232,
     "name": "Contour",
     "kind": 128,
     "kindString": "Class",
@@ -17,7 +17,7 @@
         },
         {
             "fileName": "Contour.ts",
-            "line": 75,
+            "line": 76,
             "character": 24
         }
     ],

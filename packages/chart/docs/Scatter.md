@@ -2,8 +2,55 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/Scatter.ts#L16",
-    "extends": "XYAxis"
+    "id": 1462,
+    "name": "Scatter",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "Scatter.ts",
+            "line": 16,
+            "character": 20
+        },
+        {
+            "fileName": "Scatter.ts",
+            "line": 352,
+            "character": 24
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "XYAxis",
+            "id": 693
+        }
+    ],
+    "extendedBy": [
+        {
+            "type": "reference",
+            "name": "Area",
+            "id": 2361
+        },
+        {
+            "type": "reference",
+            "name": "BubbleXY",
+            "id": 5087
+        },
+        {
+            "type": "reference",
+            "name": "Line",
+            "id": 10281
+        },
+        {
+            "type": "reference",
+            "name": "Step",
+            "id": 13237
+        }
+    ],
+    "folder": "packages/chart"
 }
 -->
 

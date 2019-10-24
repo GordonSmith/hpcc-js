@@ -2,8 +2,32 @@
 
 <!--meta
 {
-    "source": "https://github.com/hpcc-systems/Visualization/blob/master/packages/chart/src/Summary.ts#L11",
-    "extends": "HTMLWidget"
+    "id": 13959,
+    "name": "Summary",
+    "kind": 128,
+    "kindString": "Class",
+    "flags": {
+        "isExported": true
+    },
+    "sources": [
+        {
+            "fileName": "Summary.ts",
+            "line": 11,
+            "character": 20
+        },
+        {
+            "fileName": "Summary.ts",
+            "line": 181,
+            "character": 24
+        }
+    ],
+    "extendedTypes": [
+        {
+            "type": "reference",
+            "name": "HTMLWidget"
+        }
+    ],
+    "folder": "packages/chart"
 }
 -->
 

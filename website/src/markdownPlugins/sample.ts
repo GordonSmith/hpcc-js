@@ -56,11 +56,12 @@ export class Sample extends HTMLWidget {
             this._widget = null;
             System.import(this.systemJSUrl()).then(() => {
                 loading.remove();
-                const element = this._sampleDiv.select(".common_Widget");
-                if (!element.empty()) {
-                    this._widget = element.datum();
-                    this.changed(this._widget);
+                let element = this._sampleDiv.select(".common_Widget");
+                if (element.empty()) {
+                    element = this._sampleDiv.select(".hpcc-js-Widget");
                 }
+                this._widget = element.datum();
+                this.changed(this._widget);
             }).catch(e => {
                 this.changed(this._widget);
                 this._sampleDiv.node().innerText = e.message;

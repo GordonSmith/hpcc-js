@@ -1977,6 +1977,7 @@ var config = {
       "plugin-css": "https://cdn.jsdelivr.net/npm/systemjs-plugin-css@0.1.37/css.js",
       "plugin-json": "https://cdn.jsdelivr.net/npm/systemjs-plugin-json@0.3.0/json.js",
       "plugin-babel": "https://cdn.jsdelivr.net/npm/systemjs-plugin-babel@0.0.25/plugin-babel.js",
+      "plugin-text": "https://cdn.jsdelivr.net/npm/systemjs-plugin-text@0.0.11/text.js",
       "systemjs-babel-build": "https://cdn.jsdelivr.net/npm/systemjs-plugin-babel@0.0.25/systemjs-babel-browser.js",
       "d3-array": "https://cdn.jsdelivr.net/npm/d3-array@1.2.1/build/d3-array.js",
       "d3-fetch": "https://cdn.jsdelivr.net/npm/d3-fetch@1.1.2/dist/d3-fetch.min.js",
@@ -1992,6 +1993,7 @@ var config = {
       "@hpcc-js/graph": "https://cdn.jsdelivr.net/npm/@hpcc-js/graph@^2.9.10/dist/index.min.js",
       "@hpcc-js/layout": "https://cdn.jsdelivr.net/npm/@hpcc-js/layout@^2.13.0/dist/index.min.js",
       "@hpcc-js/map": "https://cdn.jsdelivr.net/npm/@hpcc-js/map@^2.7.11/dist/index.min.js",
+      "@hpcc-js/marked": "https://cdn.jsdelivr.net/npm/@hpcc-js/marked@2.0.0/dist/index.min.js",
       "@hpcc-js/other": "https://cdn.jsdelivr.net/npm/@hpcc-js/other@^2.12.10/dist/index.min.js",
       "@hpcc-js/phosphor": "https://cdn.jsdelivr.net/npm/@hpcc-js/phosphor@^2.12.4/dist/index.min.js",
       "@hpcc-js/util": "https://cdn.jsdelivr.net/npm/@hpcc-js/util@^2.7.2/dist/index.min.js",
@@ -2002,6 +2004,7 @@ var config = {
       "@hpcc-js/html": "https://cdn.jsdelivr.net/npm/@hpcc-js/html@^2.6.10/dist/index.min.js",
       "@hpcc-js/leaflet-shim": "https://cdn.jsdelivr.net/npm/@hpcc-js/leaflet-shim@^2.0.0/dist/index.min.js",
       "@hpcc-js/map-deck": "https://cdn.jsdelivr.net/npm/@hpcc-js/map-deck@^2.0.0/dist/index.min.js",
+      "@hpcc-js/markdown": "https://cdn.jsdelivr.net/npm/@hpcc-js/markdown@^2.0.0/dist/index.min.js",
       "@hpcc-js/marshaller": "https://cdn.jsdelivr.net/npm/@hpcc-js/marshaller@^2.14.0/dist/index.min.js",
       "@hpcc-js/phosphor-shim": "https://cdn.jsdelivr.net/npm/@hpcc-js/phosphor-shim@^2.10.3/dist/index.min.js",
       "@hpcc-js/preact-shim": "https://cdn.jsdelivr.net/npm/@hpcc-js/preact-shim@^2.10.3/dist/index.min.js",
@@ -2014,6 +2017,9 @@ var config = {
       },
       "*.json": {
         "loader": "plugin-json"
+      },
+      "*.md": {
+        "loader": "plugin-text"
       }
     },
     "transpiler": "plugin-babel"
