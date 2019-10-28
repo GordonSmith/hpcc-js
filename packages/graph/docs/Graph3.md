@@ -1,7 +1,7 @@
 # Graph3
 
 [Graph3](./Graph3.md) the next generation of Graph!!!
-```xxx-sample-code
+```sample-code
 import { graph3 } from "@hpcc-js/graph";
 
 new graph3.Graph()
@@ -346,7 +346,7 @@ new graph3.Graph()
 ```
 
 [Graph3](./Graph3.md) with maps
-```xxx-sample-code
+```sample-code
 import { graph3 } from "@hpcc-js/graph";
 
 new graph3.GraphMap()

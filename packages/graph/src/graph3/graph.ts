@@ -36,7 +36,7 @@ export class Graph extends SVGZoomSurface {
             const py = pos[1];
             const [x, y] = [px, py]; // this._projection.invert([px, py]);
             */
-            const [x, y] = [d3.event.x, d3.event.y];
+            const [x, y] = [d3.event().x, d3.event().y];
             d.fx = x;
             d.fy = y;
             // this.startLayout();

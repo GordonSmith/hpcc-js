@@ -1,6 +1,50 @@
 import { Base } from "./base";
 import * as d3 from "./d3";
 
+export const DEFAULT_DEBOUNCE_DURATION = 500;
+
+function debounce(duration) {
+    return function innerDecorator(target, key, descriptor) {
+        return {
+            configurable: true,
+            enumerable: descriptor.enumerable,
+            get: function getter() {
+                // Attach this function to the instance (not the class)
+                Object.defineProperty(this, key, {
+                    configurable: true,
+                    enumerable: descriptor.enumerable,
+                    value: _debounce(descriptor.value, duration)
+                });
+
+                return this[key];
+            }
+        };
+    };
+}
+
+export function _debounce(method, duration = DEFAULT_DEBOUNCE_DURATION) {
+    let timeoutId;
+
+    function debounceWrapper(...args) {
+        debounceWrapper.clear();
+
+        timeoutId = setTimeout(() => {
+            timeoutId = null;
+            // @ts-ignore
+            method.apply(this, args);
+        }, duration);
+    }
+
+    debounceWrapper.clear = function () {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+        }
+    };
+
+    return debounceWrapper;
+}
+
 export type ElementT<B extends d3.BaseType = d3.BaseType, T = any> = d3.Selection<B, T, d3.BaseType, unknown>;
 
 export type ElementTagNameMap = HTMLElementTagNameMap & Pick<SVGElementTagNameMap, Exclude<keyof SVGElementTagNameMap, keyof HTMLElementTagNameMap>>;
@@ -23,6 +67,7 @@ export class Widget<T extends keyof ElementTagNameMap> extends Base {
                 this.preExit();
                 this.exit(this._element);
                 this.postExit();
+                this._element.remove();
                 delete this._element;
             }
             delete this._target;
@@ -54,31 +99,38 @@ export class Widget<T extends keyof ElementTagNameMap> extends Base {
     exit(element: ElementT<ElementTagNameMap[T], this>) { }
     postExit() { }
 
-    render(callback = (w: this) => { }): this {
+    render(callback?: (w: Widget<T>) => void) {
         d3.select(this._target).selectAll("#" + this._id).data([this])
             .join(
                 enter => enter.append(this._tag)
                     .attr("id", this._id)
-                    .attr("class", this.cssClass())
+                    .attr("class", this.classID())
                     .each(function (self: Widget<T>) {
                         self._element = d3.select(this);
                         self.preEnter();
                         self.enter(self._element);
                         self.postEnter();
                     }),
-                update => update.each(function (self: Widget<T>) {
-                    self.preUpdate();
-                    self.update(self._element);
-                    self.postUpdate();
-                }),
+                update => update,
                 exit => exit.remove()
-            );
+            ).each(function (self: Widget<T>) {
+                self.preUpdate();
+                self.update(self._element);
+                self.postUpdate();
+            });
 
         setTimeout(() => {
-            callback(this);
+            if (callback) {
+                callback(this);
+            }
         }, 0);
 
         return this;
+    }
+
+    @debounce(250)
+    lazyRender(callback?: (w: Widget<T>) => void) {
+        return this.render(callback);
     }
 }
 
@@ -95,30 +147,3 @@ export class SVGGWidget extends Widget<"g"> {
         super("g");
     }
 }
-/*
-export class Placeholder<T extends Widget> extends Widget {
-
-    constructor(protected readonly _widget: T, tag: string = "div") {
-        super(tag);
-    }
-
-    widget(): T {
-        return this._widget;
-    }
-
-    enter(element: SelectionT<this>) {
-        super.enter(element);
-        this._widget.target(element);
-    }
-
-    update(element: SelectionT<this>) {
-        super.update(element);
-        this._widget.render();
-    }
-
-    exit(element: SelectionT<this>) {
-        this._widget.target(null);
-        super.exit(element);
-    }
-}
-*/

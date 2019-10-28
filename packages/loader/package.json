@@ -32,6 +32,7 @@
     "@hpcc-js/codemirror": "^2.11.0",
     "@hpcc-js/common": "^2.19.3",
     "@hpcc-js/comms": "^2.11.0",
+    "@hpcc-js/core": "^0.0.0",
     "@hpcc-js/composite": "^2.5.7",
     "@hpcc-js/dgrid": "^2.6.5",
     "@hpcc-js/eclwatch": "^2.6.8",

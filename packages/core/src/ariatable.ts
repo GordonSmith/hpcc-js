@@ -64,7 +64,7 @@ export class AriaTable extends Surface<"table"> {
                         .attr("tabindex", -1)
                         .attr("href", "#")
                         .on("click", function (d, i) {
-                            d3.event.preventDefault();
+                            d3.event().preventDefault();
                             return false;
                         })
                         ;
@@ -86,6 +86,5 @@ export class AriaTable extends Surface<"table"> {
         cells.exit().remove();
 
         rows.exit().remove();
-
     }
 }

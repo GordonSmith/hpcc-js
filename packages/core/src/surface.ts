@@ -4,19 +4,25 @@ type Size = { width: number, height: number };
 
 export class Surface<T extends keyof ElementTagNameMap> extends Widget<T> {
 
-    protected _element: ElementT<ElementTagNameMap[T], this>;
+    // _element can get swapped out by SVGZoomWidget  ---
+    protected _surfaceElement: ElementT<ElementTagNameMap[T], this>;
 
     constructor(readonly _tag: T) {
         super(_tag);
     }
 
-    protected _size: Size = { width: 0, height: 0 };
+    protected _size: Size;
     size(): Size;
     size(_: Size): this;
     size(_?: Size): Size | this {
-        if (_ === void 0) return this._size;
+        if (_ === void 0) {
+            if (!this._size) {
+                this.size(this.calcTargetSize());
+            }
+            return this._size;
+        }
         this._size = _;
-        this._element
+        this._surfaceElement
             .style("width", _.width + "px")
             .style("height", _.height + "px")
             ;
@@ -32,11 +38,13 @@ export class Surface<T extends keyof ElementTagNameMap> extends Widget<T> {
     }
 
     resize(size?: Size): this {
-        return this.size(size || this.calcTargetSize());
+        this._size = size;
+        return this;
     }
 
     preEnter() {
         super.preEnter();
+        this._surfaceElement = this._element;
         this.resize();
     }
 }

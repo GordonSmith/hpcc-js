@@ -56,9 +56,9 @@ export class Sample extends HTMLWidget {
             this._widget = null;
             System.import(this.systemJSUrl()).then(() => {
                 loading.remove();
-                let element = this._sampleDiv.select(".common_Widget");
+                let element = this._sampleDiv.select(":first-child");
                 if (element.empty()) {
-                    element = this._sampleDiv.select(".hpcc-js-Widget");
+                    throw new Error("Unable to locate Widget...");
                 }
                 this._widget = element.datum();
                 this.changed(this._widget);
