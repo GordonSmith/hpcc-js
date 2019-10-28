@@ -12,7 +12,7 @@
             "d3-dsv": "https://cdn.jsdelivr.net/npm/d3-dsv",
             "d3-fetch": "https://cdn.jsdelivr.net/npm/d3-fetch",
             "d3-random": "https://cdn.jsdelivr.net/npm/d3-random",
-            "d3-tile": "https://cdn.jsdelivr.net/npm/d3-tile",
+            "d3-selection": "https://cdn.jsdelivr.net/npm/d3-selection",
             "@hpcc-js": "https://cdn.jsdelivr.net/npm/@hpcc-js"
         },
         "meta": {

@@ -12,13 +12,19 @@ export class SVGZoomSurface extends SVGSurface {
         super.preEnter();
         this._svgElement = this._element;
         this._element = this._svgElement.append("g");
-        const { width, height } = this.size();
-        this._zoom
-            .extent([[0, 0], [width, height]])
-            .on("zoom", () => this.zoomed(d3.event.transform))
-            ;
-
+        this._zoom.on("zoom", () => this.zoomed(d3.event().transform));
         this._svgElement.call(this._zoom);
+    }
+
+    preUpdate() {
+        super.preUpdate();
+        const { width, height } = this.size();
+        this._zoom.extent([[0, 0], [width, height]]);
+    }
+
+    preExit() {
+        super.preExit();
+        this._element = this._svgElement;
     }
 
     zoomed(transform) {

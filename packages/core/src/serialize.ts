@@ -51,7 +51,7 @@ export interface serializable {
      *  CSS Class:  Class name + parent class name (recursive)
      *  @param prefix: defaults to "hpcc-js"
      */
-    cssClass(prefix?: string): string;
+    classID(prefix?: string): string;
 
     /**
      *  Serialize published properties to JSON Object
@@ -114,7 +114,7 @@ export function serializable(moduleName: string) {
                 return className;
             }
 
-            cssClass(prefix: string = "hpcc-js"): string {
+            classID(prefix: string = "hpcc-js"): string {
                 const __proto__ = Object.getPrototypeOf(this);
                 const className = __proto__.constructor.name;
                 if (__proto__.__proto__ && __proto__.__proto__.cssClass) {
