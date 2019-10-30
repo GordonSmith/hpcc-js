@@ -1,6 +1,15 @@
-import { publish, SVGGWidget } from "@hpcc-js/core";
+import { SVGGWidget } from "@hpcc-js/core";
+import { curveBasis as d3CurveBasis, curveBundle as d3CurveBundle, curveCardinal as d3CurveCardinal, curveCatmullRom as d3CurveCatmullRom, curveLinear as d3CurveLinear, line as d3Line } from "d3-shape";
 
-export type Point = { x: number, y: number };
+const Curve = {
+    basis: d3CurveBasis,
+    bundle: d3CurveBundle,
+    cardinal: d3CurveCardinal,
+    catmullRom: d3CurveCatmullRom,
+    linear: d3CurveLinear
+};
+
+export type Point = [number, number];
 
 export interface EdgeItem {
     id: string;
@@ -12,60 +21,55 @@ export interface EdgeItem {
 
 export class Edge3 extends SVGGWidget {
 
-    @publish({ x: 0, y: 0 }, "Source Vertex")
-    sourcePoint: publish<Point, this>;
-
-    @publish({ x: 0, y: 0 }, "Target Vertex")
-    targetPoint: publish<Point, this>;
-
-    protected _line: any;
+    protected _path: any;
     protected _title: any;
 
     constructor() {
         super();
     }
 
-    moveSource(x: number, y: number) {
-        // this.sourcePoint({ x, y });
-        this._line
-            .attr("x1", x)
-            .attr("y1", y)
-            ;
-        return this;
+    calcArc(points: Point[]): Point[] {
+        const curveDepth = 16;
+        if (points.length === 2 && curveDepth) {
+            const dx = points[0][0] - points[1][0];
+            const dy = points[0][1] - points[1][1];
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist) {
+                const midX = (points[0][0] + points[1][0]) / 2 - dy * curveDepth / 100;
+                const midY = (points[0][1] + points[1][1]) / 2 + dx * curveDepth / 100;
+                return [points[0], [midX, midY], points[1]];
+            }
+        }
+        return points;
     }
 
-    moveTarget(x: number, y: number) {
-        // this.targetPoint({ x, y });
-        this._line
-            .attr("x2", x)
-            .attr("y2", y)
+    move(points: Point[]) {
+        const line = d3Line()
+            .x(d => d[0])
+            .y(d => d[1])
+            .curve(Curve.basis)
+            // .tension(0.75)
+            (this.calcArc(points))
             ;
-        return this;
-    }
 
-    move(x1: number, y1: number, x2: number, y2: number) {
-        this.moveSource(x1, y1);
-        this.moveTarget(x2, y2);
+        this._path
+            .attr("d", line)
+            ;
         return this;
     }
 
     enter(element) {
         super.enter(element);
-        this._line = element.append("line");
-        this._title = this._line.append("title");
+        this._path = element.append("path")
+            .attr("stroke", "black")
+            .attr("fill", "none")
+            ;
+        this._title = this._path.append("title");
+        this.move([[0, 0], [0, 0]]);
     }
 
     update(element) {
         super.update(element);
-        const sourcePoint = this.sourcePoint();
-        const targetPoint = this.targetPoint();
-        this._line
-            .attr("stroke", "black")
-            .attr("x1", sourcePoint.x)
-            .attr("y1", sourcePoint.y)
-            .attr("x2", targetPoint.x)
-            .attr("y2", targetPoint.y)
-            ;
         this._title.text("XXX");
     }
 }

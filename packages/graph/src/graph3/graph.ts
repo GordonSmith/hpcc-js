@@ -1,12 +1,17 @@
 import { d3, ElementT, publish, SVGZoomSurface } from "@hpcc-js/core";
 import { compare2 } from "@hpcc-js/util";
 import { forceCenter as d3ForceCenter, forceLink as d3ForceLink, forceManyBody as d3ForceManyBody, forceSimulation as d3ForceSimulation } from "d3-force";
+import { Vertex } from "../Vertex";
 import { Edge3, EdgeItem } from "./edge";
-// import { GraphMap } from "./map";
-import { Vertex3, VertexItem } from "./vertex";
+
+interface VertexItem {
+    id: string;
+    label: string;
+    [key: string]: any;
+}
 
 interface VertexItemEx extends VertexItem {
-    __widget: Vertex3;
+    __widget: Vertex;
 }
 
 interface EdgeItemEx extends EdgeItem {
@@ -46,9 +51,9 @@ export class Graph extends SVGZoomSurface {
         .on("end", (d: any) => {
             d.x = d.fx;
             d.y = d.fy;
-            d.fx = null;
-            d.fy = null;
-            //            this.startLayout();
+            d.fx = undefined;
+            d.fy = undefined;
+            this.startLayout();
         })
         ;
     _nodes: d3.Selection<SVGGElement, VertexItemEx, d3.BaseType, this> = d3.selectAll(null);
@@ -69,7 +74,7 @@ export class Graph extends SVGZoomSurface {
         diff.added.forEach(item => {
             this._masterVertices.push({
                 ...item,
-                __widget: new Vertex3()
+                __widget: new Vertex()
             });
         });
         this._prevVertices = vertices;
@@ -92,11 +97,34 @@ export class Graph extends SVGZoomSurface {
         this._prevEdges = edges;
     }
 
+    projectX(point: { x?: number, y?: number, fx?: number, fy?: number }) {
+        return point.fx || point.x || 0;
+    }
+
+    projectY(point: { x?: number, y?: number, fx?: number, fy?: number }) {
+        return point.fy || point.y || 0;
+    }
+
+    project(point: { x?: number, y?: number, fx?: number, fy?: number }) {
+        return [point.fx || point.x || 0, point.fy || point.y || 0];
+        /*
+        return this._projection([
+            Math.max(-180, Math.min(180, point.fx || point.x || 0)),
+            Math.max(-89, Math.min(89, point.fy || point.y || 0))
+        ]);
+        */
+    }
+
     startLayout() {
+        const size = this.size();
         const simulation = d3ForceSimulation(this._masterVertices)
-            .force("link", d3ForceLink(this._masterEdges).id(d => d.id))
+            .force("link",
+                d3ForceLink(this._masterEdges)
+                    .id(d => d.id)
+                    .distance(300)
+            )
             .force("charge", d3ForceManyBody())
-            .force("center", d3ForceCenter(0, 0)) // size.width / 2, size.height / 2))
+            .force("center", d3ForceCenter(size.width / 2, size.height / 2))
             ;
 
         simulation.on("tick", () => {
@@ -139,28 +167,13 @@ export class Graph extends SVGZoomSurface {
                     })
                     .remove()
             ).each(function (d: VertexItemEx) {
-                const [x, y] = [d.x || 0, d.y || 0]; // context._projection([d.x || 0, d.y || 0]);
-                d3.select(this)
-                    .attr("transform", d => `translate(${x} ${y})`)
-                    ;
-
                 d.__widget
-                    .radius(5)
+                    .text(d.label)
                     .render()
                     ;
             })
             ;
         return this._nodes;
-    }
-
-    project(point: { x?: number, y?: number, fx?: number, fy?: number }) {
-        return [point.fx || point.x || 0, point.fy || point.y || 0];
-        /*
-        return this._projection([
-            Math.max(-180, Math.min(180, point.fx || point.x || 0)),
-            Math.max(-89, Math.min(89, point.fy || point.y || 0))
-        ]);
-        */
     }
 
     moveVertices() {
@@ -180,27 +193,29 @@ export class Graph extends SVGZoomSurface {
                     .attr("class", "edgePlaceholder")
                     .each(function (d: EdgeItemEx) {
                         d.__widget.target(this);
-                    }),
+                    })
+                ,
                 update => update,
                 exit => exit
-                    .each(function (d: EdgeItem) {
+                    .each(function (d: EdgeItemEx) {
                         d.__widget.target(null);
                     })
                     .remove()
             ).each(function (d: EdgeItemEx) {
-                d.__widget.render();
+                d.__widget
+                    .render()
+                    ;
             })
             ;
     }
 
     moveEdges() {
-        this._links
-            .each((d: any) => {
-                const [x1, y1] = this.project(d.source);
-                const [x2, y2] = this.project(d.target);
-                d.__widget.move(x1, y1, x2, y2);
-            })
-            ;
+        const context = this;
+        this._links.each((d: any) => {
+            d.__widget
+                .move([context.project(d.source), context.project(d.target)])
+                ;
+        });
     }
 
     exit(element) {
