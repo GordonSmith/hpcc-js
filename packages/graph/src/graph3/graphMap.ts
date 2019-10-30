@@ -1,12 +1,18 @@
 import { d3, ElementT, publish } from "@hpcc-js/core";
 import { compare } from "@hpcc-js/util";
 import { forceCenter as d3ForceCenter, forceLink as d3ForceLink, forceManyBody as d3ForceManyBody, forceSimulation as d3ForceSimulation } from "d3-force";
+import { Vertex } from "../Vertex";
 import { Edge3, EdgeItem } from "./edge";
 import { Map } from "./map";
-import { Vertex3, VertexItem } from "./vertex";
+
+interface VertexItem {
+    id: string;
+    label: string;
+    [key: string]: any;
+}
 
 interface VertexItemEx extends VertexItem {
-    __widget: Vertex3;
+    __widget: Vertex;
 }
 
 interface EdgeItemEx extends EdgeItem {
@@ -66,7 +72,7 @@ export class GraphMap extends Map {
         diff.added.forEach(item => {
             this._masterVertices.push({
                 ...item,
-                __widget: new Vertex3()
+                __widget: new Vertex()
             });
         });
         this._prevVertices = vertices;
@@ -143,7 +149,6 @@ export class GraphMap extends Map {
                     ;
 
                 d.__widget
-                    .radius(5)
                     .render()
                     ;
             })

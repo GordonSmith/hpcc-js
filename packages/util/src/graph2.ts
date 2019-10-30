@@ -1,338 +1,235 @@
-//  Typescript port of:  https://github.com/datavis-tech/graph-data-structure
-
-type D3Node = { id: string };
-type D3Link = { source: string, target: string, weight: number };
-type D3Graph = {
-    nodes: D3Node[],
-    links: D3Link[]
-};
-
-interface PathT extends Array<string> {
-    weight: number;
+export interface IGraphItem {
+    readonly id: string;
 }
 
-export class Graph2 {
+export interface ISubgraph extends IGraphItem {
+}
 
-    edges: { [key: string]: string[] } = {};
-    edgeWeights: { [key: string]: number } = {};
-    edgePayload: { [key: string]: any } = {};
+export interface IVertex extends IGraphItem {
+}
 
-    constructor() {
+export interface IEdge extends IGraphItem {
+    source: string;
+    target: string;
+}
+
+class GraphItem<T extends IGraphItem = IGraphItem> {
+    protected _graph: Graph2;
+    readonly _: T;
+    id(): string {
+        return this._.id;
     }
 
-    addVertex(v: string) {
-        this.edges[v] = this.adjacent(v);
-        return this;
+    constructor(g: Graph2, _: T) {
+        this._graph = g;
+        this._ = _;
+    }
+}
+
+class Subgraph<T extends ISubgraph = ISubgraph> extends GraphItem<T> {
+
+    private _parent: Subgraph;
+    private _children: Array<Subgraph | Vertex> = [];
+
+    constructor(g: Graph2, _: T) {
+        super(g, _);
     }
 
-    removeVertex(v: string) {
-        Object.keys(this.edges).forEach(u => {
-            this.edges[u].forEach(v => {
-                if (v === v) {
-                    this.removeEdge(u, v);
-                }
-            });
-        });
-        delete this.edges[v];
-        return this;
-    }
-
-    vertices() {
-        const vertexSet: { [key: string]: boolean } = {};
-        Object.keys(this.edges).forEach(u => {
-            vertexSet[u] = true;
-            this.edges[u].forEach(function (v) {
-                vertexSet[v] = true;
-            });
-        });
-        return Object.keys(vertexSet);
-    }
-
-    adjacent(v: string) {
-        return this.edges[v] || [];
-    }
-
-    encodeEdge(u: string, v: string): string {
-        return u + "->" + v;
-    }
-
-    setEdgeWeight(u: string, v: string, weight: number) {
-        this.edgeWeights[this.encodeEdge(u, v)] = weight;
-        return this;
-    }
-
-    getEdgeWeight(u: string, v: string) {
-        const weight = this.edgeWeights[this.encodeEdge(u, v)];
-        return weight === undefined ? 1 : weight;
-    }
-
-    addEdge(u: string, v: string, weight?: number) {
-        this.addVertex(u);
-        this.addVertex(v);
-        this.adjacent(u).push(v);
-
-        if (weight !== undefined) {
-            this.setEdgeWeight(u, v, weight);
-        }
-
-        return this;
-    }
-
-    removeEdge(u: string, v: string) {
-        if (this.edges[u]) {
-            this.edges[u] = this.adjacent(u).filter(function (_v) {
-                return _v !== v;
-            });
-        }
-        return this;
-    }
-
-    inDegree(v: string) {
-        let degree = 0;
-        function check(v2: string) {
-            if (v2 === v) {
-                degree++;
+    parent(): Subgraph;
+    parent(_: Subgraph): this;
+    parent(_?: Subgraph): Subgraph | this {
+        if (_ === void 0) return this._parent;
+        if (this._parent !== _) {
+            if (this._parent) {
+                this._parent.removeChild(this);
             }
+            this._parent = _;
+            this._parent.addChild(this);
         }
-        Object.keys(this.edges).forEach(e => {
-            this.edges[e].forEach(check);
-        });
-        return degree;
+        return this;
     }
 
-    outDegree(v: string) {
-        return v in this.edges ? this.edges[v].length : 0;
+    children(): Array<Subgraph | Vertex> {
+        return this._children;
     }
 
-    // Depth First Search algorithm, inspired by
-    // Cormen et al. "Introduction to Algorithms" 3rd Ed. p. 604
-    // This variant includes an additional option
-    // `includeSourceVertices` to specify whether to include or
-    // exclude the source nodes from the result (true by default).
-    // If `sourceVertices` is not specified, all nodes in the graph
-    // are used as source nodes.
-    depthFirstSearch(sourceVertices: string[], includeSourceVertices: boolean) {
-        const context = this;
+    addChild(_: Subgraph | Vertex) {
+        this._children.push(_);
+    }
 
-        if (!sourceVertices) {
-            sourceVertices = this.vertices();
-        }
+    removeChild(_: Subgraph | Vertex) {
+        this._children = this._children.filter(row => row.id !== _.id);
+    }
+}
 
-        if (typeof includeSourceVertices !== "boolean") {
-            includeSourceVertices = true;
-        }
+class Vertex<T extends IVertex = IVertex> extends GraphItem<T> {
 
-        const visited: { [key: string]: boolean } = {};
-        const vertexList: string[] = [];
+    private _parent: Subgraph;
+    private _inEdges: Edge[] = [];
+    private _outEdges: Edge[] = [];
 
-        function DFSVisit(v: string) {
-            if (!visited[v]) {
-                visited[v] = true;
-                context.adjacent(v).forEach(DFSVisit);
-                vertexList.push(v);
+    constructor(g: Graph2, _: T) {
+        super(g, _);
+    }
+
+    parent(): Subgraph;
+    parent(_: Subgraph): this;
+    parent(_?: Subgraph): Subgraph | this {
+        if (_ === void 0) return this._parent;
+        if (this._parent !== _) {
+            if (this._parent) {
+                this._parent.removeChild(this);
             }
+            this._parent = _;
+            this._parent.addChild(this);
         }
-
-        if (includeSourceVertices) {
-            sourceVertices.forEach(DFSVisit);
-        } else {
-            sourceVertices.forEach(v => {
-                visited[v] = true;
-            });
-            sourceVertices.forEach(v => {
-                context.adjacent(v).forEach(DFSVisit);
-            });
-        }
-
-        return vertexList;
+        return this;
     }
 
-    // Least Common Ancestors
-    // Inspired by https://github.com/relaxedws/lca/blob/master/src/LowestCommonAncestor.php code
-    // but uses depth search instead of breadth. Also uses some optimizations
-    lowestCommonAncestors(v1: string, v2: string) {
-        const context = this;
+    edges() {
+        return [...this._inEdges, ...this._outEdges];
+    }
 
-        const v1Ancestors: string[] = [];
-        const lcas: string[] = [];
+    inEdges() {
+        return this._inEdges;
+    }
 
-        function CA1Visit(visited: { [x: string]: boolean; }, v: string): boolean {
-            if (!visited[v]) {
-                visited[v] = true;
-                v1Ancestors.push(v);
-                if (v === v2) {
-                    lcas.push(v);
-                    return false; // found - shortcut
-                }
-                return context.adjacent(v).every(v => {
-                    return CA1Visit(visited, v);
-                });
+    addInEdge(e: Edge) {
+        this._inEdges.push(e);
+    }
+
+    removeInEdge(id: string) {
+        this._outEdges = this._outEdges.filter(e => e._.id !== id);
+    }
+
+    outEdges() {
+        return this._outEdges;
+    }
+
+    addOutEdge(e: Edge) {
+        this._outEdges.push(e);
+    }
+
+    removeOutEdge(id: string) {
+        this._outEdges = this._outEdges.filter(e => e._.id !== id);
+    }
+}
+
+class Edge<T extends IEdge = IEdge> extends GraphItem<T> {
+
+    constructor(g: Graph2, _: T) {
+        super(g, _);
+    }
+}
+
+type SubgraphMap<T extends ISubgraph> = { [id: string]: Subgraph<T> };
+type VertexMap<T extends IVertex> = { [id: string]: Vertex<T> };
+type EdgeMap<T extends IEdge = IEdge> = { [id: string]: Edge<T> };
+
+export class Graph2<S extends ISubgraph = ISubgraph, V extends IVertex = IVertex, E extends IEdge = IEdge> {
+
+    private _directed: boolean;
+    private _subgraphs: SubgraphMap<S> = {};
+    private _vertices: VertexMap<V> = {};
+    private _edges: EdgeMap<E> = {};
+
+    constructor(directed = true) {
+        this._directed = directed;
+    }
+
+    clear() {
+        this._subgraphs = {};
+        this._vertices = {};
+        this._edges = {};
+    }
+
+    isDirected(): boolean {
+        return this._directed;
+    }
+
+    subgraphExists(e: ISubgraph): boolean {
+        return !!this._subgraphs[e.id];
+    }
+
+    addsubgraph(s: S, parent?: S) {
+        if (this._subgraphs[s.id]) throw new Error(`Subgraph '${s.id}' already exists.`);
+        const subgraph = new Subgraph(this, s);
+        if (parent) {
+            if (this._subgraphs[parent.id]) throw new Error(`Subgraph '${parent.id}' does not exist.`);
+            subgraph.parent(this._subgraphs[parent.id]);
+        }
+        this._subgraphs[s.id] = subgraph;
+    }
+
+    removeSubgraph(id: string, promoteChildren = true) {
+        if (!this._subgraphs[id]) throw new Error(`Subgraph '${id}' does not exist.`);
+        this._subgraphs[id].children().forEach(child => {
+            if (promoteChildren) {
+                child.parent(this._subgraphs[id].parent());
             } else {
-                return true;
-            }
-        }
-
-        function CA2Visit(visited: { [x: string]: boolean; }, v: string) {
-            if (!visited[v]) {
-                visited[v] = true;
-                if (v1Ancestors.indexOf(v) >= 0) {
-                    lcas.push(v);
-                } else if (lcas.length === 0) {
-                    context.adjacent(v).forEach(v2 => {
-                        CA2Visit(visited, v2);
-                    });
+                if (child instanceof Subgraph) {
+                    this.removeSubgraph(child.id());
+                } else {
+                    this.removeVertex(child.id());
                 }
             }
-        }
-
-        if (CA1Visit({}, v1)) { // No shortcut worked
-            CA2Visit({}, v2);
-        }
-
-        return lcas;
-    }
-
-    // The topological sort algorithm yields a list of visited nodes
-    // such that for each visited edge (u, v), u comes before v in the list.
-    // Amazingly, this comes from just reversing the result from depth first search.
-    // Cormen et al. "Introduction to Algorithms" 3rd Ed. p. 613
-    topologicalSort(sourceVertices: string[], includeSourceVertex: boolean) {
-        return this.depthFirstSearch(sourceVertices, includeSourceVertex).reverse();
-    }
-
-    // Dijkstra's Shortest Path Algorithm.
-    // Cormen et al. "Introduction to Algorithms" 3rd Ed. p. 658
-    // Variable and function names correspond to names in the book.
-    shortestPath(v1: string, v2: string) {
-        const context = this;
-
-        // Upper bounds for shortest path weights from source.
-        const d: { [key: string]: number } = {};
-
-        // Predecessors.
-        const p: { [key: string]: string } = {};
-
-        // Poor man's priority queue, keyed on d.
-        let q: { [key: string]: boolean } = {};
-
-        function initializeSingleSource() {
-            context.vertices().forEach(v => {
-                d[v] = Infinity;
-            });
-            if (d[v1] !== Infinity) {
-                throw new Error("Source node is not in the graph");
-            }
-            if (d[v2] !== Infinity) {
-                throw new Error("Destination node is not in the graph");
-            }
-            d[v1] = 0;
-        }
-
-        // Adds entries in q for all nodes.
-        function initializePriorityQueue() {
-            context.vertices().forEach(v => {
-                q[v] = true;
-            });
-        }
-
-        // Returns true if q is empty.
-        function priorityQueueEmpty() {
-            return Object.keys(q).length === 0;
-        }
-
-        // Linear search to extract (find and remove) min from q.
-        function extractMin(): string | null {
-            let min = Infinity;
-            let minVertex;
-            Object.keys(q).forEach(v => {
-                if (d[v] < min) {
-                    min = d[v];
-                    minVertex = v;
-                }
-            });
-            if (minVertex === undefined) {
-                // If we reach here, there's a disconnected subgraph, and we're done.
-                q = {};
-                return null;
-            }
-            delete q[minVertex];
-            return minVertex;
-        }
-
-        function relax(u: string, v: string) {
-            const w = context.getEdgeWeight(u, v);
-            if (d[v] > d[u] + w) {
-                d[v] = d[u] + w;
-                p[v] = u;
-            }
-        }
-
-        function dijkstra() {
-            initializeSingleSource();
-            initializePriorityQueue();
-            while (!priorityQueueEmpty()) {
-                const u = extractMin() as string;
-                context.adjacent(u).forEach(v => {
-                    relax(u, v);
-                });
-            }
-        }
-
-        // Assembles the shortest path by traversing the
-        // predecessor subgraph from destination to source.
-        function path(): PathT {
-            const vertexList: PathT = [] as any;
-            let weight = 0;
-            let v = v2;
-            while (p[v]) {
-                vertexList.push(v);
-                weight += context.getEdgeWeight(p[v], v);
-                v = p[v];
-            }
-            if (v !== v1) {
-                throw new Error("No path found");
-            }
-            vertexList.push(v);
-            vertexList.reverse();
-            vertexList.weight = weight;
-            return vertexList;
-        }
-
-        dijkstra();
-
-        return path();
-    }
-
-    d3Serialize(): D3Graph {
-        const context = this;
-        const serialized: D3Graph = {
-            nodes: this.vertices().map(id => {
-                return { id };
-            }),
-            links: []
-        };
-
-        serialized.nodes.forEach(node => {
-            const source = node.id;
-            context.adjacent(source).forEach(target => {
-                serialized.links.push({
-                    source,
-                    target,
-                    weight: context.getEdgeWeight(source, target)
-                });
-            });
         });
-
-        return serialized;
+        delete this._subgraphs[id];
     }
 
-    d3Deserialize(serialized: D3Graph) {
-        serialized.nodes.forEach(node => {
-            this.addVertex(node.id);
+    vertex(id: string): IVertex {
+        return this._vertices[id]._;
+    }
+
+    vertexExists(id: string): boolean {
+        return !!this._vertices[id];
+    }
+
+    addVertex(v: V, parent?: S) {
+        if (this._vertices[v.id]) throw new Error(`Vertex '${v.id}' already exists.`);
+        const vertex = new Vertex(this, v);
+        if (parent) {
+            if (this._subgraphs[parent.id]) throw new Error(`Subgraph '${parent.id}' does not exist.`);
+            vertex.parent(this._subgraphs[parent.id]);
+        }
+        this._vertices[v.id] = vertex;
+    }
+
+    removeVertex(id: string) {
+        if (!this._vertices[id]) throw new Error(`Vertex '${id}' does not exist.`);
+        this._vertices[id].edges().forEach(e => {
+            this.removeEdge(e.id(), false);
         });
-        serialized.links.forEach(link => {
-            this.addEdge(link.source, link.target, link.weight);
-        });
-        return this;
+        delete this._vertices[id];
+    }
+
+    edge(id: string): IEdge {
+        return this._edges[id]._;
+    }
+
+    edgeExists(id: string): boolean {
+        return !!this._edges[id];
+    }
+
+    addEdge(e: E) {
+        if (this._edges[e.id]) throw new Error(`Edge '${e.id}' already exists.`);
+        if (!this.vertexExists(e.source)) throw new Error(`Edge Source'${e.source}' does not exist.`);
+        if (!this.vertexExists(e.target)) throw new Error(`Edge Target'${e.target}' does not exist.`);
+        const edge = new Edge(this, e);
+        this._edges[e.id] = edge;
+        this._vertices[e.source].addOutEdge(edge);
+        this._vertices[e.target].addInEdge(edge);
+    }
+
+    removeEdge(id: string, updateVertices = true) {
+        if (!this._edges[id]) throw new Error(`Vertex '${id}' does not exist.`);
+        const edge = this._edges[id];
+        if (updateVertices) {
+            if (!this.vertexExists(edge._.source)) throw new Error(`Edge Source'${edge._.source}' does not exist.`);
+            this._vertices[edge._.source].removeOutEdge(edge._.source);
+            if (!this.vertexExists(edge._.target)) throw new Error(`Edge Target'${edge._.target}' does not exist.`);
+            this._vertices[edge._.source].removeInEdge(edge._.target);
+        }
+        delete this._edges[id];
     }
 }
