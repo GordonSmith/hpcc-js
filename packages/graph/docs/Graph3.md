@@ -1,10 +1,31 @@
 # Graph3
 
+```sample-code
+import { Edge, graph3, Vertex } from "@hpcc-js/graph";
+
+const vertices = [
+    new graph3.Vertex().text("Daddy"),
+    new graph3.Vertex().text("Mammy"),
+    new graph3.Vertex().text("Baby")
+];
+
+const edges = [
+    new graph3.LineEdge().sourceVertex(vertices[0]).targetVertex(vertices[2]),
+    new graph3.LineEdge().sourceVertex(vertices[1]).targetVertex(vertices[2])
+];
+
+new graph3.Graph()
+    .target("target")
+    .data({vertices, edges})
+    .render()
+    ;
+```
+
 [Graph3](./Graph3.md) the next generation of Graph!!!
 ```sample-code
 import { graph3 } from "@hpcc-js/graph";
 
-new graph3.Graph()
+new graph3.DataGraph()
     .target("target")
     .vertices([
             {"id": 0,"label": "Myriel", "group": 1 },
