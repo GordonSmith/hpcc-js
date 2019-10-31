@@ -35,7 +35,7 @@ export const npmPackages = {
     "d3-time": "d3-time/build/d3-time",
     "d3-timer": "d3-timer/build/d3-timer",
     "d3-time-format": "d3-time-format/dist/d3-time-format",
-    "d3-tile": "d3-tile/build/d3-tile",
+    "d3-tile": "d3-tile/dist/d3-tile",
     "d3-transition": "d3-transition/dist/d3-transition",
     "d3-zoom": "d3-zoom/dist/d3-zoom",
     "dagre": "dagre/dist/dagre",

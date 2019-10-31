@@ -1,3 +1,4 @@
+import { Widget } from "@hpcc-js/common";
 import { SVGGWidget } from "@hpcc-js/core";
 import { curveBasis as d3CurveBasis, curveBundle as d3CurveBundle, curveCardinal as d3CurveCardinal, curveCatmullRom as d3CurveCatmullRom, curveLinear as d3CurveLinear, line as d3Line } from "d3-shape";
 
@@ -11,15 +12,69 @@ const Curve = {
 
 export type Point = [number, number];
 
-export interface EdgeItem {
-    id: string;
-    source: string;
-    target: string;
-    label?: string;
-    [key: string]: any;
+export abstract class Edge extends SVGGWidget {
+
+    protected _sourceVertex: Widget;
+    protected _targetVertex: Widget;
+
+    constructor() {
+        super();
+    }
+
+    sourceVertex(): Widget;
+    sourceVertex(_: Widget): this;
+    sourceVertex(_?: Widget): Widget | this {
+        if (!arguments.length) return this._sourceVertex;
+        this._sourceVertex = _;
+        return this;
+    }
+
+    targetVertex(): Widget;
+    targetVertex(_: Widget): this;
+    targetVertex(_?: Widget): Widget | this {
+        if (!arguments.length) return this._targetVertex;
+        this._targetVertex = _;
+        return this;
+    }
+
+    abstract move(points: Point[]);
 }
 
-export class Edge3 extends SVGGWidget {
+export class LineEdge extends Edge {
+
+    protected _line: any;
+    protected _title: any;
+
+    constructor() {
+        super();
+    }
+
+    move(points: Point[]) {
+        this._line
+            .attr("x1", points[0][0])
+            .attr("y1", points[0][1])
+            .attr("x2", points[1][0])
+            .attr("y2", points[1][1])
+            ;
+        return this;
+    }
+
+    enter(element) {
+        super.enter(element);
+        this._line = element.append("line")
+            .attr("stroke", "black")
+            .attr("fill", "none")
+            ;
+        this._title = this._line.append("title");
+        this.move([[0, 0], [0, 0]]);
+    }
+
+    update(element) {
+        super.update(element);
+    }
+}
+
+export class CurveEdge extends Edge {
 
     protected _path: any;
     protected _title: any;
