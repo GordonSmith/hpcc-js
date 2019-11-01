@@ -2,7 +2,7 @@ import { Widget } from "@hpcc-js/common";
 import { d3, ElementT, SVGZoomSurface } from "@hpcc-js/core";
 import { Graph2 as GraphCollection } from "@hpcc-js/util";
 import { Edge } from "./edge";
-import { ForceDirected, ILayout } from "./layouts";
+import { EdgePlaceholder, ForceDirected, ILayout, VertexPlaceholder } from "./layouts";
 
 export interface Lineage {
     parent: Widget;
@@ -16,49 +16,74 @@ export interface IGraphData {
     hierarchy?: Lineage[];
 }
 
+function safeRaise(domNode: Element) {
+    const target = domNode;
+    let nextSibling = target.nextSibling;
+    while (nextSibling) {
+        target.parentNode.insertBefore(nextSibling, target);
+        nextSibling = target.nextSibling;
+    }
+}
+
 export class Graph extends SVGZoomSurface {
 
-    protected _graphData = new GraphCollection<Widget, Edge>()
-        .idFunc(d => d.id())
-        .sourceFunc(e => e.sourceVertex().id())
-        .targetFunc(e => e.targetVertex().id())
+    protected _graphData = new GraphCollection<VertexPlaceholder, EdgePlaceholder>()
+        .idFunc(d => d.id)
+        .sourceFunc(e => e.source.id)
+        .targetFunc(e => e.target.id)
         ;
 
     protected _edgeG: ElementT<SVGGElement, this>;
     protected _vertexG: ElementT<SVGGElement, this>;
 
-    protected _dragHandler = d3.drag()
-        .on("start", (d: Widget) => {
-            this._layout.fixVertexPos(d.id(), this._layout.vertexPos(d.id()));
-        })
-        .on("drag", (d: Widget) => {
-            /*
-            const pos = d3.mouse(this._svgElement.node());
-            const px = pos[0];
-            const py = pos[1];
-            const [x, y] = [px, py]; // this._projection.invert([px, py]);
-            */
-            this._layout
-                .fixVertexPos(d.id(), [d3.event().x, d3.event().y])
-                ;
-            if (this._layout.running()) {
-            } else {
-                this.moveEdges();
-                this.moveVertices();
-            }
-        })
-        .on("end", (d: Widget) => {
-            this._layout
-                .fixVertexPos(d.id())
-                // .start()
-                ;
-        })
-        ;
-    protected _nodes: d3.Selection<SVGGElement, Widget, d3.BaseType, this> = d3.selectAll(null);
-    protected _links: d3.Selection<SVGGElement, Edge, d3.BaseType, this> = d3.selectAll(null);
+    protected _dragHandler = d3.drag<Element, VertexPlaceholder>();
+    protected _nodes: d3.Selection<SVGGElement, VertexPlaceholder, d3.BaseType, this> = d3.selectAll(null);
+    protected _links: d3.Selection<SVGGElement, EdgePlaceholder, d3.BaseType, this> = d3.selectAll(null);
 
     constructor() {
         super();
+        const context = this;
+        this._dragHandler
+            .on("start", function (d) {
+                d.fx = d.sx = d.x;
+                d.fy = d.sy = d.y;
+                safeRaise(this);
+                context._graphData.singleNeighbors(d.id).forEach(n => {
+                    n.fx = n.sx = n.x;
+                    n.fy = n.sy = n.y;
+                });
+            })
+            .on("drag", d => {
+                /*
+                const pos = d3.mouse(this._svgElement.node());
+                const px = pos[0];
+                const py = pos[1];
+                const [x, y] = [px, py]; // this._projection.invert([px, py]);
+                */
+                d.fx = d3.event().x;
+                d.fy = d3.event().y;
+                context._graphData.singleNeighbors(d.id).forEach(n => {
+                    n.fx = n.sx + d.fx - d.sx;
+                    n.fy = n.sy + d.fy - d.sy;
+                });
+                if (!this._layout.running()) {
+                    this.moveEdges();
+                    this.moveVertices();
+                }
+            })
+            .on("end", d => {
+                d.x = d.fx;
+                d.y = d.fy;
+                d.fx = d.sx = undefined;
+                d.fy = d.sy = undefined;
+                context._graphData.singleNeighbors(d.id).forEach(n => {
+                    n.fx = n.sx = undefined;
+                    n.fy = n.sy = undefined;
+                });
+                this.startLayout();
+            })
+            ;
+
     }
 
     data(): IGraphData;
@@ -67,16 +92,24 @@ export class Graph extends SVGZoomSurface {
         if (_ === void 0) {
             return {
                 subgraphs: this._graphData.subgraphs(),
-                vertices: this._graphData.vertices(),
-                edges: this._graphData.edges(),
+                vertices: this._graphData.vertices().map(d => d.widget),
+                edges: this._graphData.edges().map(d => d.widget),
                 hierarchy: []
             };
         }
         if (_.subgraphs) {
             _.subgraphs.forEach(sg => this._graphData.addSubgraph(sg));
         }
-        _.vertices.forEach(v => this._graphData.addVertex(v));
-        _.edges.forEach(e => this._graphData.addEdge(e));
+        _.vertices.forEach(v => this._graphData.addVertex({
+            id: v.id(),
+            widget: v
+        }));
+        _.edges.forEach(e => this._graphData.addEdge({
+            id: e.id(),
+            widget: e,
+            source: this._graphData.vertex(e.sourceVertex().id()),
+            target: this._graphData.vertex(e.targetVertex().id())
+        }));
         return this;
     }
 
@@ -101,7 +134,7 @@ export class Graph extends SVGZoomSurface {
     _layout: ILayout;
     startLayout() {
         const size = this.size();
-        this._layout = new ForceDirected(this._graphData.vertices().map(v => ({ id: v.id() })), this._graphData.edges().map(e => ({ id: e.id(), source: e.sourceVertex().id(), target: e.targetVertex().id() })), size.width, size.height)
+        this._layout = new ForceDirected(this._graphData.vertices(), this._graphData.edges(), size.width, size.height)
             .on("tick", () => {
                 this.moveEdges();
                 this.moveVertices();
@@ -124,24 +157,27 @@ export class Graph extends SVGZoomSurface {
     }
 
     updateVertices() {
-        this._nodes = this._vertexG.selectAll<SVGGElement, Widget>(".vertexPlaceholder")
-            .data(this._graphData.vertices(), d => d.id())
+        this._nodes = this._vertexG.selectAll<SVGGElement, VertexPlaceholder>(".vertexPlaceholder")
+            .data(this._graphData.vertices(), d => d.id)
             .join(
                 enter => enter.append("g")
                     .attr("class", "vertexPlaceholder")
                     .each(function (d) {
-                        d.target(this);
+                        d.widget.target(this);
+                    })
+                    .on("mouseover", function (d) {
+                        safeRaise(this);
                     })
                     .call(this._dragHandler)
                 ,
                 update => update,
                 exit => exit
                     .each(function (d) {
-                        d.target(null);
+                        d.widget.target(null);
                     })
                     .remove()
             ).each(function (d) {
-                d.render();
+                d.widget.render();
             })
             ;
         return this._nodes;
@@ -149,37 +185,37 @@ export class Graph extends SVGZoomSurface {
 
     moveVertices() {
         this._nodes
-            .attr("transform", (d: any) => {
-                const [x, y] = this._layout.vertexPos(d.id());
-                return `translate(${x} ${y})`;
-            })
+            .attr("transform", d => `translate(${d.fx || d.x || 0} ${d.fy || d.y || 0})`)
             ;
     }
 
     updateEdges() {
-        this._links = this._edgeG.selectAll<SVGGElement, Edge>(".edgePlaceholder")
-            .data(this._graphData.edges(), d => d.id())
+        this._links = this._edgeG.selectAll<SVGGElement, EdgePlaceholder>(".edgePlaceholder")
+            .data(this._graphData.edges(), d => d.id)
             .join(
                 enter => enter.append("g")
                     .attr("class", "edgePlaceholder")
                     .each(function (d) {
-                        d.target(this);
+                        d.widget.target(this);
                     })
                 ,
                 update => update,
                 exit => exit
                     .each(function (d) {
-                        d.target(null);
+                        d.widget.target(null);
                     })
                     .remove()
             ).each(function (d) {
-                d.render();
+                d.widget.render();
             })
             ;
     }
 
     moveEdges() {
-        this._graphData.edges().forEach(e => e.move(this._layout.edgePoints(e.id())));
+        this._graphData.edges().forEach(e => e.widget.move([
+            [e.source.fx || e.source.x || 0, e.source.fy || e.source.y || 0],
+            [e.target.fx || e.target.x || 0, e.target.fy || e.target.y || 0]
+        ]));
     }
 
     exit(element) {

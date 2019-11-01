@@ -1,48 +1,73 @@
 import { publish } from "@hpcc-js/core";
 import { compare2 } from "@hpcc-js/util";
-import { CurveEdge as LineEdge } from "./edge";
+import { CurveEdge, Edge } from "./edge";
 import { Graph } from "./graph";
 import { Vertex } from "./Vertex";
 
 interface VertexItem {
     id: string;
     label: string;
-    [key: string]: any;
-}
-
-interface VertexItemEx extends VertexItem {
-    __widget: Vertex;
+    faChar: string;
+    __widget?: Vertex;
 }
 
 interface EdgeItem {
     id: string;
     source: string;
     target: string;
-    label?: string;
-    [key: string]: any;
-}
-
-interface EdgeItemEx extends EdgeItem {
-    __widget: LineEdge;
+    __widget?: Edge;
 }
 
 export class DataGraph extends Graph {
 
+    @publish([], "Vertex Columns")
+    vertexColumns: publish<string[], this>;
     @publish([], "Vertices (Nodes)")
-    vertices: publish<VertexItem[], this>;
+    vertices: publish<string[][], this>;
+    @publish("", "Vertex ID column")
+    vertexIDColumn: publish<string, this>;
+    @publish("", "Vertex label column")
+    vertexLabelColumn: publish<string, this>;
+    @publish("", "Vertex FAChar column")
+    vertexFACharColumn: publish<string, this>;
 
+    @publish([], "Edge columns")
+    edgeColumns: publish<string[], this>;
     @publish([], "Edges (Edges)")
-    edges: publish<EdgeItem[], this>;
+    edges: publish<string[][], this>;
+    @publish("", "Edge ID column")
+    edgeIDColumn: publish<string, this>;
+    @publish("", "Edge label column")
+    edgeLabelColumn: publish<string, this>;
+    @publish("", "Edge source ID column")
+    edgeSourceColumn: publish<string, this>;
+    @publish("", "Edge target ID column")
+    edgeTargetColumn: publish<string, this>;
 
     constructor() {
         super();
     }
 
-    _prevVertices: readonly VertexItem[] = [];
-    _masterVertices: VertexItemEx[] = [];
-    _masterVerticesMap: { [key: string]: Vertex } = {};
+    indexOf(columns: readonly string[], column: string, defColumn: string = ""): number {
+        const retVal = columns.indexOf(column);
+        return retVal >= 0 ? retVal : columns.indexOf(defColumn);
+    }
+
+    private _prevVertices: readonly VertexItem[] = [];
+    private _masterVertices: VertexItem[] = [];
+    private _masterVerticesMap: { [key: string]: Vertex } = {};
     mergeVertices() {
-        const vertices = this.vertices();
+        const columns = this.vertexColumns();
+        const idIdx = this.indexOf(columns, this.vertexIDColumn(), "id");
+        const labelIdx = this.indexOf(columns, this.vertexLabelColumn(), "label");
+        const faCharIdx = this.indexOf(columns, this.vertexFACharColumn(), "faChar");
+        const vertices: VertexItem[] = this.vertices().map(v => {
+            return {
+                id: v[idIdx],
+                label: v[labelIdx],
+                faChar: v[faCharIdx]
+            };
+        });
         const diff = compare2(this._prevVertices, vertices, d => d.id);
         diff.removed.forEach(item => {
             this._masterVertices = this._masterVertices.filter(i => i.id !== item.id);
@@ -61,9 +86,19 @@ export class DataGraph extends Graph {
     }
 
     _prevEdges: readonly EdgeItem[] = [];
-    _masterEdges: EdgeItemEx[] = [];
+    _masterEdges: EdgeItem[] = [];
     mergeEdges() {
-        const edges = this.edges();
+        const columns = this.edgeColumns();
+        const idIdx = this.indexOf(columns, this.edgeSourceColumn(), "id");
+        const sourceIdx = this.indexOf(columns, this.edgeSourceColumn(), "source");
+        const targetIdx = this.indexOf(columns, this.edgeTargetColumn(), "target");
+        const edges: EdgeItem[] = this.edges().map(e => {
+            return {
+                id: e[idIdx] || e[sourceIdx] + "->" + e[targetIdx],
+                source: e[sourceIdx],
+                target: e[targetIdx]
+            };
+        });
         const diff = compare2(this._masterEdges, edges, d => d.id);
         diff.removed.forEach(item => {
             this._masterEdges = this._masterEdges.filter(i => i.id !== item.id);
@@ -71,7 +106,7 @@ export class DataGraph extends Graph {
         diff.added.forEach(item => {
             this._masterEdges.push({
                 ...item,
-                __widget: new LineEdge()
+                __widget: new CurveEdge()
                     .sourceVertex(this._masterVerticesMap[item.source])
                     .targetVertex(this._masterVerticesMap[item.target])
             });

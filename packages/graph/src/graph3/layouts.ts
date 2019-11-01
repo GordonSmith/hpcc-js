@@ -1,5 +1,35 @@
+import { Widget } from "@hpcc-js/common";
 import { dispatch as d3Dispatch } from "d3-dispatch";
 import { forceCenter as d3ForceCenter, forceLink as d3ForceLink, forceManyBody as d3ForceManyBody, forceSimulation as d3ForceSimulation } from "d3-force";
+import { Edge } from "./edge";
+
+export interface VertexPlaceholder {
+    id: string;
+    widget: Widget;
+
+    //  D3 Assigned Properties  ---
+    index?: number; // The node’s zero-based index into nodes
+    x?: number; // The node’s current x-position
+    y?: number; // The node’s current y-position
+    fx?: number; // The node’s fixed x-position
+    fy?: number; // The node’s fixed y-position
+    vx?: number; // The node’s current x-velocity
+    vy?: number; // The node’s current y-velocity
+
+    //  HPCC Assigned Properties  ---
+    sx?: number; // The node’s drag start x
+    sy?: number; // The node’s drag start y
+}
+
+export interface EdgePlaceholder {
+    id: string;
+    widget: Edge;
+    source: VertexPlaceholder; // The link’s source node
+    target: VertexPlaceholder; // The link’s target node
+
+    //  D3 Assigned Properties  ---
+    index?: number; // The zero-based index into links, assigned by this method
+}
 
 export interface ILayout {
     on(eventID: "start" | "tick" | "end", callback: () => void): this;
@@ -7,26 +37,54 @@ export interface ILayout {
     start(): this;
     stop(): this;
     running(): boolean;
-
-    fixVertexPos(id: string, pos?: [number, number]): this;
-    vertexPos(id: string): [number, number];
-    edgePoints(id: string): Array<[number, number]>;
 }
 
-export class ForceDirected implements ILayout {
-    protected _dispatch = d3Dispatch("start", "tick", "end");
+export class Layout implements ILayout {
+    protected _vertices: { [id: string]: VertexPlaceholder } = {};
+    protected _edges: { [id: string]: EdgePlaceholder } = {};
 
-    protected _vertices = {};
-    protected _edges = {};
+    protected _dispatch = d3Dispatch("start", "tick", "end");
+    protected _running = false;
+
+    constructor(vertices: VertexPlaceholder[], edges: EdgePlaceholder[]) {
+        vertices.forEach(v => this._vertices[v.id] = this._vertices[v.id] || v);
+        edges.forEach(e => this._edges[e.id] = this._edges[e.id] || e);
+    }
+
+    on(eventID: "start" | "tick" | "end", callback: (...args: any[]) => void) {
+        this._dispatch.on(eventID, callback);
+        return this;
+    }
+
+    start() {
+        this._dispatch.call("start");
+        this._running = true;
+        return this;
+    }
+
+    stop() {
+        this._running = false;
+        return this;
+    }
+
+    running(): boolean {
+        return this._running;
+    }
+}
+
+export class NullDirected extends Layout {
+
+}
+
+export class ForceDirected extends Layout {
+
     _links;
     _charge;
     _center;
     _simulation: any;
-    _running = false;
 
-    constructor(vertices: any[], edges: any[], width: number, height: number) {
-        vertices.forEach(v => this._vertices[v.id] = this._vertices[v.id] || v);
-        edges.forEach(e => this._edges[e.id] = this._edges[e.id] || e);
+    constructor(vertices: VertexPlaceholder[], edges: EdgePlaceholder[], width: number, height: number) {
+        super(vertices, edges);
         this._links = d3ForceLink(edges)
             .id(d => d.id)
             .distance(300)
@@ -58,7 +116,7 @@ export class ForceDirected implements ILayout {
     start() {
         this._dispatch.call("start");
         this._running = true;
-        this._simulation.restart();
+        this._simulation.alphaTarget(0.3).restart();
         return this;
     }
 
@@ -69,30 +127,5 @@ export class ForceDirected implements ILayout {
 
     running(): boolean {
         return this._running;
-    }
-
-    fixVertexPos(id: string, pos?: [number, number]): this {
-        const v = this._vertices[id];
-        if (pos === void 0) {
-            v.x = v.fx || v.x;
-            v.y = v.fy || v.y;
-        }
-        v.fx = pos && pos[0];
-        v.fy = pos && pos[1];
-        return this;
-    }
-
-    vertexPos(id: string): [number, number] {
-        const v = this._vertices[id];
-        return [v.fx || v.x || 0, v.fy || v.y || 0];
-
-    }
-
-    edgePoints(id: string): Array<[number, number]> {
-        const e = this._edges[id];
-        return [
-            [e.source.fx || e.source.x || 0, e.source.fy || e.source.y || 0],
-            [e.target.fx || e.target.x || 0, e.target.fy || e.target.y || 0]
-        ];
     }
 }
