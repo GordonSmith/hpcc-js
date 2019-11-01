@@ -10,6 +10,8 @@ const Curve = {
     linear: d3CurveLinear
 };
 
+const DEFAULT_STROKE = "gray";
+
 export type Point = [number, number];
 
 export abstract class Edge extends SVGGWidget {
@@ -62,7 +64,7 @@ export class LineEdge extends Edge {
     enter(element) {
         super.enter(element);
         this._line = element.append("line")
-            .attr("stroke", "black")
+            .attr("stroke", DEFAULT_STROKE)
             .attr("fill", "none")
             ;
         this._title = this._line.append("title");
@@ -116,7 +118,7 @@ export class CurveEdge extends Edge {
     enter(element) {
         super.enter(element);
         this._path = element.append("path")
-            .attr("stroke", "black")
+            .attr("stroke", DEFAULT_STROKE)
             .attr("fill", "none")
             ;
         this._title = this._path.append("title");

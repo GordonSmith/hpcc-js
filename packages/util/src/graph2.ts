@@ -68,6 +68,10 @@ class Vertex<V = any> extends ChildGraphItem<V> {
         return [...this._inEdges, ...this._outEdges];
     }
 
+    edgeCount() {
+        return this._outEdges.length + this._inEdges.length;
+    }
+
     inEdges() {
         return this._inEdges;
     }
@@ -93,7 +97,16 @@ class Vertex<V = any> extends ChildGraphItem<V> {
     }
 }
 
-class Edge<T = any> extends GraphItem<T> {
+class Edge<E = any> extends GraphItem<E> {
+
+    _source: Vertex;
+    _target: Vertex;
+
+    constructor(g: Graph2, _: E, source: Vertex, target: Vertex) {
+        super(g, _);
+        this._source = source;
+        this._target = target;
+    }
 }
 
 type SubgraphMap<T> = { [id: string]: Subgraph<T> };
@@ -223,6 +236,18 @@ export class Graph2<V = any, E = any, S = any> {
         return this._vertices[id]._;
     }
 
+    private _neighbors(id: string): Vertex[] {
+        return [...this._vertices[id].outEdges().map(e => e._target), ...this._vertices[id].inEdges().map(e => e._source)];
+    }
+
+    neighbors(id: string): V[] {
+        return this._neighbors(id).map(n => n._);
+    }
+
+    singleNeighbors(id: string): V[] {
+        return this._neighbors(id).filter(n => n.edgeCount() === 1).map(n => n._);
+    }
+
     addVertex(v: V, parent?: S): this {
         const v_id = this._idFunc(v);
         if (this._vertices[v_id]) throw new Error(`Vertex '${v_id}' already exists.`);
@@ -279,7 +304,7 @@ export class Graph2<V = any, E = any, S = any> {
         if (this._edges[e_id]) throw new Error(`Edge '${e_id}' already exists.`);
         if (!this.vertexExists(e_source)) throw new Error(`Edge Source '${e_source}' does not exist.`);
         if (!this.vertexExists(e_target)) throw new Error(`Edge Target '${e_target}' does not exist.`);
-        const edge = new Edge(this, e);
+        const edge = new Edge(this, e, this._vertices[e_source], this._vertices[e_target]);
         this._edges[e_id] = edge;
         this._vertices[e_source].addOutEdge(edge);
         this._vertices[e_target].addInEdge(edge);
