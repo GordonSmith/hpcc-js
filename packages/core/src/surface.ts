@@ -1,3 +1,4 @@
+import * as d3 from "./d3";
 import { ElementT, ElementTagNameMap, Widget } from "./widget";
 
 type Size = { width: number, height: number };
@@ -51,8 +52,31 @@ export class Surface<T extends keyof ElementTagNameMap> extends Widget<T> {
 
 export class SVGSurface extends Surface<"svg"> {
 
+    protected _svgElement: ElementT<SVGSVGElement, this>;
+
     constructor() {
         super("svg");
+    }
+
+    locateSVGElement(_domNode?: Element): SVGSVGElement | undefined {
+        let domNode: Element = _domNode || this._element.node();
+        while (domNode) {
+            if (domNode instanceof SVGSVGElement) {
+                return domNode;
+            }
+            domNode = domNode.parentElement;
+        }
+        return undefined;
+    }
+
+    preEnter() {
+        super.preEnter();
+        const svgsvgNode = this.locateSVGElement();
+        if (!svgsvgNode) {
+            throw new Error("Unable to locate SVGSVGElement");
+        }
+        this._svgElement = d3.select(svgsvgNode);
+        this.resize();
     }
 }
 

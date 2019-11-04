@@ -28,6 +28,8 @@ export class DataGraph extends Graph {
     vertexIDColumn: publish<string, this>;
     @publish("", "Vertex label column")
     vertexLabelColumn: publish<string, this>;
+    @publish("fa-user", "Vertex default FAChar")
+    vertexFAChar: publish<string, this>;
     @publish("", "Vertex FAChar column")
     vertexFACharColumn: publish<string, this>;
 
@@ -65,7 +67,7 @@ export class DataGraph extends Graph {
             return {
                 id: v[idIdx],
                 label: v[labelIdx],
-                faChar: v[faCharIdx]
+                faChar: v[faCharIdx] || this.vertexFAChar()
             };
         });
         const diff = compare2(this._prevVertices, vertices, d => d.id);
@@ -74,6 +76,7 @@ export class DataGraph extends Graph {
         });
         diff.added.forEach(item => {
             const vertex = new Vertex()
+                .faChar(item.faChar)
                 .text(item.label)
                 ;
             this._masterVertices.push({

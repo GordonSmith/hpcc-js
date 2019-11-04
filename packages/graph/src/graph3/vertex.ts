@@ -11,7 +11,7 @@ export class Vertex extends OldVertex {
             .icon_shape_colorFill("transparent")
             .icon_image_colorFill("#333333")
             .iconAnchor("middle")
-            .faChar("fa-user")
+            .faChar("fa-question")
             .textbox_shape_colorStroke("#AAAAAA")
             .textbox_shape_colorFill("#FAFAFA")
             .textbox_text_colorFill("#333333")

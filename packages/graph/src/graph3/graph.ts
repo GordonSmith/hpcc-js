@@ -3,6 +3,7 @@ import { d3, ElementT, SVGZoomSurface } from "@hpcc-js/core";
 import { Graph2 as GraphCollection } from "@hpcc-js/util";
 import { Edge } from "./edge";
 import { EdgePlaceholder, ForceDirected, ILayout, VertexPlaceholder } from "./layouts";
+// import { Map } from "./map";
 
 export interface Lineage {
     parent: Widget;
@@ -77,10 +78,12 @@ export class Graph extends SVGZoomSurface {
                 d.fx = d.sx = undefined;
                 d.fy = d.sy = undefined;
                 context._graphData.singleNeighbors(d.id).forEach(n => {
+                    n.x = n.fx;
+                    n.y = n.fy;
                     n.fx = n.sx = undefined;
                     n.fy = n.sy = undefined;
                 });
-                this.startLayout();
+                // this.startLayout();
             })
             ;
 
@@ -133,8 +136,8 @@ export class Graph extends SVGZoomSurface {
 
     _layout: ILayout;
     startLayout() {
-        const size = this.size();
-        this._layout = new ForceDirected(this._graphData.vertices(), this._graphData.edges(), size.width, size.height)
+        const { width, height } = this.size();
+        this._layout = new ForceDirected(this._graphData.vertices(), this._graphData.edges(), width, height)
             .on("tick", () => {
                 this.moveEdges();
                 this.moveVertices();

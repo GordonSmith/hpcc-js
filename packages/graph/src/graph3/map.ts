@@ -7,9 +7,17 @@ function url(x, y, z) {
 }
 
 export class Map extends SVGZoomSurface {
-    _levels: any;
-    _tile: any;
-    _projection: any;
+    protected _levels: any;
+
+    protected _projection = d3GeoMercator()
+        .scale(1 / (2 * Math.PI))
+        .translate([0, 0])
+        ;
+
+    protected _tile = d3Tile()
+        .tileSize(512)
+        .clampX(false)
+        ;
 
     constructor() {
         super();
@@ -20,16 +28,8 @@ export class Map extends SVGZoomSurface {
 
         const { width, height } = this.size();
 
-        this._projection = d3GeoMercator()
-            .scale(1 / (2 * Math.PI))
-            .translate([0, 0]);
-
-        const deltas = [-100, -4, -1, 0];
-
-        this._tile = d3Tile()
+        this._tile
             .extent([[0, 0], [width, height]])
-            .tileSize(512)
-            .clampX(false)
             ;
 
         this._zoom
@@ -37,6 +37,7 @@ export class Map extends SVGZoomSurface {
             .extent([[0, 0], [width, height]])
             ;
 
+        const deltas = [-100, -4, -1, 0];
         this._levels = this._svgElement.insert("g", ":first-child")
             .attr("pointer-events", "none")
             .selectAll("g")
@@ -54,7 +55,8 @@ export class Map extends SVGZoomSurface {
     }
 
     zoomed(transform) {
-        // super.zoomed(transform);
+        const graphTransform = d3.zoomIdentity.translate(transform.x, transform.y).scale(transform.k >> 12);
+        super.zoomed(graphTransform);
         const context = this;
         this._levels.each(function (delta) {
             const tiles = context._tile.zoomDelta(delta)(transform);
@@ -72,11 +74,11 @@ export class Map extends SVGZoomSurface {
                 .attr("width", tiles.scale)
                 .attr("height", tiles.scale)
                 ;
-
-            context._projection
-                .scale(transform.k / (2 * Math.PI))
-                .translate([transform.x, transform.y])
-                ;
         });
+
+        context._projection
+            .scale(transform.k / (2 * Math.PI))
+            .translate([transform.x, transform.y])
+            ;
     }
 }

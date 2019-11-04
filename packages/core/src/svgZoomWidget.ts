@@ -3,15 +3,13 @@ import { SVGSurface } from "./surface";
 
 export class SVGZoomSurface extends SVGSurface {
 
-    protected _svgElement: any;
     protected _zoom = d3.zoom<any, this>()
         .scaleExtent([0.1, 1.5])
         ;
 
     preEnter() {
         super.preEnter();
-        this._svgElement = this._element;
-        this._element = this._svgElement.append("g");
+        this._element = this._svgElement.append("g") as any;
         this._zoom.on("zoom", () => this.zoomed(d3.event().transform));
         this._svgElement.call(this._zoom);
     }

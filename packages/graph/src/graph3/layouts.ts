@@ -116,7 +116,7 @@ export class ForceDirected extends Layout {
     start() {
         this._dispatch.call("start");
         this._running = true;
-        this._simulation.alphaTarget(0.3).restart();
+        this._simulation.restart();
         return this;
     }
 
