@@ -62,11 +62,11 @@ export class Graph extends SVGZoomSurface {
                 */
                 d.fx = d3.event().x;
                 d.fy = d3.event().y;
-                context.moveVertexPlaceholder(d, true, false);
+                context.moveVertexPlaceholder(d, false, true);
                 context._graphData.singleNeighbors(d.id).forEach(n => {
                     n.fx = n.sx + d.fx - d.sx;
                     n.fy = n.sy + d.fy - d.sy;
-                    context.moveVertexPlaceholder(n, true, false);
+                    context.moveVertexPlaceholder(n, false, true);
                 });
             })
             .on("end", d => {
@@ -138,12 +138,11 @@ export class Graph extends SVGZoomSurface {
         if (!this._layout) {
             this.setLayout(new Null(this));
             setTimeout(() => {
-                this.setLayout(new ForceDirected(this));
+                this.setLayout(new Circle(this));
             }, 3000);
             setTimeout(() => {
-                this.setLayout(new Dagre(this));
+                this.setLayout(new ForceDirected(this));
             }, 6000);
-            return;
             setTimeout(() => {
                 this.setLayout(new Circle(this));
             }, 9000);
@@ -151,7 +150,7 @@ export class Graph extends SVGZoomSurface {
                 this.setLayout(new Null(this));
             }, 12000);
             setTimeout(() => {
-                this.setLayout(new Circle(this));
+                this.setLayout(new Dagre(this));
             }, 15000);
         }
     }
@@ -184,21 +183,18 @@ export class Graph extends SVGZoomSurface {
         return this;
     }
 
-    moveVertexPlaceholder(vp: VertexPlaceholder, moveEdges: boolean, transition: boolean): this {
+    moveVertexPlaceholder(vp: VertexPlaceholder, transition: boolean, moveNeighbours: boolean): this {
         (transition ? vp.element.transition() : vp.element)
             .attr("transform", `translate(${vp.fx || vp.x || 0} ${vp.fy || vp.y || 0})`)
             ;
-        if (moveEdges) {
+        if (moveNeighbours) {
             this._graphData.edges(vp.id).forEach(e => this.moveEdgePlaceholder(e, transition));
         }
         return this;
     }
 
-    moveVertices(moveEdges: boolean, transition: boolean): this {
-        this._graphData.vertices().forEach(v => this.moveVertexPlaceholder(v, false, transition));
-        if (moveEdges) {
-            this.moveEdges(transition);
-        }
+    moveVertices(transition: boolean): this {
+        this._graphData.vertices().forEach(v => this.moveVertexPlaceholder(v, transition, false));
         return this;
     }
 

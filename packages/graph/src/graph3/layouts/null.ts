@@ -11,7 +11,10 @@ export class Null extends Layout {
             v.x = size.width / 2 + Math.random() * 5 - 2.5;
             v.y = size.height / 2 + Math.random() * 5 - 2.5;
         });
-        this._graph.moveVertices(true, true);
+        this._graph
+            .moveEdges(true)
+            .moveVertices(true)
+            ;
         this.stop();
         return this;
     }

@@ -27,7 +27,8 @@ export class ForceDirected extends Layout {
 
         this._simulation.on("tick", () => {
             this._graph
-                .moveVertices(true, false)
+                .moveEdges(true)
+                .moveVertices(true)
                 ;
         });
 

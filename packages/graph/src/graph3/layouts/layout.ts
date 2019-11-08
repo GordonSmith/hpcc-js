@@ -44,8 +44,10 @@ export interface ILayout {
 export interface IGraph {
     size(): Size;
     layoutData(): GraphCollection<VertexPlaceholder, EdgePlaceholder>;
-    moveVertexPlaceholder(vp: VertexPlaceholder, moveEdges: boolean, transition: boolean): this;
-    moveVertices(moveEdges: boolean, transition: boolean): this;
+    moveVertexPlaceholder(vp: VertexPlaceholder, transition: boolean, moveEdges: boolean): this;
+    moveVertices(transition: boolean): this;
+    moveEdgePlaceholder(ep: EdgePlaceholder, transition: boolean): this;
+    moveEdges(transition: boolean): this;
 }
 
 export class Layout implements ILayout {

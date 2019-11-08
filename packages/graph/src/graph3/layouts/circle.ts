@@ -19,7 +19,10 @@ export class Circle extends Layout {
             v.x = size.width / 2 + Math.cos(rads(i * angle)) * r;
             v.y = size.height / 2 + Math.sin(rads(i * angle)) * r;
         });
-        this._graph.moveVertices(true, true);
+        this._graph
+            .moveEdges(true)
+            .moveVertices(true)
+            ;
         this.stop();
         this._running = false;
         return this;
