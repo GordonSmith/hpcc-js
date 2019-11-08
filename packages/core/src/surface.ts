@@ -1,7 +1,7 @@
 import * as d3 from "./d3";
 import { ElementT, ElementTagNameMap, Widget } from "./widget";
 
-type Size = { width: number, height: number };
+export type Size = { width: number, height: number };
 
 export class Surface<T extends keyof ElementTagNameMap> extends Widget<T> {
 

@@ -236,6 +236,18 @@ export class Graph2<V = any, E = any, S = any> {
         return this._vertices[id]._;
     }
 
+    edges(vertexID?: string): E[] {
+        return vertexID ? this._vertices[vertexID].edges().map(e => e._) : this.values(this._edges);
+    }
+
+    inEdges(vertexID: string): E[] {
+        return this._vertices[vertexID].inEdges().map(e => e._);
+    }
+
+    outEdges(vertexID: string): E[] {
+        return this._vertices[vertexID].outEdges().map(e => e._);
+    }
+
     private _neighbors(id: string): Vertex[] {
         return [...this._vertices[id].outEdges().map(e => e._target), ...this._vertices[id].inEdges().map(e => e._source)];
     }
@@ -285,10 +297,6 @@ export class Graph2<V = any, E = any, S = any> {
         return this;
     }
     // Edges  ---
-    edges(): E[] {
-        return this.values(this._edges);
-    }
-
     edgeExists(id: string): boolean {
         return !!this._edges[id];
     }

@@ -39,7 +39,7 @@ export abstract class Edge extends SVGGWidget {
         return this;
     }
 
-    abstract move(points: Point[]);
+    abstract move(points: Point[], transition: boolean);
 }
 
 export class LineEdge extends Edge {
@@ -51,8 +51,8 @@ export class LineEdge extends Edge {
         super();
     }
 
-    move(points: Point[]) {
-        this._line
+    move(points: Point[], transition: boolean) {
+        (transition ? this._line.transition() : this._line)
             .attr("x1", points[0][0])
             .attr("y1", points[0][1])
             .attr("x2", points[1][0])
@@ -68,7 +68,7 @@ export class LineEdge extends Edge {
             .attr("fill", "none")
             ;
         this._title = this._line.append("title");
-        this.move([[0, 0], [0, 0]]);
+        this.move([[0, 0], [0, 0]], false);
     }
 
     update(element) {
@@ -100,7 +100,7 @@ export class CurveEdge extends Edge {
         return points;
     }
 
-    move(points: Point[]) {
+    move(points: Point[], transition: boolean) {
         const line = d3Line()
             .x(d => d[0])
             .y(d => d[1])
@@ -109,7 +109,7 @@ export class CurveEdge extends Edge {
             (this.calcArc(points))
             ;
 
-        this._path
+        (transition ? this._path.transition() : this._path)
             .attr("d", line)
             ;
         return this;
@@ -122,7 +122,7 @@ export class CurveEdge extends Edge {
             .attr("fill", "none")
             ;
         this._title = this._path.append("title");
-        this.move([[0, 0], [0, 0]]);
+        this.move([[0, 0], [0, 0]], false);
     }
 
     update(element) {

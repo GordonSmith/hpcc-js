@@ -2,8 +2,7 @@ import { Widget } from "@hpcc-js/common";
 import { d3, ElementT, SVGZoomSurface } from "@hpcc-js/core";
 import { Graph2 as GraphCollection } from "@hpcc-js/util";
 import { Edge } from "./edge";
-import { EdgePlaceholder, ForceDirected, ILayout, VertexPlaceholder } from "./layouts";
-// import { Map } from "./map";
+import { Circle, Dagre, EdgePlaceholder, ForceDirected, ILayout, Null, VertexPlaceholder } from "./layouts/index";
 
 export interface Lineage {
     parent: Widget;
@@ -63,14 +62,12 @@ export class Graph extends SVGZoomSurface {
                 */
                 d.fx = d3.event().x;
                 d.fy = d3.event().y;
+                context.moveVertexPlaceholder(d, true, false);
                 context._graphData.singleNeighbors(d.id).forEach(n => {
                     n.fx = n.sx + d.fx - d.sx;
                     n.fy = n.sy + d.fy - d.sy;
+                    context.moveVertexPlaceholder(n, true, false);
                 });
-                if (!this._layout.running()) {
-                    this.moveEdges();
-                    this.moveVertices();
-                }
             })
             .on("end", d => {
                 d.x = d.fx;
@@ -83,7 +80,6 @@ export class Graph extends SVGZoomSurface {
                     n.fx = n.sx = undefined;
                     n.fy = n.sy = undefined;
                 });
-                // this.startLayout();
             })
             ;
 
@@ -116,34 +112,17 @@ export class Graph extends SVGZoomSurface {
         return this;
     }
 
-    projectX(point: { x?: number, y?: number, fx?: number, fy?: number }) {
-        return point.fx || point.x || 0;
-    }
-
-    projectY(point: { x?: number, y?: number, fx?: number, fy?: number }) {
-        return point.fy || point.y || 0;
-    }
-
-    project(point: { x?: number, y?: number, fx?: number, fy?: number }) {
-        return [point.fx || point.x || 0, point.fy || point.y || 0];
-        /*
-        return this._projection([
-            Math.max(-180, Math.min(180, point.fx || point.x || 0)),
-            Math.max(-89, Math.min(89, point.fy || point.y || 0))
-        ]);
-        */
+    layoutData() {
+        return this._graphData;
     }
 
     _layout: ILayout;
-    startLayout() {
-        const { width, height } = this.size();
-        this._layout = new ForceDirected(this._graphData.vertices(), this._graphData.edges(), width, height)
-            .on("tick", () => {
-                this.moveEdges();
-                this.moveVertices();
-            })
-            .start()
-            ;
+    setLayout(layout: ILayout) {
+        if (this._layout) {
+            this._layout.stop();
+        }
+        this._layout = layout;
+        this._layout.start();
     }
 
     enter(element) {
@@ -156,10 +135,28 @@ export class Graph extends SVGZoomSurface {
         super.update(element);
         this.updateEdges();
         this.updateVertices();
-        this.startLayout();
+        if (!this._layout) {
+            this.setLayout(new Null(this));
+            setTimeout(() => {
+                this.setLayout(new ForceDirected(this));
+            }, 3000);
+            setTimeout(() => {
+                this.setLayout(new Dagre(this));
+            }, 6000);
+            return;
+            setTimeout(() => {
+                this.setLayout(new Circle(this));
+            }, 9000);
+            setTimeout(() => {
+                this.setLayout(new Null(this));
+            }, 12000);
+            setTimeout(() => {
+                this.setLayout(new Circle(this));
+            }, 15000);
+        }
     }
 
-    updateVertices() {
+    updateVertices(): this {
         this._nodes = this._vertexG.selectAll<SVGGElement, VertexPlaceholder>(".vertexPlaceholder")
             .data(this._graphData.vertices(), d => d.id)
             .join(
@@ -167,6 +164,7 @@ export class Graph extends SVGZoomSurface {
                     .attr("class", "vertexPlaceholder")
                     .each(function (d) {
                         d.widget.target(this);
+                        d.element = d3.select(this);
                     })
                     .on("mouseover", function (d) {
                         safeRaise(this);
@@ -183,16 +181,28 @@ export class Graph extends SVGZoomSurface {
                 d.widget.render();
             })
             ;
-        return this._nodes;
+        return this;
     }
 
-    moveVertices() {
-        this._nodes
-            .attr("transform", d => `translate(${d.fx || d.x || 0} ${d.fy || d.y || 0})`)
+    moveVertexPlaceholder(vp: VertexPlaceholder, moveEdges: boolean, transition: boolean): this {
+        (transition ? vp.element.transition() : vp.element)
+            .attr("transform", `translate(${vp.fx || vp.x || 0} ${vp.fy || vp.y || 0})`)
             ;
+        if (moveEdges) {
+            this._graphData.edges(vp.id).forEach(e => this.moveEdgePlaceholder(e, transition));
+        }
+        return this;
     }
 
-    updateEdges() {
+    moveVertices(moveEdges: boolean, transition: boolean): this {
+        this._graphData.vertices().forEach(v => this.moveVertexPlaceholder(v, false, transition));
+        if (moveEdges) {
+            this.moveEdges(transition);
+        }
+        return this;
+    }
+
+    updateEdges(): this {
         this._links = this._edgeG.selectAll<SVGGElement, EdgePlaceholder>(".edgePlaceholder")
             .data(this._graphData.edges(), d => d.id)
             .join(
@@ -212,13 +222,21 @@ export class Graph extends SVGZoomSurface {
                 d.widget.render();
             })
             ;
+        return this;
     }
 
-    moveEdges() {
-        this._graphData.edges().forEach(e => e.widget.move([
-            [e.source.fx || e.source.x || 0, e.source.fy || e.source.y || 0],
-            [e.target.fx || e.target.x || 0, e.target.fy || e.target.y || 0]
-        ]));
+    moveEdgePlaceholder(ep: EdgePlaceholder, transition: boolean): this {
+        ep.widget.move(ep.points || [
+            [ep.source.fx || ep.source.x || 0, ep.source.fy || ep.source.y || 0],
+            [ep.target.fx || ep.target.x || 0, ep.target.fy || ep.target.y || 0]
+        ], transition);
+        delete ep.points;
+        return this;
+    }
+
+    moveEdges(transition: boolean): this {
+        this._graphData.edges().forEach(e => this.moveEdgePlaceholder(e, transition));
+        return this;
     }
 
     exit(element) {
