@@ -5,7 +5,7 @@ import { geoMercator as d3GeoMercator } from "d3-geo";
 import { tile as d3Tile, tileWrap as d3TileWrap } from "d3-tile";
 import { Vertex } from "../Vertex";
 import { Edge } from "./edge";
-import { EdgePlaceholder, ForceDirected, ILayout, VertexPlaceholder } from "./layouts/index";
+import { EdgePlaceholder, GeoForceDirected, ILayout, VertexPlaceholder } from "./layouts/index";
 
 export interface Lineage {
     parent: Widget;
@@ -163,11 +163,6 @@ export class Graph extends SVGZoomSurface {
     }
 
     moveVertexPlaceholder(vp: VertexPlaceholder, transition: boolean, moveNeighbours: boolean): this {
-        if (vp.lat && vp.lng) {
-            const [x, y] = this.project(vp.lat, vp.lng);
-            vp.fx = vp.x = x;
-            vp.fy = vp.y = y;
-        }
         (transition ? vp.element.transition() : vp.element)
             .attr("transform", `translate(${(vp.fx || vp.x || 0) * this._transformScale} ${(vp.fy || vp.y || 0) * this._transformScale})`)
             ;
@@ -180,23 +175,6 @@ export class Graph extends SVGZoomSurface {
     moveVertices(transition: boolean): this {
         this._graphData.vertices().forEach(v => this.moveVertexPlaceholder(v, transition, false));
         return this;
-    }
-
-    enter(element) {
-        super.enter(element);
-        this._zoom.scaleExtent([0.0078125, 4096]);
-
-        // --- Map Support ---
-        const deltas = [-100, -4, -1, 0];
-        this._levels = this._svgElement.insert("g", ":first-child")
-            .attr("pointer-events", "none")
-            .selectAll("g").data(deltas)
-            .join("g")
-            ;
-        // --- Map Support ---
-
-        this._edgeG = element.append("g");
-        this._vertexG = element.append("g");
     }
 
     updateVertices(): this {
@@ -271,6 +249,23 @@ export class Graph extends SVGZoomSurface {
         return this;
     }
 
+    enter(element) {
+        super.enter(element);
+        this._zoom.scaleExtent([0.0078125, 4096]);
+
+        // --- Map Support ---
+        const deltas = [-100, -4, -1, 0];
+        this._levels = this._svgElement.insert("g", ":first-child")
+            .attr("pointer-events", "none")
+            .selectAll("g").data(deltas)
+            .join("g")
+            ;
+        // --- Map Support ---
+
+        this._edgeG = element.append("g");
+        this._vertexG = element.append("g");
+    }
+
     update(element) {
         super.update(element);
 
@@ -282,7 +277,7 @@ export class Graph extends SVGZoomSurface {
         // --- Map Support ---
 
         if (!this._layout) {
-            this.setLayout(new ForceDirected(this));
+            this.setLayout(new GeoForceDirected(this));
         }
     }
 
