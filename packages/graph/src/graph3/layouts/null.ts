@@ -12,8 +12,8 @@ export class Null extends Layout {
             v.y = size.height / 2 + Math.random() * 5 - 2.5;
         });
         this._graph
-            .moveEdges(true)
             .moveVertices(true)
+            .moveEdges(true)
             ;
         this.stop();
         return this;

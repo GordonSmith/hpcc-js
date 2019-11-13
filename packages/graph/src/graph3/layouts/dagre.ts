@@ -41,8 +41,10 @@ export class Dagre extends Layout {
             const ep = digraph.edge(e) as any;
             ep.points = ep.points.map(p => [p.x + deltaX, p.y + deltaY]);
         });
-        this._graph.moveEdges(true);
-        this._graph.moveVertices(true);
+        this._graph
+            .moveVertices(true)
+            .moveEdges(true)
+            ;
         this.stop();
         return this;
     }

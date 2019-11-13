@@ -20,6 +20,10 @@ export interface VertexPlaceholder {
     //  HPCC Drag /Drop Assigned Properties  ---
     sx?: number; // The node’s drag start x
     sy?: number; // The node’s drag start y
+
+    //  Geo Locations  ---
+    lat?: number;
+    lng?: number;
 }
 
 export interface EdgePlaceholder {
@@ -44,10 +48,11 @@ export interface ILayout {
 export interface IGraph {
     size(): Size;
     layoutData(): GraphCollection<VertexPlaceholder, EdgePlaceholder>;
-    moveVertexPlaceholder(vp: VertexPlaceholder, transition: boolean, moveEdges: boolean): this;
-    moveVertices(transition: boolean): this;
     moveEdgePlaceholder(ep: EdgePlaceholder, transition: boolean): this;
     moveEdges(transition: boolean): this;
+    moveVertexPlaceholder(vp: VertexPlaceholder, transition: boolean, moveEdges: boolean): this;
+    moveVertices(transition: boolean): this;
+    project(lat: number, lng: number): [number, number];
 }
 
 export class Layout implements ILayout {

@@ -4,7 +4,7 @@ import { SVGSurface } from "./surface";
 export class SVGZoomSurface extends SVGSurface {
 
     protected _zoom = d3.zoom<any, this>()
-        .scaleExtent([0.1, 1.5])
+        .scaleExtent([0.1, 10])
         ;
 
     preEnter() {
