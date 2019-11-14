@@ -52,7 +52,7 @@ export class LineEdge extends Edge {
     }
 
     move(points: Point[], transition: boolean) {
-        (transition ? this._line.transition() : this._line)
+        this._line && (transition ? this._line.transition() : this._line)
             .attr("x1", points[0][0])
             .attr("y1", points[0][1])
             .attr("x2", points[1][0])
@@ -109,7 +109,7 @@ export class CurveEdge extends Edge {
             (this.calcArc(points))
             ;
 
-        (transition ? this._path.transition() : this._path)
+        this._path && (transition ? this._path.transition() : this._path)
             .attr("d", line)
             ;
         return this;

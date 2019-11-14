@@ -610,7 +610,9 @@ export abstract class Widget extends PropertyExt {
                 // .attr("opacity", 0.50)  //  Uncomment to debug position offsets  ---
                 .each(function (context2) {
                     context2._element = d3Select(this);
+                    context2.preEnter(this, context2._element);
                     context2.enter(this, context2._element);
+                    context2.postEnter(this, context2._element);
                     if ((window as any).__hpcc_debug) {
                         context2.leakCheck(this);
                     }
@@ -630,7 +632,9 @@ export abstract class Widget extends PropertyExt {
             elements.exit()
                 .each(function (context2) {
                     d3Select(this).datum(null);
+                    context2.preExit(this, context2._element);
                     context2.exit(this, context2._element);
+                    context2.postExit(this, context2._element);
                 })
                 .remove()
                 ;
@@ -690,13 +694,17 @@ export abstract class Widget extends PropertyExt {
         return this;
     }
 
+    preEnter(_domNode: HTMLElement, _element) { }
     enter(_domNode: HTMLElement, _element) { }
+    postEnter(_domNode: HTMLElement, _element) { }
     preUpdate(_domNode: HTMLElement, _element) { }
     update(_domNode: HTMLElement, _element) { }
     postUpdate(_domNode: HTMLElement, _element) { }
+    preExit(_domNode: HTMLElement, _element) { }
     exit(_domNode?: HTMLElement, _element?) {
         this.publishedWidgets().forEach(w => w.target(null));
     }
+    postExit(_domNode: HTMLElement, _element) { }
 }
 Widget.prototype._class += " common_Widget";
 

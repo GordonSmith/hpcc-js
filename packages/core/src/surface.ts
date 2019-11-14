@@ -23,7 +23,7 @@ export class Surface<T extends keyof ElementTagNameMap> extends Widget<T> {
             return this._size;
         }
         this._size = _;
-        this._surfaceElement
+        this._surfaceElement && this._surfaceElement
             .style("width", _.width + "px")
             .style("height", _.height + "px")
             ;
@@ -39,7 +39,10 @@ export class Surface<T extends keyof ElementTagNameMap> extends Widget<T> {
     }
 
     resize(size?: Size): this {
-        this._size = size;
+        this._size = undefined;
+        if (size) {
+            this.size(size);
+        }
         return this;
     }
 

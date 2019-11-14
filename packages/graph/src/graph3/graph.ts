@@ -5,7 +5,7 @@ import { geoMercator as d3GeoMercator } from "d3-geo";
 import { tile as d3Tile, tileWrap as d3TileWrap } from "d3-tile";
 import { Vertex } from "../Vertex";
 import { Edge } from "./edge";
-import { EdgePlaceholder, GeoForceDirected, ILayout, VertexPlaceholder } from "./layouts/index";
+import { EdgePlaceholder, ForceDirectedAnimated, ILayout, VertexPlaceholder } from "./layouts/index";
 
 export interface Lineage {
     parent: Widget;
@@ -50,6 +50,7 @@ export class Graph extends SVGZoomSurface {
     protected _links: d3.Selection<SVGGElement, EdgePlaceholder, d3.BaseType, this> = d3.selectAll(null);
 
     // --- Map Support ---
+    protected _mapVisible = false;
     private _mapScale = 1 << 15;
 
     protected _levels: any;
@@ -104,6 +105,14 @@ export class Graph extends SVGZoomSurface {
             ;
     }
 
+    fields(_: any): this {
+        return this;
+    }
+
+    monitor(_: any) {
+        return null;
+    }
+
     data(): IGraphData;
     data(_: IGraphData, merge?: boolean): this;
     data(_?: IGraphData, merge?: boolean): IGraphData | this {
@@ -117,17 +126,22 @@ export class Graph extends SVGZoomSurface {
         }
         if (_.subgraphs) {
             _.subgraphs.forEach(sg => this._graphData.addSubgraph(sg));
+
         }
-        _.vertices.forEach(v => this._graphData.addVertex({
-            id: v.id(),
-            widget: v
-        }));
-        _.edges.forEach(e => this._graphData.addEdge({
-            id: e.id(),
-            widget: e,
-            source: this._graphData.vertex(e.sourceVertex().id()),
-            target: this._graphData.vertex(e.targetVertex().id())
-        }));
+        if (_.vertices) {
+            _.vertices.forEach(v => this._graphData.addVertex({
+                id: v.id(),
+                widget: v
+            }));
+        }
+        if (_.edges) {
+            _.edges.forEach(e => this._graphData.addEdge({
+                id: e.id(),
+                widget: e,
+                source: this._graphData.vertex(e.sourceVertex().id()),
+                target: this._graphData.vertex(e.targetVertex().id())
+            }));
+        }
         return this;
     }
 
@@ -163,7 +177,7 @@ export class Graph extends SVGZoomSurface {
     }
 
     moveVertexPlaceholder(vp: VertexPlaceholder, transition: boolean, moveNeighbours: boolean): this {
-        (transition ? vp.element.transition() : vp.element)
+        vp.element && (transition ? vp.element.transition() : vp.element)
             .attr("transform", `translate(${(vp.fx || vp.x || 0) * this._transformScale} ${(vp.fy || vp.y || 0) * this._transformScale})`)
             ;
         if (moveNeighbours) {
@@ -177,6 +191,7 @@ export class Graph extends SVGZoomSurface {
         return this;
     }
 
+    _first = true;
     updateVertices(): this {
         this._nodes = this._vertexG.selectAll<SVGGElement, VertexPlaceholder>(".vertexPlaceholder")
             .data(this._graphData.vertices(), d => d.id)
@@ -184,7 +199,7 @@ export class Graph extends SVGZoomSurface {
                 enter => enter.append("g")
                     .attr("class", "vertexPlaceholder")
                     .each(function (d) {
-                        d.widget.target(this);
+                        d.widget.target(this).pos({ x: 0, y: 0 });
                         d.element = d3.select(this);
                         if (d.widget instanceof Vertex) {
                             switch (d.widget.text()) {
@@ -220,7 +235,7 @@ export class Graph extends SVGZoomSurface {
                     })
                     .remove()
             ).each(function (d) {
-                d.widget.render();
+                d.widget.animationFrameRender();
             })
             ;
         return this;
@@ -277,7 +292,7 @@ export class Graph extends SVGZoomSurface {
         // --- Map Support ---
 
         if (!this._layout) {
-            this.setLayout(new GeoForceDirected(this));
+            this.setLayout(new ForceDirectedAnimated(this));
         }
     }
 
@@ -299,11 +314,8 @@ export class Graph extends SVGZoomSurface {
         const context = this;
         const mapTransform = transform.translate(width >> 1, height >> 1).scale(this._mapScale);
         this._levels.each(function (delta) {
-            const tiles = context._tile.zoomDelta(delta)(mapTransform);
-
-            d3.select(this)
-                .selectAll("image")
-                .data(tiles, d => d as any)
+            const tiles = context._mapVisible ? context._tile.zoomDelta(delta)(mapTransform) : [];
+            d3.select(this).selectAll("image").data(tiles, d => d as any)
                 .join("image")
                 .attr("xlink:href", d => {
                     const tmp = d3TileWrap(d) as [number, number, number];
