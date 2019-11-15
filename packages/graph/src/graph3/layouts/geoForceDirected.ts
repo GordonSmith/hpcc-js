@@ -27,9 +27,9 @@ export class GeoForceDirectedBase extends Layout {
             .force("link", this._links)
             .force("charge", this._charge)
             .nodes(data.vertices().map(v => {
-                const { width, height } = v.widget.getBBox();
-                v["width"] = width;
-                v["height"] = height;
+                // const { width, height } = v.widget.getBBox();
+                // v["width"] = width;
+                // v["height"] = height;
                 return v;
             }))
             .stop()

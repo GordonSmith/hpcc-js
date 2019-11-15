@@ -40,9 +40,9 @@ export class ForceDirectedBase extends Layout {
             .force("charge", this._charge)
             .force("center", this._center)
             .nodes(data.vertices().map(v => {
-                const { width, height } = v.widget.getBBox();
-                v["width"] = width;
-                v["height"] = height;
+                // const { width, height } = v.widget.getBBox();
+                // v["width"] = width;
+                // v["height"] = height;
                 return v;
             }))
             .stop()

@@ -1,11 +1,10 @@
-import { Widget } from "@hpcc-js/common";
 import { ElementT, Size } from "@hpcc-js/core";
 import { Graph2 as GraphCollection } from "@hpcc-js/util";
-import { Edge } from "../edge";
+import { EdgeProps, VertexProps } from "../components/icon";
 
 export interface VertexPlaceholder {
     id: string;
-    widget: Widget;
+    widget: VertexProps;
     element?: ElementT<SVGGElement, VertexPlaceholder>;
 
     //  D3 Assigned Properties  ---
@@ -28,7 +27,8 @@ export interface VertexPlaceholder {
 
 export interface EdgePlaceholder {
     id: string;
-    widget: Edge;
+    domNode?: SVGElement;
+    widget: EdgeProps;
     source: VertexPlaceholder; // The link’s source node
     target: VertexPlaceholder; // The link’s target node
 

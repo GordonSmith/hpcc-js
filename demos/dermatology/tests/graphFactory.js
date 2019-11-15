@@ -112,6 +112,7 @@
                             [76, "Mme.Hucheloup", 8]
                         ])
                         .edgeColumns(["id", "source", "target", "weight"])
+                        .edgeIDColumn("id")
                         .edgeSourceColumn("source")
                         .edgeTargetColumn("target")
                         .edges([

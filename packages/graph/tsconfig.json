@@ -3,6 +3,7 @@
     "compilerOptions": {
         "rootDir": "./src",
         "outDir": "./lib-umd",
+        "jsx": "react",
         "declarationDir": "./types"
     },
     "include": [

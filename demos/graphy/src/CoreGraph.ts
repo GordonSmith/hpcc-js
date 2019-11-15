@@ -1,8 +1,15 @@
 import { graph3 } from "@hpcc-js/graph";
-import { CoreEdge } from "./IMDBEdge";
 import { IMovie, IPerson } from "./IMDBServer";
-import { IMDBVertex, MovieVertex, PersonVertex } from "./IMDBVertex";
 import { RandomServer as IMDBServer } from "./RandomServer";
+
+interface Vertex extends graph3.VertexProps {
+    payload: IMovie | IPerson;
+}
+
+interface CoreEdge extends graph3.EdgeProps {
+    source: Vertex;
+    target: Vertex;
+}
 
 /**
  * The IMDBGraph class manages the master list of "explored" movies and people.
@@ -11,8 +18,8 @@ import { RandomServer as IMDBServer } from "./RandomServer";
 export class CoreGraph extends graph3.Graph {
 
     private _server = IMDBServer.attach();
-    private verticies: IMDBVertex[] = [];
-    private vertexMap: { [id: string]: IMDBVertex } = {};
+    private verticies: Vertex[] = [];
+    private vertexMap: { [id: string]: Vertex } = {};
     private edges: CoreEdge[] = [];
     private edgeMap: { [id: string]: CoreEdge } = {};
 
@@ -41,13 +48,13 @@ export class CoreGraph extends graph3.Graph {
         return this._server.isPerson(movie_person).then(isPerson => {
             if (isPerson) {
                 return this._server.person(movie_person).then(person => {
-                    return this.createPersonVertex(person).centroid(true);
+                    return this.createPersonVertex(person);
                 });
             }
             return this._server.isMovie(movie_person).then(isMovie => {
                 if (isMovie) {
                     return this._server.movie(movie_person).then(movie => {
-                        return this.createMovieVertex(movie).centroid(true);
+                        return this.createMovieVertex(movie);
                     });
                 }
                 return null;
@@ -58,7 +65,7 @@ export class CoreGraph extends graph3.Graph {
             } else {
                 return this._server.movies().then(movies => {
                     return Promise.all(movies.map((movie, i) => {
-                        const mv = this.createMovieVertex(movie).centroid(i === 0);
+                        const mv = this.createMovieVertex(movie);
                         return this.expand(mv);
                     })).then(all => null);
                 });
@@ -66,42 +73,36 @@ export class CoreGraph extends graph3.Graph {
         });
     }
 
-    createMovieVertex(movie: IMovie): IMDBVertex {
+    createMovieVertex(movie: IMovie): Vertex {
         let retVal = this.vertexMap[`m: ${movie.title} `];
         if (!retVal) {
-            retVal = this.vertexMap[`m: ${movie.title} `] = new MovieVertex(movie);
+            retVal = this.vertexMap[`m: ${movie.title} `] = { id: movie.title, text: movie.title, payload: movie };
             this.verticies.push(retVal);
         }
         return retVal;
     }
 
-    createPersonVertex(person: IPerson): IMDBVertex {
+    createPersonVertex(person: IPerson): Vertex {
         let retVal = this.vertexMap[`p: ${person.name} `];
         if (!retVal) {
-            retVal = this.vertexMap[`p: ${person.name} `] = new PersonVertex(person);
+            retVal = this.vertexMap[`p: ${person.name} `] = { id: person.name, text: person.name, payload: person };
             this.verticies.push(retVal);
         }
         return retVal;
     }
 
     createEdge(source, target, label: "Actor" | "Director"): CoreEdge {
-        const id = `${source.id()} -> ${target.id()} ${label}`;
+        const id = `${source.id} -> ${target.id} ${label}`;
         let retVal: CoreEdge = this.edgeMap[id];
         if (!retVal) {
-            retVal = this.edgeMap[id] = new CoreEdge()
-                .sourceVertex(source)
-                .targetVertex(target)
-                // .strokeColor(label === "Actor" ? "darkgreen" : "navy")
-                // .text_text_colorFill(label === "Actor" ? "darkgreen" : "navy")
-                // .text(label)
-                ;
+            retVal = this.edgeMap[id] = { id, source, target };
             this.edges.push(retVal);
         }
         return retVal;
     }
 
-    expandMovie(v: MovieVertex): Promise<void> {
-        return this._server.moviePeople(v.info().title).then(people => {
+    expandMovie(v: Vertex): Promise<void> {
+        return this._server.moviePeople((v.payload as IMovie).title).then(people => {
             people.directors.forEach(director => {
                 const p = this.createPersonVertex(director);
                 this.createEdge(p, v, "Director");
@@ -113,8 +114,8 @@ export class CoreGraph extends graph3.Graph {
         });
     }
 
-    expandPerson(v: PersonVertex): Promise<void> {
-        return this._server.personMovies(v.info().name).then(movies => {
+    expandPerson(v: Vertex): Promise<void> {
+        return this._server.personMovies((v.payload as IPerson).name).then(movies => {
             movies.directed.forEach(movie => {
                 const m = this.createMovieVertex(movie);
                 this.createEdge(v, m, "Director");
@@ -126,12 +127,10 @@ export class CoreGraph extends graph3.Graph {
         });
     }
 
-    expand(v: IMDBVertex): Promise<void> {
-        v.expanded(true);
+    expand(v: Vertex): Promise<void> {
+        // v.expanded(true);
         let promise;
-        if (v instanceof PersonVertex) {
-            promise = this.expandPerson(v);
-        } else if (v instanceof MovieVertex) {
+        if ((v.payload as IMovie).title) {
             promise = this.expandMovie(v);
         } else {
             promise = Promise.resolve();

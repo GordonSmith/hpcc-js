@@ -1,10 +1,10 @@
 import { Widget } from "@hpcc-js/common";
 import { d3, ElementT, SVGZoomSurface } from "@hpcc-js/core";
+import * as React from "@hpcc-js/preact-shim";
 import { Graph2 as GraphCollection } from "@hpcc-js/util";
 import { geoMercator as d3GeoMercator } from "d3-geo";
 import { tile as d3Tile, tileWrap as d3TileWrap } from "d3-tile";
-import { Vertex } from "../Vertex";
-import { Edge } from "./edge";
+import { Edge, EdgeProps, Vertex, VertexProps } from "./components/icon";
 import { EdgePlaceholder, ForceDirectedAnimated, ILayout, VertexPlaceholder } from "./layouts/index";
 
 export interface Lineage {
@@ -14,8 +14,8 @@ export interface Lineage {
 
 export interface IGraphData {
     subgraphs?: Widget[];
-    vertices: Widget[];
-    edges: Edge[];
+    vertices: VertexProps[];
+    edges: EdgeProps[];
     hierarchy?: Lineage[];
 }
 
@@ -130,16 +130,16 @@ export class Graph extends SVGZoomSurface {
         }
         if (_.vertices) {
             _.vertices.forEach(v => this._graphData.addVertex({
-                id: v.id(),
+                id: v.id,
                 widget: v
             }));
         }
         if (_.edges) {
             _.edges.forEach(e => this._graphData.addEdge({
-                id: e.id(),
+                id: e.id,
                 widget: e,
-                source: this._graphData.vertex(e.sourceVertex().id()),
-                target: this._graphData.vertex(e.targetVertex().id())
+                source: this._graphData.vertex(e.source.id),
+                target: this._graphData.vertex(e.target.id)
             }));
         }
         return this;
@@ -163,10 +163,15 @@ export class Graph extends SVGZoomSurface {
     }
 
     moveEdgePlaceholder(ep: EdgePlaceholder, transition: boolean): this {
+        if (ep.domNode) {
+            React.render(React.createElement(Edge, { ...ep.widget }), ep.domNode);
+        }
+        /*
         ep.widget.move(ep.points || [
             [(ep.source.fx || ep.source.x || 0) * this._transformScale, (ep.source.fy || ep.source.y || 0) * this._transformScale],
             [(ep.target.fx || ep.target.x || 0) * this._transformScale, (ep.target.fy || ep.target.y || 0) * this._transformScale]
         ], transition);
+        */
         delete ep.points;
         return this;
     }
@@ -177,8 +182,10 @@ export class Graph extends SVGZoomSurface {
     }
 
     moveVertexPlaceholder(vp: VertexPlaceholder, transition: boolean, moveNeighbours: boolean): this {
+        vp.widget.x = (vp.fx || vp.x || 0) * this._transformScale;
+        vp.widget.y = (vp.fy || vp.y || 0) * this._transformScale;
         vp.element && (transition ? vp.element.transition() : vp.element)
-            .attr("transform", `translate(${(vp.fx || vp.x || 0) * this._transformScale} ${(vp.fy || vp.y || 0) * this._transformScale})`)
+            .attr("transform", `translate(${vp.widget.x} ${vp.widget.y})`)
             ;
         if (moveNeighbours) {
             this._graphData.edges(vp.id).forEach(e => this.moveEdgePlaceholder(e, transition));
@@ -199,10 +206,9 @@ export class Graph extends SVGZoomSurface {
                 enter => enter.append("g")
                     .attr("class", "vertexPlaceholder")
                     .each(function (d) {
-                        d.widget.target(this).pos({ x: 0, y: 0 });
                         d.element = d3.select(this);
                         if (d.widget instanceof Vertex) {
-                            switch (d.widget.text()) {
+                            switch (d.widget.props.text) {
                                 case "Jondrette":
                                     d.lat = 51.8985;
                                     d.lng = -8.4756;
@@ -215,7 +221,7 @@ export class Graph extends SVGZoomSurface {
                                     d.lat = 51.5074;
                                     d.lng = 0.1278;
                                     break;
-                                case "ValjeanXXX":
+                                case "Valjean":
                                     d.lat = 40.7128;
                                     d.lng = -74.0060;
                                     break;
@@ -230,12 +236,10 @@ export class Graph extends SVGZoomSurface {
                 update => update,
                 exit => exit
                     .each(function (d) {
-                        delete d.element;
-                        d.widget.target(null);
                     })
                     .remove()
             ).each(function (d) {
-                d.widget.animationFrameRender();
+                React.render(React.createElement(Vertex, { ...d.widget }), this);
             })
             ;
         return this;
@@ -247,18 +251,12 @@ export class Graph extends SVGZoomSurface {
             .join(
                 enter => enter.append("g")
                     .attr("class", "edgePlaceholder")
-                    .each(function (d) {
-                        d.widget.target(this);
-                    })
                 ,
                 update => update,
-                exit => exit
-                    .each(function (d) {
-                        d.widget.target(null);
-                    })
-                    .remove()
+                exit => exit.remove()
             ).each(function (d) {
-                d.widget.render();
+                d.domNode = this;
+                React.render(React.createElement(Edge, { ...d.widget }), this);
             })
             ;
         return this;
@@ -301,7 +299,7 @@ export class Graph extends SVGZoomSurface {
     }
 
     _minScale = 0.75;
-    _maxScale = 1; // 9999999999999999999999999999.0;
+    _maxScale = 1.0;
     _prevWidth;
     _prevHeight;
     _prevTransformScale;

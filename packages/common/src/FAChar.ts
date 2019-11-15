@@ -3,7 +3,7 @@ import { Text } from "./Text";
 
 import "../src/FAChar.css";
 
-const FACharMapping = {
+export const FACharMapping = {
     "fa-500px": 0xf26e,
     "fa-address-book": 0xf2b9,
     "fa-address-book-o": 0xf2ba,

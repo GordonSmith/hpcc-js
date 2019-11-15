@@ -11,6 +11,7 @@
         "strictNullChecks": false,
         "importHelpers": false,
         "experimentalDecorators": true,
+        "jsx": "react",
         "lib": [
             "dom",
             "es5",

@@ -7,11 +7,10 @@
     }
 }(this, function () {
     return {
-        TSXHTML: {
+        GC: {
             simple: function (callback) {
-                legacyRequire(["test/DataFactory", "src/html/TSXHTML"], function (DataFactory, TSXHTML) {
-                    const w = new TSXHTML();
-                    callback(w);
+                legacyRequire(["src/graph/Test"], function (Test) {
+                    callback(new Test());
                 });
             }
         },
