@@ -4,8 +4,8 @@ import { EdgeProps, VertexProps } from "../components/icon";
 
 export interface VertexPlaceholder {
     id: string;
-    widget: VertexProps;
     element?: ElementT<SVGGElement, VertexPlaceholder>;
+    props: VertexProps;
 
     //  D3 Assigned Properties  ---
     index?: number; // The node’s zero-based index into nodes
@@ -27,7 +27,7 @@ export interface VertexPlaceholder {
 
 export interface EdgePlaceholder {
     id: string;
-    domNode?: SVGElement;
+    domNode?: SVGGElement;
     widget: EdgeProps;
     source: VertexPlaceholder; // The link’s source node
     target: VertexPlaceholder; // The link’s target node

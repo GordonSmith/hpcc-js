@@ -37,7 +37,7 @@ class Square extends React.Component<SquareProps> {
     };
 
     render() {
-        return <rect x={-this.props.radius} y={-this.props.radius} rx={-this.props.cornerRadius} ry={this.props.cornerRadius} width={this.props.radius * 2} height={this.props.radius * 2} fill={this.props.fill} stroke={this.props.stroke || this.props.fill} />;
+        return <rect x={-this.props.radius} y={-this.props.radius} rx={this.props.cornerRadius} ry={this.props.cornerRadius} width={this.props.radius * 2} height={this.props.radius * 2} fill={this.props.fill} stroke={this.props.stroke || this.props.fill} />;
     }
 }
 
@@ -62,7 +62,7 @@ class Rectangle extends React.Component<RectangleProps> {
     };
 
     render() {
-        return <rect x={-this.props.width / 2} y={this.props.y - this.props.height / 2} rx={-this.props.cornerRadius} ry={this.props.cornerRadius} width={this.props.width} height={this.props.height} fill={this.props.fill} stroke={this.props.stroke || this.props.fill} />;
+        return <rect x={-this.props.width / 2} y={this.props.y - this.props.height / 2} rx={this.props.cornerRadius} ry={this.props.cornerRadius} width={this.props.width} height={this.props.height} fill={this.props.fill} stroke={this.props.stroke || this.props.fill} />;
     }
 }
 
@@ -183,29 +183,29 @@ class Icon extends React.Component<IconProps> {
 }
 
 export interface VertexProps {
-    x?: number;
-    y?: number;
     id: string;
+    text: string;
     iconHeight?: number;
     iconFill?: string;
     iconStroke?: string;
     textHeight?: number;
     faChar?: string;
     faCharFill?: string;
-    text?: string;
+    x?: number;
+    y?: number;
 }
 
 export class Vertex extends React.Component<VertexProps> {
 
     static defaultProps: VertexProps = {
-        x: 0,
-        y: 0,
         id: "",
         iconHeight: 32,
         iconFill: "transparent",
         textHeight: 12,
         faChar: "",
-        text: ""
+        text: "",
+        x: 0,
+        y: 0
     };
 
     render() {
@@ -232,7 +232,7 @@ export class Edge extends React.Component<EdgeProps> {
 export class Test extends SVGWidget {
 
     snippet() {
-        return <Vertex id="1" faChar="fa-user"></Vertex>;
+        return <Vertex id="1" text="XXX" faChar="fa-user"></Vertex>;
     }
 
     update(domNode, element) {

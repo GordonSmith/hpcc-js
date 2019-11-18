@@ -116,9 +116,9 @@ export class RandomServer {
     private load(): Promise<void> {
         if (!this._loaded) {
             this._loaded = new Promise((resolve, reject) => {
-                const movieCount = 100;
-                const peopleCount = movieCount * 20;
-                const actorCount = 10;
+                const movieCount = 5;
+                const peopleCount = movieCount * 100;
+                const actorCount = 0;
 
                 range(peopleCount).forEach(p => {
                     this._person(`Person-${p}`);

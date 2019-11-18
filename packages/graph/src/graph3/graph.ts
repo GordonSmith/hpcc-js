@@ -50,7 +50,7 @@ export class Graph extends SVGZoomSurface {
     protected _links: d3.Selection<SVGGElement, EdgePlaceholder, d3.BaseType, this> = d3.selectAll(null);
 
     // --- Map Support ---
-    protected _mapVisible = false;
+    protected _mapVisible = true;
     private _mapScale = 1 << 15;
 
     protected _levels: any;
@@ -119,19 +119,19 @@ export class Graph extends SVGZoomSurface {
         if (_ === void 0) {
             return {
                 subgraphs: this._graphData.subgraphs(),
-                vertices: this._graphData.vertices().map(d => d.widget),
+                vertices: this._graphData.vertices().map(d => d.props),
                 edges: this._graphData.edges().map(d => d.widget),
                 hierarchy: []
             };
         }
+        this._graphData.clear();
         if (_.subgraphs) {
             _.subgraphs.forEach(sg => this._graphData.addSubgraph(sg));
-
         }
         if (_.vertices) {
             _.vertices.forEach(v => this._graphData.addVertex({
                 id: v.id,
-                widget: v
+                props: v
             }));
         }
         if (_.edges) {
@@ -182,10 +182,10 @@ export class Graph extends SVGZoomSurface {
     }
 
     moveVertexPlaceholder(vp: VertexPlaceholder, transition: boolean, moveNeighbours: boolean): this {
-        vp.widget.x = (vp.fx || vp.x || 0) * this._transformScale;
-        vp.widget.y = (vp.fy || vp.y || 0) * this._transformScale;
+        vp.props.x = (vp.fx || vp.x || 0) * this._transformScale;
+        vp.props.y = (vp.fy || vp.y || 0) * this._transformScale;
         vp.element && (transition ? vp.element.transition() : vp.element)
-            .attr("transform", `translate(${vp.widget.x} ${vp.widget.y})`)
+            .attr("transform", `translate(${vp.props.x} ${vp.props.y})`)
             ;
         if (moveNeighbours) {
             this._graphData.edges(vp.id).forEach(e => this.moveEdgePlaceholder(e, transition));
@@ -207,8 +207,8 @@ export class Graph extends SVGZoomSurface {
                     .attr("class", "vertexPlaceholder")
                     .each(function (d) {
                         d.element = d3.select(this);
-                        if (d.widget instanceof Vertex) {
-                            switch (d.widget.props.text) {
+                        if (d.props instanceof Vertex) {
+                            switch (d.props.props.text) {
                                 case "Jondrette":
                                     d.lat = 51.8985;
                                     d.lng = -8.4756;
@@ -239,7 +239,7 @@ export class Graph extends SVGZoomSurface {
                     })
                     .remove()
             ).each(function (d) {
-                React.render(React.createElement(Vertex, { ...d.widget }), this);
+                React.render(React.createElement(Vertex, { ...d.props }), this);
             })
             ;
         return this;
