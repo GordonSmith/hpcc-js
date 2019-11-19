@@ -76,8 +76,8 @@ export class DataGraph extends Graph {
         const edges: EdgeProps[] = this.edges().map(e => {
             return {
                 id: e[idIdx] || e[sourceIdx] + "->" + e[targetIdx],
-                source: this._masterVerticesMap[e[sourceIdx]],
-                target: this._masterVerticesMap[e[targetIdx]]
+                source: this._masterVerticesMap[e[sourceIdx]] as any,
+                target: this._masterVerticesMap[e[targetIdx]] as any
             };
         });
         const diff = compare2(this._masterEdges, edges, d => d.id);

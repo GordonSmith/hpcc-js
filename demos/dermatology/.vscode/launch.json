@@ -22,7 +22,7 @@
             "name": "Graph3",
             "type": "chrome",
             "request": "launch",
-            "url": "file:///C:/Users/gordon/git/hpcc-js/demos/dermatology/index.html?src/graph/Graph3.LesMis",
+            "url": "file:///C:/Users/gordon/git/hpcc-js/demos/dermatology/index.html?src/graph/Graph3",
             "runtimeArgs": [
                 "--allow-file-access-from-files"
             ],

@@ -9,17 +9,13 @@ interface CircleProps {
     stroke?: string;
 }
 
-class Circle extends React.Component<CircleProps> {
-
-    static defaultProps: CircleProps = {
-        radius: 32,
-        fill: "white"
-    };
-
-    render() {
-        return <circle cx={this.props.cx} cy={this.props.cy} r={this.props.radius} fill={this.props.fill} stroke={this.props.stroke || this.props.fill} />;
-    }
-}
+const Circle: React.FunctionComponent<CircleProps> = ({
+    cx,
+    cy,
+    radius = 32,
+    fill = "navy",
+    stroke = fill
+}) => <circle cx={cx} cy={cy} r={radius} fill={fill} stroke={stroke} />;
 
 interface SquareProps {
     radius?: number;
@@ -28,18 +24,12 @@ interface SquareProps {
     stroke?: string;
 }
 
-class Square extends React.Component<SquareProps> {
-
-    static defaultProps: SquareProps = {
-        radius: 30,
-        cornerRadius: 3,
-        fill: "white"
-    };
-
-    render() {
-        return <rect x={-this.props.radius} y={-this.props.radius} rx={this.props.cornerRadius} ry={this.props.cornerRadius} width={this.props.radius * 2} height={this.props.radius * 2} fill={this.props.fill} stroke={this.props.stroke || this.props.fill} />;
-    }
-}
+const Square: React.FunctionComponent<SquareProps> = ({
+    radius = 30,
+    cornerRadius = 3,
+    fill = "white",
+    stroke
+}) => <rect x={-radius} y={-radius} rx={cornerRadius} ry={cornerRadius} width={radius * 2} height={radius * 2} fill={fill} stroke={stroke || fill} />;
 
 interface RectangleProps {
     y?: number;
@@ -50,21 +40,14 @@ interface RectangleProps {
     stroke?: string;
 }
 
-class Rectangle extends React.Component<RectangleProps> {
-
-    static defaultProps: RectangleProps = {
-        y: 0,
-        width: 30,
-        height: 30,
-        cornerRadius: 3,
-        fill: "white",
-        stroke: "black"
-    };
-
-    render() {
-        return <rect x={-this.props.width / 2} y={this.props.y - this.props.height / 2} rx={this.props.cornerRadius} ry={this.props.cornerRadius} width={this.props.width} height={this.props.height} fill={this.props.fill} stroke={this.props.stroke || this.props.fill} />;
-    }
-}
+const Rectangle: React.FunctionComponent<RectangleProps> = ({
+    y = 0,
+    width = 30,
+    height = 30,
+    cornerRadius = 3,
+    fill = "white",
+    stroke = "black"
+}) => <rect x={-width / 2} y={y - height / 2} rx={cornerRadius} ry={cornerRadius} width={width} height={height} fill={fill} stroke={stroke || fill} />;
 
 interface TextProps {
     x?: number;
@@ -75,50 +58,36 @@ interface TextProps {
     text: string;
 }
 
-class Text extends React.Component<TextProps> {
-
-    static defaultProps: TextProps = {
-        y: 0,
-        anchor: "middle",
-        height: 12,
-        fill: "black",
-        text: ""
-    };
-
-    render() {
-        return <text x={this.props.x} y={this.props.y - this.props.height * 3 / 12} fill={this.props.fill} font-size={`${this.props.height}px`} style={`text-anchor: ${this.props.anchor};`} >{this.props.text}</text>;
-    }
-}
+const Text: React.FunctionComponent<TextProps> = ({
+    x,
+    y = 0,
+    anchor = "middle",
+    height = 12,
+    fill = "black",
+    text = ""
+}) => <text x={x} y={y - height * 3 / 12} fill={fill} font-size={`${height}px`} style={`text-anchor: ${anchor};`} >{text}</text>;
 
 interface TextBoxProps {
-    x?: number;
     y?: number;
-    anchor?: string;
-    height?: number;
     fill?: string;
+    stroke?: string;
     text: string;
 }
 
-class TextBox extends React.Component<TextBoxProps> {
-
-    static defaultProps: TextBoxProps = {
-        y: 0,
-        anchor: "middle",
-        height: 12,
-        fill: "black",
-        text: ""
-    };
-
-    render() {
-        const size = textSize(this.props.text, "Helvetica", 12, false);
-        size.width += 4;
-        size.height += 4;
-        return <>
-            <Rectangle y={this.props.y - size.height / 2} width={size.width} height={size.height} stroke="whitesmoke" fill="whitesmoke" />
-            <Text y={this.props.y} text={this.props.text} />
-        </>;
-    }
-}
+const TextBox: React.FunctionComponent<TextBoxProps> = ({
+    y = 0,
+    fill = "whitesmoke",
+    stroke = "whitesmoke",
+    text = ""
+}) => {
+    let { width, height } = textSize(text, "Helvetica", 12, false);
+    width += 4;
+    height += 4;
+    return <>
+        <Rectangle y={y - height / 2} width={width} height={height} stroke={stroke} fill={fill} />
+        <Text y={y} text={text} />
+    </>;
+};
 
 interface FACharProps {
     x?: number;
@@ -128,22 +97,31 @@ interface FACharProps {
     faChar?: string;
 }
 
-class FAChar extends React.Component<FACharProps> {
+const calcFAChar = (faChar: string) => faChar.indexOf("fa-") === 0 ? String.fromCharCode(FACharMapping[faChar]) : faChar;
+const FAChar: React.FunctionComponent<FACharProps> = ({
+    x,
+    y = 0,
+    height = 12,
+    faChar = "",
+    fill
+}) => <text x={x} y={y - height * 3.5 / 12} fill={fill} font-family="FontAwesome" font-size={`${height}px`} style="text-anchor: middle;" >{calcFAChar(faChar)}</text>;
 
-    static defaultProps: FACharProps = {
-        y: 0,
-        height: 12,
-        faChar: ""
-    };
-
-    faChar() {
-        return this.props.faChar.indexOf("fa-") === 0 ? String.fromCharCode(FACharMapping[this.props.faChar]) : this.props.faChar;
-    }
-
-    render() {
-        return <text x={this.props.x} y={this.props.y - this.props.height * 3.5 / 12} fill={this.props.fill} font-family="FontAwesome" font-size={`${this.props.height}px`} style="text-anchor: middle;" >{this.faChar()}</text>;
-    }
+interface ShapeProps {
+    shape?: "circle" | "square";
+    height?: number;
+    fill?: string;
+    stroke?: string;
 }
+
+const Shape: React.FunctionComponent<ShapeProps> = ({
+    shape = "circle",
+    height = 128,
+    fill,
+    stroke
+}) => {
+    const Tag = shape === "square" ? Square : Circle;
+    return <Tag radius={height / 2} fill={fill} stroke={stroke} />;
+};
 
 interface IconProps {
     shape?: "circle" | "square";
@@ -154,33 +132,20 @@ interface IconProps {
     faCharFill?: string;
 }
 
-class Icon extends React.Component<IconProps> {
-
-    static defaultProps: IconProps = {
-        shape: "circle",
-        height: 128,
-        faChar: ""
-    };
-
-    shape() {
-        if (this.props.shape === "square") {
-            return <Square radius={this.props.height / 2} fill={this.props.fill} stroke={this.props.stroke}></Square>;
-        }
-        return <Circle radius={this.props.height / 2} fill={this.props.fill} stroke={this.props.stroke}></Circle>;
-    }
-
-    faCharColor() {
-        return this.props.faCharFill || Palette.textColor(this.props.fill || this.props.shape === "square" ? Square.defaultProps.fill : Circle.defaultProps.fill);
-    }
-
-    render() {
-        const padding = this.props.height / 5;
-        return <>
-            {this.shape()}
-            <FAChar y={this.props.height / 2} height={this.props.height - padding} faChar={this.props.faChar} fill={this.faCharColor()}></FAChar>
-        </>;
-    }
-}
+const Icon: React.FunctionComponent<IconProps> = ({
+    shape = "circle",
+    height = 128,
+    fill,
+    stroke,
+    faChar = "",
+    faCharFill = Palette.textColor(fill)
+}) => {
+    const padding = height / 5;
+    return <>
+        <Shape shape={shape} height={height} fill={fill} stroke={stroke} />
+        <FAChar y={height / 2} height={height - padding} faChar={faChar} fill={faCharFill}></FAChar>
+    </>;
+};
 
 export interface VertexProps {
     id: string;
@@ -195,26 +160,18 @@ export interface VertexProps {
     y?: number;
 }
 
-export class Vertex extends React.Component<VertexProps> {
-
-    static defaultProps: VertexProps = {
-        id: "",
-        iconHeight: 32,
-        iconFill: "transparent",
-        textHeight: 12,
-        faChar: "",
-        text: "",
-        x: 0,
-        y: 0
-    };
-
-    render() {
-        return <>
-            <Icon height={this.props.iconHeight} fill={this.props.iconFill} stroke={this.props.iconStroke} faChar={this.props.faChar} faCharFill={this.props.faCharFill} />
-            <TextBox y={this.props.iconHeight / 2 + this.props.textHeight} height={this.props.textHeight} text={this.props.text} />
-        </>;
-    }
-}
+export const Vertex: React.FunctionComponent<VertexProps> = ({
+    iconHeight = 32,
+    iconFill = "transparent",
+    textHeight = 12,
+    faChar = "",
+    text = "",
+    iconStroke,
+    faCharFill
+}) => <>
+        <Icon height={iconHeight} fill={iconFill} stroke={iconStroke} faChar={faChar} faCharFill={faCharFill} />
+        <TextBox y={iconHeight / 2 + textHeight} text={text} />
+    </>;
 
 export interface EdgeProps {
     id: string;
@@ -222,12 +179,10 @@ export interface EdgeProps {
     target: VertexProps;
 }
 
-export class Edge extends React.Component<EdgeProps> {
-
-    render() {
-        return <line x1={this.props.source.x} y1={this.props.source.y} x2={this.props.target.x} y2={this.props.target.y} stroke="gray" />;
-    }
-}
+export const Edge: React.FunctionComponent<EdgeProps> = ({
+    source,
+    target
+}) => <line x1={source.x} y1={source.y} x2={target.x} y2={target.y} stroke="gray" />;
 
 export class Test extends SVGWidget {
 

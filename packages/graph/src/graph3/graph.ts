@@ -7,6 +7,8 @@ import { tile as d3Tile, tileWrap as d3TileWrap } from "d3-tile";
 import { Edge, EdgeProps, Vertex, VertexProps } from "./components/icon";
 import { EdgePlaceholder, ForceDirectedAnimated, ILayout, VertexPlaceholder } from "./layouts/index";
 
+import "../../src/graph3/graph.css";
+
 export interface Lineage {
     parent: Widget;
     child: Widget;
@@ -50,7 +52,7 @@ export class Graph extends SVGZoomSurface {
     protected _links: d3.Selection<SVGGElement, EdgePlaceholder, d3.BaseType, this> = d3.selectAll(null);
 
     // --- Map Support ---
-    protected _mapVisible = true;
+    protected _mapVisible = false;
     private _mapScale = 1 << 15;
 
     protected _levels: any;
@@ -70,6 +72,7 @@ export class Graph extends SVGZoomSurface {
         const context = this;
         this._dragHandler
             .on("start", function (d) {
+                d3.select(this).classed("grabbed", true);
                 d.fx = d.sx = d.x;
                 d.fy = d.sy = d.y;
                 safeRaise(this);
@@ -89,7 +92,7 @@ export class Graph extends SVGZoomSurface {
                     context.moveVertexPlaceholder(n, false, true);
                 });
             })
-            .on("end", d => {
+            .on("end", function (d) {
                 d.x = d.fx;
                 d.y = d.fy;
                 d.fx = d.sx = undefined;
@@ -100,7 +103,8 @@ export class Graph extends SVGZoomSurface {
                     n.fx = n.sx = undefined;
                     n.fy = n.sy = undefined;
                 });
-                this._layout.start();
+                d3.select(this).classed("grabbed", false);
+                context._layout.start();
             })
             ;
     }
@@ -164,7 +168,24 @@ export class Graph extends SVGZoomSurface {
 
     moveEdgePlaceholder(ep: EdgePlaceholder, transition: boolean): this {
         if (ep.domNode) {
-            React.render(React.createElement(Edge, { ...ep.widget }), ep.domNode);
+            /*
+            const widget: EdgeProps = {
+                id: ep.widget.id,
+                source: {
+                    id: ep.widget.source.id,
+                    x: ep.widget.source.x,
+                    y: ep.widget.source.y,
+                    text: ""
+                },
+                target: {
+                    id: ep.widget.target.id,
+                    x: ep.widget.target.x,
+                    y: ep.widget.target.y,
+                    text: ""
+                }
+            };
+            */
+            React.render(React.createElement(Edge, ep.widget), ep.domNode);
         }
         /*
         ep.widget.move(ep.points || [
@@ -177,6 +198,7 @@ export class Graph extends SVGZoomSurface {
     }
 
     moveEdges(transition: boolean): this {
+        console.log(this._graphData.edges().length);
         this._graphData.edges().forEach(e => this.moveEdgePlaceholder(e, transition));
         return this;
     }
@@ -194,6 +216,7 @@ export class Graph extends SVGZoomSurface {
     }
 
     moveVertices(transition: boolean): this {
+        console.log(this._graphData.vertices().length);
         this._graphData.vertices().forEach(v => this.moveVertexPlaceholder(v, transition, false));
         return this;
     }
@@ -208,7 +231,7 @@ export class Graph extends SVGZoomSurface {
                     .each(function (d) {
                         d.element = d3.select(this);
                         if (d.props instanceof Vertex) {
-                            switch (d.props.props.text) {
+                            switch (d.props.text) {
                                 case "Jondrette":
                                     d.lat = 51.8985;
                                     d.lng = -8.4756;

@@ -11,14 +11,14 @@
             simple: function (callback) {
                 legacyRequire(["test/DataFactory", "src/graph/graph3"], function (DataFactory, graph3Mod) {
                     const vertices = [
-                        new graph3Mod.Vertex().text("Daddy"),
-                        new graph3Mod.Vertex().text("Mammy"),
-                        new graph3Mod.Vertex().text("Baby")
+                        { id: 0, text: "Daddy" },
+                        { id: 1, text: "Mummy" },
+                        { id: 2, text: "Baby" }
                     ];
 
                     const edges = [
-                        new graph3Mod.LineEdge().sourceVertex(vertices[0]).targetVertex(vertices[2]),
-                        new graph3Mod.LineEdge().sourceVertex(vertices[1]).targetVertex(vertices[2])
+                        { id: 0, source: vertices[0], target: vertices[2] },
+                        { id: 1, source: vertices[1], target: vertices[2] }
                     ];
 
                     callback(new graph3Mod.Graph()

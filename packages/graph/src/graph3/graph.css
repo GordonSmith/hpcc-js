@@ -1,0 +1,7 @@
+.vertexPlaceholder {
+    cursor: grab;
+}
+
+.vertexPlaceholder.grabbed {
+    cursor: grabbing;
+}
