@@ -5,3 +5,7 @@
 .vertexPlaceholder.grabbed {
     cursor: grabbing;
 }
+
+.edgePlaceholder {
+    stroke: darkgray;
+}

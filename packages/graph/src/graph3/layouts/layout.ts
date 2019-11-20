@@ -27,8 +27,8 @@ export interface VertexPlaceholder {
 
 export interface EdgePlaceholder {
     id: string;
-    domNode?: SVGGElement;
-    widget: EdgeProps;
+    element?: ElementT<SVGLineElement, VertexPlaceholder>;
+    props: EdgeProps;
     source: VertexPlaceholder; // The link’s source node
     target: VertexPlaceholder; // The link’s target node
 

@@ -4,7 +4,7 @@ import * as React from "@hpcc-js/preact-shim";
 import { Graph2 as GraphCollection } from "@hpcc-js/util";
 import { geoMercator as d3GeoMercator } from "d3-geo";
 import { tile as d3Tile, tileWrap as d3TileWrap } from "d3-tile";
-import { Edge, EdgeProps, Vertex, VertexProps } from "./components/icon";
+import { EdgeProps, Vertex, VertexProps } from "./components/icon";
 import { EdgePlaceholder, ForceDirectedAnimated, ILayout, VertexPlaceholder } from "./layouts/index";
 
 import "../../src/graph3/graph.css";
@@ -48,8 +48,6 @@ export class Graph extends SVGZoomSurface {
     protected _vertexG: ElementT<SVGGElement, this>;
 
     protected _dragHandler = d3.drag<Element, VertexPlaceholder>();
-    protected _nodes: d3.Selection<SVGGElement, VertexPlaceholder, d3.BaseType, this> = d3.selectAll(null);
-    protected _links: d3.Selection<SVGGElement, EdgePlaceholder, d3.BaseType, this> = d3.selectAll(null);
 
     // --- Map Support ---
     protected _mapVisible = false;
@@ -124,7 +122,7 @@ export class Graph extends SVGZoomSurface {
             return {
                 subgraphs: this._graphData.subgraphs(),
                 vertices: this._graphData.vertices().map(d => d.props),
-                edges: this._graphData.edges().map(d => d.widget),
+                edges: this._graphData.edges().map(d => d.props),
                 hierarchy: []
             };
         }
@@ -141,7 +139,7 @@ export class Graph extends SVGZoomSurface {
         if (_.edges) {
             _.edges.forEach(e => this._graphData.addEdge({
                 id: e.id,
-                widget: e,
+                props: e,
                 source: this._graphData.vertex(e.source.id),
                 target: this._graphData.vertex(e.target.id)
             }));
@@ -167,45 +165,20 @@ export class Graph extends SVGZoomSurface {
     }
 
     moveEdgePlaceholder(ep: EdgePlaceholder, transition: boolean): this {
-        if (ep.domNode) {
-            /*
-            const widget: EdgeProps = {
-                id: ep.widget.id,
-                source: {
-                    id: ep.widget.source.id,
-                    x: ep.widget.source.x,
-                    y: ep.widget.source.y,
-                    text: ""
-                },
-                target: {
-                    id: ep.widget.target.id,
-                    x: ep.widget.target.x,
-                    y: ep.widget.target.y,
-                    text: ""
-                }
-            };
-            */
-            React.render(React.createElement(Edge, ep.widget), ep.domNode);
-        }
-        /*
-        ep.widget.move(ep.points || [
-            [(ep.source.fx || ep.source.x || 0) * this._transformScale, (ep.source.fy || ep.source.y || 0) * this._transformScale],
-            [(ep.target.fx || ep.target.x || 0) * this._transformScale, (ep.target.fy || ep.target.y || 0) * this._transformScale]
-        ], transition);
-        */
+        ep.element && (transition ? ep.element.transition() : ep.element)
+            .attr("x1", ep.source.props.x)
+            .attr("y1", ep.source.props.y)
+            .attr("x2", ep.target.props.x)
+            .attr("y2", ep.target.props.y)
+            ;
         delete ep.points;
         return this;
     }
 
-    moveEdges(transition: boolean): this {
-        console.log(this._graphData.edges().length);
-        this._graphData.edges().forEach(e => this.moveEdgePlaceholder(e, transition));
-        return this;
-    }
-
     moveVertexPlaceholder(vp: VertexPlaceholder, transition: boolean, moveNeighbours: boolean): this {
-        vp.props.x = (vp.fx || vp.x || 0) * this._transformScale;
-        vp.props.y = (vp.fy || vp.y || 0) * this._transformScale;
+        const rf = 10;
+        vp.props.x = Math.round((vp.fx || vp.x || 0) * this._transformScale * rf) / rf;
+        vp.props.y = Math.round((vp.fy || vp.y || 0) * this._transformScale * rf) / rf;
         vp.element && (transition ? vp.element.transition() : vp.element)
             .attr("transform", `translate(${vp.props.x} ${vp.props.y})`)
             ;
@@ -215,15 +188,39 @@ export class Graph extends SVGZoomSurface {
         return this;
     }
 
+    moveEdges(transition: boolean): this {
+        this._graphData.edges().forEach(e => this.moveEdgePlaceholder(e, transition));
+        return this;
+    }
+
     moveVertices(transition: boolean): this {
-        console.log(this._graphData.vertices().length);
         this._graphData.vertices().forEach(v => this.moveVertexPlaceholder(v, transition, false));
         return this;
     }
 
-    _first = true;
+    updateEdges(): this {
+        this._edgeG.selectAll<SVGLineElement, EdgePlaceholder>(".edgePlaceholder")
+            .data(this._graphData.edges(), d => d.id)
+            .join(
+                enter => enter.append("line")
+                    .attr("class", "edgePlaceholder")
+                    .each(function (d) {
+                        d.element = d3.select(this);
+                    })
+                ,
+                update => update,
+                exit => exit
+                    .each(function (d) {
+                        delete d.element;
+                    })
+                    .remove()
+            )
+            ;
+        return this;
+    }
+
     updateVertices(): this {
-        this._nodes = this._vertexG.selectAll<SVGGElement, VertexPlaceholder>(".vertexPlaceholder")
+        this._vertexG.selectAll<SVGGElement, VertexPlaceholder>(".vertexPlaceholder")
             .data(this._graphData.vertices(), d => d.id)
             .join(
                 enter => enter.append("g")
@@ -259,27 +256,11 @@ export class Graph extends SVGZoomSurface {
                 update => update,
                 exit => exit
                     .each(function (d) {
+                        delete d.element;
                     })
                     .remove()
             ).each(function (d) {
-                React.render(React.createElement(Vertex, { ...d.props }), this);
-            })
-            ;
-        return this;
-    }
-
-    updateEdges(): this {
-        this._links = this._edgeG.selectAll<SVGGElement, EdgePlaceholder>(".edgePlaceholder")
-            .data(this._graphData.edges(), d => d.id)
-            .join(
-                enter => enter.append("g")
-                    .attr("class", "edgePlaceholder")
-                ,
-                update => update,
-                exit => exit.remove()
-            ).each(function (d) {
-                d.domNode = this;
-                React.render(React.createElement(Edge, { ...d.widget }), this);
+                React.render(React.createElement(Vertex, d.props), this);
             })
             ;
         return this;

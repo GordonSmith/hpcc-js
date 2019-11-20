@@ -116,31 +116,29 @@ type EdgeMap<T> = { [id: string]: Edge<T> };
 export class Graph2<V = any, E = any, S = any> {
 
     private _directed: boolean;
-    private _subgraphs: SubgraphMap<S> = {};
-    private _vertices: VertexMap<V> = {};
-    private _edges: EdgeMap<E> = {};
+    private _subgraphMap: SubgraphMap<S> = {};
+    private _subgraphs: S[] = [];
+    private _vertexMap: VertexMap<V> = {};
+    private _vertices: V[] = [];
+    private _edgeMap: EdgeMap<E> = {};
+    private _edges: E[] = [];
 
     constructor(directed = true) {
         this._directed = directed;
     }
 
     clear(): this {
-        this._subgraphs = {};
-        this._vertices = {};
-        this._edges = {};
+        this._subgraphMap = {};
+        this._subgraphs = [];
+        this._vertexMap = {};
+        this._vertices = [];
+        this._edgeMap = {};
+        this._edges = [];
         return this;
     }
 
     isDirected(): boolean {
         return this._directed;
-    }
-
-    values<T>(obj: { [id: string]: GraphItem<T> }) {
-        const retVal: T[] = [];
-        for (const key in obj) {
-            retVal.push(obj[key]._);
-        }
-        return retVal;
     }
 
     _idFunc = (_: any): string => typeof _.id === "function" ? _.id() : _.id;
@@ -167,35 +165,37 @@ export class Graph2<V = any, E = any, S = any> {
 
     // Subgraphs  ---
     subgraphs(): S[] {
-        return this.values(this._subgraphs);
+        return this._subgraphs;
     }
 
     subgraphExists(id: string): boolean {
-        return !!this._subgraphs[id];
+        return !!this._subgraphMap[id];
     }
 
     subgraph(id: string): S {
-        return this._subgraphs[id]._;
+        return this._subgraphMap[id]._;
     }
 
     addSubgraph(s: S, parent?: S): this {
         const s_id = this._idFunc(s);
-        if (this._subgraphs[s_id]) throw new Error(`Subgraph '${s_id}' already exists.`);
+        if (this._subgraphMap[s_id]) throw new Error(`Subgraph '${s_id}' already exists.`);
         const subgraph = new Subgraph(this, s);
         if (parent) {
             const p_id = this._idFunc(parent);
-            if (!this._subgraphs[p_id]) throw new Error(`Subgraph '${p_id}' does not exist.`);
-            subgraph.parent(this._subgraphs[p_id]);
+            if (!this._subgraphMap[p_id]) throw new Error(`Subgraph '${p_id}' does not exist.`);
+            subgraph.parent(this._subgraphMap[p_id]);
         }
-        this._subgraphs[s_id] = subgraph;
+        this._subgraphMap[s_id] = subgraph;
+        this._subgraphs.push(subgraph._);
         return this;
     }
 
     removeSubgraph(id: string, promoteChildren = true): this {
-        if (!this._subgraphs[id]) throw new Error(`Subgraph '${id}' does not exist.`);
-        this._subgraphs[id].children().forEach(child => {
+        const sg = this._subgraphMap[id];
+        if (!sg) throw new Error(`Subgraph '${id}' does not exist.`);
+        sg.children().forEach(child => {
             if (promoteChildren) {
-                child.parent(this._subgraphs[id].parent());
+                child.parent(sg.parent());
             } else {
                 if (child instanceof Subgraph) {
                     this.removeSubgraph(child.id());
@@ -204,20 +204,21 @@ export class Graph2<V = any, E = any, S = any> {
                 }
             }
         });
-        delete this._subgraphs[id];
+        this._subgraphs = this._subgraphs.filter(row => row !== sg._);
+        delete this._subgraphMap[id];
         return this;
     }
 
     subgraphParent(id: string): S | undefined;
     subgraphParent(id: string, parentID: string): this;
     subgraphParent(id: string, parentID?: string): S | undefined | this {
-        const item = this._subgraphs[id];
+        const item = this._subgraphMap[id];
         if (!item) throw new Error(`Vertex '${id}' does not exist.`);
         if (parentID === void 0) {
             const parent = item.parent();
             return parent ? parent._ as S : undefined;
         }
-        const parent = this._subgraphs[parentID];
+        const parent = this._subgraphMap[parentID];
         if (!parent) throw new Error(`Vertex parent '${parent}' does not exist.`);
         item.parent(parent);
         return this;
@@ -225,31 +226,31 @@ export class Graph2<V = any, E = any, S = any> {
 
     // Vertices  ---
     vertices(): V[] {
-        return this.values(this._vertices);
+        return this._vertices;
     }
 
     vertexExists(id: string): boolean {
-        return !!this._vertices[id];
+        return !!this._vertexMap[id];
     }
 
     vertex(id: string): V {
-        return this._vertices[id]._;
+        return this._vertexMap[id]._;
     }
 
     edges(vertexID?: string): E[] {
-        return vertexID ? this._vertices[vertexID].edges().map(e => e._) : this.values(this._edges);
+        return vertexID ? this._vertexMap[vertexID].edges().map(e => e._) : this._edges;
     }
 
     inEdges(vertexID: string): E[] {
-        return this._vertices[vertexID].inEdges().map(e => e._);
+        return this._vertexMap[vertexID].inEdges().map(e => e._);
     }
 
     outEdges(vertexID: string): E[] {
-        return this._vertices[vertexID].outEdges().map(e => e._);
+        return this._vertexMap[vertexID].outEdges().map(e => e._);
     }
 
     private _neighbors(id: string): Vertex[] {
-        return [...this._vertices[id].outEdges().map(e => e._target), ...this._vertices[id].inEdges().map(e => e._source)];
+        return [...this._vertexMap[id].outEdges().map(e => e._target), ...this._vertexMap[id].inEdges().map(e => e._source)];
     }
 
     neighbors(id: string): V[] {
@@ -262,75 +263,80 @@ export class Graph2<V = any, E = any, S = any> {
 
     addVertex(v: V, parent?: S): this {
         const v_id = this._idFunc(v);
-        if (this._vertices[v_id]) throw new Error(`Vertex '${v_id}' already exists.`);
+        if (this._vertexMap[v_id]) throw new Error(`Vertex '${v_id}' already exists.`);
         const vertex = new Vertex(this, v);
         if (parent) {
             const p_id = this._idFunc(parent);
             if (!this.subgraphExists(p_id)) throw new Error(`Subgraph '${p_id}' does not exist.`);
-            vertex.parent(this._subgraphs[p_id]);
+            vertex.parent(this._subgraphMap[p_id]);
         }
-        this._vertices[v_id] = vertex;
+        this._vertexMap[v_id] = vertex;
+        this._vertices.push(vertex._);
         return this;
     }
 
     removeVertex(id: string): this {
-        if (!this._vertices[id]) throw new Error(`Vertex '${id}' does not exist.`);
-        this._vertices[id].edges().forEach(e => {
+        const v = this._vertexMap[id];
+        if (!v) throw new Error(`Vertex '${id}' does not exist.`);
+        v.edges().forEach(e => {
             this.removeEdge(e.id(), false);
         });
-        delete this._vertices[id];
+        this._vertices = this._vertices.filter(row => row !== v._);
+        delete this._vertexMap[id];
         return this;
     }
 
     vertexParent(id: string): S | undefined;
     vertexParent(id: string, parentID: string): this;
     vertexParent(id: string, parentID?: string): S | undefined | this {
-        const item = this._vertices[id];
+        const item = this._vertexMap[id];
         if (!item) throw new Error(`Vertex '${id}' does not exist.`);
         if (parentID === void 0) {
             const parent = item.parent();
             return parent ? parent._ as S : undefined;
         }
-        const parent = this._subgraphs[parentID];
+        const parent = this._subgraphMap[parentID];
         if (!parent) throw new Error(`Vertex parent '${parent}' does not exist.`);
         item.parent(parent);
         return this;
     }
     // Edges  ---
     edgeExists(id: string): boolean {
-        return !!this._edges[id];
+        return !!this._edgeMap[id];
     }
 
     edge(id: string): E {
-        return this._edges[id]._;
+        return this._edgeMap[id]._;
     }
 
     addEdge(e: E): this {
         const e_id = this._idFunc(e);
         const e_source = this._sourceFunc(e);
         const e_target = this._targetFunc(e);
-        if (this._edges[e_id]) throw new Error(`Edge '${e_id}' already exists.`);
+        if (this._edgeMap[e_id]) throw new Error(`Edge '${e_id}' already exists.`);
         if (!this.vertexExists(e_source)) throw new Error(`Edge Source '${e_source}' does not exist.`);
         if (!this.vertexExists(e_target)) throw new Error(`Edge Target '${e_target}' does not exist.`);
-        const edge = new Edge(this, e, this._vertices[e_source], this._vertices[e_target]);
-        this._edges[e_id] = edge;
-        this._vertices[e_source].addOutEdge(edge);
-        this._vertices[e_target].addInEdge(edge);
+        const edge = new Edge(this, e, this._vertexMap[e_source], this._vertexMap[e_target]);
+        this._edgeMap[e_id] = edge;
+        this._edges.push(edge._);
+        this._vertexMap[e_source].addOutEdge(edge);
+        this._vertexMap[e_target].addInEdge(edge);
         return this;
     }
 
     removeEdge(id: string, updateVertices = true): this {
-        if (!this._edges[id]) throw new Error(`Vertex '${id}' does not exist.`);
-        const edge = this._edges[id];
+        const e = this._edgeMap[id];
+        if (!e) throw new Error(`Vertex '${id}' does not exist.`);
         if (updateVertices) {
-            const e_source = this._sourceFunc(edge);
+            const e_source = this._sourceFunc(e);
             if (!this.vertexExists(e_source)) throw new Error(`Edge Source'${e_source}' does not exist.`);
-            this._vertices[e_source].removeOutEdge(id);
-            const e_target = this._targetFunc(edge);
+            this._vertexMap[e_source].removeOutEdge(id);
+            const e_target = this._targetFunc(e);
             if (!this.vertexExists(e_target)) throw new Error(`Edge Target'${e_target}' does not exist.`);
-            this._vertices[e_target].removeInEdge(id);
+            this._vertexMap[e_target].removeInEdge(id);
         }
-        delete this._edges[id];
+        this._edges = this._edges.filter(row => row !== e._);
+        delete this._edgeMap[id];
         return this;
     }
 }
