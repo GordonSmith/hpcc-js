@@ -75,7 +75,7 @@ export function compare2<T>(before: readonly T[], after: readonly T[], idFunc: (
     });
     for (const row of before) {
         const otherIdx = retVal.added.indexOf(addedMap[idFunc(row)]);
-        if (otherIdx !== undefined) {
+        if (otherIdx >= 0) {
             retVal.unchanged.push(row);
             retVal.added.splice(otherIdx, 1);
         } else {

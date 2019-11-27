@@ -9,7 +9,7 @@ export class Dagre extends Layout {
     start() {
         super.start();
         const size = this._graph.size();
-        const data = this._graph.layoutData();
+        const data = this._graph.graphData();
         const digraph = new graphlib.Graph({ multigraph: true, compound: false })
             .setGraph({
                 compound: false

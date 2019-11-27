@@ -1,6 +1,8 @@
+import { compare2 } from './array';
+
 class GraphItem<T = any> {
     protected _graph: Graph2;
-    readonly _: T;
+    _: T;
     id(): string {
         return this._graph.id(this._);
     }
@@ -190,6 +192,22 @@ export class Graph2<V = any, E = any, S = any> {
         return this;
     }
 
+    mergeSubgraphs(_subgraphs: S[] = []): this {
+        const sgDiff = compare2<S>(this.subgraphs(), _subgraphs, sg => this._idFunc(sg));
+        sgDiff.removed.forEach(sg => this.removeSubgraph(this._idFunc(sg)));
+        sgDiff.added.forEach(sg => this.addSubgraph(sg));
+        sgDiff.unchanged.forEach(sg => this.updateSubgraph(sg));
+        return this;
+    }
+
+    updateSubgraph(sg: S): this {
+        const sg_id = this._idFunc(sg);
+        const subgraph = this._subgraphMap[sg_id];
+        if (!subgraph) throw new Error(`Subgraph '${sg_id}' does not exist.`);
+        subgraph._ = sg;
+        return this;
+    }
+
     removeSubgraph(id: string, promoteChildren = true): this {
         const sg = this._subgraphMap[id];
         if (!sg) throw new Error(`Subgraph '${id}' does not exist.`);
@@ -275,6 +293,22 @@ export class Graph2<V = any, E = any, S = any> {
         return this;
     }
 
+    mergeVertices(_vertices: V[]): this {
+        const vDiff = compare2(this.vertices(), _vertices, v => this._idFunc(v));
+        vDiff.removed.forEach(v => this.removeVertex(this._idFunc(v)));
+        vDiff.added.forEach(v => this.addVertex(v));
+        vDiff.unchanged.forEach(v => this.updateVertex(v));
+        return this;
+    }
+
+    updateVertex(v: V): this {
+        const v_id = this._idFunc(v);
+        const vertex = this._vertexMap[v_id];
+        if (!vertex) throw new Error(`Vertex '${v_id}' does not exist.`);
+        vertex._ = v;
+        return this;
+    }
+
     removeVertex(id: string): this {
         const v = this._vertexMap[id];
         if (!v) throw new Error(`Vertex '${id}' does not exist.`);
@@ -321,6 +355,22 @@ export class Graph2<V = any, E = any, S = any> {
         this._edges.push(edge._);
         this._vertexMap[e_source].addOutEdge(edge);
         this._vertexMap[e_target].addInEdge(edge);
+        return this;
+    }
+
+    mergeEdges(_edges: E[]): this {
+        const eDiff = compare2(this.edges(), _edges, e => this._idFunc(e));
+        eDiff.removed.forEach(e => this.removeEdge(this._idFunc(e)));
+        eDiff.added.forEach(e => this.addEdge(e));
+        eDiff.unchanged.forEach(e => this.updateEdge(e));
+        return this;
+    }
+
+    updateEdge(e: E): this {
+        const e_id = this._idFunc(e);
+        const edge = this._edgeMap[e_id];
+        if (!edge) throw new Error(`Edge '${e_id}' does not exist.`);
+        edge._ = e;
         return this;
     }
 

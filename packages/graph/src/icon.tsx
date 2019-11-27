@@ -1,5 +1,14 @@
 import { FACharMapping, Palette, SVGWidget, textSize } from "@hpcc-js/common";
 import * as React from "@hpcc-js/preact-shim";
+import { curveBasis as d3CurveBasis, curveBundle as d3CurveBundle, curveCardinal as d3CurveCardinal, curveCatmullRom as d3CurveCatmullRom, curveLinear as d3CurveLinear, line as d3Line } from "d3-shape";
+
+const Curve = {
+    basis: d3CurveBasis,
+    bundle: d3CurveBundle,
+    cardinal: d3CurveCardinal,
+    catmullRom: d3CurveCatmullRom,
+    linear: d3CurveLinear
+};
 
 interface CircleProps {
     cx?: string;
@@ -183,6 +192,42 @@ export const Edge: React.FunctionComponent<EdgeProps> = ({
     source,
     target
 }) => <line x1={source.x} y1={source.y} x2={target.x} y2={target.y} stroke="gray" />;
+
+export type Point = [number, number];
+function calcArc(points: Point[]): Point[] {
+    const curveDepth = 16;
+    if (points.length === 2 && curveDepth) {
+        const dx = points[0][0] - points[1][0];
+        const dy = points[0][1] - points[1][1];
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist) {
+            const midX = (points[0][0] + points[1][0]) / 2 - dy * curveDepth / 100;
+            const midY = (points[0][1] + points[1][1]) / 2 + dx * curveDepth / 100;
+            return [points[0], [midX, midY], points[1]];
+        }
+    }
+    return points;
+}
+
+export const CurvedEdge: React.FunctionComponent<EdgeProps> = ({
+    source,
+    target
+}) => {
+    const line = d3Line()
+        .x(d => d[0])
+        .y(d => d[1])
+        .curve(Curve.basis)
+        // .tension(0.75)
+        (calcArc([[source.x, source.y], [target.x, target.y]]))
+        ;
+
+    return <path d={line} stroke="gray" />;
+};
+
+export interface SubgraphProps {
+    id: string;
+    text: string;
+}
 
 export class Test extends SVGWidget {
 

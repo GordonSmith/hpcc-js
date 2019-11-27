@@ -646,9 +646,12 @@ export class Graph extends SVGZoomWidget {
             const context = this;
             const layoutEngine = this.getLayoutEngine();
             if (this.layout() === "ForceDirected2") {
+                let total = 0;
+                let count = 0;
                 this.forceLayout = layoutEngine;
                 this.forceLayout.force
                     .on("tick", function (this: SVGElement) {
+                        const start = performance.now();
                         context.progress("layout-tick");
                         layoutEngine.vertices.forEach(function (item) {
                             if (item.fixed) {
@@ -676,6 +679,9 @@ export class Graph extends SVGZoomWidget {
                             // const vBounds = context.getVertexBounds(layoutEngine);
                             // context.shrinkToFit(vBounds);
                         }
+                        total += performance.now() - start;
+                        ++count;
+                        console.log("tick:" + (total / count));
                     })
                     .on("end", function (this: SVGElement) {
                         context.progress("layout-end");

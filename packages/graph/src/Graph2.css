@@ -8,4 +8,5 @@
 
 .edgePlaceholder {
     stroke: darkgray;
+    fill: none;
 }

@@ -4,14 +4,14 @@
 import { Edge, graph3, Vertex } from "@hpcc-js/graph";
 
 const vertices = [
-    new graph3.Vertex().text("Daddy"),
-    new graph3.Vertex().text("Mammy"),
-    new graph3.Vertex().text("Baby")
+    { id: 0, text: "Daddy" },
+    { id: 1, text: "Mummy" },
+    { id: 2, text: "Baby" }
 ];
 
 const edges = [
-    new graph3.LineEdge().sourceVertex(vertices[0]).targetVertex(vertices[2]),
-    new graph3.LineEdge().sourceVertex(vertices[1]).targetVertex(vertices[2])
+    { id: 0, source: vertices[0], target: vertices[2] },
+    { id: 1, source: vertices[1], target: vertices[2] }
 ];
 
 new graph3.Graph()

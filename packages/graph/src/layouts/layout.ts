@@ -1,6 +1,6 @@
 import { ElementT, Size } from "@hpcc-js/core";
 import { Graph2 as GraphCollection } from "@hpcc-js/util";
-import { EdgeProps, VertexProps } from "../components/icon";
+import { EdgeProps, VertexProps } from "../icon";
 
 export interface VertexPlaceholder {
     id: string;
@@ -47,7 +47,7 @@ export interface ILayout {
 
 export interface IGraph {
     size(): Size;
-    layoutData(): GraphCollection<VertexPlaceholder, EdgePlaceholder>;
+    graphData(): GraphCollection<VertexPlaceholder, EdgePlaceholder>;
     moveEdgePlaceholder(ep: EdgePlaceholder, transition: boolean): this;
     moveEdges(transition: boolean): this;
     moveVertexPlaceholder(vp: VertexPlaceholder, transition: boolean, moveEdges: boolean): this;

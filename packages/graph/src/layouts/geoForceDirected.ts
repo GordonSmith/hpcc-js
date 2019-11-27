@@ -14,7 +14,7 @@ export class GeoForceDirectedBase extends Layout {
 
     start() {
         super.start();
-        const data = this._graph.layoutData();
+        const data = this._graph.graphData();
         this._links = d3ForceLink(data.edges())
             .id(d => d.id)
             .distance(this._options.linkDistance)
@@ -48,7 +48,7 @@ export class GeoForceDirected extends GeoForceDirectedBase {
 
     start() {
         super.start();
-        const vertices = this._graph.layoutData().vertices();
+        const vertices = this._graph.graphData().vertices();
         vertices.forEach(vp => {
             if (vp.lat && vp.lng) {
                 const [x, y] = this._graph.project(vp.lat, vp.lng);

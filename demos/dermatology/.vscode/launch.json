@@ -19,10 +19,10 @@
             }
         },
         {
-            "name": "Graph3",
+            "name": "Graph2",
             "type": "chrome",
             "request": "launch",
-            "url": "file:///C:/Users/gordon/git/hpcc-js/demos/dermatology/index.html?src/graph/Graph3",
+            "url": "file:///C:/Users/gordon/git/hpcc-js/demos/dermatology/index.html?src/graph/Graph2.LesMis_2",
             "runtimeArgs": [
                 "--allow-file-access-from-files"
             ],

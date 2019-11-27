@@ -5,7 +5,7 @@ export class Null extends Layout {
     start() {
         super.start();
         const size = this._graph.size();
-        const data = this._graph.layoutData();
+        const data = this._graph.graphData();
         //  Avoid edges of 0 length ---
         data.vertices().forEach(v => {
             v.x = size.width / 2 + Math.random() * 5 - 2.5;

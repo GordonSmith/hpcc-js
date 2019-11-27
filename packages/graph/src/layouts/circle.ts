@@ -12,7 +12,7 @@ export class Circle extends Layout {
     start() {
         super.start();
         const size = this._graph.size();
-        const vertices = this._graph.layoutData().vertices();
+        const vertices = this._graph.graphData().vertices();
         const r = radius(vertices.length, this.sideLength);
         const angle = 360 / vertices.length;
         vertices.forEach((v, i) => {

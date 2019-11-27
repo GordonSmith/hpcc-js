@@ -25,7 +25,7 @@ export class ForceDirectedBase extends Layout {
     start() {
         super.start();
         const size = this._graph.size();
-        const data = this._graph.layoutData();
+        const data = this._graph.graphData();
         this._links = d3ForceLink(data.edges())
             .id(d => d.id)
             .distance(this._options.linkDistance)
@@ -40,9 +40,9 @@ export class ForceDirectedBase extends Layout {
             .force("charge", this._charge)
             .force("center", this._center)
             .nodes(data.vertices().map(v => {
-                // const { width, height } = v.widget.getBBox();
-                // v["width"] = width;
-                // v["height"] = height;
+                const { width, height } = v.element.node().getBBox();
+                v["width"] = width;
+                v["height"] = height;
                 return v;
             }))
             .stop()
@@ -65,7 +65,7 @@ export class ForceDirected extends ForceDirectedBase {
             .velocityDecay(0.1)
             .restart()
             ;
-        let total = this._graph.layoutData().vertices().length;
+        let total = this._graph.graphData().vertices().length;
         total = Math.min(total * total, 500);
         for (let i = 0; i < total; ++i) {
             this._simulation.tick();
@@ -85,13 +85,19 @@ export class ForceDirectedAnimated extends ForceDirectedBase {
 
     start() {
         super.start();
+        let total = 0;
+        let count = 0;
         this._simulation
             .velocityDecay(this._options.velocityDecay)
             .on("tick", () => {
+                const start = performance.now();
                 this._graph
                     .moveVertices(false)
                     .moveEdges(false)
                     ;
+                total += performance.now() - start;
+                ++count;
+                console.log("tick:" + (total / count));
             })
             .on("end", () => {
                 this._running = false;

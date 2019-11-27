@@ -1,35 +1,35 @@
-import { publish } from "@hpcc-js/core";
+import { publish, Widget } from "@hpcc-js/common";
 import { compare2 } from "@hpcc-js/util";
-import { EdgeProps, VertexProps } from "./components/icon";
-import { Graph } from "./graph";
+import { Graph2 } from "./Graph2";
+import { EdgeProps, VertexProps } from "./icon";
 
-export class DataGraph extends Graph {
+export class DataGraph2 extends Graph2 {
 
-    @publish([], "Vertex Columns")
-    vertexColumns: publish<string[], this>;
-    @publish([], "Vertices (Nodes)")
-    vertices: publish<string[][], this>;
-    @publish("", "Vertex ID column")
-    vertexIDColumn: publish<string, this>;
-    @publish("", "Vertex label column")
-    vertexLabelColumn: publish<string, this>;
-    @publish("fa-user", "Vertex default FAChar")
-    vertexFAChar: publish<string, this>;
-    @publish("", "Vertex FAChar column")
-    vertexFACharColumn: publish<string, this>;
+    @publish([], "any", "Vertex Columns")
+    vertexColumns: publish<this, string[]>;
+    @publish([], "any", "Vertices (Nodes)")
+    vertices: publish<this, string[][]>;
+    @publish("", "any", "Vertex ID column")
+    vertexIDColumn: publish<this, string>;
+    @publish("", "any", "Vertex label column")
+    vertexLabelColumn: publish<this, string>;
+    @publish("fa-user", "any", "Vertex default FAChar")
+    vertexFAChar: publish<this, string>;
+    @publish("", "any", "Vertex FAChar column")
+    vertexFACharColumn: publish<this, string>;
 
-    @publish([], "Edge columns")
-    edgeColumns: publish<string[], this>;
-    @publish([], "Edges (Edges)")
-    edges: publish<string[][], this>;
-    @publish("", "Edge ID column")
-    edgeIDColumn: publish<string, this>;
-    @publish("", "Edge label column")
-    edgeLabelColumn: publish<string, this>;
-    @publish("", "Edge source ID column")
-    edgeSourceColumn: publish<string, this>;
-    @publish("", "Edge target ID column")
-    edgeTargetColumn: publish<string, this>;
+    @publish([], "any", "Edge columns")
+    edgeColumns: publish<this, string[]>;
+    @publish([], "any", "Edges (Edges)")
+    edges: publish<this, string[][]>;
+    @publish("", "any", "Edge ID column")
+    edgeIDColumn: publish<this, string>;
+    @publish("", "any", "Edge label column")
+    edgeLabelColumn: publish<this, string>;
+    @publish("", "any", "Edge source ID column")
+    edgeSourceColumn: publish<this, string>;
+    @publish("", "any", "Edge target ID column")
+    edgeTargetColumn: publish<this, string>;
 
     constructor() {
         super();
@@ -90,10 +90,25 @@ export class DataGraph extends Graph {
         this._prevEdges = edges;
     }
 
-    update(element) {
+    update(domNode, element) {
         this.mergeVertices();
         this.mergeEdges();
         this.data({ vertices: this._masterVertices, edges: this._masterEdges });
-        super.update(element);
+        super.update(domNode, element);
+    }
+
+    render(callback?: (w: Widget) => void): this {
+        console.log("Vertices:  " + this.vertices().length);
+        console.log("Edges:  " + this.edges().length);
+        const start = performance.now();
+        super.render(w => {
+            const end = performance.now();
+            console.log(end - start);
+            if (callback) {
+                callback(w);
+            }
+        });
+        return this;
     }
 }
+DataGraph2.prototype._class += " graph_DataGraph2";
