@@ -6,7 +6,7 @@ _A [@hpcc-js/observable-md](https://github.com/hpcc-systems/Visualization/tree/m
 ${mdFormatted}
 
 ```
-mdFormatted = Object.keys(editor).map(k => "  * " + k).join("\n");
+mdFormatted = Object.keys(hpcc.editor).map(k => "  * " + k).join("\n");
 ```
 
 ---
@@ -16,7 +16,7 @@ _Creating widgets is always broken into two steps, this allows the content of th
 
 ```javascript
 // First Create ECL Editor instance
-viewof eclEditor = editor.ecl();
+viewof eclEditor = hpcc.editor.ecl();
 
 // Next assign some text:
 viewof eclEditor.text(`a := 'aaa';`)
@@ -28,7 +28,7 @@ eclEditor;
 
 ```
 // First Create ECL Editor instance
-viewof eclEditor = editor.ecl();
+viewof eclEditor = hpcc.editor.ecl();
 
 // Next assign some text:
 viewof eclEditor.text(`a := 'aaa';\n//  TYPE HERE NOW!!!`)
@@ -53,7 +53,7 @@ _A Javascript Editor_
 function add(a, b) {
   return a + b;
 }
-viewof js = editor.javascript();
+viewof js = hpcc.editor.javascript();
 viewof js.text(`function add(a, b) {
   return a + b;
 }

@@ -10,7 +10,7 @@ _A [@hpcc-js/observable-md](https://github.com/hpcc-systems/Visualization/tree/m
 ${fromattedResults}
 
 ```
-platform = esp("https://play.hpccsystems.com:18010");
+platform = hpcc.esp("https://play.hpccsystems.com:18010");
 wu = platform.wu("W20200109-161403");
 results = wu.results();
 fromattedResults = results.map(r => `  * ${r.name}\n`);

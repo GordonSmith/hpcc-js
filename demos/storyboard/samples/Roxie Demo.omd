@@ -16,7 +16,7 @@ querySet = "roxie";
 queryID = "covid19_by_us_states";
 
 //  Initialize Roxie
-r = roxie("https://play.hpccsystems.com:18002");
+r = hpcc.roxie("https://play.hpccsystems.com:18002");
 q = r.query("roxie", "covid19_by_countries");
 requestFields = q.requestFields();
 responseFields = q.responseFields();

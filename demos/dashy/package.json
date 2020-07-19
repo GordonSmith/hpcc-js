@@ -38,7 +38,7 @@
         "pure-css": "1.0.4",
         "rimraf": "2.6.3",
         "rollup": "2.10.7",
-        "typescript": "3.9.2",
+        "typescript": "3.9.7",
         "webpack": "4.41.5",
         "webpack-cli": "3.3.10"
     }

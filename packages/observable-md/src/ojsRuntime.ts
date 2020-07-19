@@ -2,6 +2,7 @@ import { Callback, Dispatch, hashSum, IObserverHandle, Message } from "@hpcc-js/
 import { parseModule } from "@observablehq/parser";
 import { Inspector, Runtime } from "@observablehq/runtime";
 import { FileAttachments, Library } from "@observablehq/stdlib";
+import * as stdlib from "./stdlib/index";
 import { FakeRuntime as ParseRuntime } from "./parseRuntime";
 import { calcRefs, createFunction, FuncTypes, OJSSyntaxError, OJSVariableMessageType } from "./util";
 
@@ -174,6 +175,8 @@ export class OJSModule {
     protected _variables: OJSVariable[] = [];
 
     constructor(protected _ojsCompiler: OJSRuntime, protected _id: string, protected _module, protected _ojs: string) {
+        //  Load stdlib  ---
+        this._module.define("hpcc", [], () => stdlib);
     }
 
     variables() {

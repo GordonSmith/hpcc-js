@@ -5,7 +5,7 @@ _A [@hpcc-js/observable-md](https://github.com/hpcc-systems/Visualization/tree/m
 ## 1 - An ECL Editor
 
 ```
-viewof eclEditor = editor.ecl();
+viewof eclEditor = hpcc.editor.ecl();
 viewof eclEditor.text(`\
 
 Layout_Person := RECORD
@@ -43,13 +43,13 @@ viewof eclToSubmit = {
 * **Platform**:  ${platform.url} 
 
 ```
-platform = esp("https://play.hpccsystems.com:18010");
+platform = hpcc.esp("https://play.hpccsystems.com:18010");
 results = platform.submit(eclToSubmit);
 ```
 
 ## 4 - Render results in a Table
 
 ```
-viewof resultsTable = table({height:140});
+viewof resultsTable = hpcc.table({height:140});
 viewof resultsTable.json(results);
 ``` 

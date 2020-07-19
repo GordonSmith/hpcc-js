@@ -1,6 +1,6 @@
 import * as React from "@hpcc-js/preact-shim";
 
-interface Circle {
+interface Circle extends SVGCircleElement {
     radius?: number;
     fill?: string;
     stroke?: string;
@@ -8,19 +8,14 @@ interface Circle {
     shapeRendering?: "auto" | "optimizeSpeed" | "crispEdges" | "geometricPrecision";
 }
 
-export const Circle: React.FunctionComponent<Circle> = ({
-    radius = 32,
-    fill = "navy",
-    stroke = fill,
-    strokeWidth = 1,
-    shapeRendering
-}) => <circle
-        r={radius}
-        fill={fill}
-        stroke={stroke}
-        stroke-width={strokeWidth}
-        shape-rendering={shapeRendering}
-    />;
+export const Circle: React.FunctionComponent<Circle> = (props: Circle) => <circle
+    {...props}
+    r={props.radius}
+    fill={props.fill}
+    stroke={props.stroke}
+    stroke-width={props.strokeWidth}
+    shape-rendering={props.shapeRendering}
+/>;
 
 interface Square {
     radius?: number;

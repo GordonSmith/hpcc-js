@@ -1,9 +1,11 @@
 {
     "extends": "../tsconfig.settings.json",
     "compilerOptions": {
+        "target": "es6",
         "rootDir": "./src",
         "outDir": "./lib-umd",
         "declarationDir": "./types",
+        "downlevelIteration": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
         "noImplicitThis": true
