@@ -501,7 +501,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
         return this.WUDetails(request).then(response => response.Scopes.Scope);
     }
 
-    fetchDetailsNormalized(request: Partial<WsWorkunits.WUDetails.Request> = {}): Promise<{ meta: WsWorkunits.WUDetailsMeta.Response, columns: { [id: string]: any }, data: object[] }> {
+    fetchDetailsNormalized(request: Partial<WsWorkunits.WUDetails.Request> = {}): Promise<{ meta: WsWorkunits.WUDetailsMeta.Response, columns: { [id: string]: any }, data: object[], scopes: WsWorkunits.WUDetails.Scope[] }> {
         return Promise.all([this.fetchDetailsMeta(), this.fetchDetailsRaw(request)]).then(promises => {
             const meta = promises[0];
             const scopes = promises[1];
@@ -572,7 +572,8 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
             return {
                 meta,
                 columns,
-                data
+                data,
+                scopes
             };
         });
     }
