@@ -1,6 +1,5 @@
-var HasJsPlugin = require('webpack-hasjs-plugin');
+// var HasJsPlugin = require('webpack-hasjs-plugin');
 var DojoWebpackPlugin = require("dojo-webpack-plugin");
-var CopyWebpackPlugin = require("copy-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 
 var path = require("path");
@@ -49,22 +48,22 @@ module.exports = function (env) {
                 }]
         },
         plugins: [
-            new HasJsPlugin({
-                features: {
-                    "touch": false,
-                    'dojo-config-api': false,
-                    "dojo-trace-api": false,
-                    "dojo-log-api": false,
-                    'dojo-publish-privates': false,
-                    'dojo-sync-loader': false,
-                    'dojo-test-sniff': false,
-                    'dijit-legacy-requires': false,
-                    "dojo-loader": false,
-                    "bug-for-in-skips-shadowed": false,
-                    "dojo-debug-messages": false,
-                    "highcontrast": false
-                }
-            }),
+            // new HasJsPlugin({
+            //     features: {
+            //         "touch": false,
+            //         'dojo-config-api': false,
+            //         "dojo-trace-api": false,
+            //         "dojo-log-api": false,
+            //         'dojo-publish-privates': false,
+            //         'dojo-sync-loader': false,
+            //         'dojo-test-sniff': false,
+            //         'dijit-legacy-requires': false,
+            //         "dojo-loader": false,
+            //         "bug-for-in-skips-shadowed": false,
+            //         "dojo-debug-messages": false,
+            //         "highcontrast": false
+            //     }
+            // }),
             new DojoWebpackPlugin({
                 loaderConfig: require("./src/loaderConfig"),
                 environment: { dojoRoot: "./dist" },	// used at run time for non-packed resources (e.g. blank.gif)
